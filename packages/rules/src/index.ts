@@ -14,3 +14,4 @@ export type { BattleEvent, Card, Hero, Seat } from './model'
 export { heroes } from './heroes'
 
 export { slot } from './cards'
+export { definitions } from './cards'

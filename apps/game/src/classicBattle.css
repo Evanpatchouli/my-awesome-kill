@@ -1,0 +1,569 @@
+.classic-board {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: calc(100dvh - 64px);
+  min-height: 420px;
+  overflow: hidden;
+  color: #30271e;
+  background: url('./assets/standard/theme/arena.jpg') center/cover;
+}
+.classic-topline {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 5px 16px;
+  font-size: 12px;
+  color: #625343;
+}
+.classic-log {
+  margin-left: auto;
+  position: relative;
+  z-index: 10;
+}
+.classic-log summary,
+.classic-skills summary {
+  cursor: pointer;
+  color: #fff3df;
+  text-shadow: 0 1px 3px #271a10;
+}
+.classic-log ol {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  width: 260px;
+  max-height: 230px;
+  overflow: auto;
+  margin: 0;
+  padding: 9px 10px 9px 30px;
+  background: #f3e9da;
+  border: 1px solid #ae9a80;
+}
+.classic-opponents {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 5px;
+  padding: 3px 12px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.classic-seat {
+  position: relative;
+  flex: 1 0 86px;
+  max-width: 160px;
+  min-width: 0;
+  padding: 3px;
+  background: #eee2cfc9;
+  border: 1px solid #ad9a80;
+}
+.classic-seat.current {
+  border-color: #a44a32;
+  box-shadow: inset 0 0 0 1px #a44a32;
+}
+.classic-seat.dead {
+  filter: grayscale(1);
+  opacity: 0.7;
+}
+.classic-seat.targetable,
+.classic-self.targetable {
+  outline: 2px solid #ad4b32;
+  outline-offset: -2px;
+}
+.classic-seat.chosen,
+.classic-self.chosen {
+  outline: 3px solid #9e3828;
+}
+.seat-select,
+.self-select {
+  position: relative;
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr);
+  grid-template-rows: repeat(3, auto);
+  gap: 1px 5px;
+  width: 100%;
+  padding: 0;
+  text-align: left;
+  color: inherit;
+  background: transparent;
+  border: 0;
+}
+.seat-select:disabled,
+.self-select:disabled {
+  opacity: 1;
+}
+.seat-select img,
+.self-select img {
+  grid-row: 1 / 5;
+  width: 46px;
+  height: 72px;
+  object-fit: cover;
+  object-position: top;
+}
+.seat-identity {
+  font-size: 10px;
+  color: #8f3d2d;
+}
+.seat-name {
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 1.1;
+}
+.seat-faction {
+  font-size: 10px;
+  white-space: nowrap;
+}
+.classic-board .health {
+  margin: 2px 0;
+  gap: 1px;
+}
+.classic-board .health .health-point {
+  width: 11px;
+  height: 14px;
+}
+.target-number {
+  position: absolute;
+  right: 0;
+  top: 0;
+  border-radius: 50%;
+  background: #983e2c;
+  color: white;
+  padding: 1px 5px;
+}
+.classic-board .public-zone {
+  position: static;
+  width: auto;
+  z-index: auto;
+  background: transparent;
+  padding: 3px 0 0;
+  gap: 0 3px;
+  font-size: 10px;
+}
+.classic-board .public-slot {
+  min-width: 0;
+  overflow: hidden;
+}
+.classic-board .public-slot strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.classic-center {
+  flex: 1 1 0;
+  min-height: 65px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  text-align: center;
+}
+.classic-center h1 {
+  margin: 0;
+  font-size: clamp(14px, 1.4vw, 20px);
+}
+.classic-turn {
+  margin: 0;
+  font-size: 13px;
+  color: #8e3b2e;
+}
+.classic-revealed {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-height: 38px;
+  overflow: auto;
+  font-size: 11px;
+}
+.classic-revealed span:not(:first-child) {
+  padding: 1px 4px;
+  background: #f5ead8;
+  border: 1px solid #b9a18a;
+}
+.classic-bottom {
+  display: flex;
+  align-items: end;
+  gap: 8px;
+  padding: 4px 12px 8px;
+}
+.classic-self {
+  flex: 0 0 15%;
+  min-width: 110px;
+  max-width: 185px;
+  padding: 4px;
+  background: #eee2cfcc;
+}
+.self-select img {
+  height: 84px;
+}
+.classic-hand-zone {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+}
+.classic-skills {
+  font-size: 11px;
+}
+.classic-skills[open] {
+  position: absolute;
+  z-index: 9;
+  bottom: 100%;
+  max-height: 180px;
+  overflow: auto;
+  padding: 8px;
+  background: #f3e9da;
+  border: 1px solid #b7a38b;
+}
+.classic-skills p {
+  margin: 4px 0;
+}
+.classic-hand-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 11px;
+  color: #6f5d4b;
+}
+.classic-hand-heading span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.classic-hand {
+  display: flex;
+  gap: 5px;
+  overflow-x: auto;
+  padding: 5px 3px 7px;
+}
+.classic-hand .playing-card {
+  flex: 0 0 clamp(68px, 7vw, 105px);
+  height: clamp(100px, 20vh, 170px);
+  min-height: 0;
+  padding: 6px;
+}
+.classic-hand .playing-card strong {
+  font-size: clamp(19px, 2vw, 28px);
+  margin: 5px 0 0;
+}
+.classic-hand .playing-card.long-name strong {
+  font-size: clamp(14px, 1.5vw, 20px);
+}
+.classic-controls {
+  flex: 0 0 18%;
+  min-width: 140px;
+  max-width: 240px;
+  max-height: 33vh;
+  overflow: auto;
+  padding: 4px;
+}
+.classic-options,
+.classic-pool,
+.classic-control-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.classic-controls button {
+  border: 1px solid #a4846a;
+  background: #f1e4d2;
+  color: #573f31;
+  padding: 5px 8px;
+  font-size: 12px;
+}
+.classic-controls button.selected {
+  border-color: #913b2d;
+  background: #dfc6a9;
+}
+.classic-controls button:disabled {
+  opacity: 0.5;
+}
+.classic-control-row {
+  margin-top: 4px;
+}
+.classic-control-row button {
+  flex: 1;
+  background: #903d2d;
+  border-color: #903d2d;
+  color: white;
+}
+.classic-control-row button.secondary {
+  background: #f1e4d2;
+  color: #513d30;
+  border-color: #a4846a;
+}
+.classic-controls p {
+  font-size: 11px;
+  margin: 4px 0;
+}
+.classic-save-error {
+  color: #9d3224;
+  font-size: 12px;
+}
+@media (max-height: 500px) and (orientation: landscape) {
+  .classic-board {
+    height: calc(100dvh - 40px);
+    min-height: 0;
+  }
+  .classic-topline {
+    padding: 1px 12px;
+    font-size: 10px;
+  }
+  .classic-opponents {
+    padding: 1px 8px;
+    gap: 3px;
+  }
+  .classic-seat {
+    flex-basis: 80px;
+    padding: 2px;
+  }
+  .seat-select {
+    grid-template-columns: 32px minmax(0, 1fr);
+    gap: 0 3px;
+  }
+  .seat-select img {
+    width: 32px;
+    height: 50px;
+  }
+  .seat-name {
+    font-size: 12px;
+  }
+  .seat-identity,
+  .seat-faction {
+    font-size: 9px;
+  }
+  .classic-board .health .health-point {
+    width: 8px;
+    height: 11px;
+  }
+  .classic-board .public-zone {
+    font-size: 9px;
+    line-height: 1.1;
+    padding: 0;
+  }
+  .classic-center {
+    min-height: 42px;
+    gap: 0;
+  }
+  .classic-center h1 {
+    font-size: 13px;
+  }
+  .classic-turn {
+    font-size: 11px;
+  }
+  .classic-revealed {
+    max-height: 25px;
+  }
+  .classic-bottom {
+    gap: 5px;
+    padding: 2px 8px 4px;
+  }
+  .classic-self {
+    flex-basis: 14%;
+    min-width: 100px;
+    padding: 2px;
+  }
+  .self-select {
+    grid-template-columns: 35px minmax(0, 1fr);
+    font-size: 10px;
+  }
+  .self-select img {
+    width: 35px;
+    height: 58px;
+  }
+  .classic-skills,
+  .classic-hand-heading {
+    font-size: 10px;
+  }
+  .classic-hand {
+    padding: 3px 2px 4px;
+  }
+  .classic-hand .playing-card {
+    flex-basis: 65px;
+    height: 92px;
+    padding: 5px;
+  }
+  .classic-hand .playing-card strong {
+    font-size: 18px;
+    margin-top: 2px;
+  }
+  .classic-hand .playing-card.long-name strong {
+    font-size: 14px;
+  }
+  .classic-controls {
+    min-width: 130px;
+    max-height: 33vh;
+  }
+  .classic-controls button {
+    padding: 3px 5px;
+    font-size: 11px;
+  }
+}
+
+.classic-controls button:hover:not(:disabled),
+.classic-controls button:focus-visible {
+  filter: brightness(0.88);
+}
+.classic-board .public-zone {
+  grid-template-columns: minmax(0, 1fr);
+}
+.classic-board .public-slot {
+  grid-column: 1 / -1;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.classic-board .public-slot strong {
+  overflow: visible;
+  text-overflow: clip;
+}
+@media (max-height: 500px) and (orientation: landscape) {
+  .classic-seat {
+    flex-basis: 95px;
+  }
+}
+/* Seats keep the original portrait as the main surface, with public zones beneath. */
+.classic-seat {
+  display: flex;
+  flex-direction: column;
+  padding: 3px;
+}
+.seat-select {
+  display: block;
+  flex: 1;
+  min-height: 130px;
+  overflow: hidden;
+  background: #544335;
+}
+.seat-select img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 15%;
+}
+.seat-select .seat-identity,
+.seat-select .seat-name,
+.seat-select .seat-faction,
+.seat-select .health {
+  position: absolute;
+  z-index: 1;
+  margin: 0;
+  padding: 2px 4px;
+  color: #fff4df;
+  text-shadow: 0 1px 3px #24170f;
+  background: #2a1c14a8;
+}
+.seat-select .seat-identity {
+  top: 3px;
+  left: 3px;
+  font-size: 10px;
+}
+.seat-select .seat-name {
+  left: 3px;
+  bottom: 25px;
+  font-size: clamp(13px, 1.3vw, 19px);
+}
+.seat-select .seat-faction {
+  right: 3px;
+  top: 3px;
+}
+.seat-select .health {
+  left: 3px;
+  bottom: 3px;
+}
+.classic-zones {
+  flex: none;
+  min-width: 0;
+  padding-top: 2px;
+  font-size: 10px;
+  line-height: 1.25;
+}
+.classic-zones > div {
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: none;
+}
+.classic-zones span {
+  color: #826448;
+}
+.classic-controls .classic-control-row button {
+  border: 0;
+  min-height: 38px;
+  background: url('./assets/ink/primary.webp') center/100% 100% no-repeat;
+  color: #fff5e7;
+}
+.classic-controls .classic-control-row button.secondary {
+  background-image: url('./assets/ink/secondary.webp');
+  color: #29231e;
+}
+@media (max-height: 500px) and (orientation: landscape) {
+  .seat-select {
+    min-height: 72px;
+  }
+  .seat-select .seat-name {
+    bottom: 18px;
+    font-size: 12px;
+  }
+  .seat-select .seat-identity,
+  .seat-select .seat-faction {
+    font-size: 9px;
+    padding: 1px 2px;
+  }
+  .seat-select .health {
+    bottom: 1px;
+    padding: 1px 2px;
+  }
+  .classic-zones {
+    font-size: 9px;
+    line-height: 1.1;
+  }
+  .classic-controls .classic-control-row button {
+    min-height: 33px;
+  }
+}
+@media (min-height: 501px) {
+  .classic-seat {
+    max-width: 200px;
+  }
+  .seat-select {
+    min-height: 170px;
+  }
+  .self-select {
+    grid-template-columns: 68px minmax(0, 1fr);
+  }
+  .self-select img {
+    width: 68px;
+    height: 108px;
+  }
+}
+@media (max-height: 500px) and (orientation: landscape) {
+  .self-select {
+    grid-template-columns: 44px minmax(0, 1fr);
+  }
+  .self-select img {
+    width: 44px;
+    height: 68px;
+  }
+}
+
+/* The simple arena uses the original bronze table. Keep unframed labels legible over the engraving. */
+.classic-topline,
+.classic-center,
+.classic-turn,
+.classic-hand-heading,
+.classic-hand-wrap > details > summary,
+.classic-controls > p {
+  color: #fff3df;
+  text-shadow:
+    0 1px 3px #271a10,
+    0 0 4px #271a10;
+}
+.classic-center h1,
+.classic-turn {
+  color: #fff5de;
+}
+.classic-revealed span {
+  color: #30251d;
+  text-shadow: none;
+}
+.classic-skills[open] summary { color: #573d30; text-shadow: none; }

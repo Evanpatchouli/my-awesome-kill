@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build",
-    "typecheck": "vue-tsc --noEmit",
+    "dev": "node ../../scripts/build-engine.mjs && vite",
+    "build": "node ../../scripts/build-engine.mjs && vue-tsc --noEmit && vite build",
+    "typecheck": "node ../../scripts/build-engine.mjs && vue-tsc --noEmit",
     "tauri": "tauri",
     "smoke": "node smoke.mjs"
   },

@@ -7,6 +7,8 @@
     "test": "pnpm -r --if-present test",
     "typecheck": "pnpm -r --if-present typecheck",
     "build": "pnpm --filter @mak/game build",
-    "tauri": "pnpm --filter @mak/game tauri"
+    "tauri": "pnpm --filter @mak/game tauri",
+    "engine:build": "node scripts/build-engine.mjs",
+    "engine:test": "cargo test --locked --manifest-path packages/duel-core/Cargo.toml && node scripts/build-engine.mjs && node scripts/test-engine-web.mjs"
   }
 }

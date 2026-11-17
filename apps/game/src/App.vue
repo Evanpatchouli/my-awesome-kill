@@ -2,9 +2,10 @@
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { gsap } from 'gsap'
-import BattleView from './BattleView.vue'
+import ClassicBattle from './ClassicBattle.vue'
+import ClassicSelection from './ClassicSelection.vue'
 import { useGame } from './game'
-import { heroes } from '@mak/rules'
+
 import { listMatches } from './persistence'
 import { heroPortrait } from './battleArt'
 const zhangfei = heroPortrait('zhangfei')
@@ -13,7 +14,8 @@ const huangyueying = heroPortrait('huangyueying')
 const route = useRoute()
 const router = useRouter()
 const game = useGame()
-const hero = ref<'zhangfei' | 'huangyueying'>('zhangfei')
+const hero = ref('zhangfei')
+const count = ref(8)
 const reduced = ref(localStorage.getItem('mak-reduced-motion') === 'true')
 const records = ref<Awaited<ReturnType<typeof listMatches>>>([])
 const screen = ref<HTMLElement | null>(null)
@@ -32,8 +34,8 @@ async function retryHistory() {
     records.value = []
   }
 }
-function begin() {
-  if (game.start(hero.value)) void router.push('/battle')
+async function begin() {
+  if (await game.start(hero.value, count.value)) void router.push('/battle')
 }
 watch(
   reduced,
@@ -46,7 +48,11 @@ watch(
 watch(
   () => route.path,
   async (path, old) => {
-    if (old === '/battle' && path !== '/battle') game.leave()
+    if (
+      (old === '/battle' && path !== '/battle') ||
+      (old === '/classic' && game.busy && path !== '/battle')
+    )
+      game.leave()
     if (path === '/battle' && !game.view) {
       void router.replace('/classic')
       return
@@ -113,10 +119,6 @@ onUnmounted(() => {
     <template v-else>
       <header class="page-header">
         <button class="back-button" aria-label="返回" @click="back"></button>
-        <div v-if="route.path === '/battle' && game.view" class="header-info">
-          第 {{ game.view.turn }} 回合　·　牌堆 {{ game.view.drawCount }}　·　弃牌
-          {{ game.view.discardCount }}
-        </div>
       </header>
       <section v-if="route.path === '/modes'" class="page-content modes-page">
         <div class="section-heading">
@@ -135,41 +137,25 @@ onUnmounted(() => {
           </div>
         </button>
       </section>
-      <section v-else-if="route.path === '/classic'" class="page-content selection-page">
-        <div class="section-heading">
-          <div>
-            <h1>选择你的武将</h1>
-            <p>单人对战电脑，另一位武将将成为你的对手。</p>
-          </div>
-        </div>
-        <div class="hero-grid grid grid-cols-1 md:grid-cols-2 gap-6">
-          <button
-            v-for="item in [
-              { id: 'zhangfei', ...heroes.zhangfei, image: zhangfei },
-              { id: 'huangyueying', ...heroes.huangyueying, image: huangyueying },
-            ] as const"
-            :key="item.id"
-            class="hero-option"
-            :class="{ active: hero === item.id }"
-            @click="hero = item.id"
-          >
-            <img :src="item.image" :alt="item.name + '立绘'" />
-            <div class="hero-info">
-              <h2>{{ item.name }}</h2>
-              <p>{{ item.skills.join(' ') }}</p>
-            </div>
-            <span class="hero-check">{{ hero === item.id ? '✓' : '＋' }}</span>
-          </button>
-        </div>
-        <div class="selection-bottom flex items-center justify-between">
-          <p>
-            你执 <strong>{{ hero === 'zhangfei' ? '张飞' : '黄月英' }}</strong
-            >，电脑执 {{ hero === 'zhangfei' ? '黄月英' : '张飞' }}
-          </p>
-          <button class="primary-button" @click="begin">开始对局 <span>→</span></button>
-        </div>
-      </section>
-      <BattleView v-else-if="route.path === '/battle'" @exit="back" @restart="begin" />
+      <ClassicSelection
+        v-else-if="route.path === '/classic'"
+        v-model:hero="hero"
+        v-model:count="count"
+        :busy="game.busy"
+        :error="game.error"
+        @start="begin"
+      />
+      <ClassicBattle
+        v-else-if="route.path === '/battle' && game.view"
+        :view="game.view"
+        :locked="game.locked"
+        :log="game.log"
+        :feedback="game.feedback"
+        :save-error="game.saveError"
+        @act="game.act"
+        @restart="begin"
+        @retry-save="game.retrySave"
+      />
       <section v-else-if="route.path === '/profile'" class="page-content simple-page">
         <div class="section-heading">
           <div>
@@ -232,5 +218,8 @@ onUnmounted(() => {
         </div>
       </section>
     </template>
+    <p v-if="game.error && route.path === '/battle'" role="alert" class="game-error">
+      {{ game.error }}
+    </p>
   </main>
 </template>
