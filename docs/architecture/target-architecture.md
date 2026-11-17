@@ -1,8 +1,12 @@
 # 应用架构
 
-P1 以 pnpm workspace 组织两个包。规则层是独立 TypeScript 包，可在 Node 中复现整局；应用包使用 Vite 8、Vue 3、vue-router 和 Pinia。两端复用同一份游戏核心和界面。Tauri 2 的 Rust 壳承载桌面与 Android WebView，Android 的 Activity 在 manifest 中强制横屏。
+现有可运行原型以 pnpm workspace 组织两个包。规则层是独立 TypeScript 包，可在 Node 中复现整局；应用包使用 Vite 8、Vue 3、vue-router 和 Pinia。两端复用同一份游戏核心和界面。Tauri 2 的 Rust 壳承载桌面与 Android WebView，Android 的 Activity 在 manifest 中强制横屏。
 
-## 规则与对手
+## 迁移目标
+
+按[底座迁移计划](../exec-plans/active/p1-engine-migration.md)，后继 Rust 权威内核以带版本的命令、按座位投影的快照、可暂停的选择以及结构化结算事件对接内容包和表现层。经典模式将提供多人身份规则与全部 2008 标准武将。前端仅管理选择草稿、动画和输入，不以动画回调决定结算。当前双人原型仍通过下述 TypeScript 接口运行。
+
+## 原型的规则与对手
 
 - `packages/rules/src/cards.ts` 保存 104 张牌的牌面、装备槽、射程、说明。实例编号与牌名分离。武将的体力、性别和技能文案位于 `heroes.ts`。
 - `engine.ts` 管理牌区、带种子的洗牌与抽取、回合、弃牌、濒死与胜负。每次等待输入时产生合法选项，响应后继续尚未结束的结算。`combat.ts` 处理杀、闪、武器和防具，`tricks.ts` 处理普通锦囊、无懈链及延时判定。两人局目标条件见[对局契约](../specs/classic-duel.md)。
