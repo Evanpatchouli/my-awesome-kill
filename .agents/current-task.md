@@ -38,6 +38,8 @@ T2、T3 后本任采样 2026-11-17T22:05:13.850Z，123,146 / 828,400（14.87%）
 
 M6 平台复验已在独立 API 36 AVD 安装上述交接包，从首页选择张飞并进入八人身份局，见 `docs/runbooks/development.md`。640×320 屏幕底部存在截断，已安排独立复现与修复。实跑截图在本任 visualizations 下的 `android/`。模拟器及隔离 ADB 已关闭。本单元采样 2026-11-17T22:14:09.887Z，159,603 / 828,400（19.27%）。
 
+R1 重铸上游取证完成。共享驱动实跑 `--scenario tiesuo-recast`，默认和自定义回调分别记录 30 和 21 次时机调用，已复跑 golden。2026-11-17T22:19:07.225Z 本任采样为 182,437 / 828,400（22.02%）。R2 需要让 Rust 消费相同局面并核对各席投影。
+
 ## 接力规则
 
 每个可验证单元结束后更新本文件并采样，大检索、长日志、新重单元开始前也采样。读取当前进程 CODEX_THREAD_ID，在 CODEX_HOME/sessions 或 %USERPROFILE%/.codex/sessions 只匹配完整 ID 的 rollout-*.jsonl。仅提取最近一条有效 payload.type=token_count 的 timestamp、info.last_token_usage.total_tokens 与正数 info.model_context_window。以两者相除计算比例，禁止用跨次累计或按最新文件猜测。无可靠样本时记录事实，按所需空间提前交接。自动压缩后先从现场和采样核实已完成操作。初查采样 31573/828400（3.81%）。

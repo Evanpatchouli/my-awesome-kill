@@ -40,6 +40,6 @@
 - **铁索与法恩。** card/extra.js 中的 tiesuo，character/yijiang/skill.js 中的 faen，noname/library/skill.js 的 _lianhuan 与 _lianhuan4。B、C 横置，仅对 B 造成火焰伤害；核对受伤次数、伤害性质/来源、解除横置、法恩时机以及传播途中状态变化。
 - **巧说与纵适。** character/yijiang/skill.js 的 qiaoshui、jyzongshi 与 content.ts 的 chooseToCompare。两席先分别暗选再共同亮牌，核实点数修改、平点、胜败后牌的归属、下张牌的合法目标和临时技过期。
 - **忠义扩展区。** mode/versus.js 中对关羽的技能配置、character/standard/skill.js 的 zhongyi/zhongyi2、addToExpansion/roundStart。实体牌离开原区并获得标签，限定技一次，友方杀伤害增加，下轮移除效果和弃牌各一次。
-- **铁索重铸。** _recasting、player.recast、content.recast。对照默认重铸的先失去再获得及相关事件，核对结算结果和私密摸牌；重铸不横置角色，允许内容替换 lose/gain 步骤。
+- **铁索重铸。** 已采集上游 `Player.recast` 默认和替换 lose/gain 两种真实结算，分别有 30 和 21 次时机调用。前者弃铁索再摸牌，后者将铁索交给另一席再获得指定牌。待将中途状态、资格、支付、私密摸牌与可替换步骤接入 Rust 并对照。[重铸原版轨迹](../../../tests/reference/tiesuo-recast.json)
 
 按探针扩展通用接口，每个可验证部分按 AGENTS.md 提交，并继续更新此表。上述探针通过以后仍须逐族对账并完成真实应用验收。

@@ -8,6 +8,8 @@
 
 `trigger-order-cancel.json` 使用同样的实体杀局面，再给 B 一张桃作为费用材料。上游 `finishSkill` 和 `addSkill` 注册诊断技能：伤害 `damageBegin4` 的 firstDo 先执行；A 的两个同优先级 source 技能通过真实 `chooseControl` 选择第二项 Beta，Beta 使低优先级候选失效；B 的 player 技能尽管数值优先级更高，仍在 A 的普通技能之后执行，并在真实 cost 事件中弃置桃；最后 A 的 global lastDo 取消伤害。`filterResults` 记录候选筛选的真实结果，`skillSequence` 和事件的 `parent` 列记录父事件。此轨迹观察到 `damageCancelled` 而没有 `damageEnd` / `damageAfter`，但仍有 `shaDamage`、`useCardAfter` 和处理区清理；B 的体力保持 4，杀的使用次数为 1。事件名 `shaDamage` 本身不证明体力发生变化。
 
+`tiesuo-recast.json` 记录直接调用上游 `Player.recast` 的两次结算。A 持有铁索和杀，牌堆顶固定一张桃。上游严格判定允许铁索重铸。默认结算将铁索弃置，A 摸到桃。第二次通过上游公开回调将另一张铁索交给 B，并让 A 获得指定的闪。两次均保持 A 的手牌数、铁索使用次数及双方横置状态。`events` 记录原版请求时机时的实体位置，`A:h` 和 `B:h` 表示所在席的手牌。`recastingLost`、`recastingGained` 的请求发生在相应子事件移动实体之前，`recast`、`recastEnd` 分别可见两次移动的结果。该场景覆盖内容调用与牌区变化，玩家点选重铸的交互仍需单独验证。
+
 ## 复现
 
 1. 在独立临时目录检出上述上游提交，保留 `apps/core`、`packages/fs`、`packages/jit` 和根目录的 `scripts`；可从本机 `.reference/noname` 用 `git clone --shared --sparse` 复用已有对象。通过 `git rev-parse HEAD` 确认提交。不要在项目运行时依赖该参考检出。
@@ -18,6 +20,7 @@
    ```powershell
    node scripts/reference-trace.mjs --check tests/reference/sha-no-shan.json
    node scripts/reference-trace.mjs --scenario trigger-order-cancel --check tests/reference/trigger-order-cancel.json
+   node scripts/reference-trace.mjs --scenario tiesuo-recast --check tests/reference/tiesuo-recast.json
    ```
 
-运行器会先校验与此场景相关的八个上游源文件的 LF 归一化 SHA-256，再启动隔离浏览器并逐项比较事件和结果。该摘要检查不能替代对整个 Git 检出的提交校验。`--write <path>` 用于明确地重新采集，默认无参数则将结果写至标准输出；不要在未核查上游版本或差异时覆盖现有 golden。
+运行器在隔离浏览器内核对八个共同上游源文件的 LF 归一化 SHA-256，重铸场景还校验 `card/extra.js`。随后执行场景并逐项比较事件和结果。整个检出的版本由第 1 步确认。`--write <path>` 用于重新采集，默认将结果写至标准输出。

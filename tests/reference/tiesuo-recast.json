@@ -1,0 +1,193 @@
+{
+  "schema": "noname-reference-trace-v1",
+  "referenceCommit": "c73270948d72949aa80009536b9fd5400767d091",
+  "mode": "identity",
+  "scenario": "default and custom loss and gain when recasting a physical tiesuo",
+  "setup": {
+    "material": {
+      "name": "tiesuo",
+      "position": "h",
+      "actorHand": true,
+      "targetHand": false,
+      "discard": false,
+      "pile": false,
+      "strict": true
+    },
+    "control": {
+      "name": "sha",
+      "position": "h",
+      "actorHand": true,
+      "targetHand": false,
+      "discard": false,
+      "pile": false,
+      "strict": false
+    },
+    "replacement": {
+      "position": "c",
+      "actorHand": false,
+      "targetHand": false,
+      "discard": false,
+      "pile": true
+    },
+    "handSize": 2,
+    "useCardStat": 0,
+    "targetLinked": false,
+    "actorLinked": false
+  },
+  "afterDefault": {
+    "material": {
+      "position": "d",
+      "actorHand": false,
+      "targetHand": false,
+      "discard": true,
+      "pile": false
+    },
+    "replacement": {
+      "position": "h",
+      "actorHand": true,
+      "targetHand": false,
+      "discard": false,
+      "pile": false
+    },
+    "control": {
+      "position": "h",
+      "actorHand": true,
+      "targetHand": false,
+      "discard": false,
+      "pile": false
+    },
+    "handSize": 2,
+    "useCardStat": 0,
+    "targetLinked": false,
+    "actorLinked": false,
+    "materialLocations": 1,
+    "replacementLocations": 1,
+    "losingEvents": [
+      "loseToDiscardpile"
+    ],
+    "gainingEvents": [
+      "draw"
+    ]
+  },
+  "overrideSetup": {
+    "material": {
+      "position": "h",
+      "actorHand": true,
+      "targetHand": false,
+      "discard": false,
+      "pile": false
+    },
+    "replacement": {
+      "position": "c",
+      "actorHand": false,
+      "targetHand": false,
+      "discard": false,
+      "pile": true
+    },
+    "handSize": 3,
+    "useCardStat": 0
+  },
+  "callbacks": [
+    {
+      "kind": "lose",
+      "count": 1
+    },
+    {
+      "kind": "gain",
+      "count": 1
+    }
+  ],
+  "afterOverride": {
+    "material": {
+      "position": "h",
+      "actorHand": false,
+      "targetHand": true,
+      "discard": false,
+      "pile": false
+    },
+    "replacement": {
+      "position": "h",
+      "actorHand": true,
+      "targetHand": false,
+      "discard": false,
+      "pile": false
+    },
+    "handSize": 3,
+    "useCardStat": 0,
+    "targetLinked": false,
+    "actorLinked": false,
+    "materialLocations": 1,
+    "replacementLocations": 1,
+    "losingEvents": [
+      "gain"
+    ],
+    "gainingEvents": [
+      "gain"
+    ]
+  },
+  "eventColumns": [
+    "phase",
+    "hook",
+    "event",
+    "parent",
+    "player",
+    "source",
+    "target",
+    "material",
+    "replacement",
+    "actorHandSize"
+  ],
+  "events": [
+    ["default","recastBefore","recast","reference_fixture_use","actor",null,null,"A:h","c",2],
+    ["default","recastBegin","recast","reference_fixture_use","actor",null,null,"A:h","c",2],
+    ["default","recastingLose","recast","reference_fixture_use","actor",null,null,"A:h","c",2],
+    ["default","recastingLost","recast","reference_fixture_use","actor",null,null,"A:h","c",2],
+    ["default","loseToDiscardpileBefore","loseToDiscardpile","recast","actor",null,null,"A:h","c",2],
+    ["default","loseToDiscardpileBegin","loseToDiscardpile","recast","actor",null,null,"A:h","c",2],
+    ["default","loseBefore","lose","loseToDiscardpile","actor",null,null,"A:h","c",2],
+    ["default","loseBegin","lose","loseToDiscardpile","actor",null,null,"A:h","c",2],
+    ["default","loseEnd","lose","loseToDiscardpile","actor",null,null,"d","c",1],
+    ["default","loseAfter","lose","loseToDiscardpile","actor",null,null,"d","c",1],
+    ["default","loseToDiscardpile","loseToDiscardpile","recast","actor",null,null,"d","c",1],
+    ["default","loseToDiscardpileEnd","loseToDiscardpile","recast","actor",null,null,"d","c",1],
+    ["default","loseToDiscardpileAfter","loseToDiscardpile","recast","actor",null,null,"d","c",1],
+    ["default","_discardBefore","_discard","trigger","actor",null,null,"d","c",1],
+    ["default","_discardBegin","_discard","trigger","actor",null,null,"d","c",1],
+    ["default","_discardEnd","_discard","trigger","actor",null,null,"d","c",1],
+    ["default","_discardAfter","_discard","trigger","actor",null,null,"d","c",1],
+    ["default","recast","recast","reference_fixture_use","actor",null,null,"d","c",1],
+    ["default","recastingGain","recast","reference_fixture_use","actor",null,null,"d","c",1],
+    ["default","recastingGained","recast","reference_fixture_use","actor",null,null,"d","c",1],
+    ["default","drawBefore","draw","recast","actor","actor",null,"d","c",1],
+    ["default","drawBegin","draw","recast","actor","actor",null,"d","c",1],
+    ["default","gainBefore","gain","draw","actor",null,null,"d",null,1],
+    ["default","gainBegin","gain","draw","actor",null,null,"d",null,1],
+    ["default","gainEnd","gain","draw","actor",null,null,"d","A:h",2],
+    ["default","gainAfter","gain","draw","actor",null,null,"d","A:h",2],
+    ["default","drawEnd","draw","recast","actor","actor",null,"d","A:h",2],
+    ["default","drawAfter","draw","recast","actor","actor",null,"d","A:h",2],
+    ["default","recastEnd","recast","reference_fixture_use","actor",null,null,"d","A:h",2],
+    ["default","recastAfter","recast","reference_fixture_use","actor",null,null,"d","A:h",2],
+    ["override","recastBefore","recast","reference_fixture_use","actor",null,null,"A:h","c",3],
+    ["override","recastBegin","recast","reference_fixture_use","actor",null,null,"A:h","c",3],
+    ["override","recastingLose","recast","reference_fixture_use","actor",null,null,"A:h","c",3],
+    ["override","recastingLost","recast","reference_fixture_use","actor",null,null,"A:h","c",3],
+    ["override","gainBefore","gain","recast","target","actor",null,"A:h","c",3],
+    ["override","gainBegin","gain","recast","target","actor",null,"A:h","c",3],
+    ["override","loseBefore","lose","gain","actor",null,null,"A:h","c",3],
+    ["override","loseBegin","lose","gain","actor",null,null,"A:h","c",3],
+    ["override","loseEnd","lose","gain","actor",null,null,"s","c",2],
+    ["override","loseAfter","lose","gain","actor",null,null,"s","c",2],
+    ["override","gainEnd","gain","recast","target","actor",null,"B:h","c",2],
+    ["override","gainAfter","gain","recast","target","actor",null,"B:h","c",2],
+    ["override","recast","recast","reference_fixture_use","actor",null,null,"B:h","c",2],
+    ["override","recastingGain","recast","reference_fixture_use","actor",null,null,"B:h","c",2],
+    ["override","recastingGained","recast","reference_fixture_use","actor",null,null,"B:h","c",2],
+    ["override","gainBefore","gain","recast","actor",null,null,"B:h","c",2],
+    ["override","gainBegin","gain","recast","actor",null,null,"B:h","c",2],
+    ["override","gainEnd","gain","recast","actor",null,null,"B:h","A:h",3],
+    ["override","gainAfter","gain","recast","actor",null,null,"B:h","A:h",3],
+    ["override","recastEnd","recast","reference_fixture_use","actor",null,null,"B:h","A:h",3],
+    ["override","recastAfter","recast","reference_fixture_use","actor",null,null,"B:h","A:h",3]
+  ]
+}

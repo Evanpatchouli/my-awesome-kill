@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import { readFile, writeFile } from 'node:fs/promises';
 import { installTriggerOrderScenario } from './reference-trigger-order-cancel.mjs';
+import { installReferenceRecast } from './reference-recast.mjs';
 
 // This is an optional oracle runner. It needs a running, separate upstream dev
 // server and Playwright; neither is a runtime dependency of the game.
@@ -26,16 +27,22 @@ const sourceHashes = {
 };
 
 const argv = process.argv.slice(2);
+const descriptions = new Map([
+  ['sha-no-shan', 'ordinary physical sha against an adjacent AI target with no shan'],
+  ['trigger-order-cancel', 'damage trigger ordering, cost, and cancellation for physical sha'],
+  ['tiesuo-recast', 'default and custom loss and gain when recasting a physical tiesuo'],
+]);
 let scenario = 'sha-no-shan';
 const scenarioIndex = argv.indexOf('--scenario');
 if (scenarioIndex !== -1) {
   scenario = argv[scenarioIndex + 1];
   argv.splice(scenarioIndex, 2);
 }
-if (!['sha-no-shan', 'trigger-order-cancel'].includes(scenario)) throw new Error(`Unknown scenario: ${scenario}`);
+if (!descriptions.has(scenario)) throw new Error(`Unknown scenario: ${scenario}`);
 if (argv.length && (argv.length !== 2 || !['--check', '--write'].includes(argv[0]))) {
-  throw new Error('Usage: node scripts/reference-trace.mjs [--check|--write path]');
+  throw new Error('Usage: node scripts/reference-trace.mjs [--scenario name] [--check|--write path]');
 }
+if (scenario === 'tiesuo-recast') sourceHashes['/card/extra.js'] = '8a73678a49b4fc413d6dc0d506733e594fae619d91dc8013cd441a6cd107c35d';
 
 const browser = await chromium.launch({ headless: true, executablePath });
 const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
@@ -58,7 +65,11 @@ try {
     localStorage.setItem('noname_0.9_disable_extension', 'true');
   });
 
-  await context.addInitScript({ content: `window.__installTriggerOrderScenario = ${installTriggerOrderScenario.toString()};` });
+  if (scenario === 'trigger-order-cancel') {
+    await context.addInitScript({ content: `window.__installTriggerOrderScenario = ${installTriggerOrderScenario.toString()};` });
+  } else if (scenario === 'tiesuo-recast') {
+    await context.addInitScript(installReferenceRecast);
+  }
 
   const page = await context.newPage();
   page.on('pageerror', error => errors.push(error.stack || error.message));
@@ -120,6 +131,11 @@ try {
           window.__referenceStages.push('phaseUseBegin: arranging scenario');
           const target = actor.next === game.me ? actor.previous : actor.next;
           if (!target || target === game.me || target === actor) throw new Error('No adjacent AI target');
+          if (scenario === 'tiesuo-recast') {
+            window.__referenceResult = await window.__runReferenceRecast({ lib, game, ui, get, actor, target });
+            game.pause();
+            return;
+          }
           for (const player of [actor, target]) {
             const cards = player.getCards('he');
             if (cards.length) await player.discard(cards);
@@ -241,11 +257,29 @@ try {
   if (scenario === 'sha-no-shan') assert.deepEqual(captured.value.final, {
     targetHp: 3, cardPosition: 'd', inActorHand: false, inDiscard: true, useCount: 1, targetAlive: true,
   });
+  if (scenario === 'tiesuo-recast') {
+    const { setup, afterDefault, overrideSetup, callbacks, afterOverride } = captured.value;
+    assert.equal(setup.material.strict, true);
+    assert.equal(setup.control.strict, false);
+    assert.equal(afterDefault.material.discard, true);
+    assert.equal(afterDefault.control.actorHand, true);
+    assert.equal(afterOverride.material.targetHand, true);
+    assert.deepEqual(callbacks.map(callback => callback.kind), ['lose', 'gain']);
+    for (const [before, after] of [[setup, afterDefault], [overrideSetup, afterOverride]]) {
+      assert.equal(after.materialLocations, 1);
+      assert.equal(after.replacementLocations, 1);
+      assert.equal(after.replacement.actorHand, true);
+      assert.equal(after.handSize, before.handSize);
+      assert.equal(after.useCardStat, before.useCardStat);
+      assert.equal(after.targetLinked, setup.targetLinked);
+      assert.equal(after.actorLinked, setup.actorLinked);
+    }
+  }
   result = {
     schema: 'noname-reference-trace-v1',
     referenceCommit: commit,
     mode: 'identity',
-    scenario: scenario === 'sha-no-shan' ? 'ordinary physical sha against an adjacent AI target with no shan' : 'damage trigger ordering, cost, and cancellation for physical sha',
+    scenario: descriptions.get(scenario),
     ...captured.value,
   };
 } finally {
