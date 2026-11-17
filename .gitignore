@@ -5,3 +5,4 @@ dist/
 target/
 apps/game/src-tauri/gen/android_old/
 apps/game/src-tauri/gen/schemas/
+apps/game/src/generated/duel/
