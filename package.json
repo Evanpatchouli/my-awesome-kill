@@ -1,0 +1,12 @@
+{
+  "name": "my-awesome-kill",
+  "private": true,
+  "packageManager": "pnpm@10.20.0",
+  "scripts": {
+    "dev": "pnpm --filter @mak/game dev",
+    "test": "pnpm -r --if-present test",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "build": "pnpm --filter @mak/game build",
+    "tauri": "pnpm --filter @mak/game tauri"
+  }
+}
