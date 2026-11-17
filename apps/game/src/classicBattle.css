@@ -42,7 +42,7 @@
 .classic-opponents {
   display: flex;
   align-items: stretch;
-  justify-content: center;
+  justify-content: safe center;
   gap: 5px;
   padding: 3px 12px;
   overflow-x: auto;
@@ -398,6 +398,15 @@
     font-size: 11px;
   }
 }
+@media (width < 700px) and (max-height: 500px) and (orientation: landscape) {
+  .page-header:has(+ .classic-board) {
+    height: 40px;
+  }
+  .page-header:has(+ .classic-board) .back-button {
+    width: 36px;
+    height: 36px;
+  }
+}
 
 .classic-controls button:hover:not(:disabled),
 .classic-controls button:focus-visible {
@@ -543,6 +552,41 @@
   .self-select img {
     width: 44px;
     height: 68px;
+  }
+}
+@media (max-height: 350px) and (orientation: landscape) {
+  .classic-board {
+    height: auto;
+    min-height: calc(100dvh - 40px);
+  }
+  .classic-center {
+    flex-flow: row wrap;
+    align-content: center;
+    min-height: 40px;
+    gap: 0 8px;
+  }
+  .classic-revealed {
+    flex-basis: 100%;
+  }
+  .seat-select {
+    min-height: clamp(46px, 18dvh, 64px);
+  }
+  .seat-select .seat-name {
+    bottom: 15px;
+  }
+  .self-select img {
+    height: clamp(50px, 19dvh, 68px);
+  }
+  .classic-hand-zone {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 8px;
+  }
+  .classic-hand {
+    grid-column: 1 / -1;
+  }
+  .classic-hand .playing-card {
+    height: clamp(65px, 24dvh, 84px);
   }
 }
 
