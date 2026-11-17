@@ -63,13 +63,13 @@
 
 以下是默认能力路由。模型名是 **Codex 的推荐映射**，不是角色定义的硬依赖；其他 AI Agent 应选择能力与成本最接近的可用模型和思考强度。
 
-| 难度   | 工作单元本身需要什么                                     | 首选角色      | Codex 推荐映射          |
-| ------ | -------------------------------------------------------- | ------------- | ----------------------- |
-| S0     | 只读定位、读取、总结、执行已知验证、收集证据             | `scout`       | GPT-6.1 Terra / Max     |
-| S1     | 已知方案下的机械实现、fixture、测试脚手架、文档/配置小改 | `fast-worker` | GPT-6.1 Terra / High    |
-| S2     | 需要普通设计判断的 feature/bugfix/API/DB/明确边界重构    | `worker`      | GPT-6.1 Sol / High      |
-| S3     | 已有失败证据但根因仍跨层，或并发/事务/安全/高风险迁移    | `deep-solver` | GPT-6 Astra / High 起步 |
-| Review | 非平凡改动的独立复核                                     | `reviewer`    | GPT-6.1 Astra / High    |
+| 难度   | 工作单元本身需要什么                                     | 首选角色      | Codex 推荐映射            |
+| ------ | -------------------------------------------------------- | ------------- | ------------------------- |
+| S0     | 只读定位、读取、总结、执行已知验证、收集证据             | `scout`       | GPT-6.1 Terra / Max       |
+| S1     | 已知方案下的机械实现、fixture、测试脚手架、文档/配置小改 | `fast-worker` | GPT-6.1 Terra / High      |
+| S2     | 需要普通设计判断的 feature/bugfix/API/DB/明确边界重构    | `worker`      | GPT-6.2 Sol / High        |
+| S3     | 已有失败证据但根因仍跨层，或并发/事务/安全/高风险迁移    | `deep-solver` | GPT-6.2 Astra / High 起步 |
+| Review | 非平凡改动的独立复核                                     | `reviewer`    | GPT-6.2 Astra / High      |
 
 评级顺序：
 
@@ -113,8 +113,8 @@ Scout 的目标是先形成 Evidence Pack，并回答：
 升级规则：
 
 - 只是读 Issue、日志、代码、历史记录并整理证据 -> 保持 S0 / Scout / GPT-6.1 Terra Max。
-- 已定位相关模块，但需要在多个修复层级、API / 数据模型 / 架构边界之间做工程取舍 -> 升到 S2 / Worker / GPT-6.1 Sol High。
-- 涉及安全、事务、并发、数据丢失等高风险问题，且已有具体失败证据需要更深入复核 -> 优先 S2 / Worker / GPT-6.1 Sol High；只有根因仍跨层且普通诊断不足时再进入 S3 / Deep Solver / GPT-6.1 Astra High。
+- 已定位相关模块，但需要在多个修复层级、API / 数据模型 / 架构边界之间做工程取舍 -> 升到 S2 / Worker / GPT-6.2 Sol High。
+- 涉及安全、事务、并发、数据丢失等高风险问题，且已有具体失败证据需要更深入复核 -> 优先 S2 / Worker / GPT-6.2 Sol High；只有根因仍跨层且普通诊断不足时再进入 S3 / Deep Solver / GPT-6.1 Astra High。
 - Issue 很长、附件很多或日志很多本身**不构成升级理由**。
 
 Issue triage 只负责审读和定性边界，不应顺手修改代码；一旦决定进入修复任务，应重新拆分 Work Unit 并独立评级。
