@@ -33,4 +33,12 @@ Windows 上已验证前端生产构建、Rust `cargo check` 和 SQLite 重复对
 
 本机的 pnpm shim 遇到系统不受信任装入点错误，临时验证时使用官方 pnpm 10.20.0 包内的 `bin/pnpm.cjs` 由 Node 启动，并通过 PATH 中的临时 `pnpm.cmd` 调用它；常规开发应修复或重装 pnpm。若 rustup shim 无法启动，可将已安装 toolchain 的 `bin` 加入 PATH，直接调用其中的 `cargo.exe`。这些方法只绕过本机损坏的启动器，不修复被系统拒绝的 workspace 目录联接。
 
-Android 已验证 Tauri 生成工程、ARM64 Rust 库编译，并在隔离 WSL 工程中使用 Linux JDK、Gradle 和 Android SDK 将该库打入 debug APK；debug APK 的 v2 签名、入口、横屏配置及库哈希均已核对；两端嵌入的 WASM 解压后与生产构建文件一致。当前 ARM64 debug APK 位于 `apps/game/src-tauri/gen/android/app/build/outputs/apk/arm64/debug/app-arm64-debug.apk`，仅用于调试，不是发布签名包。尚未在设备或模拟器运行 APK。本机使用独立 AVD 和端口启动 Android Emulator 时进程以 `0xC0000135` 退出；WHPX 自检显示可用，仍需在可启动的模拟器或设备上验证。本机 JDK 17、21、25 的 `Selector.open()` 均在 Unix 域套接字连接时报 `Invalid argument`；Gradle 因此无法连接 daemon。普通 IPv4 loopback 可用，修改 Java 临时目录及 `--no-daemon` 均未解决。请在 Java NIO 选择器和 Gradle 正常的 Android 构建环境继续验证 APK 与设备横屏行为。
+Android 的 ARM64 调试包位于 `apps/game/src-tauri/gen/android/app/build/outputs/apk/arm64/debug/app-arm64-debug.apk`。已在隔离 WSL 工程中使用 Linux JDK、Gradle 和 Android SDK 打包，并核对 v2 签名、入口、横屏配置、原生库哈希和嵌入的 WASM。本机 Windows JDK 17、21、25 的 `Selector.open()` 均返回 `Invalid argument`，导致 Gradle 无法连接 daemon。Windows 上修改 Java 临时目录或使用 `--no-daemon` 均未解决该问题。
+
+### 在 Windows 验证 ARM64 包
+
+2026-11-18 用 API 36 Google Play x86_64 镜像的 ARM64 翻译实际运行了 SHA-256 为 `2657E4D9E067F34C3800A12FB31C9D9946F94E4F5F8BA13877356A975966BCD7` 的调试包。从首页进入经典选将，选择张飞，启动八人对局并观察到 AI 出牌。`dumpsys package` 确认为 `arm64-v8a`，Activity 确认为横屏。此次实跑使用交接时的包，供后续新制品回归时对照。
+
+1. 为临时 AVD 设置独立的 `ANDROID_AVD_HOME`。选择两个空闲的模拟器控制与传输端口，另设独立的 `ANDROID_ADB_SERVER_PORT`。通过 Python `subprocess` 的 `env` 显式传递进程环境，将 SDK 下的 `emulator`、`emulator/lib64`、`emulator/lib64/qt/lib` 和 `emulator/qemu/windows-x86_64` 前置到 PATH。先执行 `emulator.exe -version` 核实返回 0。本机默认 PATH 曾导致 QEMU 返回 `0xC0000135`。
+2. 本次使用 `emulator.exe -avd mak_sandbox -ports 5566,5567 -read-only -no-snapshot -no-window -no-audio -gpu swiftshader_indirect`。`-read-only` 模式仍会在临时 AVD 目录生成缓存。等 `adb -P 15037 -s emulator-5566 shell getprop sys.boot_completed` 返回 `1` 后，将 APK 安装到该 serial。初次引导和首次 WebView 显示均需要时间。
+3. 从实际应用首页选择玩法、选将并入桌。用 `adb -P 15037 -s emulator-5566 exec-out screencap -p` 保存截图，并以 `dumpsys activity` 核对横屏。结束时向这个 serial 执行 `emu kill`，然后向对应的 ADB 端口执行 `kill-server`。
