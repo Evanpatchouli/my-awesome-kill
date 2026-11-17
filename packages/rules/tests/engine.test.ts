@@ -58,6 +58,37 @@ describe('seat and command boundaries', () => {
     expect(m.act(before.revision, end.key)).toBe(false)
     expect(m.view()).toEqual(after)
   })
+  it('discards exactly the required cards atomically and rejects invalid requests', () => {
+    const m = createMatch({ seed: 19, hero: 'zhangfei' })
+    const initial = m.view()
+    expect(m.act(initial.revision, initial.choices.find((c) => c.label === '结束出牌')!.key)).toBe(true)
+    const before = m.view()
+    expect(before.discardCountRequired).toBe(2)
+    const ids = before.players[0].hand.map((c) => c.id)
+    for (const [revision, selected] of [[before.revision - 1, ids.slice(0, 2)], [before.revision, [ids[0]]], [before.revision, [ids[0], ids[0]]], [before.revision, [ids[0], -1]]] as [number, number[]][]) {
+      expect(m.discard(revision, selected)).toBe(false)
+      expect(m.view()).toEqual(before)
+    }
+    expect(m.discard(before.revision, ids.slice(0, 2))).toBe(true)
+    const after = m.view()
+    expect(after.events[0]).toMatchObject({ type: 'discard', seat: 0, cards: before.players[0].hand.slice(0, 2) })
+    expect(m.discard(before.revision, ids.slice(0, 2))).toBe(false)
+    expect(m.view()).toEqual(after)
+  })
+  it('emits public response and damage events for the successful command only', () => {
+    const { g, give, choose } = setup()
+    const sha = give(0, 'sha')
+    const shan = give(1, 'shan')
+    g.playPhase()
+    choose('杀')
+    expect(g.view().events).toEqual([{ type: 'play', seat: 0, cards: [sha] }])
+    choose('出闪 ·')
+    expect(g.view().events).toEqual([{ type: 'respond', seat: 1, cards: [shan] }])
+    give(0, 'sha')
+    g.playPhase()
+    choose('杀')
+    expect(g.view().events.map((event) => event.type)).toEqual(['play', 'damage'])
+  })
   it.each(['zhangfei', 'huangyueying'] as const)(
     'finishes seeded matches with %s and conserves all cards after every decision',
     (hero) => {

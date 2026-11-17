@@ -58,6 +58,7 @@ function counter(
         passes = 0
         effective = !effective
         g.move(card, 'table')
+        g.emit({ type: 'respond', seat: s, cards: [card] })
         responses.push(card)
         g.log(`${g.players[s].name}使用了无懈可击`)
         g.insight(s, card, () => next(g.other(s)))
@@ -209,7 +210,10 @@ export function playTrick(g: Game, s: Seat, c: Card, done: Done): void {
           c.kind === 'shunshou' ? '选择获得的牌' : '选择弃置的牌',
           (card) => {
             if (c.kind === 'shunshou') g.move(card, 'hand', s)
-            else g.move(card, 'discard')
+            else {
+              g.move(card, 'discard')
+              g.emit({ type: 'discard', seat: t, cards: [card] })
+            }
             next()
           },
           true,
@@ -264,6 +268,7 @@ export function judgePhase(g: Game, s: Seat, done: Done): void {
       }
       const result = g.reveal()
       if (result) {
+        g.emit({ type: 'judge', seat: s, cards: [result] })
         g.log(g.players[s].name + '的' + delayed.name + '判定为' + face(result))
         g.move(result, 'discard')
       } else g.log(g.players[s].name + '的' + delayed.name + '没有判定牌')

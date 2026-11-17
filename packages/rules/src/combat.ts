@@ -73,6 +73,7 @@ export function requestSha(g: Game, s: Seat, prompt: string, result: (ok: boolea
     prompt,
     (cards) => {
       cards.forEach((c) => g.move(c, 'discard'))
+      g.emit({ type: 'respond', seat: s, cards })
       result(true)
     },
     () => result(false),
@@ -82,6 +83,7 @@ export function requestSha(g: Game, s: Seat, prompt: string, result: (ok: boolea
 
 export function attackWith(g: Game, s: Seat, target: Seat, cards: Card[], done: Done) {
   cards.forEach((c) => g.move(c, 'table'))
+  g.emit({ type: 'play', seat: s, cards })
   attack(g, s, target, () => {
     cards.forEach((c) => g.move(c, 'discard'))
     done()
@@ -109,6 +111,7 @@ export function requestShan(
         card: c.id,
         run: () => {
           g.move(c, 'discard')
+          g.emit({ type: 'respond', seat: s, cards: [c] })
           g.log(`${p.name}打出${face(c)}`)
           result(true)
         },
@@ -120,6 +123,7 @@ export function requestShan(
         run: () => {
           const c = g.reveal()
           if (c) {
+            g.emit({ type: 'judge', seat: s, cards: [c] })
             g.log(`八卦阵判定：${face(c)}`)
             g.move(c, 'discard')
           }
@@ -153,6 +157,7 @@ export function attack(g: Game, s: Seat, t: Seat, done: Done) {
         score: 8,
         run: () => {
           g.move(c, 'discard')
+          g.emit({ type: 'discard', seat: t, cards: [c] })
           g.log(`麒麟弓弃置${c.name}`)
           hurt()
         },
@@ -180,6 +185,7 @@ export function attack(g: Game, s: Seat, t: Seat, done: Done) {
             run: () =>
               payPair(g, s, costs, '贯石斧', (cards) => {
                 cards.forEach((c) => g.move(c, 'discard'))
+                g.emit({ type: 'discard', seat: s, cards })
                 hit()
               }),
           },
@@ -207,6 +213,7 @@ export function attack(g: Game, s: Seat, t: Seat, done: Done) {
         score: 5 - keepValue(c),
         run: () => {
           g.move(c, 'discard')
+          g.emit({ type: 'discard', seat: t, cards: [c] })
           g.log(`${target.name}弃置${face(c)}`)
           dodge()
         },

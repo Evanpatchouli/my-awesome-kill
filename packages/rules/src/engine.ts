@@ -1,7 +1,7 @@
 import { definitions, face, slot, standardDeck, type Card } from './cards'
 import { attack, attackWith, requestAttack, requestSha, requestShan, spear } from './combat'
 import { judgePhase, playTrick, trickPlayable } from './tricks'
-import { keepValue, player, type Done, type Hero, type Option, type Player, type Seat } from './model'
+import { keepValue, player, type Done, type Hero, type Option, type Player, type Seat, type BattleEvent } from './model'
 
 type Zone = 'hand' | 'equipment' | 'judges' | 'discard' | 'table'
 
@@ -23,6 +23,8 @@ export class Game {
   skipPlay = false
   usedSha = 0
   private randomState: number
+  private events: BattleEvent[] = []
+  private discardRequired = 0
 
   constructor(seed: number, hero: Hero) {
     this.randomState = seed >>> 0
@@ -31,6 +33,7 @@ export class Game {
     this.draw(0, 4)
     this.draw(1, 4)
     this.startTurn(0)
+    this.events = []
   }
 
   other(s: Seat): Seat {
@@ -74,6 +77,9 @@ export class Game {
     from.splice(from.indexOf(c), 1)
     to.push(c)
   }
+  emit(event: BattleEvent) {
+    this.events.push(event)
+  }
   draw(s: Seat, count: number) {
     let n = 0
     for (; n < count; n++) {
@@ -81,6 +87,7 @@ export class Game {
       if (!c) break
       this.move(c, 'hand', s)
     }
+    if (n) this.emit({ type: 'draw', seat: s, amount: n })
     this.log(`${this.players[s].name}摸了${n}张牌`)
   }
   ask(s: Seat, prompt: string, options: Option[]) {
@@ -94,22 +101,47 @@ export class Game {
     return `${this.revision}/${index}`
   }
   act(revision: number, key: string) {
-    if (this.winner !== null || revision !== this.revision) return false
+    if (this.winner !== null || revision !== this.revision || this.discardRequired) return false
     const idx = this.options.findIndex((_, i) => this.key(i) === key)
     if (idx < 0) return false
     const option = this.options[idx]
     this.revision++
+    this.events = []
     this.options = []
     option.run()
     return true
   }
+  discardCards(revision: number, ids: number[]) {
+    if (this.winner !== null || revision !== this.revision || !this.discardRequired ||
+        this.phase !== '弃牌阶段' || this.actor !== this.active ||
+        ids.length !== this.discardRequired || new Set(ids).size !== ids.length) return false
+    const p = this.players[this.actor]
+    const cards = ids.map((id) => p.hand.find((c) => c.id === id))
+    if (cards.some((c) => !c)) return false
+    this.revision++
+    this.events = []
+    this.discardRequired = 0
+    this.options = []
+    const discarded = cards as Card[]
+    discarded.forEach((c) => this.move(c, 'discard'))
+    this.emit({ type: 'discard', seat: this.actor, cards: discarded })
+    this.log(`${p.name}弃置${discarded.map(face).join('、')}`)
+    this.startTurn(this.other(this.actor))
+    return true
+  }
   best() {
+    if (this.discardRequired) {
+      const ids = [...this.players[this.actor].hand].sort((a, b) => keepValue(a) - keepValue(b))
+        .slice(0, this.discardRequired).map((c) => c.id)
+      return this.discardCards(this.revision, ids)
+    }
     if (!this.options.length) return false
     const best = this.options.reduce((a, b) => (b.score > a.score ? b : a))
     return this.act(this.revision, this.key(this.options.indexOf(best)))
   }
   view() {
     const playerView = (p: Player, hidden: boolean) => ({
+      hero: p.hero,
       name: p.name,
       hp: p.hp,
       maxHp: p.maxHp,
@@ -120,6 +152,8 @@ export class Game {
     })
     return {
       revision: this.revision,
+      discardCountRequired: this.actor === 0 ? this.discardRequired : 0,
+      events: this.events.map((event) => 'cards' in event ? { ...event, cards: event.cards.map((c) => ({ ...c })) } : { ...event }),
       turn: this.turn,
       active: this.active,
       actor: this.actor,
@@ -141,12 +175,14 @@ export class Game {
     const p = this.players[s]
     if (p.hp < p.maxHp) {
       p.hp++
+      this.emit({ type: 'heal', seat: s, amount: 1 })
       this.log(`${p.name}回复一点体力`)
     }
   }
   damage(s: Seat, amount: number, source: Seat | null, done: Done) {
     const p = this.players[s]
     p.hp -= amount
+    this.emit({ type: 'damage', seat: s, amount })
     this.log(`${p.name}受到${source === null ? '闪电' : this.players[source].name}造成的${amount}点伤害`)
     if (p.hp > 0) {
       done()
@@ -179,6 +215,7 @@ export class Game {
           score: seat === s ? 20 : -10,
           run: () => {
             this.move(c, 'discard')
+            this.emit({ type: 'respond', seat, cards: [c] })
             this.heal(s)
             rescue(seat, passes)
           },
@@ -310,6 +347,7 @@ export class Game {
         score,
         run: () => {
           this.move(c, 'table')
+          this.emit({ type: equip ? 'equip' : 'play', seat: s, cards: [c] })
           this.log(`${p.name}使用${face(c)}${rival ? ' → ' + target.name : ''}`)
           const finish = () => {
             if (this.table.includes(c)) this.move(c, 'discard')
@@ -351,19 +389,10 @@ export class Game {
       this.startTurn(this.other(s))
       return
     }
-    this.ask(
-      s,
-      `还须弃置${excess}张手牌`,
-      p.hand.map((c) => ({
-        label: `弃${face(c)}`,
-        score: -keepValue(c),
-        card: c.id,
-        run: () => {
-          this.move(c, 'discard')
-          this.log(`${p.name}弃置${face(c)}`)
-          this.drop(s)
-        },
-      })),
-    )
+    this.actor = s
+    this.prompt = `还须弃置${excess}张手牌`
+    this.options = []
+    this.discardRequired = excess
+
   }
 }

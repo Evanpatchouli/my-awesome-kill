@@ -59,6 +59,7 @@ function fixture() {
       actions.push(options)
     },
     log: () => {},
+    emit: () => {},
     damage: (_s: Seat, n: number, _source: Seat | null, done: () => void) => {
       damage.push(n)
       done()

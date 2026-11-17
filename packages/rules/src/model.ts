@@ -2,6 +2,9 @@ import type { Card } from './cards'
 export type { Card } from './cards'
 export type Game = import('./engine').Game
 export type Seat = 0 | 1
+export type BattleEvent =
+  | { type: 'play' | 'respond' | 'equip' | 'judge' | 'discard'; seat: Seat; cards: Card[] }
+  | { type: 'damage' | 'heal' | 'draw'; seat: Seat; amount: number }
 import { heroes, type Hero } from './heroes'
 export type { Hero } from './heroes'
 export type Done = () => void
