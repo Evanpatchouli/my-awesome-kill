@@ -21,6 +21,20 @@
 
 本轮验收与剩余项见 `docs/exec-plans/active/noname-coverage.md` 和 `docs/runbooks/testing.md`。接棒先看 `.agents/handoff.md`。首任在“经典模式实际可玩 → 全局通用调度”边界提前交接，采样 2026-11-17T21:48:35.0630000Z，453314/828400（54.72%）。旧实现历史不必加载。
 
+### M4 本任工作单元
+
+本任会话 `01a1eb7c-8b2d-7a50-9d09-3f57dcd9bc0e` 已通过桌面 chat 与项目登记核对 local、固定 projectId 与 `E:\my-awesome-kill`。起点 `master@57fc9d7`，无用户未提交改动。
+
+| 单元 | 路由 | 工作和验收 |
+|---|---|---|
+| T1 上游输入可复现 | 验证 S0 | 已在独立 WSL 检出核对完整提交，并用原有 Playwright 驱动逐行复跑 `sha-no-shan.json` 通过。 |
+| T2 顺序与取消取证 | 执行 S1 | 使用实际 `chooseControl` 和 `damageBegin4` 注册，采集 firstDo、同席自选、跨席、lastDo、取消和处理区清理，独立于 T1。 |
+| T3 派发语义与接入边界 | 调查 S0 → 决策 S2 | 定位 Rust 现有技能队列、选择恢复与取消，依据 T2 的真实结果定接口及回归条件。 |
+| T4 通用派发与经典技能 | 执行 S1 | 按 T3 接入正常游戏的技能，以同一公开规则接口重现 T2；核对隐私、费用、取消、祖先清理与正常身份局。 |
+| T5 独立复核与后续各族 | 验证 S0 / reviewer | 修复实际发现，每个可验单元本地提交。沿覆盖台账推进下一族。 |
+
+T1 后本任采样 2026-11-17T21:52:04.889Z，54,688 / 828,400（6.60%）。
+
 ## 接力规则
 
 每个可验证单元结束后更新本文件并采样，大检索、长日志、新重单元开始前也采样。读取当前进程 CODEX_THREAD_ID，在 CODEX_HOME/sessions 或 %USERPROFILE%/.codex/sessions 只匹配完整 ID 的 rollout-*.jsonl。仅提取最近一条有效 payload.type=token_count 的 timestamp、info.last_token_usage.total_tokens 与正数 info.model_context_window。以两者相除计算比例，禁止用跨次累计或按最新文件猜测。无可靠样本时记录事实，按所需空间提前交接。自动压缩后先从现场和采样核实已完成操作。初查采样 31573/828400（3.81%）。
