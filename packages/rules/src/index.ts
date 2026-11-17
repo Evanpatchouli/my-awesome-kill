@@ -12,3 +12,5 @@ export function createMatch({ seed, hero }: { seed: number; hero: Hero }) {
 }
 export type { BattleEvent, Card, Hero, Seat } from './model'
 export { heroes } from './heroes'
+
+export { slot } from './cards'

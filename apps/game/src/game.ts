@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { markRaw, ref } from 'vue'
 import { createMatch } from '@mak/rules'
+import { settleDelay } from './battleMotion'
 import { saveMatch } from './persistence'
 
 type Hero = 'zhangfei' | 'huangyueying'
@@ -90,9 +91,11 @@ export const useGame = defineStore('game', () => {
       persistQueue()
       void retrySave()
     }
-    scheduleBot()
+    const delay = settleDelay(view.value.events)
+    lockInput(delay)
+    scheduleBot(delay)
   }
-  function scheduleBot() {
+  function scheduleBot(delay: number) {
     if (!match.value || !view.value || view.value.winner !== null || view.value.actor !== 1) return
     waiting.value = true
     const token = generation
@@ -101,19 +104,19 @@ export const useGame = defineStore('game', () => {
       if (token !== generation || !match.value || view.value?.revision !== revision) return
       waiting.value = false
       if (match.value.bot()) refresh()
-    }, 500)
+    }, Math.max(500, delay + 40))
   }
-  function lockInput() {
+  function lockInput(delay: number) {
+    if (inputTimer) clearTimeout(inputTimer)
     locked.value = true
     const token = generation
     inputTimer = setTimeout(() => {
       if (token === generation) locked.value = false
-    }, 300)
+    }, delay)
   }
   function start(hero: Hero) {
     if (locked.value) return false
     stop()
-    lockInput()
     recorded = false
     match.value = markRaw(createMatch({ seed: Math.floor(Math.random() * 0x7fffffff), hero }))
     refresh()
@@ -129,8 +132,11 @@ export const useGame = defineStore('game', () => {
       revision !== view.value.revision
     )
       return
-    lockInput()
     if (match.value.act(revision, key)) refresh()
+  }
+  function discard(ids: number[], revision: number) {
+    if (locked.value || waiting.value || !match.value) return
+    if (match.value.discard(revision, ids)) refresh()
   }
   function leave() {
     stop()
@@ -148,6 +154,7 @@ export const useGame = defineStore('game', () => {
     selectedCard,
     start,
     act,
+    discard,
     leave,
     retrySave,
   }

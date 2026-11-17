@@ -1060,7 +1060,7 @@ button:disabled {
   filter: brightness(0.88);
 }
 .battle-page {
-  background: url('./assets/ink/table.webp') center/cover no-repeat;
+  background: linear-gradient(#eee4d5c9, #eee4d5e0), url('./assets/landscape.webp') center/cover no-repeat;
 }
 .portrait img,
 .player-portrait {
@@ -1070,7 +1070,7 @@ button:disabled {
 .playing-card {
   position: relative;
   border: 0;
-  background: url('./assets/ink/card.webp') center/100% 100% no-repeat;
+  background: url('./assets/standard/theme/card.png') center/100% 100% no-repeat;
   box-shadow: none;
 }
 .playing-card.playable {
@@ -1410,3 +1410,49 @@ button:disabled {
     top: 2%;
   }
 }
+/* Preserve the brush artwork in every interactive state. */
+.primary-button:hover, .primary-button:focus-visible,
+.action-row button:hover, .action-row button:focus-visible {
+  background-image: url('./assets/ink/primary.webp');
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  color: #fff5e7;
+  filter: brightness(.88);
+}
+.action-row button.secondary:hover, .action-row button.secondary:focus-visible {
+  background-image: url('./assets/ink/secondary.webp');
+  color: #29231e;
+}
+.primary-button:disabled, .action-row button:disabled { filter: grayscale(.45); opacity: .55; }
+.public-zone {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2px 6px;
+  font-size: 11px;
+  line-height: 1.3;
+  color: #463c30;
+}
+.public-slot { display: flex; gap: 4px; white-space: nowrap; }
+.public-slot > span { color: #695644; flex: none; }
+.public-slot strong { font-weight: 600; }
+.public-slot.red strong, .public-slot .red { color: #a13e2e; }
+.judge-slot { grid-column: 1 / -1; flex-wrap: wrap; }
+.discard-actions span { font-size: 13px; color: #71392b; }
+@media (min-width: 700px) {
+  .public-zone { position: absolute; width: 20%; z-index: 2; padding: 5px 7px; background: #eee3d2e8; }
+  .opponent-zone { top: 7%; left: 15%; }
+  .player-zone { bottom: 39%; left: 2%; }
+}
+@media (max-height: 500px) and (orientation: landscape) and (min-width: 700px) {
+  .public-zone { width: 22%; font-size: 10px; line-height: 1.2; padding: 3px 5px; }
+  .opponent-zone { top: 3%; left: 11%; }
+  .player-zone { bottom: 35%; left: 1%; }
+}
+.public-slot:first-child { grid-column: 1 / -1; }
+
+.health { display: flex; align-items: center; gap: 3px; margin: 5px 0; line-height: 1; }
+.health .health-point { display: block; width: 16px; height: 20px; background: url('./assets/standard/theme/glass1.png') center/100% 100% no-repeat; }
+.health.mid .health-point { background-image: url('./assets/standard/theme/glass2.png'); }
+.health.low .health-point { background-image: url('./assets/standard/theme/glass3.png'); }
+.health .health-point.lost { background-image: url('./assets/standard/theme/glass4.png'); }

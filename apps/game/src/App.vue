@@ -6,8 +6,9 @@ import BattleView from './BattleView.vue'
 import { useGame } from './game'
 import { heroes } from '@mak/rules'
 import { listMatches } from './persistence'
-import zhangfei from './assets/ink/zhangfei.webp'
-import huangyueying from './assets/ink/huangyueying.webp'
+import { heroPortrait } from './battleArt'
+const zhangfei = heroPortrait('zhangfei')
+const huangyueying = heroPortrait('huangyueying')
 
 const route = useRoute()
 const router = useRouter()

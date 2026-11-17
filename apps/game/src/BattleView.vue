@@ -3,33 +3,17 @@ import { computed, onUnmounted, ref, watch } from 'vue'
 import { gsap } from 'gsap'
 import { useGame } from './game'
 import { heroes } from '@mak/rules'
-import zhangfei from './assets/ink/zhangfei.webp'
-import huangyueying from './assets/ink/huangyueying.webp'
+import { heroPortrait } from './battleArt'
+import CardFace from './CardFace.vue'
+import SeatZones from './SeatZones.vue'
+import HealthMeter from './HealthMeter.vue'
+import BattleEffects from './BattleEffects.vue'
 
 const emit = defineEmits<{ exit: []; restart: [] }>()
 const game = useGame()
 const battleScreen = ref<HTMLElement | null>(null)
-const art = {
-  sha: new URL('./assets/ink/sha.webp', import.meta.url).href,
-  shan: new URL('./assets/ink/shan.webp', import.meta.url).href,
-  tao: new URL('./assets/ink/tao.webp', import.meta.url).href,
-  land: new URL('./assets/ink/land.webp', import.meta.url).href,
-  army: new URL('./assets/ink/army.webp', import.meta.url).href,
-  bridge: new URL('./assets/ink/bridge.webp', import.meta.url).href,
-}
-function cardArt(name: string) {
-  if (name === '杀') return art.sha
-  if (name === '闪') return art.shan
-  if (name === '桃') return art.tao
-  if (name.includes('南蛮') || name.includes('万箭')) return art.army
-  if (name.includes('过河') || name.includes('顺手')) return art.bridge
-  return art.land
-}
-function rankLabel(rank: number) {
-  return ({ 1: 'A', 11: 'J', 12: 'Q', 13: 'K' } as Record<number, string>)[rank] ?? rank
-}
+const discardSelection = ref<number[]>([])
 const suits = { spade: '♠', heart: '♥', club: '♣', diamond: '♦' }
-const portraits = { 张飞: zhangfei, 黄月英: huangyueying } as Record<string, string>
 const selected = computed(() =>
   game.view?.players[0].hand.find((card) => card.id === game.selectedCard),
 )
@@ -52,12 +36,17 @@ function choiceHandler(key: string, revision: number) {
 }
 function cardHandler(id: number, revision: number) {
   return () => {
-    if (revision === game.view?.revision && !game.locked && !game.waiting) game.selectedCard = id
+    if (revision !== game.view?.revision || game.locked || game.waiting || game.view.actor !== 0) return
+    if (game.view.discardCountRequired) {
+      if (discardSelection.value.includes(id)) discardSelection.value = discardSelection.value.filter((value) => value !== id)
+      else if (discardSelection.value.length < game.view.discardCountRequired) discardSelection.value = [...discardSelection.value, id]
+    } else game.selectedCard = id
   }
 }
 watch(
-  () => game.view?.revision,
+  () => game.view,
   () => {
+    discardSelection.value = []
     if (!battleScreen.value || localStorage.getItem('mak-reduced-motion') === 'true') return
     const prompt = battleScreen.value.querySelector('.battle-prompt')
     if (prompt) {
@@ -71,27 +60,23 @@ onUnmounted(() => {
 })
 </script>
 <template>
-  <section v-if="game.view" ref="battleScreen" class="battle-page">
-    <div class="battle-layout grid gap-8">
-      <aside class="combatant opponent">
+  <section v-if="game.view" ref="battleScreen" class="battle-page" :data-revision="game.view.revision">
+    <BattleEffects :view="game.view" />
+    <div class="battle-layout grid gap-8" data-battle-table>
+      <aside class="combatant opponent" data-seat="1">
         <div class="portrait">
-          <img :src="portraits[game.view.players[1].name]" :alt="game.view.players[1].name" /><span
+          <img :src="heroPortrait(game.view.players[1].hero)" :alt="game.view.players[1].name" /><span
             >对手</span
           >
         </div>
         <div>
           <h2>{{ game.view.players[1].name }}</h2>
-          <p class="health">
-            {{ '♥'.repeat(Math.max(0, game.view.players[1].hp))
-            }}<span>{{
-              '♡'.repeat(Math.max(0, game.view.players[1].maxHp - game.view.players[1].hp))
-            }}</span>
-          </p>
+          <HealthMeter :hp="game.view.players[1].hp" :max-hp="game.view.players[1].maxHp" />
           <p>手牌 {{ game.view.players[1].handCount }}</p>
-          <p>装备：{{ game.view.players[1].equipment.map((c) => c.name).join('、') || '无' }}</p>
-          <p>判定：{{ game.view.players[1].judges.map((c) => c.name).join('、') || '无' }}</p>
+
         </div>
       </aside>
+      <SeatZones class="opponent-zone" label="对手" :equipment="game.view.players[1].equipment" :judges="game.view.players[1].judges" />
       <div class="battle-center">
         <div class="turn-indicator">
           <span>{{
@@ -133,6 +118,10 @@ onUnmounted(() => {
             再来一局 →
           </button>
         </div>
+        <div v-else-if="game.view.discardCountRequired" class="action-row discard-actions">
+          <span>已选 {{ discardSelection.length }} / {{ game.view.discardCountRequired }}</span>
+          <button :disabled="game.locked || game.waiting || discardSelection.length !== game.view.discardCountRequired" @click="game.discard(discardSelection, game.view.revision)">确认弃牌</button>
+        </div>
         <div v-else class="action-row">
           <button
             v-for="choice in otherChoices"
@@ -163,45 +152,27 @@ onUnmounted(() => {
       </details>
     </div>
     <div class="player-area flex gap-8">
-      <div class="player-meta">
+      <div class="player-meta" data-seat="0">
         <img
           class="player-portrait"
-          :src="portraits[game.view.players[0].name]"
+          :src="heroPortrait(game.view.players[0].hero)"
           :alt="game.view.players[0].name + '立绘'"
         />
         <div>
           <span>你</span>
           <h2>{{ game.view.players[0].name }}</h2>
-          <p class="health">
-            {{ '♥'.repeat(Math.max(0, game.view.players[0].hp))
-            }}<span>{{
-              '♡'.repeat(Math.max(0, game.view.players[0].maxHp - game.view.players[0].hp))
-            }}</span>
-          </p>
+          <HealthMeter :hp="game.view.players[0].hp" :max-hp="game.view.players[0].maxHp" />
         </div>
-        <p>
-          装备：{{ game.view.players[0].equipment.map((c) => c.name).join('、') || '无'
-          }}<br />判定：{{ game.view.players[0].judges.map((c) => c.name).join('、') || '无' }}
-        </p>
       </div>
+      <SeatZones class="player-zone" label="你" :equipment="game.view.players[0].equipment" :judges="game.view.players[0].judges" />
       <div class="hand-zone">
         <details class="rules-detail">
           <summary>查看武将技能与场上牌说明</summary>
           <p>
-            {{ game.view.players[0].name }}：{{
-              (game.view.players[0].name === heroes.zhangfei.name
-                ? heroes.zhangfei.skills
-                : heroes.huangyueying.skills
-              ).join(' ')
-            }}
+            {{ game.view.players[0].name }}：{{ heroes[game.view.players[0].hero].skills.join(' ') }}
           </p>
           <p>
-            {{ game.view.players[1].name }}：{{
-              (game.view.players[1].name === heroes.zhangfei.name
-                ? heroes.zhangfei.skills
-                : heroes.huangyueying.skills
-              ).join(' ')
-            }}
+            {{ game.view.players[1].name }}：{{ heroes[game.view.players[1].hero].skills.join(' ') }}
           </p>
           <p
             v-for="card in [
@@ -219,27 +190,27 @@ onUnmounted(() => {
           <span
             >手牌 <b>{{ game.view.players[0].handCount }}</b></span
           ><span>{{
-            selected ? selected.description : '点击手牌查看牌效；可用手牌以边框标出'
+            game.view.discardCountRequired ? `请选择 ${game.view.discardCountRequired} 张手牌弃置` : selected ? selected.description : '点击手牌查看牌效；可用手牌以边框标出'
           }}</span>
         </div>
-        <div class="hand">
+        <div class="hand" data-hand>
           <button
             v-for="card in game.view.players[0].hand"
             :key="card.id"
-            :disabled="game.locked || game.waiting || game.view.winner !== null"
+            :disabled="game.locked || game.waiting || game.view.winner !== null || game.view.actor !== 0"
             class="playing-card"
             :class="{
               red: card.suit === 'heart' || card.suit === 'diamond',
               'long-name': card.name.length > 2,
-              selected: game.selectedCard === card.id,
+              selected: game.view.discardCountRequired ? discardSelection.includes(card.id) : game.selectedCard === card.id,
               playable: game.view.choices.some((choice) => choice.card === card.id),
             }"
             :title="card.description"
+            :aria-label="`${suits[card.suit]}${card.rank} ${card.name}：${card.description}`"
+            :aria-pressed="game.view.discardCountRequired ? discardSelection.includes(card.id) : game.selectedCard === card.id"
             v-on="{ click: cardHandler(card.id, game.view.revision) }"
           >
-            <span>{{ rankLabel(card.rank) }}{{ suits[card.suit] }}</span
-            ><strong>{{ card.name }}</strong
-            ><img class="card-art" :src="cardArt(card.name)" alt="" />
+            <CardFace :card="card" />
           </button>
         </div>
       </div>

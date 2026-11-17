@@ -17,7 +17,8 @@ const server = await createServer({
   logLevel: 'silent',
 })
 const { Game } = await server.ssrLoadModule('/src/engine.ts')
-const seed = 19
+const { slot } = await server.ssrLoadModule('/src/cards.ts')
+const seed = 20
 const game = new Game(seed, 'zhangfei')
 const b = await chromium.launch(
   process.env.MAK_QA_BROWSER ? { executablePath: process.env.MAK_QA_BROWSER } : {},
@@ -76,7 +77,21 @@ try {
   console.log('mobile', mobile)
   await page.setViewportSize({ width: 1280, height: 720 })
   await screenshot(page, 'battle')
-  let clicks = 0,
+  // Check the brush image survives hover and focus; shorthand background must not reset it.
+  const action = page.locator('.action-row button').first()
+  await action.waitFor({ state: 'visible' })
+  const beforeHover = await action.evaluate((el) => getComputedStyle(el).backgroundImage)
+  await action.hover()
+  const afterHover = await action.evaluate((el) => getComputedStyle(el).backgroundImage)
+  assert.match(beforeHover, /primary\.webp|secondary\.webp/)
+  assert.equal(afterHover, beforeHover, 'hover preserves the brush image')
+  await action.focus()
+  assert.equal(await action.evaluate((el) => getComputedStyle(el).backgroundImage), beforeHover)
+  await screenshot(page, 'hover')
+  const eventTypes = new Set(), equipmentSeen = new Set(), hoverTypes = new Set(), previousEquipment = [{}, {}]
+  let replacementChecks = 0
+  let discardChecks = 0, eventChecks = 0, zoneChecks = 0,
+    clicks = 0,
     responses = 0,
     locked = 0,
     steps = 0,
@@ -86,8 +101,56 @@ try {
       game.best()
       continue
     }
-    const choice = game.options.reduce((a, b) => (a.score >= b.score ? a : b))
     const view = game.view()
+    if (!await page.locator('.battle-page').isVisible()) { console.error('missing battle', { step: steps, revision: view.revision, url: page.url(), errors, body: (await page.locator('body').innerText()).slice(0, 1000) }) }
+    await page.locator('.battle-page').waitFor()
+    await page.waitForFunction((revision) => Number(document.querySelector('.battle-page')?.dataset.revision) === revision, view.revision, { timeout: 45000 }).catch(async (e) => { console.error('revision mismatch', { step: steps, expected: view.revision, actual: await page.locator('.battle-page').getAttribute('data-revision'), prompt: await page.locator('.battle-prompt').innerText().catch(() => ''), errors }); throw e })
+    for (const [seat, zone] of [[0, '.player-zone'], [1, '.opponent-zone']]) {
+      const text = await page.locator(zone).innerText()
+      for (const card of [...view.players[seat].equipment, ...view.players[seat].judges]) assert.ok(text.includes(card.name), `seat ${seat} zone must show ${card.name}`)
+      const actualEquipment = view.players[seat].equipment
+      for (const [oldSlot, oldCard] of Object.entries(previousEquipment[seat])) {
+        const replacement = actualEquipment.find((card) => slot(card.kind) === oldSlot)
+        if (replacement && replacement.id !== oldCard.id) {
+          assert.ok(text.includes(replacement.name), 'new equipment visible')
+          if (replacement.name !== oldCard.name) assert.ok(!text.includes(oldCard.name), 'replaced equipment removed')
+          replacementChecks++
+          await screenshot(page, 'replacement')
+        }
+      }
+      previousEquipment[seat] = Object.fromEntries(actualEquipment.map((card) => [slot(card.kind), card]))
+      for (const card of actualEquipment) equipmentSeen.add(`${seat}:${card.id}`)
+      zoneChecks++
+    }
+    if (view.discardCountRequired) {
+      const value = (c) => c.kind === 'tao' ? 10 : ['shan', 'wuxie'].includes(c.kind) ? 7 : c.kind === 'sha' ? 4 : 5
+      const ids = [...view.players[0].hand].sort((a, b) => value(a) - value(b)).slice(0, view.discardCountRequired).map((c) => c.id)
+      const confirm = page.getByRole('button', { name: '确认弃牌' })
+      assert.equal(await confirm.isDisabled(), true)
+      for (const id of ids) {
+        const index = view.players[0].hand.findIndex((c) => c.id === id)
+        const card = page.locator('.playing-card').nth(index)
+        await card.click()
+        assert.equal(await card.getAttribute('aria-pressed'), 'true')
+        if (id === ids[0]) {
+          await card.click()
+          assert.equal(await card.getAttribute('aria-pressed'), 'false')
+          assert.equal(await confirm.isDisabled(), true)
+          await card.click()
+        }
+      }
+      assert.equal(await confirm.isEnabled(), true)
+      await screenshot(page, 'discard-selected')
+      await confirm.click()
+      assert.equal(game.best(), true)
+      discardChecks++
+      continue
+    }
+    const replacementChoice = game.options.find((option) => {
+      const card = view.players[0].hand.find((item) => item.id === option.card)
+      return card && slot(card.kind) && view.players[0].equipment.some((item) => slot(item.kind) === slot(card.kind))
+    })
+    const choice = replacementChoice ?? game.options.reduce((a, b) => (a.score >= b.score ? a : b))
     await page.getByRole('heading', { name: view.prompt, exact: true }).waitFor({ timeout: 5000 })
     assert.equal(await page.locator('.playing-card').count(), view.players[0].handCount)
     const i = view.players[0].hand.findIndex((c) => c.id === choice.card)
@@ -114,6 +177,15 @@ try {
         ),
       choice.label,
     )
+    const brushType = await btn.evaluate((el) => el.classList.contains('secondary') ? 'secondary' : 'primary')
+    if (!hoverTypes.has(brushType)) {
+      const normal = await btn.evaluate((el) => ({ image: getComputedStyle(el).backgroundImage, size: getComputedStyle(el).backgroundSize }))
+      await btn.hover()
+      const hovered = await btn.evaluate((el) => ({ image: getComputedStyle(el).backgroundImage, size: getComputedStyle(el).backgroundSize }))
+      assert.match(normal.image, new RegExp(`${brushType}\\.webp`))
+      assert.deepEqual(hovered, normal, `${brushType} hover preserves brush proportions`)
+      hoverTypes.add(brushType)
+    }
     if (!rapidChecks) {
       const second = await btn.evaluate(async (element) => {
         element.click()
@@ -132,7 +204,15 @@ try {
     } else await btn.click()
     if (game.phase !== '出牌阶段' || view.prompt.includes('杀') || view.prompt.includes('无懈'))
       responses++
-    game.best()
+    assert.equal(game.act(game.revision, game.key(game.options.indexOf(choice))), true)
+    if (game.events.length) {
+      await page.waitForFunction((revision) => Number(document.querySelector('.battle-page')?.dataset.revision) === revision, game.revision, { timeout: 10000 })
+      for (const event of game.events) {
+        assert.ok(await page.locator(`[data-effect="${event.type}"]`).count(), `event ${event.type} must render`)
+        eventTypes.add(event.type)
+        eventChecks++
+      }
+    }
     clicks++
     if (game.actor === 0 && game.winner === null) {
       const later = page.locator('.action-row button').first()
@@ -141,6 +221,10 @@ try {
   }
   assert.notEqual(game.winner, null)
   assert.equal(rapidChecks, 1)
+  assert.ok(discardChecks > 0, 'must exercise batch discard')
+  assert.ok(replacementChecks > 0, 'must observe equipment replacement')
+  assert.deepEqual([...hoverTypes].sort(), ['primary', 'secondary'])
+  assert.ok(eventTypes.has('play') && eventTypes.has('damage'), 'must render play and damage cues')
   await page.getByRole('button', { name: /再来一局/ }).waitFor({ timeout: 10000 })
   await screenshot(page, 'finish')
   await page.getByRole('button', { name: /再来一局/ }).click()
@@ -176,6 +260,7 @@ try {
       responses,
       locked,
       rapidChecks,
+      discardChecks, eventChecks, zoneChecks, replacementChecks, hoverTypes: [...hoverTypes], eventTypes: [...eventTypes], equipmentSeen: [...equipmentSeen],
       steps,
       winner: game.winner,
       turn: game.turn,
