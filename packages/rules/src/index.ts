@@ -1,0 +1,13 @@
+import { Game } from './engine'
+import type { Hero } from './model'
+
+export function createMatch({ seed, hero }: { seed: number; hero: Hero }) {
+  const game = new Game(seed, hero)
+  return {
+    view: () => game.view(),
+    act: (revision: number, key: string) => game.actor === 0 && game.act(revision, key),
+    bot: () => game.actor === 1 && game.best(),
+  }
+}
+export type { Card, Hero, Seat } from './model'
+export { heroes } from './heroes'
