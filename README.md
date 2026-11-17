@@ -1,11 +1,17 @@
-# my-awesome-kill
+# my-awesome-kill · 随心杀
 
-my-awesome-kill 的目标是打造一款单机、可自定义卡牌的类三国杀游戏，面向桌面和 Android 平台。Android 将复用桌面端技术栈，并强制横屏。
+项目名为 `my-awesome-kill`，中文产品名为「随心杀」。P1 提供「经典三国杀」单机双人对局。你选择张飞或黄月英，与使用另一名武将的电脑对手对决。游戏使用 104 张经典标准牌，胜负在濒死救援结束后结算。
 
-项目目前处于文档规划阶段：仓库尚无应用代码或依赖，以下技术选型均为待实现目标。
+安装 Node.js、pnpm 10 后，在仓库根目录运行：
 
-- 应用：Tauri 2（Rust 后端）、Vite 8、Vue 3、vue-router 和 Pinia，以 pnpm monorepo 组织。
-- 界面与动效：Tailwind 负责布局、外观和基础动效；GSAP 负责与游戏流程绑定的动画序列及复杂动效；@vueuse/motion 负责纯装饰性微交互。
-- 本地数据：SQLite。
+```sh
+pnpm install
+pnpm dev
+```
 
-产品方向见[产品愿景](docs/specs/product-vision.md)，技术方向见[目标架构](docs/architecture/target-architecture.md)，阶段目标见[路线图](docs/roadmap/roadmap.md)。开发、测试和发布流程尚待实现后建立，入口见 [runbooks](docs/runbooks/README.md)。完整文档入口见[文档地图](docs/README.md)。
+打开 http://localhost:1420 ，从“开始游玩”进入“经典三国杀”，选将后开始对局。桌面原生入口为 `pnpm tauri dev`，需配置 Rust 与 Tauri 系统依赖。Android 工程与桌面共用规则和界面。
+
+- [启动与原生工具链](docs/runbooks/development.md)
+- [规则、牌表与本期范围](docs/specs/classic-duel.md)
+- [验证与性能测量](docs/runbooks/testing.md)
+- [模块边界](docs/architecture/target-architecture.md) · [路线图](docs/roadmap/roadmap.md)
