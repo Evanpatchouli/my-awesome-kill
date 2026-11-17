@@ -52,6 +52,7 @@ impl Game {
         let state = self.classic.as_mut().expect("the table is classic");
         state.turn = Some(turn);
         state.sha_played = false;
+        state.skip_play = false;
         self.active_seat = turn.seat;
         self.scheduler.start(Program::event(EventKind::Turn {
             seat: turn.seat,
@@ -135,11 +136,28 @@ impl Game {
     ) {
         let state = self.classic.as_mut().expect("the table is classic");
         state.turn.as_mut().expect("the turn has started").phase = phase;
+        if phase == Phase::Play && state.skip_play {
+            self.finish_phase(phase);
+            return;
+        }
         if self.match_result().is_some() || !self.seat(seat).expect("the turn seat exists").alive {
             self.finish_phase(phase);
             return;
         }
         match phase {
+            Phase::Judgment => {
+                if let Some(card) = self
+                    .seat(seat)
+                    .expect("the turn seat exists")
+                    .judges
+                    .last()
+                    .copied()
+                {
+                    self.scheduler.next(self.trick_judgment(seat, card));
+                } else {
+                    self.finish_phase(phase);
+                }
+            }
             Phase::Draw if child.is_none() => self.next(EventKind::Draw {
                 seat,
                 amount: 2,
@@ -161,7 +179,15 @@ impl Game {
             None => self.decision = Some(Decision::Play(seat)),
             Some(Answer::EndPlay) => self.finish_phase(Phase::Play),
             Some(Answer::Play(program)) => {
-                if matches!(program.kind(), EventKind::UseSha { .. }) {
+                if matches!(
+                    program.kind(),
+                    EventKind::UseSha { .. }
+                        | EventKind::UseShaTargets { .. }
+                        | EventKind::UseVirtual {
+                            kind: CardKind::Sha,
+                            ..
+                        }
+                ) {
                     self.classic
                         .as_mut()
                         .expect("the table is classic")
@@ -199,6 +225,7 @@ impl Game {
                 min: required,
                 max: required,
                 cards,
+                branches: vec![],
             }));
         }
     }
@@ -244,28 +271,20 @@ impl Game {
     }
 
     fn resolve_draw(&mut self, seat: SeatId, amount: u16) {
-        let state = self.classic.as_mut().expect("the table is classic");
-        let amount = usize::from(amount);
-        if state.deck.len() + self.discard.len() < amount {
-            state.result = Some(MatchResult::Draw);
+        let Some(cards) = self.draw_from_piles(usize::from(amount)) else {
             self.scheduler.end(Outcome::Cancelled);
             return;
-        }
-        let mut cards = Vec::with_capacity(amount);
-        for _ in 0..amount {
-            if state.deck.is_empty() {
-                state.deck.append(&mut self.discard);
-                state.random.shuffle(&mut state.deck);
-            }
-            cards.push(
-                state
-                    .deck
-                    .pop()
-                    .expect("the draw was checked against both piles"),
-            );
-        }
+        };
         self.seat_mut(seat).hand.extend(cards);
         self.finish();
+    }
+
+    pub(crate) fn queue_draw(&mut self, seat: SeatId, amount: u16, reason: DrawReason) {
+        self.next(EventKind::Draw {
+            seat,
+            amount,
+            reason,
+        });
     }
 
     fn resolve_dying(

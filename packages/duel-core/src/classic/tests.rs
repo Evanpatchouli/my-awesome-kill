@@ -5,11 +5,11 @@ use crate::{
     GameView, Phase, Program, RuleError, Seat, SeatId, SeatSetup, TurnView,
 };
 
-fn card(id: u32, kind: CardKind) -> Card {
+pub(super) fn card(id: u32, kind: CardKind) -> Card {
     Card { id, kind }
 }
 
-fn scene(roles: &[Role], active: SeatId) -> Game {
+pub(super) fn scene(roles: &[Role], active: SeatId) -> Game {
     let seats = roles
         .iter()
         .enumerate()
@@ -37,6 +37,7 @@ fn scene(roles: &[Role], active: SeatId) -> Game {
             phase: Phase::Play,
         }),
         sha_played: false,
+        skip_play: false,
         result: None,
         result_announced: false,
     });

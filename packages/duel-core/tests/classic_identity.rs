@@ -181,10 +181,7 @@ fn only_in_range_attacks_appear_and_sha_is_limited_to_once_per_turn() {
                 .iter()
                 .filter(|card| card.kind == CardKind::Sha)
                 .count()
-                >= 2
-                && hand.iter().any(|card| {
-                    !matches!(card.kind, CardKind::Sha | CardKind::Shan | CardKind::Tao)
-                });
+                >= 2;
             enough.then_some(game)
         })
         .unwrap();
@@ -196,10 +193,6 @@ fn only_in_range_attacks_appear_and_sha_is_limited_to_once_per_turn() {
         .iter()
         .filter(|card| card.kind == CardKind::Sha)
         .collect::<Vec<_>>();
-    let unsupported = hand
-        .iter()
-        .find(|card| !matches!(card.kind, CardKind::Sha | CardKind::Shan | CardKind::Tao))
-        .unwrap();
     let play_card = |id, target| Action::PlayCard {
         card: id,
         targets: vec![target],
@@ -209,10 +202,6 @@ fn only_in_range_attacks_appear_and_sha_is_limited_to_once_per_turn() {
     assert!(play.actions.contains(&play_card(sha[0].id, order[1])));
     assert!(play.actions.contains(&play_card(sha[0].id, order[3])));
     assert!(!play.actions.contains(&play_card(sha[0].id, order[2])));
-    assert_eq!(
-        game.submit(command(&play, play_card(unsupported.id, order[1]))),
-        Err(RuleError::UnsupportedCard)
-    );
     assert_eq!(
         game.submit(command(&play, play_card(sha[0].id, order[2]))),
         Err(RuleError::InvalidTarget)
@@ -318,10 +307,9 @@ fn ordinary_tao_is_available_to_a_damaged_actor_and_recovers_only_that_actor() {
     let healed = game.view(Some(target)).unwrap();
     assert_eq!(healed.seats[target as usize].hp, i32::from(player.max_hp));
     assert!(healed.discard.contains(tao));
-    assert!(!healed
-        .actions
-        .iter()
-        .any(|action| matches!(action, Action::PlayCard { targets, .. } if targets == &[target])));
+    let held = healed.seats[target as usize].hand.as_ref().unwrap();
+    assert!(!healed.actions.iter().any(|action| matches!(action,
+        Action::PlayCard { card, .. } if held.iter().any(|held| held.id == *card && held.kind == CardKind::Tao))));
 }
 
 #[test]
@@ -348,6 +336,25 @@ fn seeded_identity_games_reach_terminal_and_conserve_physical_cards() {
                 let action = match perspective.choice.as_ref() {
                     Some(choice) if choice.kind == ChoiceKind::Discard => {
                         discard_action(&perspective)
+                    }
+                    Some(choice) if choice.kind == ChoiceKind::Content => {
+                        let branch = &choice.branches[0];
+                        Action::Select {
+                            event: choice.event,
+                            branch: branch.id,
+                            cards: branch
+                                .cards
+                                .iter()
+                                .take(branch.min_cards)
+                                .copied()
+                                .collect(),
+                            targets: branch
+                                .targets
+                                .iter()
+                                .take(branch.min_targets)
+                                .copied()
+                                .collect(),
+                        }
                     }
                     Some(choice) => Action::Choose {
                         event: choice.event,

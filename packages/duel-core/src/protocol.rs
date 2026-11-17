@@ -91,6 +91,17 @@ pub enum Action {
         event: EventId,
         cards: Vec<CardId>,
     },
+    Select {
+        event: EventId,
+        branch: u32,
+        cards: Vec<CardId>,
+        targets: Vec<SeatId>,
+    },
+    PlayVirtual {
+        kind: CardKind,
+        cards: Vec<CardId>,
+        targets: Vec<SeatId>,
+    },
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -109,6 +120,7 @@ pub struct GameView {
     pub waiting_for: Option<SeatId>,
     pub choice: Option<ChoiceView>,
     pub actions: Vec<Action>,
+    pub virtual_plays: Vec<VirtualPlay>,
     pub card_faces: Vec<CardFace>,
     /// Lifecycle records emitted since the latest accepted command, or during setup.
     pub events: Vec<GameEvent>,
@@ -127,6 +139,14 @@ pub struct SeatView {
     pub hand: Option<Vec<Card>>,
     pub equipment: Vec<Card>,
     pub judges: Vec<Card>,
+    pub judge_assignments: Vec<JudgmentAssignment>,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct JudgmentAssignment {
+    pub id: CardId,
+    pub kind: CardKind,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -167,6 +187,7 @@ pub struct ChoiceView {
     pub min: usize,
     pub max: usize,
     pub cards: Vec<CardId>,
+    pub branches: Vec<ChoiceBranch>,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -175,6 +196,27 @@ pub enum ChoiceKind {
     Shan,
     Save,
     Discard,
+    Content,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ChoiceBranch {
+    pub id: u32,
+    pub label: String,
+    pub cards: Vec<CardId>,
+    pub min_cards: usize,
+    pub max_cards: usize,
+    pub targets: Vec<SeatId>,
+    pub min_targets: usize,
+    pub max_targets: usize,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct VirtualPlay {
+    pub kind: CardKind,
+    pub branch: ChoiceBranch,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -220,6 +262,22 @@ pub enum EventKind {
         target: SeatId,
         card: Card,
     },
+    UseShaTargets {
+        seat: SeatId,
+        card: Card,
+    },
+    UseVirtual {
+        seat: SeatId,
+        kind: CardKind,
+    },
+    UseCost {
+        seat: SeatId,
+        card: Card,
+    },
+    UseResponseCard {
+        seat: SeatId,
+        card: Card,
+    },
     ShaEffect {
         seat: SeatId,
         target: SeatId,
@@ -236,10 +294,44 @@ pub enum EventKind {
         target: SeatId,
         card: Card,
     },
+    UseTrick {
+        seat: SeatId,
+        card: Card,
+        target: Option<SeatId>,
+    },
+    Equip {
+        seat: SeatId,
+        card: Card,
+    },
+    EquipmentEffect {
+        seat: SeatId,
+        target: SeatId,
+        kind: CardKind,
+    },
+    Respond {
+        seat: SeatId,
+        kind: CardKind,
+    },
+    ChooseContent {
+        seat: SeatId,
+        target: Option<SeatId>,
+    },
+    Judge {
+        seat: SeatId,
+    },
+    Reveal {
+        seat: SeatId,
+        card: Card,
+    },
     Damage {
         source: Option<SeatId>,
         target: SeatId,
         amount: u16,
+    },
+    ChangeHp {
+        seat: SeatId,
+        before: i32,
+        after: i32,
     },
     Recover {
         seat: SeatId,
@@ -276,6 +368,7 @@ pub enum DrawReason {
     Opening,
     Phase,
     RebelReward,
+    CardEffect,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]

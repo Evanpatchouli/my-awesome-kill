@@ -3,21 +3,29 @@ pub mod classic_data;
 mod protocol;
 mod scheduler;
 
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
+use classic::equipment;
+use classic::tricks::Trick;
 use classic::{Classic, MatchResult};
 use classic_data::{General, Role};
 pub use protocol::*;
 
 use scheduler::{EventRef, Outcome, Scheduler, Work};
 
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 enum Resolution {
     Complete,
     Passed,
     Dodged,
     PhaseFinished(Phase),
     SavePassed(SeatId),
+    Selected(Selection),
+    Responded,
+    Judged(Card),
+    Revealed(Card),
+    HpChanged,
+    ForcedHit,
 }
 
 enum Answer {
@@ -26,6 +34,21 @@ enum Answer {
     Play(Program),
     EndPlay,
     Discard(Vec<CardId>),
+    Select(Selection),
+}
+
+#[derive(Clone)]
+struct Selection {
+    branch: u32,
+    cards: Vec<CardId>,
+    targets: Vec<SeatId>,
+}
+
+#[derive(Clone)]
+struct ChoiceRequest {
+    seat: SeatId,
+    target: Option<SeatId>,
+    branches: Vec<ChoiceBranch>,
 }
 
 enum Decision {
@@ -49,7 +72,7 @@ enum Zone {
     Judgment,
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 enum Program {
     Event(EventKind),
     DiscardFrom {
@@ -57,6 +80,12 @@ enum Program {
         zone: Zone,
         card: Card,
     },
+    Choose(ChoiceRequest),
+    Judge {
+        seat: SeatId,
+    },
+    Equipment(equipment::Flow),
+    Trick(Trick),
 }
 
 impl Program {
@@ -64,11 +93,22 @@ impl Program {
         Self::Event(kind)
     }
 
-    fn kind(self) -> EventKind {
+    fn kind(&self) -> EventKind {
         match self {
-            Self::Event(kind) => kind,
-            Self::DiscardFrom { card, .. } => EventKind::Discard { card },
+            Self::Event(kind) => *kind,
+            Self::DiscardFrom { card, .. } => EventKind::Discard { card: *card },
+            Self::Choose(choice) => EventKind::ChooseContent {
+                seat: choice.seat,
+                target: choice.target,
+            },
+            Self::Judge { seat } => EventKind::Judge { seat: *seat },
+            Self::Equipment(flow) => flow.kind(),
+            Self::Trick(flow) => flow.kind(),
         }
+    }
+
+    fn respond(seat: SeatId, kind: CardKind) -> Self {
+        Self::Equipment(equipment::Flow::response(seat, kind, false))
     }
 }
 
@@ -116,6 +156,7 @@ pub struct Game {
     version: u32,
     resolving: Vec<Card>,
     discard: Vec<Card>,
+    judgment_overrides: HashMap<CardId, CardKind>,
     decision: Option<Decision>,
     scheduler: Scheduler<Program, Resolution>,
     events: Vec<GameEvent>,
@@ -162,6 +203,7 @@ impl Game {
             version: 0,
             resolving: Vec::new(),
             discard: Vec::new(),
+            judgment_overrides: HashMap::new(),
             decision: None,
             scheduler: Scheduler::new(),
             events: Vec::new(),
@@ -196,7 +238,16 @@ impl Game {
             .iter()
             .position(|part| *part == to)
             .expect("both seats live");
-        Ok(clockwise.min(living.len() - clockwise))
+        let raw = clockwise.min(living.len() - clockwise);
+        let rider = self.seat(from)?;
+        let target = self.seat(to)?;
+        let adjustment = i32::from(equipment::has_slot(target, equipment::Slot::DefenseHorse))
+            - i32::from(equipment::has_slot(rider, equipment::Slot::AttackHorse));
+        Ok(if raw == 0 {
+            0
+        } else {
+            (raw as i32 + adjustment).max(1) as usize
+        })
     }
 
     /// Return public information and the specified seat's own hand and choices.
@@ -225,6 +276,15 @@ impl Game {
                     hand: own.then(|| seat.hand.clone()),
                     equipment: seat.equipment.clone(),
                     judges: seat.judges.clone(),
+                    judge_assignments: seat
+                        .judges
+                        .iter()
+                        .filter_map(|card| {
+                            self.judgment_overrides
+                                .get(&card.id)
+                                .map(|&kind| JudgmentAssignment { id: card.id, kind })
+                        })
+                        .collect(),
                 }
             })
             .collect::<Vec<_>>();
@@ -252,13 +312,20 @@ impl Game {
             waiting_for: self.decision.as_ref().map(Decision::seat),
             choice,
             actions,
+            virtual_plays: match self.decision.as_ref() {
+                Some(Decision::Play(seat)) if viewer == Some(*seat) => self.virtual_plays(*seat),
+                _ => vec![],
+            },
             card_faces,
             events: self.events.clone(),
         })
     }
 
     fn visible_faces(&self, state: &Classic, seats: &[SeatView]) -> Vec<CardFace> {
-        use EventKind::{Discard, UseSha, UseShan, UseTao};
+        use EventKind::{
+            Discard, Equip, Reveal, UseCost, UseResponseCard, UseSha, UseShaTargets, UseShan,
+            UseTao, UseTrick,
+        };
 
         let public_zones = self.resolving.iter().chain(&self.discard);
         let seat_zones = seats.iter().flat_map(|seat| {
@@ -270,9 +337,16 @@ impl Game {
                 .chain(&seat.judges)
         });
         let revealed_events = self.events.iter().filter_map(|event| match event.kind {
-            UseSha { card, .. } | UseShan { card, .. } | UseTao { card, .. } | Discard { card } => {
-                Some(card.id)
-            }
+            UseSha { card, .. }
+            | UseShaTargets { card, .. }
+            | UseShan { card, .. }
+            | UseTao { card, .. }
+            | UseTrick { card, .. }
+            | UseCost { card, .. }
+            | UseResponseCard { card, .. }
+            | Equip { card, .. }
+            | Reveal { card, .. }
+            | Discard { card } => Some(card.id),
             _ => None,
         });
         let visible: HashSet<_> = public_zones
@@ -332,6 +406,30 @@ impl Game {
             Action::Discard { event, cards } => {
                 Some(self.validate_discard(command.seat, event, cards)?)
             }
+            Action::Select {
+                event,
+                branch,
+                cards,
+                targets,
+            } => Some(self.validate_selection(
+                command.seat,
+                event,
+                Selection {
+                    branch,
+                    cards,
+                    targets,
+                },
+            )?),
+            Action::PlayVirtual {
+                kind,
+                cards,
+                targets,
+            } => Some(Answer::Play(self.plan_virtual(
+                command.seat,
+                kind,
+                cards,
+                targets,
+            )?)),
         };
         self.decision = None;
         self.events.clear();
@@ -390,7 +488,7 @@ impl Game {
         let expected = match choice.kind {
             ChoiceKind::Shan => CardKind::Shan,
             ChoiceKind::Save => CardKind::Tao,
-            ChoiceKind::Discard => return Err(RuleError::InvalidSelection),
+            ChoiceKind::Discard | ChoiceKind::Content => return Err(RuleError::InvalidSelection),
         };
         match card {
             Some(card) if choice.cards.contains(&card) => {
@@ -419,6 +517,47 @@ impl Game {
             return Err(RuleError::InvalidCard);
         }
         Ok(Answer::Discard(cards))
+    }
+
+    fn validate_selection(
+        &self,
+        seat: SeatId,
+        event: EventId,
+        selection: Selection,
+    ) -> Result<Answer, RuleError> {
+        let choice = self.checked_choice(seat, event)?;
+        let Some(branch) = choice
+            .branches
+            .iter()
+            .find(|branch| branch.id == selection.branch)
+        else {
+            return Err(RuleError::InvalidSelection);
+        };
+        if !Self::matches_branch(branch, &selection.cards, &selection.targets) {
+            return Err(RuleError::InvalidSelection);
+        }
+        Ok(Answer::Select(selection))
+    }
+
+    fn matches_branch(branch: &ChoiceBranch, cards: &[CardId], targets: &[SeatId]) -> bool {
+        fn valid<T: Copy + Eq + std::hash::Hash>(
+            values: &[T],
+            pool: &[T],
+            min: usize,
+            max: usize,
+        ) -> bool {
+            (min..=max).contains(&values.len())
+                && values.iter().copied().collect::<HashSet<_>>().len() == values.len()
+                && values.iter().all(|value| pool.contains(value))
+        }
+
+        valid(cards, &branch.cards, branch.min_cards, branch.max_cards)
+            && valid(
+                targets,
+                &branch.targets,
+                branch.min_targets,
+                branch.max_targets,
+            )
     }
 
     fn run(&mut self, mut answer: Option<Answer>) {
@@ -461,7 +600,15 @@ impl Game {
         use Outcome::{Cancelled, Finished};
         use Resolution::{Complete, Dodged, Passed};
 
-        match (program.kind(), child) {
+        let kind = program.kind();
+        let program = match program {
+            Program::Equipment(flow) => return self.resolve_equipment(event, flow, child),
+            Program::Trick(flow) => return self.resolve_trick(event, flow, child),
+            Program::Choose(choice) => return self.resolve_selection(event, choice, answer),
+            Program::Judge { seat } => return self.resolve_judge(seat, child),
+            program => program,
+        };
+        match (kind, child) {
             (UseSha { seat, target, card }, None) => {
                 self.move_to_resolving(seat, card.id);
                 self.next(ShaEffect { seat, target });
@@ -501,42 +648,122 @@ impl Game {
             }
             (UseTao { .. }, Some(_)) => self.finish(),
             (Recover { target, amount, .. }, None) => {
-                let seat = self.seat_mut(target);
-                seat.hp = (seat.hp + i32::from(amount)).min(i32::from(seat.max_hp));
-                self.finish();
+                self.queue_hp_change(target, i32::from(amount))
             }
+            (Recover { .. }, Some(_)) => self.finish(),
             (
                 Damage {
                     source,
                     target,
                     amount,
                 },
-                None,
-            ) => {
+                child,
+            ) => self.resolve_damage(source, target, amount, child),
+            (ChangeHp { seat, after, .. }, None) => {
                 let classic = self.classic.is_some();
-                let seat = self.seat_mut(target);
-                seat.hp -= i32::from(amount);
+                let player = self.seat_mut(seat);
+                player.hp = after;
                 if !classic {
-                    seat.hp = seat.hp.max(0);
-                    seat.alive = seat.hp > 0;
-                    self.finish();
-                } else if seat.hp <= 0 {
-                    self.next(Dying { source, target });
-                } else {
-                    self.finish();
+                    player.alive = after > 0;
                 }
+                self.scheduler.end(Finished(Resolution::HpChanged));
             }
-            (Damage { .. }, Some(_)) => self.finish(),
+            (Reveal { card, .. }, None) => self.scheduler.end(Finished(Resolution::Revealed(card))),
+            (UseCost { seat, card }, None) => {
+                self.move_to_resolving(seat, card.id);
+                self.finish();
+            }
             (Discard { card }, None) => {
                 let card = match program {
                     Program::DiscardFrom { seat, zone, .. } => self.take_card(seat, zone, card.id),
-                    Program::Event(_) => Self::remove_card(&mut self.resolving, card.id),
+                    _ => self.take_resolving(card.id),
                 };
                 self.discard.push(card);
                 self.finish();
             }
             (kind, child) => self.resolve_classic(event, kind, child, answer),
         }
+    }
+
+    fn resolve_selection(
+        &mut self,
+        event: EventRef,
+        choice: ChoiceRequest,
+        answer: &mut Option<Answer>,
+    ) {
+        match answer.take() {
+            Some(Answer::Select(selected)) => self
+                .scheduler
+                .end(Outcome::Finished(Resolution::Selected(selected))),
+            None => {
+                self.decision = Some(Decision::Cards(ChoiceView {
+                    event: event.id,
+                    seat: choice.seat,
+                    kind: ChoiceKind::Content,
+                    target: choice.target,
+                    min: 0,
+                    max: 0,
+                    cards: vec![],
+                    branches: choice.branches,
+                }));
+            }
+            _ => unreachable!("a content choice receives a selection"),
+        }
+    }
+
+    fn resolve_judge(&mut self, seat: SeatId, child: Option<Outcome<Resolution>>) {
+        match child {
+            None => {
+                let Some(cards) = self.reveal_cards(1) else {
+                    self.scheduler.end(Outcome::Cancelled);
+                    return;
+                };
+                let card = cards[0];
+                self.next(EventKind::Reveal { seat, card });
+                self.scheduler
+                    .after(Program::event(EventKind::Discard { card }));
+            }
+            Some(Outcome::Finished(Resolution::Revealed(card))) => {
+                self.scheduler
+                    .end(Outcome::Finished(Resolution::Judged(card)));
+            }
+            _ => unreachable!("a judge only waits for a revealed card"),
+        }
+    }
+
+    fn resolve_damage(
+        &mut self,
+        source: Option<SeatId>,
+        target: SeatId,
+        amount: u16,
+        child: Option<Outcome<Resolution>>,
+    ) {
+        match child {
+            None => self.queue_hp_change(target, -i32::from(amount)),
+            Some(Outcome::Finished(Resolution::HpChanged))
+                if self.classic.is_some()
+                    && self.seat(target).expect("the damage target exists").hp <= 0 =>
+            {
+                self.next(EventKind::Dying { source, target });
+            }
+            Some(_) => self.finish(),
+        }
+    }
+
+    fn queue_hp_change(&mut self, target: SeatId, delta: i32) {
+        let player = self.seat(target).expect("the health change target exists");
+        let before = player.hp;
+        let signed = before.saturating_add(delta).min(i32::from(player.max_hp));
+        let after = if self.classic.is_some() {
+            signed
+        } else {
+            signed.max(0)
+        };
+        self.next(EventKind::ChangeHp {
+            seat: target,
+            before,
+            after,
+        });
     }
 
     fn ask_for_card(
@@ -563,6 +790,7 @@ impl Game {
             min: 0,
             max: 1,
             cards,
+            branches: vec![],
         }));
     }
 
@@ -623,11 +851,47 @@ impl Game {
     }
 
     fn take_card(&mut self, seat: SeatId, zone: Zone, id: CardId) -> Card {
-        Self::remove_card(self.seat_mut(seat).zone_mut(zone), id)
+        let card = Self::remove_card(self.seat_mut(seat).zone_mut(zone), id);
+        if matches!(zone, Zone::Judgment) {
+            self.judgment_overrides.remove(&id);
+        }
+        card
+    }
+
+    fn take_resolving(&mut self, id: CardId) -> Card {
+        Self::remove_card(&mut self.resolving, id)
+    }
+
+    fn put_in_hand(&mut self, seat: SeatId, card: Card) {
+        self.seat_mut(seat).hand.push(card);
+    }
+
+    fn judgment_kind(&self, card: Card) -> CardKind {
+        self.judgment_overrides
+            .get(&card.id)
+            .copied()
+            .unwrap_or(card.kind)
+    }
+
+    fn put_in_judgment(&mut self, seat: SeatId, card: Card, kind: CardKind) {
+        if kind != card.kind {
+            self.judgment_overrides.insert(card.id, kind);
+        }
+        self.seat_mut(seat).judges.push(card);
     }
 
     fn move_to_resolving(&mut self, seat: SeatId, id: CardId) {
-        let card = self.take_card(seat, Zone::Hand, id);
+        let zone = self.zone_for_held_card(seat, id);
+        let card = self.take_card(seat, zone, id);
         self.resolving.push(card);
+    }
+
+    fn zone_for_held_card(&self, seat: SeatId, id: CardId) -> Zone {
+        let player = self.seat(seat).expect("the actor exists");
+        if player.hand.iter().any(|card| card.id == id) {
+            Zone::Hand
+        } else {
+            Zone::Equipment
+        }
     }
 }

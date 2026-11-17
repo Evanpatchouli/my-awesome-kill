@@ -183,7 +183,22 @@ fn passing_applies_one_damage_and_allows_a_new_root_event() {
             EventStatus::Started
         )
     );
-    assert_eq!(hit.events[2].status, EventStatus::Finished);
+    assert_eq!(
+        hit.events[2],
+        event(
+            5,
+            Some(4),
+            EventKind::ChangeHp {
+                seat: TARGET,
+                before: 3,
+                after: 2
+            },
+            EventStatus::Started
+        )
+    );
+    assert_eq!(hit.events[3].status, EventStatus::Finished);
+    assert_eq!(hit.events[4].kind, hit.events[1].kind);
+    assert_eq!(hit.events[4].status, EventStatus::Finished);
 
     game.submit(Command {
         version: hit.version,
@@ -200,7 +215,7 @@ fn passing_applies_one_damage_and_allows_a_new_root_event() {
     assert_eq!(
         next.events[0],
         event(
-            6,
+            7,
             None,
             EventKind::UseSha {
                 seat: SOURCE,
@@ -344,7 +359,7 @@ fn protocol_uses_tagged_commands_and_events_with_camel_case_fields() {
     assert_eq!(payload["waitingFor"], TARGET);
     assert_eq!(
         payload["choice"],
-        json!({"event": 3, "seat": 19, "kind": "shan", "target": null, "min": 0, "max": 1, "cards": [75]})
+        json!({"event": 3, "seat": 19, "kind": "shan", "target": null, "min": 0, "max": 1, "cards": [75], "branches": []})
     );
     assert_eq!(payload["seats"][2]["hand"], Value::Null);
     assert_eq!(

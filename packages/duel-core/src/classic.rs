@@ -1,6 +1,12 @@
+pub(crate) mod equipment;
+#[cfg(test)]
+mod equipment_tests;
 mod lifecycle;
 #[cfg(test)]
 mod tests;
+pub(crate) mod tricks;
+#[cfg(test)]
+mod tricks_tests;
 
 use crate::classic_data::{self, Role, Side};
 use crate::{
@@ -31,13 +37,14 @@ pub(super) struct Classic {
     random: TableRandom,
     pub(super) turn: Option<TurnView>,
     sha_played: bool,
+    skip_play: bool,
     pub(super) result: Option<MatchResult>,
     result_announced: bool,
 }
 
 struct TableRandom(u64);
 
-struct PlannedUse {
+pub(crate) struct PlannedUse {
     targets: Vec<SeatId>,
     program: Program,
 }
@@ -142,6 +149,7 @@ impl Game {
             random,
             turn: None,
             sha_played: false,
+            skip_play: false,
             result: None,
             result_announced: false,
         });
@@ -153,6 +161,59 @@ impl Game {
 
     pub(super) fn match_result(&self) -> Option<MatchResult> {
         self.classic.as_ref().and_then(|state| state.result)
+    }
+
+    fn face(&self, id: CardId) -> Option<CardFace> {
+        self.classic
+            .as_ref()?
+            .faces
+            .iter()
+            .find(|face| face.id == id)
+            .copied()
+    }
+
+    fn draw_from_piles(&mut self, amount: usize) -> Option<Vec<Card>> {
+        let state = self.classic.as_mut().expect("the table is classic");
+        if state.deck.len() + self.discard.len() < amount {
+            state.result = Some(MatchResult::Draw);
+            return None;
+        }
+        let mut cards = Vec::with_capacity(amount);
+        for _ in 0..amount {
+            if state.deck.is_empty() {
+                state.deck.append(&mut self.discard);
+                state.random.shuffle(&mut state.deck);
+            }
+            cards.push(
+                state
+                    .deck
+                    .pop()
+                    .expect("the draw was checked against both piles"),
+            );
+        }
+        Some(cards)
+    }
+
+    pub(super) fn reveal_cards(&mut self, amount: usize) -> Option<Vec<Card>> {
+        let cards = self.draw_from_piles(amount)?;
+        self.resolving.extend(&cards);
+        Some(cards)
+    }
+
+    fn random_hand_card(&mut self, seat: SeatId) -> Option<Card> {
+        let len = self.seat(seat).ok()?.hand.len();
+        if len == 0 {
+            return None;
+        }
+        let index = (self.classic.as_mut()?.random.next() % len as u64) as usize;
+        self.seat(seat).ok()?.hand.get(index).copied()
+    }
+
+    fn skip_play_phase(&mut self, seat: SeatId) {
+        let state = self.classic.as_mut().expect("the table is classic");
+        if state.turn.is_some_and(|turn| turn.seat == seat) {
+            state.skip_play = true;
+        }
     }
 
     pub(super) fn play_choices(&self, seat: SeatId) -> Vec<Action> {
@@ -171,17 +232,8 @@ impl Game {
 
     fn card_uses(&self, player: &Seat, card: Card) -> Option<Vec<PlannedUse>> {
         let seat = player.id;
-        let classic = self.classic.as_ref().expect("the table is classic");
         let uses = match card.kind {
-            CardKind::Sha if !classic.sha_played => self
-                .living_order_from(seat)
-                .into_iter()
-                .filter(|&target| self.distance(seat, target) == Ok(1))
-                .map(|target| PlannedUse {
-                    targets: vec![target],
-                    program: Program::event(EventKind::UseSha { seat, target, card }),
-                })
-                .collect(),
+            CardKind::Sha => self.physical_sha_uses(player, card),
             CardKind::Tao if player.hp < i32::from(player.max_hp) => vec![PlannedUse {
                 targets: vec![seat],
                 program: Program::event(EventKind::UseTao {
@@ -190,8 +242,12 @@ impl Game {
                     card,
                 }),
             }],
-            CardKind::Sha | CardKind::Shan | CardKind::Tao => Vec::new(),
-            _ => return None,
+            CardKind::Shan | CardKind::Tao => Vec::new(),
+            _ => {
+                return self
+                    .equipment_uses(player, card)
+                    .or_else(|| self.trick_uses(player, card))
+            }
         };
         Some(uses)
     }
@@ -213,7 +269,15 @@ impl Game {
         self.card_uses(player, card)
             .ok_or(RuleError::UnsupportedCard)?
             .into_iter()
-            .find(|planned| planned.targets == targets)
+            .find(|planned| {
+                planned.targets == targets
+                    || card.kind == CardKind::Sha
+                        && planned.targets.len() == targets.len()
+                        && planned
+                            .targets
+                            .iter()
+                            .all(|target| targets.contains(target))
+            })
             .map(|planned| planned.program)
             .ok_or(RuleError::InvalidTarget)
     }
@@ -270,6 +334,29 @@ impl Game {
                     event: choice.event,
                     card: choice.cards.first().copied(),
                 },
+                ChoiceKind::Content => {
+                    let branch = choice
+                        .branches
+                        .iter()
+                        .find(|branch| branch.id != 0)
+                        .or_else(|| choice.branches.first())?;
+                    Action::Select {
+                        event: choice.event,
+                        branch: branch.id,
+                        cards: branch
+                            .cards
+                            .iter()
+                            .take(branch.min_cards)
+                            .copied()
+                            .collect(),
+                        targets: branch
+                            .targets
+                            .iter()
+                            .take(branch.min_targets)
+                            .copied()
+                            .collect(),
+                    }
+                }
             },
         };
         Some(Command {
@@ -291,10 +378,14 @@ impl Game {
                         .find(|held| held.id == *card)
                         .expect("the option uses a held card");
                     if held.kind == CardKind::Tao {
-                        (4, 0)
+                        (6, 0)
+                    } else if equipment::is_equipment(held.kind) {
+                        (5, 0)
+                    } else if held.kind != CardKind::Sha {
+                        (2, 0)
                     } else {
                         let target = self
-                            .seat(targets[0])
+                            .seat(*targets.first().expect("sha offers a target"))
                             .expect("the option names a living target");
                         let priority = if target.id != lord {
                             2

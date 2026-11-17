@@ -42,7 +42,7 @@ pub(crate) struct Scheduler<P, R> {
     last_id: EventId,
 }
 
-impl<P: Copy, R: Copy> Scheduler<P, R> {
+impl<P: Clone, R: Clone> Scheduler<P, R> {
     pub fn new() -> Self {
         Self {
             stack: Vec::new(),
@@ -67,6 +67,12 @@ impl<P: Copy, R: Copy> Scheduler<P, R> {
         frame.after.push_back(program);
     }
 
+    pub fn replace_current(&mut self, program: P) {
+        let frame = self.current();
+        assert!(matches!(frame.state, State::Running));
+        frame.program = program;
+    }
+
     pub fn end(&mut self, outcome: Outcome<R>) {
         let frame = self.current();
         assert!(matches!(frame.state, State::Running));
@@ -79,23 +85,28 @@ impl<P: Copy, R: Copy> Scheduler<P, R> {
             let event = frame.event;
             if matches!(frame.state, State::Ready) {
                 frame.state = State::Running;
-                return Some(Work::Started(event, frame.program));
+                return Some(Work::Started(event, frame.program.clone()));
             }
             // Queued children still run when the parent requests its own end.
             if let Some(next) = frame.next.pop_front() {
                 self.push(next, Some(event.id));
                 continue;
             }
-            let outcome = match frame.state {
+            let outcome = match &frame.state {
                 State::Ready => unreachable!(),
                 State::Running => {
-                    return Some(Work::Run(event, frame.program, frame.child_result.take()))
+                    return Some(Work::Run(
+                        event,
+                        frame.program.clone(),
+                        frame.child_result.take(),
+                    ))
                 }
                 State::Ending(outcome) => {
-                    frame.state = State::After(outcome);
-                    return Some(Work::Ended(event, frame.program, outcome));
+                    let outcome = outcome.clone();
+                    frame.state = State::After(outcome.clone());
+                    return Some(Work::Ended(event, frame.program.clone(), outcome));
                 }
-                State::After(outcome) => outcome,
+                State::After(outcome) => outcome.clone(),
             };
             if let Some(after) = frame.after.pop_front() {
                 self.push(after, Some(event.id));
