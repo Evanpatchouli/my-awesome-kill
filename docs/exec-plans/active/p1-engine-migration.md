@@ -23,4 +23,4 @@
 
 不带武将技、武器或防具。A 有可用次数且 B 在范围内。A 对 B 使用一张实体杀，B 选择打闪或放弃。记录使用前合法目标、实体从手牌至结算区、指定目标和应答时机、哪名玩家能看到闪、伤害或取消伤害、清理结算牌、再次使用杀的合法性。恢复旧命令不应重复执行。多人时须验证攻击目标可以是任一合法座位，应答仅向目标开放，其他角色的触发机会仍须依次计算。
 
-上游静态线索：`content.ts` 的 useCard 与逐目标处理、`card/standard.js` 的 sha、`content.ts` 的 damage 和 orderingDiscard。Rust 的初始可执行切片只覆盖上述轨迹的部分节点，在范围、使用次数、触发器及身份规则完善后再迁移整个模式入口。
+上游静态线索：`content.ts` 的 useCard 与逐目标处理、`card/standard.js` 的 sha、`content.ts` 的 damage 和 orderingDiscard。上游真实局已采集 83 次时机调用；Rust/WASM 已比对其中六个共同节点及最终局面。经典身份模式已接入应用。继续迁移的通用机制、候选对照用例与范围见[覆盖盘点](noname-coverage.md)。

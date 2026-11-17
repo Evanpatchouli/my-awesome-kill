@@ -1,25 +1,34 @@
-# Testing runbook
+# 验证对局与应用
 
-在仓库根目录安装依赖后，运行与改动直接相关的最小验证集：
+先按[开发手册](development.md)准备 pnpm、Rust、WASM target、wasm-bindgen 及浏览器依赖。
 
-- 规则引擎：`pnpm --filter @mak/rules test` 和 `pnpm --filter @mak/rules typecheck`。
-- 跨包变更：`pnpm test` 和 `pnpm typecheck`；涉及游戏构建时再运行 `pnpm build`。
+| 检查 | 从仓库根目录执行 |
+|---|---|
+| Rust 单元、集成与 WASM 协议 | `pnpm engine:test` |
+| 旧版 TS 规则基线 | `pnpm test` |
+| 两个前端包类型与生产构建 | `pnpm typecheck`、`pnpm build` |
+| 与已检出上游核对全部标准数据和原图 | `node scripts/check-standard-content.mjs` |
+| SQLite 首次写入及重复对局 ID 不覆盖 | `cargo test --locked --manifest-path apps/game/src-tauri/Cargo.toml --lib` |
+| Rust 格式与静态检查 | `cargo fmt --check --manifest-path packages/duel-core/Cargo.toml`、`cargo clippy --locked --all-targets --manifest-path packages/duel-core/Cargo.toml -- -D warnings` |
 
-## 规则引擎性能基准
+### 真正的原版对照
 
-运行 `pnpm --filter @mak/rules exec node bench.mjs`。脚本使用真实 `Game`，先运行 10 个独立种子预热，再运行种子 1–100 的完整对局，交替选择首位武将，双方每次均使用 `best()`。每次计时包含一次决策及其后的 `view()` 投影；初始化、预热和输出不计时。输出为每次决策耗时的最近秩 p50、p95、p99 和最大值（毫秒），并记录对局数、决策数、Node、CPU 和 UTC 日期。超过每局 1500 次决策或无法继续决策时脚本报错。结果受机器和运行时负载影响，应在同一环境重复比较。
+[参考轨迹与复现方法](../../tests/reference/README.md)说明如何用独立的 noname 检出运行真实 identity 模式，并将结果与 `tests/reference/sha-no-shan.json` 对照。编译后的 Rust/WASM 使用相同初始体力和实体杀/无闪局面，自动比对能映射的六个时机及最终状态。开发、运行与打包随心杀均不依赖参考仓库。
 
-2026-11-18 北京时间在 Windows、Node v24.22.1、Intel Core i7-13620H 上复测：100 局、6688 次决策，p50 0.0033 ms、p95 0.0082 ms、p99 0.0222 ms、最慢 0.742 ms。
+### 真实玩家入口
 
-## 浏览器 smoke
+1. 首次运行 `pnpm --filter @mak/game exec playwright install chromium`。
+2. 启动 `pnpm dev --host 127.0.0.1`，然后在另一终端运行 `pnpm --filter @mak/game smoke`。默认连接 1420。另可运行 Vite preview 并通过 `MAK_SMOKE_URL` 指定生产构建服务地址。
+3. `MAK_SMOKE_SCREENSHOTS` 可指定仓库外截图目录。调试时可用 `MAK_QA_PLAYWRIGHT` 与 `MAK_QA_BROWSER` 指定已安装的模块与浏览器。
+4. 检查八人座位及身份可见性，选择非原型两将、手牌与合法目标，测试响应、多选与撤选、装备替换、技能使用、动画锁、退出并重开。在 844×390 横屏确认手牌、响应按钮和当前行动者可见。
 
-安装依赖后，首次在游戏包安装浏览器：`pnpm --filter @mak/game exec playwright install chromium`。在一个终端运行 `pnpm dev --host 127.0.0.1 --port 1420 --strictPort`，另一个终端运行 `pnpm --filter @mak/game smoke`。默认连接 `http://127.0.0.1:1420`；如果已有服务使用其他地址，可设置 `MAK_SMOKE_URL`。
+### 性能与覆盖范围
 
-脚本以固定种子 19 执行完整对局，按规则引擎的公开投影检查提示、手牌数量和可见合法操作，并验证快速连点、等待对手时退出重开和战绩。它使用独立浏览器上下文，不会复用用户浏览器数据。可设置 `MAK_SMOKE_SCREENSHOTS` 为仓库外目录以保留截图；默认不写截图。调试时可用绝对路径 `MAK_QA_PLAYWRIGHT` 和 `MAK_QA_BROWSER` 指定 Playwright 模块和浏览器可执行文件。
+运行 `cargo test --release --locked --manifest-path packages/duel-core/Cargo.toml --lib benchmark_seeded_eight_player_games -- --ignored --nocapture`。游戏使用真实 Rust 规则，按固定种子跑完一局后验牌区守恒；进程启动、浏览器动画和 I/O 不算作结算耗时。[Rust 核心说明](../../packages/duel-core/README.md)记录测量方法和详细结果。
 
-## P1 验收记录（2026-11-18）
+2026-11-18 的经典模式检查结果：
 
-- 规则测试 31 项通过，包含全牌表指纹、36 场逐步检查牌区守恒的确定性对局、目标合法性、借刀、武器与防具、集智、判定、濒死、无懈链、五谷亮牌可见性、重复操作与终局冻结。两个包的类型检查及生产构建通过。SQLite 同 ID 重复写入的 Rust 测试通过。
-- 对最终生产构建运行 Playwright 1.65.1 和配套 Chromium。在 1280×720 从首页访问三个辅助页、画廊、选将与牌桌；844×390 横屏手牌下缘 386.5px，页面宽度 844px。种子 19 共 70 次决策，玩家 26 次，黄月英于第 11 回合获胜。跨决策连点、等待对手时离开再开、战绩读回均通过，控制台错误 0。
-- 故障注入使浏览器历史写入失败，完成对局后再开、刷新并从「我的」重试，确认队列清空且仅保留一条同 ID 战绩。
-- 独立复核提出并修复五项问题：Android Gradle 桥接路径、Android 大屏游戏分类、动画期间连点、跨局战绩重试、五谷丰登在无懈窗口的公开牌面。Windows 离线原生入口已通过，Android 制品与设备验证范围见[开发手册](development.md)。
+- Rust 常规测试 84 项通过；另行执行的性能用例为 100 场八人局、55,247 次决定。Windows / Intel i7-13620H 环境下，决策与执行 p95 为 7.7 µs，单席投影加 JSON 序列化 p95 为 15.8 µs。旧 TS 基线 33 项通过。
+- 生产构建经 Playwright 1.65.1 / Chromium 完成八人选将、隐藏身份及等待时退出，双人完整局、终局重开和战绩；另有观星私看、仁德选牌和选目标。观察到摸牌、装备、出牌、响应、判定、伤害与回复视觉事件。最新横屏实测手牌下缘 386px，视口高度 390px。
+- 独立复核的关羽种子 57（以连弩支付额外杀）、周瑜种子 0（放弃英姿）、刘备种子 1/21（无懈 AI 和响应公开信息）已有针对性回归。WASM 探查另外跑过轮换 25 将、2–10 席的 300 个种子，均结束且守恒。
+- 稳定可重现的平局有 Rust 测试，未从普通 UI 种子观察到平局画面。Android 设备运行情况见开发手册。这些用例证明对应的经典玩法行为。全底座的剩余机制依[覆盖清单](../exec-plans/active/noname-coverage.md)继续验证。

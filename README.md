@@ -1,8 +1,8 @@
 # my-awesome-kill · 随心杀
 
-项目名为 `my-awesome-kill`，中文产品名为「随心杀」。P1 提供「经典三国杀」单机双人对局。你选择张飞或黄月英，与使用另一名武将的电脑对手对决。游戏使用 104 张经典标准牌，胜负在濒死救援结束后结算。
+项目名为 `my-awesome-kill`，中文产品名为「随心杀」。经典模式提供 2–10 人单机身份局，默认八人。玩家从 2008 版 25 名武将中自选，与电脑共用 104 张标准牌。Rust 对局机制的持续迁移及验证范围见[迁移计划](docs/exec-plans/active/p1-engine-migration.md)。
 
-安装 Node.js、pnpm 10 后，在仓库根目录运行：
+按[开发手册](docs/runbooks/development.md)安装 Node、pnpm 10、Rust WASM target 和匹配版本的 wasm-bindgen 后，在仓库根目录运行：
 
 ```sh
 pnpm install

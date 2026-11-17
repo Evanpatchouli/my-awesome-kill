@@ -13,11 +13,11 @@
 
 ## 模块索引
 
-P1 运行入口在 apps/game，纯规则与确定性测试在 packages/rules。
+入口在 apps/game；权威规则及测试在 packages/duel-core，WebAssembly 边界在 packages/duel-web，packages/rules 保留原型测试及展示元数据。
 
 | 领域 | 相关文档 | 检索关键词 |
 | --- | --- | --- |
-| 双人规则与牌堆 | [P1 对局契约](../specs/classic-duel.md) | createMatch、standardDeck、trickPlayable、attack、judgePhase |
+| 经典身份局与牌堆 | [P1 对局契约](../specs/classic-duel.md) | Game::classic、card_uses、HeroMoment、GameView、CounterContext |
 | 运行与验证 | [启动](../runbooks/development.md)、[验证](../runbooks/testing.md) | Tauri、pnpm、战绩、种子 |
 | 产品方向与平台 | [产品愿景](../specs/product-vision.md) | 单机、自定义卡牌、Android、横屏 |
 | 技术选型与动效 | [目标架构](../architecture/target-architecture.md) | Tauri、Vue、SQLite、Tailwind、GSAP、motion |
