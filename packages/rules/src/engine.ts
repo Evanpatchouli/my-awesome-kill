@@ -33,7 +33,6 @@ export class Game {
     this.draw(0, 4)
     this.draw(1, 4)
     this.startTurn(0)
-    this.events = []
   }
 
   other(s: Seat): Seat {

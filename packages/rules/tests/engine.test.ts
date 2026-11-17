@@ -47,6 +47,11 @@ describe('seat and command boundaries', () => {
     const m = createMatch({ seed: 19, hero: 'zhangfei' })
     const before = m.view()
     expect(before.players.map((p) => p.handCount)).toEqual([6, 4])
+    expect(before.events).toEqual([
+      { type: 'draw', seat: 0, amount: 4 },
+      { type: 'draw', seat: 1, amount: 4 },
+      { type: 'draw', seat: 0, amount: 2 },
+    ])
     expect(before.players[1].hand).toEqual([])
     expect(m.act(before.revision, 'not an action')).toBe(false)
     expect(m.bot()).toBe(false)
