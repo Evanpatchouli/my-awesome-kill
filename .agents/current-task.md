@@ -2,51 +2,39 @@
 
 ## Goal
 
-<当前任务目标>
+根据已提供的产品愿景与技术选型完善初始化文档，区分目标与现状。
 
 ## Done when
 
-- <可验证完成条件 1>
-- <可验证完成条件 2>
+- 产品目标、技术栈、平台与动效职责可从正式文档检索。
+- 未确定的规则、实现和命令不被描述为现有事实；文档链接与最终 diff 已复核。
 
 ## Parent task complexity
 
-- Planning complexity: S0/S1/S2/S3
-- Why: <只描述父任务整体协调/风险；此等级不得被子任务继承>
+- Planning complexity: S2，需协调产品、架构和现有文档边界。
 
 ## Work units
 
 | ID | 工作单元 | 模式 | 状态 | 独立难度 | 路由 | 评级理由 / 交接产物 | 验证 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| T1 | <可独立验证的小任务> | investigate/decide/execute/verify | pending | S0/S1/S2/S3 | main/scout/fast-worker/worker/deep-solver/reviewer | <为什么需要该等级；S2/S3 完成后写 Brief> | <命令或证据> |
-
-状态建议：`pending` / `in_progress` / `blocked` / `done`。
-
-路由提示：
-
-- 父任务等级不传播给 Work Unit。
-- 一个 Work Unit 只保留一种主要认知模式；“decide + 大段 execute/verify”应在决策边界拆开。
-- 只读检索/验证/证据汇总优先 S0。
-- 已知方案下的机械实现、fixture、测试脚手架、开发验证页、文档优先 S1；代码量大本身不是 S2 理由。
-- 需要普通工程判断才用 S2；S2 决策稳定后输出 Implementation Brief，并把后续机械实现重新评级。
-- 有真实失败证据且根因仍跨层或风险高才用 S3。
-- 调查/决策后边界变清楚时必须降级。
-
-## Evidence / blockers
-
-- <只记录会影响当前任务的事实、失败证据或阻塞>
-
+| T1 | 检索初始化状态与文档 | investigate | done | S0 | scout | 只读证据整理 | 文件及 Git 状态 |
+| T2 | 确定文档边界 | decide | done | S2 | main | 见下方 Brief | 与用户选型核对 |
+| T3 | 完善正式文档 | execute | done | S1 | fast-worker | 按 Brief 填写 | 链接及事实检查 |
+| T4 | 独立复核 | verify | done | Review | reviewer | 检查需求、事实和链接 | 最终 diff |
 
 ## Implementation Briefs
 
-> 仅在 S2/S3 决策完成后需要向低成本执行角色交接时填写；保持紧凑。
+### T2
 
-### <Work Unit ID>
+- Decision: 记录产品愿景、已选技术与职责分工，明确全部是待实现目标；不凭空决定玩法、架构细节或工具命令。
+- Files: 根 README、产品 spec、架构文档及其索引、context 索引；必要时更新现有 runbook 标明待建立，不改变路线图既有需求。
+- Invariants: 精确保留用户给出的版本与平台约束；安卓复用桌面技术栈并强制横屏；动画分工清晰；数据库为 SQLite。
+- Acceptance: 文档可导航，目标和仓库现状不混淆，未决事项有边界。
+- Do not: 增加未经授权的产品规则、目录布局、技术版本或可运行命令；不修改应用代码。
+- Focused validation: 检查本地 Markdown 链接、核对 diff。
 
-- Decision:
-- Files / interfaces:
-- Invariants:
-- Implementation steps:
-- Acceptance:
-- Do not:
-- Focused validation:
+## Evidence / blockers
+
+- 仓库尚无应用代码或依赖配置；文档中的技术栈均为目标。
+- 独立复核无 blocker；Markdown 本地链接检查无缺失，git diff --check 通过。
+

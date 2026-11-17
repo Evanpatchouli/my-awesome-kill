@@ -13,11 +13,13 @@
 
 ## 模块索引
 
-随着项目形成稳定模块后维护下表。只记录入口，不抄实现。
+仓库目前尚无应用代码或测试入口。随着项目形成稳定模块后再维护模块索引；以下是规划文档入口，均描述待实现目标。
 
-| 领域 / 模块 | 代码入口 | 关键测试 | 相关文档 | 检索关键词 |
-| --- | --- | --- | --- | --- |
-| <module> | `src/...` | `tests/...` | `docs/...` | `<symbol / API / table>` |
+| 领域 | 相关文档 | 检索关键词 |
+| --- | --- | --- |
+| 产品方向与平台 | [产品愿景](../specs/product-vision.md) | 单机、自定义卡牌、Android、横屏 |
+| 技术选型与动效 | [目标架构](../architecture/target-architecture.md) | Tauri、Vue、SQLite、Tailwind、GSAP、motion |
+| 阶段目标 | [路线图](../roadmap/roadmap.md) | MVP、游戏模式 |
 
 ## 新鲜度规则
 
