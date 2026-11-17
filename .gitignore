@@ -1,1 +1,7 @@
 .reference
+node_modules/
+node_modules_old/
+dist/
+target/
+apps/game/src-tauri/gen/android_old/
+apps/game/src-tauri/gen/schemas/
