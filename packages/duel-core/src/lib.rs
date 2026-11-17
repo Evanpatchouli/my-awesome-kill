@@ -1,8 +1,12 @@
+mod classic;
+pub mod classic_data;
 mod protocol;
 mod scheduler;
 
 use std::collections::HashSet;
 
+use classic::{Classic, MatchResult};
+use classic_data::{General, Role};
 pub use protocol::*;
 
 use scheduler::{EventRef, Outcome, Scheduler, Work};
@@ -12,23 +16,110 @@ enum Resolution {
     Complete,
     Passed,
     Dodged,
+    PhaseFinished(Phase),
+    SavePassed(SeatId),
+}
+
+enum Answer {
+    Card(Card),
+    Pass,
+    Play(Program),
+    EndPlay,
+    Discard(Vec<CardId>),
+}
+
+enum Decision {
+    Play(SeatId),
+    Cards(ChoiceView),
+}
+
+impl Decision {
+    fn seat(&self) -> SeatId {
+        match self {
+            Self::Play(seat) => *seat,
+            Self::Cards(choice) => choice.seat,
+        }
+    }
 }
 
 #[derive(Clone, Copy)]
-enum Answer {
-    Play(Card),
-    Pass,
+enum Zone {
+    Hand,
+    Equipment,
+    Judgment,
+}
+
+#[derive(Clone, Copy)]
+enum Program {
+    Event(EventKind),
+    DiscardFrom {
+        seat: SeatId,
+        zone: Zone,
+        card: Card,
+    },
+}
+
+impl Program {
+    fn event(kind: EventKind) -> Self {
+        Self::Event(kind)
+    }
+
+    fn kind(self) -> EventKind {
+        match self {
+            Self::Event(kind) => kind,
+            Self::DiscardFrom { card, .. } => EventKind::Discard { card },
+        }
+    }
+}
+
+struct Seat {
+    id: SeatId,
+    hp: i32,
+    max_hp: u16,
+    alive: bool,
+    hero: Option<&'static General>,
+    role: Option<Role>,
+    hand: Vec<Card>,
+    equipment: Vec<Card>,
+    judges: Vec<Card>,
+}
+
+impl Seat {
+    fn zone_mut(&mut self, zone: Zone) -> &mut Vec<Card> {
+        match zone {
+            Zone::Hand => &mut self.hand,
+            Zone::Equipment => &mut self.equipment,
+            Zone::Judgment => &mut self.judges,
+        }
+    }
+}
+
+impl From<SeatSetup> for Seat {
+    fn from(setup: SeatSetup) -> Self {
+        Self {
+            id: setup.id,
+            hp: i32::from(setup.hp),
+            max_hp: setup.hp,
+            alive: setup.hp > 0,
+            hero: None,
+            role: None,
+            hand: setup.hand,
+            equipment: Vec::new(),
+            judges: Vec::new(),
+        }
+    }
 }
 
 pub struct Game {
-    seats: Vec<SeatSetup>,
+    seats: Vec<Seat>,
     active_seat: SeatId,
     version: u32,
     resolving: Vec<Card>,
     discard: Vec<Card>,
-    choice: Option<ChoiceView>,
-    scheduler: Scheduler<EventKind, Resolution>,
+    decision: Option<Decision>,
+    scheduler: Scheduler<Program, Resolution>,
     events: Vec<GameEvent>,
+    classic: Option<Classic>,
 }
 
 impl Game {
@@ -58,16 +149,24 @@ impl Game {
         if active.hp == 0 {
             return Err(RuleError::InactiveSeat { seat: active.id });
         }
-        Ok(Self {
-            seats: setup.seats,
-            active_seat: setup.active_seat,
+        Ok(Self::with_seats(
+            setup.seats.into_iter().map(Seat::from).collect(),
+            setup.active_seat,
+        ))
+    }
+
+    fn with_seats(seats: Vec<Seat>, active_seat: SeatId) -> Self {
+        Self {
+            seats,
+            active_seat,
             version: 0,
             resolving: Vec::new(),
             discard: Vec::new(),
-            choice: None,
+            decision: None,
             scheduler: Scheduler::new(),
             events: Vec::new(),
-        })
+            classic: None,
+        }
     }
 
     /// Walk the table once, starting at `start` and following the setup order.
@@ -85,37 +184,116 @@ impl Game {
             .collect())
     }
 
+    /// Count the shortest path through the living seats in either direction.
+    pub fn distance(&self, from: SeatId, to: SeatId) -> Result<usize, RuleError> {
+        for id in [from, to] {
+            if !self.seat(id)?.alive {
+                return Err(RuleError::InactiveSeat { seat: id });
+            }
+        }
+        let living = self.living_order_from(from);
+        let clockwise = living
+            .iter()
+            .position(|part| *part == to)
+            .expect("both seats live");
+        Ok(clockwise.min(living.len() - clockwise))
+    }
+
     /// Return public information and the specified seat's own hand and choices.
     /// With no viewer, return the spectator view.
     pub fn view(&self, viewer: Option<SeatId>) -> Result<GameView, RuleError> {
         if let Some(seat) = viewer {
             self.seat(seat)?;
         }
-        let choice = self.choice.as_ref();
+        let state = self.classic.as_ref();
+        let result = state.and_then(|state| state.result);
+        let seats = self
+            .seats
+            .iter()
+            .map(|seat| {
+                let own = viewer == Some(seat.id);
+                let role_visible =
+                    own || !seat.alive || seat.role == Some(Role::Lord) || result.is_some();
+                SeatView {
+                    id: seat.id,
+                    hp: seat.hp,
+                    max_hp: seat.max_hp,
+                    alive: seat.alive,
+                    hero: seat.hero.map(|hero| hero.id.clone()),
+                    role: seat.role.filter(|_| role_visible),
+                    hand_count: seat.hand.len(),
+                    hand: own.then(|| seat.hand.clone()),
+                    equipment: seat.equipment.clone(),
+                    judges: seat.judges.clone(),
+                }
+            })
+            .collect::<Vec<_>>();
+        let (choice, actions) = match self.decision.as_ref() {
+            Some(Decision::Cards(choice)) if viewer == Some(choice.seat) => {
+                (Some(choice.clone()), vec![])
+            }
+            Some(Decision::Play(seat)) if viewer == Some(*seat) => (None, self.play_choices(*seat)),
+            _ => (None, vec![]),
+        };
+        let card_faces = state
+            .map(|state| self.visible_faces(state, &seats))
+            .unwrap_or_default();
         Ok(GameView {
             version: self.version,
             active_seat: self.active_seat,
-            seats: self
-                .seats
-                .iter()
-                .map(|seat| SeatView {
-                    id: seat.id,
-                    hp: seat.hp,
-                    hand_count: seat.hand.len(),
-                    hand: (viewer == Some(seat.id)).then(|| seat.hand.clone()),
-                })
-                .collect(),
+            human_seat: state.map(|state| state.human),
+            turn: state.and_then(|state| state.turn),
+            winner: result.and_then(MatchResult::winner),
+            drawn: result == Some(MatchResult::Draw),
+            seats,
+            deck_count: state.map_or(0, |state| state.deck.len()),
             resolving: self.resolving.clone(),
             discard: self.discard.clone(),
-            waiting_for: choice.map(|choice| choice.seat),
-            choice: choice.filter(|choice| viewer == Some(choice.seat)).cloned(),
+            waiting_for: self.decision.as_ref().map(Decision::seat),
+            choice,
+            actions,
+            card_faces,
             events: self.events.clone(),
         })
+    }
+
+    fn visible_faces(&self, state: &Classic, seats: &[SeatView]) -> Vec<CardFace> {
+        use EventKind::{Discard, UseSha, UseShan, UseTao};
+
+        let public_zones = self.resolving.iter().chain(&self.discard);
+        let seat_zones = seats.iter().flat_map(|seat| {
+            seat.hand
+                .as_deref()
+                .unwrap_or_default()
+                .iter()
+                .chain(&seat.equipment)
+                .chain(&seat.judges)
+        });
+        let revealed_events = self.events.iter().filter_map(|event| match event.kind {
+            UseSha { card, .. } | UseShan { card, .. } | UseTao { card, .. } | Discard { card } => {
+                Some(card.id)
+            }
+            _ => None,
+        });
+        let visible: HashSet<_> = public_zones
+            .chain(seat_zones)
+            .map(|card| card.id)
+            .chain(revealed_events)
+            .collect();
+        state
+            .faces
+            .iter()
+            .filter(|face| visible.contains(&face.id))
+            .copied()
+            .collect()
     }
 
     /// Validate the command against the current state before running any events.
     /// A successful command runs through the next decision or until the table is idle.
     pub fn submit(&mut self, command: Command) -> Result<(), RuleError> {
+        if self.match_result().is_some() {
+            return Err(RuleError::GameOver);
+        }
         if command.version != self.version {
             return Err(RuleError::WrongVersion {
                 expected: self.version,
@@ -127,24 +305,43 @@ impl Game {
             .checked_add(1)
             .ok_or(RuleError::VersionExhausted)?;
         let answer = match command.action {
-            Action::PlaySha { card, target } => {
+            Action::PlaySha { card, target } if self.classic.is_none() => {
                 let use_sha = self.plan_sha(command.seat, card, target)?;
-                self.scheduler.start(use_sha);
+                self.scheduler.start(Program::event(use_sha));
                 None
             }
+            Action::PlaySha { card, target } => {
+                self.checked_play_seat(command.seat)?;
+                self.card_in_hand(command.seat, card, CardKind::Sha)?;
+                Some(Answer::Play(self.plan_play(
+                    command.seat,
+                    card,
+                    vec![target],
+                )?))
+            }
+            Action::PlayCard { card, targets } => {
+                Some(Answer::Play(self.plan_play(command.seat, card, targets)?))
+            }
+            Action::EndPlay => {
+                self.checked_play_seat(command.seat)?;
+                Some(Answer::EndPlay)
+            }
             Action::Choose { event, card } => {
-                let answer = self.validate_choice(command.seat, event, card)?;
-                self.choice = None;
-                Some(answer)
+                Some(self.validate_choice(command.seat, event, card)?)
+            }
+            Action::Discard { event, cards } => {
+                Some(self.validate_discard(command.seat, event, cards)?)
             }
         };
+        self.decision = None;
+        self.events.clear();
         self.run(answer);
         self.version = next_version;
         Ok(())
     }
 
     fn plan_sha(&self, seat: SeatId, card: CardId, target: SeatId) -> Result<EventKind, RuleError> {
-        if self.choice.is_some() {
+        if self.decision.is_some() {
             return Err(RuleError::ChoicePending);
         }
         if self.active_seat != seat {
@@ -152,20 +349,26 @@ impl Game {
                 expected: self.active_seat,
             });
         }
-        if target == seat || self.seat(target)?.hp == 0 {
+        if target == seat || !self.seat(target)?.alive {
             return Err(RuleError::InvalidTarget);
         }
         let card = self.card_in_hand(seat, card, CardKind::Sha)?;
         Ok(EventKind::UseSha { seat, target, card })
     }
 
-    fn validate_choice(
-        &self,
-        seat: SeatId,
-        event: EventId,
-        card: Option<CardId>,
-    ) -> Result<Answer, RuleError> {
-        let choice = self.choice.as_ref().ok_or(RuleError::NoChoice)?;
+    fn checked_play_seat(&self, seat: SeatId) -> Result<(), RuleError> {
+        match self.decision.as_ref() {
+            Some(Decision::Play(actor)) if *actor == seat => Ok(()),
+            Some(Decision::Play(actor)) => Err(RuleError::WrongActor { expected: *actor }),
+            Some(Decision::Cards(_)) => Err(RuleError::ChoicePending),
+            None => Err(RuleError::WrongPhase),
+        }
+    }
+
+    fn checked_choice(&self, seat: SeatId, event: EventId) -> Result<&ChoiceView, RuleError> {
+        let Some(Decision::Cards(choice)) = self.decision.as_ref() else {
+            return Err(RuleError::NoChoice);
+        };
         if choice.seat != seat {
             return Err(RuleError::WrongActor {
                 expected: choice.seat,
@@ -174,34 +377,74 @@ impl Game {
         if choice.event != event {
             return Err(RuleError::WrongEvent);
         }
-        if let Some(card) = card {
-            if !choice.cards.contains(&card) {
-                return Err(RuleError::InvalidCard);
+        Ok(choice)
+    }
+
+    fn validate_choice(
+        &self,
+        seat: SeatId,
+        event: EventId,
+        card: Option<CardId>,
+    ) -> Result<Answer, RuleError> {
+        let choice = self.checked_choice(seat, event)?;
+        let expected = match choice.kind {
+            ChoiceKind::Shan => CardKind::Shan,
+            ChoiceKind::Save => CardKind::Tao,
+            ChoiceKind::Discard => return Err(RuleError::InvalidSelection),
+        };
+        match card {
+            Some(card) if choice.cards.contains(&card) => {
+                Ok(Answer::Card(self.card_in_hand(seat, card, expected)?))
             }
-            Ok(Answer::Play(self.card_in_hand(
-                seat,
-                card,
-                CardKind::Shan,
-            )?))
-        } else {
-            Ok(Answer::Pass)
+            Some(_) => Err(RuleError::InvalidCard),
+            None => Ok(Answer::Pass),
         }
     }
 
+    fn validate_discard(
+        &self,
+        seat: SeatId,
+        event: EventId,
+        cards: Vec<CardId>,
+    ) -> Result<Answer, RuleError> {
+        let choice = self.checked_choice(seat, event)?;
+        if choice.kind != ChoiceKind::Discard || !(choice.min..=choice.max).contains(&cards.len()) {
+            return Err(RuleError::InvalidSelection);
+        }
+        let unique: HashSet<_> = cards.iter().copied().collect();
+        if unique.len() != cards.len() {
+            return Err(RuleError::InvalidSelection);
+        }
+        if !cards.iter().all(|id| choice.cards.contains(id)) {
+            return Err(RuleError::InvalidCard);
+        }
+        Ok(Answer::Discard(cards))
+    }
+
     fn run(&mut self, mut answer: Option<Answer>) {
-        while let Some(work) = self.scheduler.poll() {
+        loop {
+            let Some(work) = self.scheduler.poll() else {
+                if !self.start_next_turn() {
+                    break;
+                }
+                continue;
+            };
             match work {
-                Work::Started(event, kind) => self.record(event, kind, EventStatus::Started),
-                Work::Run(event, kind, child) => self.resolve(event, kind, child, &mut answer),
-                Work::Ended(event, kind, outcome) => {
+                Work::Started(event, program) => {
+                    self.record(event, program.kind(), EventStatus::Started)
+                }
+                Work::Run(event, program, child) => {
+                    self.resolve(event, program, child, &mut answer)
+                }
+                Work::Ended(event, program, outcome) => {
                     let status = match outcome {
                         Outcome::Finished(_) => EventStatus::Finished,
                         Outcome::Cancelled => EventStatus::Cancelled,
                     };
-                    self.record(event, kind, status);
+                    self.record(event, program.kind(), status);
                 }
             }
-            if self.choice.is_some() {
+            if self.decision.is_some() {
                 break;
             }
         }
@@ -210,7 +453,7 @@ impl Game {
     fn resolve(
         &mut self,
         event: EventRef,
-        kind: EventKind,
+        program: Program,
         child: Option<Outcome<Resolution>>,
         answer: &mut Option<Answer>,
     ) {
@@ -218,64 +461,117 @@ impl Game {
         use Outcome::{Cancelled, Finished};
         use Resolution::{Complete, Dodged, Passed};
 
-        match (kind, child) {
+        match (program.kind(), child) {
             (UseSha { seat, target, card }, None) => {
                 self.move_to_resolving(seat, card.id);
-                self.scheduler.next(ShaEffect { seat, target });
-                self.scheduler.after(Discard { card });
+                self.next(ShaEffect { seat, target });
+                self.scheduler.after(Program::event(Discard { card }));
             }
-            (UseSha { .. }, Some(_)) => self.scheduler.end(Finished(Complete)),
-            (ShaEffect { target, .. }, None) => self.scheduler.next(ChooseShan { seat: target }),
-            (ShaEffect { seat, target }, Some(Finished(Passed))) => self.scheduler.next(Damage {
-                source: seat,
+            (UseSha { .. }, Some(_)) => self.finish(),
+            (ShaEffect { target, .. }, None) => self.next(ChooseShan { seat: target }),
+            (ShaEffect { seat, target }, Some(Finished(Passed))) => self.next(Damage {
+                source: Some(seat),
                 target,
                 amount: 1,
             }),
             (ShaEffect { .. }, Some(Finished(Dodged))) => {
                 self.scheduler.end(Cancelled);
             }
-            (ShaEffect { .. }, Some(Finished(Complete))) => self.scheduler.end(Finished(Complete)),
+            (ShaEffect { .. }, Some(Finished(Complete))) => self.finish(),
             (ChooseShan { seat }, None) => match answer.take() {
                 Some(Answer::Pass) => self.scheduler.end(Finished(Passed)),
-                Some(Answer::Play(card)) => self.scheduler.next(UseShan { seat, card }),
-                None => {
-                    let cards = self
-                        .seat(seat)
-                        .expect("the attack target was validated")
-                        .hand
-                        .iter()
-                        .filter(|card| card.kind == CardKind::Shan)
-                        .map(|card| card.id)
-                        .collect();
-                    self.choice = Some(ChoiceView {
-                        event: event.id,
-                        seat,
-                        cards,
-                    });
-                }
+                Some(Answer::Card(card)) => self.next(UseShan { seat, card }),
+                None => self.ask_for_card(event, seat, ChoiceKind::Shan, None, CardKind::Shan),
+                _ => unreachable!("a shan choice receives one card or a pass"),
             },
             (ChooseShan { .. }, Some(Finished(Dodged))) => self.scheduler.end(Finished(Dodged)),
             (UseShan { seat, card }, None) => {
                 self.move_to_resolving(seat, card.id);
-                self.scheduler.after(Discard { card });
+                self.scheduler.after(Program::event(Discard { card }));
                 self.scheduler.end(Finished(Dodged));
             }
-            (Damage { target, amount, .. }, None) => {
+            (UseTao { seat, target, card }, None) => {
+                self.move_to_resolving(seat, card.id);
+                self.next(Recover {
+                    seat,
+                    target,
+                    amount: 1,
+                });
+                self.scheduler.after(Program::event(Discard { card }));
+            }
+            (UseTao { .. }, Some(_)) => self.finish(),
+            (Recover { target, amount, .. }, None) => {
                 let seat = self.seat_mut(target);
-                seat.hp = seat.hp.saturating_sub(amount);
-                self.scheduler.end(Finished(Complete));
+                seat.hp = (seat.hp + i32::from(amount)).min(i32::from(seat.max_hp));
+                self.finish();
             }
+            (
+                Damage {
+                    source,
+                    target,
+                    amount,
+                },
+                None,
+            ) => {
+                let classic = self.classic.is_some();
+                let seat = self.seat_mut(target);
+                seat.hp -= i32::from(amount);
+                if !classic {
+                    seat.hp = seat.hp.max(0);
+                    seat.alive = seat.hp > 0;
+                    self.finish();
+                } else if seat.hp <= 0 {
+                    self.next(Dying { source, target });
+                } else {
+                    self.finish();
+                }
+            }
+            (Damage { .. }, Some(_)) => self.finish(),
             (Discard { card }, None) => {
-                let index = self
-                    .resolving
-                    .iter()
-                    .position(|current| current.id == card.id)
-                    .expect("the used card is still resolving");
-                self.discard.push(self.resolving.remove(index));
-                self.scheduler.end(Finished(Complete));
+                let card = match program {
+                    Program::DiscardFrom { seat, zone, .. } => self.take_card(seat, zone, card.id),
+                    Program::Event(_) => Self::remove_card(&mut self.resolving, card.id),
+                };
+                self.discard.push(card);
+                self.finish();
             }
-            _ => unreachable!("this event cannot receive that child result"),
+            (kind, child) => self.resolve_classic(event, kind, child, answer),
         }
+    }
+
+    fn ask_for_card(
+        &mut self,
+        event: EventRef,
+        seat: SeatId,
+        kind: ChoiceKind,
+        target: Option<SeatId>,
+        card_kind: CardKind,
+    ) {
+        let cards = self
+            .seat(seat)
+            .expect("the actor was validated")
+            .hand
+            .iter()
+            .filter(|card| card.kind == card_kind)
+            .map(|card| card.id)
+            .collect();
+        self.decision = Some(Decision::Cards(ChoiceView {
+            event: event.id,
+            seat,
+            kind,
+            target,
+            min: 0,
+            max: 1,
+            cards,
+        }));
+    }
+
+    fn next(&mut self, event: EventKind) {
+        self.scheduler.next(Program::event(event));
+    }
+
+    fn finish(&mut self) {
+        self.scheduler.end(Outcome::Finished(Resolution::Complete));
     }
 
     fn record(&mut self, event: EventRef, kind: EventKind, status: EventStatus) {
@@ -287,18 +583,26 @@ impl Game {
         });
     }
 
-    fn seat(&self, id: SeatId) -> Result<&SeatSetup, RuleError> {
+    fn seat(&self, id: SeatId) -> Result<&Seat, RuleError> {
         self.seats
             .iter()
             .find(|seat| seat.id == id)
             .ok_or(RuleError::UnknownSeat { seat: id })
     }
 
-    fn seat_mut(&mut self, id: SeatId) -> &mut SeatSetup {
+    fn seat_mut(&mut self, id: SeatId) -> &mut Seat {
         self.seats
             .iter_mut()
             .find(|seat| seat.id == id)
             .expect("the seat was validated")
+    }
+
+    fn living_order_from(&self, start: SeatId) -> Vec<SeatId> {
+        self.seat_order_from(start)
+            .expect("the starting seat is present")
+            .into_iter()
+            .filter(|id| self.seat(*id).is_ok_and(|seat| seat.alive))
+            .collect()
     }
 
     fn card_in_hand(&self, seat: SeatId, id: CardId, kind: CardKind) -> Result<Card, RuleError> {
@@ -310,13 +614,20 @@ impl Game {
             .ok_or(RuleError::InvalidCard)
     }
 
-    fn move_to_resolving(&mut self, seat: SeatId, id: CardId) {
-        let hand = &mut self.seat_mut(seat).hand;
-        let index = hand
+    fn remove_card(cards: &mut Vec<Card>, id: CardId) -> Card {
+        let index = cards
             .iter()
             .position(|card| card.id == id)
             .expect("the card was validated");
-        let card = hand.remove(index);
+        cards.remove(index)
+    }
+
+    fn take_card(&mut self, seat: SeatId, zone: Zone, id: CardId) -> Card {
+        Self::remove_card(self.seat_mut(seat).zone_mut(zone), id)
+    }
+
+    fn move_to_resolving(&mut self, seat: SeatId, id: CardId) {
+        let card = self.take_card(seat, Zone::Hand, id);
         self.resolving.push(card);
     }
 }

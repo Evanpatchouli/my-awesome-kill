@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 
+use crate::classic_data::{Role, Side, Suit};
+
 pub type SeatId = u32;
 pub type CardId = u32;
 pub type EventId = u64;
@@ -31,9 +33,37 @@ pub struct Card {
 pub enum CardKind {
     Sha,
     Shan,
+    Tao,
+    Bagua,
+    Jueying,
+    Dilu,
+    Zhuahuang,
+    Chitu,
+    Dawan,
+    Zixin,
+    Zhuge,
+    Cixiong,
+    Qinggang,
+    Qinglong,
+    Zhangba,
+    Guanshi,
+    Fangtian,
+    Qilin,
+    Wugu,
+    Taoyuan,
+    Nanman,
+    Wanjian,
+    Juedou,
+    Wuzhong,
+    Shunshou,
+    Guohe,
+    Jiedao,
+    Wuxie,
+    Lebu,
+    Shandian,
 }
 
-#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Command {
     pub version: u32,
@@ -41,7 +71,7 @@ pub struct Command {
     pub action: Action,
 }
 
-#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum Action {
     PlaySha {
@@ -52,6 +82,15 @@ pub enum Action {
         event: EventId,
         card: Option<CardId>,
     },
+    PlayCard {
+        card: CardId,
+        targets: Vec<SeatId>,
+    },
+    EndPlay,
+    Discard {
+        event: EventId,
+        cards: Vec<CardId>,
+    },
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -59,11 +98,19 @@ pub enum Action {
 pub struct GameView {
     pub version: u32,
     pub active_seat: SeatId,
+    pub human_seat: Option<SeatId>,
+    pub turn: Option<TurnView>,
+    pub winner: Option<Side>,
+    pub drawn: bool,
     pub seats: Vec<SeatView>,
+    pub deck_count: usize,
     pub resolving: Vec<Card>,
     pub discard: Vec<Card>,
     pub waiting_for: Option<SeatId>,
     pub choice: Option<ChoiceView>,
+    pub actions: Vec<Action>,
+    pub card_faces: Vec<CardFace>,
+    /// Lifecycle records emitted since the latest accepted command, or during setup.
     pub events: Vec<GameEvent>,
 }
 
@@ -71,9 +118,43 @@ pub struct GameView {
 #[serde(rename_all = "camelCase")]
 pub struct SeatView {
     pub id: SeatId,
-    pub hp: u16,
+    pub hp: i32,
+    pub max_hp: u16,
+    pub alive: bool,
+    pub hero: Option<String>,
+    pub role: Option<Role>,
     pub hand_count: usize,
     pub hand: Option<Vec<Card>>,
+    pub equipment: Vec<Card>,
+    pub judges: Vec<Card>,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CardFace {
+    pub id: CardId,
+    pub suit: Suit,
+    pub rank: u8,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TurnView {
+    pub seat: SeatId,
+    pub number: u64,
+    pub round: u64,
+    pub phase: Phase,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub enum Phase {
+    Preparation,
+    Judgment,
+    Draw,
+    Play,
+    Discard,
+    End,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -81,7 +162,19 @@ pub struct SeatView {
 pub struct ChoiceView {
     pub event: EventId,
     pub seat: SeatId,
+    pub kind: ChoiceKind,
+    pub target: Option<SeatId>,
+    pub min: usize,
+    pub max: usize,
     pub cards: Vec<CardId>,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub enum ChoiceKind {
+    Shan,
+    Save,
+    Discard,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -105,6 +198,23 @@ pub enum EventStatus {
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum EventKind {
+    Opening {
+        lord: SeatId,
+    },
+    Turn {
+        seat: SeatId,
+        number: u64,
+        round: u64,
+    },
+    Phase {
+        seat: SeatId,
+        phase: Phase,
+    },
+    Draw {
+        seat: SeatId,
+        amount: u16,
+        reason: DrawReason,
+    },
     UseSha {
         seat: SeatId,
         target: SeatId,
@@ -121,38 +231,85 @@ pub enum EventKind {
         seat: SeatId,
         card: Card,
     },
+    UseTao {
+        seat: SeatId,
+        target: SeatId,
+        card: Card,
+    },
     Damage {
-        source: SeatId,
+        source: Option<SeatId>,
         target: SeatId,
         amount: u16,
+    },
+    Recover {
+        seat: SeatId,
+        target: SeatId,
+        amount: u16,
+    },
+    Dying {
+        source: Option<SeatId>,
+        target: SeatId,
+    },
+    ChooseSave {
+        seat: SeatId,
+        target: SeatId,
+    },
+    Death {
+        source: Option<SeatId>,
+        target: SeatId,
+        role: Role,
+    },
+    Penalty {
+        lord: SeatId,
     },
     Discard {
         card: Card,
     },
+    GameOver {
+        winner: Option<Side>,
+    },
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub enum DrawReason {
+    Opening,
+    Phase,
+    RebelReward,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "code", rename_all = "camelCase")]
 pub enum RuleError {
     NotEnoughSeats,
+    UnsupportedSeatCount { count: usize },
+    UnknownHero,
     DuplicateSeat { seat: SeatId },
     UnknownSeat { seat: SeatId },
     DuplicateCard { card: CardId },
     InactiveSeat { seat: SeatId },
     WrongVersion { expected: u32, received: u32 },
     VersionExhausted,
+    GameOver,
     ChoicePending,
     NoChoice,
     WrongActor { expected: SeatId },
     WrongEvent,
     InvalidCard,
     InvalidTarget,
+    InvalidSelection,
+    WrongPhase,
+    UnsupportedCard,
 }
 
 impl std::fmt::Display for RuleError {
     fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::NotEnoughSeats => formatter.write_str("the table needs at least two seats"),
+            Self::UnsupportedSeatCount { count } => {
+                write!(formatter, "unsupported table size {count}")
+            }
+            Self::UnknownHero => formatter.write_str("the selected hero is absent from the roster"),
             Self::DuplicateSeat { seat } => write!(formatter, "seat {seat} appears twice"),
             Self::UnknownSeat { seat } => write!(formatter, "seat {seat} is absent"),
             Self::DuplicateCard { card } => write!(formatter, "card {card} appears twice"),
@@ -164,12 +321,18 @@ impl std::fmt::Display for RuleError {
                 )
             }
             Self::VersionExhausted => formatter.write_str("the command version is exhausted"),
+            Self::GameOver => formatter.write_str("the match has finished"),
             Self::ChoicePending => formatter.write_str("an event is waiting for a choice"),
             Self::NoChoice => formatter.write_str("no event is waiting for a choice"),
             Self::WrongActor { expected } => write!(formatter, "seat {expected} must act"),
             Self::WrongEvent => formatter.write_str("the choice references a different event"),
             Self::InvalidCard => formatter.write_str("the card is unavailable for this action"),
             Self::InvalidTarget => formatter.write_str("the target is unavailable for this action"),
+            Self::InvalidSelection => {
+                formatter.write_str("the selected cards do not satisfy the choice")
+            }
+            Self::WrongPhase => formatter.write_str("the table is not waiting for a play action"),
+            Self::UnsupportedCard => formatter.write_str("this card's effects are not available"),
         }
     }
 }

@@ -133,7 +133,7 @@ fn shan_resumes_the_existing_choice_and_cancels_the_effect_before_cleaning_up_sh
     assert!(resolved.resolving.is_empty());
     assert_eq!(resolved.discard, vec![SHAN, SHA]);
     assert_eq!(
-        &resolved.events[3..],
+        resolved.events,
         [
             event(4, Some(3), use_shan, Started),
             event(4, Some(3), use_shan, Finished),
@@ -171,19 +171,19 @@ fn passing_applies_one_damage_and_allows_a_new_root_event() {
     assert!(hit.resolving.is_empty());
     assert!(hit.choice.is_none());
     assert_eq!(
-        hit.events[4],
+        hit.events[1],
         event(
             4,
             Some(2),
             EventKind::Damage {
-                source: SOURCE,
+                source: Some(SOURCE),
                 target: TARGET,
                 amount: 1,
             },
             EventStatus::Started
         )
     );
-    assert_eq!(hit.events[5].status, EventStatus::Finished);
+    assert_eq!(hit.events[2].status, EventStatus::Finished);
 
     game.submit(Command {
         version: hit.version,
@@ -198,7 +198,7 @@ fn passing_applies_one_damage_and_allows_a_new_root_event() {
     assert_eq!(next.waiting_for, Some(OBSERVER));
     assert!(next.choice.unwrap().cards.is_empty());
     assert_eq!(
-        next.events[hit.events.len()],
+        next.events[0],
         event(
             6,
             None,
@@ -226,7 +226,7 @@ fn malformed_and_stale_commands_leave_the_paused_game_unchanged() {
         (
             0,
             TARGET,
-            response,
+            response.clone(),
             RuleError::WrongVersion {
                 expected: 1,
                 received: 0,
@@ -235,7 +235,7 @@ fn malformed_and_stale_commands_leave_the_paused_game_unchanged() {
         (
             1,
             SOURCE,
-            response,
+            response.clone(),
             RuleError::WrongActor { expected: TARGET },
         ),
         (
@@ -283,7 +283,7 @@ fn malformed_and_stale_commands_leave_the_paused_game_unchanged() {
         seat: TARGET,
         action: response,
     };
-    game.submit(valid).unwrap();
+    game.submit(valid.clone()).unwrap();
     let after = game.view(None).unwrap();
     assert_eq!(
         game.submit(valid),
@@ -344,7 +344,7 @@ fn protocol_uses_tagged_commands_and_events_with_camel_case_fields() {
     assert_eq!(payload["waitingFor"], TARGET);
     assert_eq!(
         payload["choice"],
-        json!({"event": 3, "seat": 19, "cards": [75]})
+        json!({"event": 3, "seat": 19, "kind": "shan", "target": null, "min": 0, "max": 1, "cards": [75]})
     );
     assert_eq!(payload["seats"][2]["hand"], Value::Null);
     assert_eq!(
