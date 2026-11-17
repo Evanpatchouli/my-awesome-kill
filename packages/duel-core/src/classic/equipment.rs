@@ -4,6 +4,7 @@ mod skill;
 
 use crate::classic::PlannedUse;
 use crate::scheduler::{EventRef, Outcome};
+use crate::CounterContext;
 use crate::{
     Card, CardId, CardKind, ChoiceBranch, ChoiceRequest, EventKind, Game, Program, Resolution,
     RuleError, Seat, SeatId, VirtualPlay, Zone,
@@ -83,6 +84,10 @@ impl Flow {
 
     pub(crate) fn response(seat: SeatId, kind: CardKind, ignore_armor: bool) -> Self {
         Self::Response(response::Response::new(seat, kind, ignore_armor))
+    }
+
+    pub(crate) fn counter_response(seat: SeatId, context: CounterContext) -> Self {
+        Self::Response(response::Response::counter(seat, context))
     }
 }
 
@@ -186,13 +191,19 @@ impl Game {
     }
 
     pub(crate) fn may_play_sha(&self, seat: SeatId) -> bool {
+        self.may_play_sha_without(seat, None)
+    }
+
+    pub(crate) fn may_play_sha_without(&self, seat: SeatId, material: Option<CardId>) -> bool {
         !self
             .classic
             .as_ref()
             .expect("the table is classic")
             .sha_played
-            || self.has_weapon(seat, CardKind::Zhuge)
             || self.hero_unlimited_sha(seat)
+            || self
+                .weapon(seat)
+                .is_some_and(|weapon| weapon.kind == CardKind::Zhuge && Some(weapon.id) != material)
     }
 
     pub(crate) fn physical_sha_uses(&self, player: &Seat, card: Card) -> Vec<PlannedUse> {
@@ -273,11 +284,11 @@ impl Game {
         targets: Vec<SeatId>,
     ) -> Result<Program, RuleError> {
         self.checked_play_seat(seat)?;
-        if !self.virtual_plays(seat).iter().any(|play| {
-            play.kind == kind
-                && Self::matches_branch(&play.branch, &ids, &targets)
-                && (play.branch.id == 0 || self.hero_valid_conversion(seat, kind, &ids))
-        }) {
+        if !self
+            .virtual_plays(seat)
+            .iter()
+            .any(|play| play.kind == kind && Self::matches_branch(&play.branch, &ids, &targets))
+        {
             return Err(RuleError::InvalidSelection);
         }
         self.virtual_program(seat, kind, self.hero_cards_by_id(seat, &ids), targets)

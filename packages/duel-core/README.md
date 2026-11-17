@@ -30,6 +30,8 @@
 
 为保持隐藏手牌的视角一致性，杀和濒死响应即使没有符合条件的牌也提供放弃。上游 `_save` 会依据 `canSave` 跳过没有合法牌的角色。引擎将置入弃牌区的死亡清理及当前结算清理完成后再发布终局，终局后冻结命令。
 
+每个锦囊目标以当前行动席为起点，按存活座次发出同形的无懈窗口。公开 `counterWindow` 只记录目前正询问无懈。当前决策席的 `choice.counter` 提供原锦囊、来源、目标和 `negated` 状态。有无可用实体只影响该席看到的选项。连续一轮无人回应后，按当前奇偶结算原效果。种子 21 的五谷回归核对了有牌与无牌时相同的公开状态，种子 1 回归验证 AI 保留无懈并完成自己的无中生有。
+
 ```sh
 cargo test --manifest-path packages/duel-core/Cargo.toml
 ```
@@ -40,4 +42,4 @@ cargo test --manifest-path packages/duel-core/Cargo.toml
 cargo test --release --locked --manifest-path packages/duel-core/Cargo.toml --lib benchmark_seeded_eight_player_games -- --ignored --nocapture
 ```
 
-Windows 10.0.26200、Intel i7-13620H，按种子 1–100 运行八席 AI 局。100 局均结束，共处理 18,440 次决定，每局中位数 174 次，范围 39–390 次。AI 生成命令和核心执行合计 p95 为 15.3 微秒，单席投影及 JSON 序列化合计 p95 为 19.7 微秒。最大单批投影有 167 条事件，共 20,851 字节。每个终局核对 104 张实体牌各处于唯一牌区，结算区为空。
+Windows 10.0.26200、Intel i7-13620H，按种子 1–100 运行八席 AI 局。100 局均结束，共处理 55,247 次决定，每局 p50 为 529 次，范围 63–1,211 次。决定计入所有无懈窗口，包括直接放弃的窗口。AI 生成命令和核心执行合计 p95 为 7.7 微秒，单席投影及 JSON 序列化合计 p95 为 15.8 微秒。最大单批投影有 37 条事件，最大投影为 9,876 字节。每个终局核对 104 张实体牌各处于唯一牌区，结算区为空。

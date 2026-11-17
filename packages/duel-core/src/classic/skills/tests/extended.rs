@@ -1,4 +1,5 @@
 use super::*;
+use crate::classic::tests::{pass_counters, pass_counters_until};
 
 fn play_card(game: &mut Game, seat: SeatId, card: CardId, targets: Vec<SeatId>) {
     command(game, seat, Action::PlayCard { card, targets });
@@ -103,6 +104,7 @@ fn qixi_turns_a_black_equipped_card_into_guohe() {
             targets: vec![1],
         },
     );
+    pass_counters(&mut game);
     select(&mut game, 0, 0, vec![], vec![]);
     assert!(game.seat(0).unwrap().equipment.is_empty());
     assert!(game.seat(1).unwrap().hand.is_empty());
@@ -198,6 +200,7 @@ fn qicai_reaches_a_distant_trick_target_and_jizhi_draws_before_its_effect() {
     select(&mut game, 0, 1, vec![], vec![]);
     assert_eq!(game.seat(0).unwrap().hand, vec![card(109, CardKind::Sha)]);
     assert_eq!(game.seat(2).unwrap().hand, vec![gained]);
+    pass_counters(&mut game);
     select(&mut game, 0, 0, vec![], vec![]);
     assert!(game.seat(0).unwrap().hand.contains(&gained));
 }
@@ -210,10 +213,12 @@ fn jizhi_can_draw_when_using_wuxie() {
     game.seat_mut(1).hand.push(wuxie);
     play_phase(&mut game, 0);
     play_card(&mut game, 0, 1, vec![0]);
+    pass_counters_until(&mut game, |choice| choice.seat == 1);
     supply(&mut game, 1, wuxie.id);
     let choice = game.view(Some(1)).unwrap().choice.unwrap();
     assert!(choice.branches.iter().any(|branch| branch.label == "集智"));
     select(&mut game, 1, 1, vec![], vec![]);
+    pass_counters(&mut game);
     assert_eq!(game.seat(1).unwrap().hand, vec![card(109, CardKind::Sha)]);
     assert!(game.seat(0).unwrap().hand.is_empty());
 }
@@ -244,6 +249,46 @@ fn yingzi_draws_an_extra_card_and_biyue_draws_at_the_end_of_the_turn() {
     assert!(choice.branches.iter().any(|branch| branch.label == "闭月"));
     select(&mut game, 1, 1, vec![], vec![]);
     assert_eq!(game.seat(1).unwrap().hand.len(), 3);
+}
+
+#[test]
+fn yingzi_reports_one_activation_only_when_the_choice_is_accepted() {
+    use crate::EventStatus;
+
+    for (branch, amount) in [(0, 2), (1, 3)] {
+        let mut game = Game::classic(0, 0, "zhouyu", 2).unwrap();
+        let before = game.view(Some(0)).unwrap();
+        assert!(before
+            .choice
+            .unwrap()
+            .branches
+            .iter()
+            .any(|branch| branch.label == "英姿"));
+        let activations = |events: &[crate::GameEvent]| {
+            events
+                .iter()
+                .filter(|event| {
+                    event.status == EventStatus::Started
+                        && event.kind
+                            == EventKind::Skill {
+                                seat: 0,
+                                skill: SkillId::Yingzi,
+                            }
+                })
+                .count()
+        };
+        assert_eq!(activations(&before.events), 0);
+
+        select(&mut game, 0, branch, vec![], vec![]);
+        let after = game.view(Some(0)).unwrap();
+        assert_eq!(activations(&after.events), branch as usize);
+        assert!(after.events.iter().any(|event| event.kind
+            == EventKind::Draw {
+                seat: 0,
+                amount,
+                reason: DrawReason::Phase
+            }));
+    }
 }
 
 #[test]

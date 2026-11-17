@@ -260,6 +260,7 @@ impl Game {
                 max: required,
                 cards,
                 branches: vec![],
+                counter: None,
             }));
         }
     }

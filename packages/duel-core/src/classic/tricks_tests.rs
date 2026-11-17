@@ -1,4 +1,5 @@
-use crate::{Card, CardKind, Game};
+use super::tests::{pass_counters, pass_counters_until};
+use crate::{Action, Card, CardKind, Command, CounterContext, Game};
 
 fn card(id: u32, kind: CardKind) -> Card {
     Card { id, kind }
@@ -123,7 +124,9 @@ fn select(game: &mut Game, branch: u32, cards: Vec<u32>) {
 fn wugu_public_pool_is_taken_in_seat_order_and_consumed_once() {
     let mut game = scene();
     start_trick(&mut game, card(20, CardKind::Wugu), vec![0, 1, 2, 3]);
+    assert_eq!(game.view(None).unwrap().resolving.len(), 5);
     for expected in 0..4 {
+        pass_counters(&mut game);
         let public = game.view(None).unwrap();
         assert_eq!(public.waiting_for, Some(expected));
         let private = game.view(Some(expected)).unwrap();
@@ -147,6 +150,7 @@ fn guohe_hides_hand_id_from_attacker_and_public_choice() {
     let mut game = scene();
     game.seat_mut(1).hand.push(card(42, CardKind::Tao));
     start_trick(&mut game, card(20, CardKind::Guohe), vec![1]);
+    pass_counters(&mut game);
     let public = game.view(None).unwrap();
     let attacker = game.view(Some(0)).unwrap();
     let choice = attacker.choice.unwrap();
@@ -163,11 +167,14 @@ fn wuxie_cancels_only_the_current_aoe_target() {
     let mut game = scene();
     game.seat_mut(2).hand.push(card(42, CardKind::Wuxie));
     start_trick(&mut game, card(20, CardKind::Nanman), vec![1, 2, 3]);
+    pass_counters_until(&mut game, |choice| choice.seat == 2);
     assert_eq!(game.view(None).unwrap().waiting_for, Some(2));
     select(&mut game, 1, vec![42]);
+    pass_counters(&mut game);
     assert_eq!(game.seat(1).unwrap().hp, 4, "first target was negated");
     assert_eq!(game.view(None).unwrap().waiting_for, Some(2));
     select(&mut game, 0, vec![]);
+    pass_counters(&mut game);
     assert_eq!(game.seat(2).unwrap().hp, 3);
     assert_eq!(game.view(None).unwrap().waiting_for, Some(3));
     select(&mut game, 0, vec![]);
@@ -180,14 +187,47 @@ fn successive_wuxie_restore_effect_for_one_target() {
     game.seat_mut(1).hand.push(card(41, CardKind::Wuxie));
     game.seat_mut(2).hand.push(card(42, CardKind::Wuxie));
     start_trick(&mut game, card(20, CardKind::Nanman), vec![1, 2, 3]);
+    pass_counters_until(&mut game, |choice| choice.seat == 1);
     assert_eq!(game.view(None).unwrap().waiting_for, Some(1));
+    assert!(
+        !game
+            .view(Some(1))
+            .unwrap()
+            .choice
+            .unwrap()
+            .counter
+            .unwrap()
+            .negated
+    );
     select(&mut game, 1, vec![41]);
     assert_eq!(game.view(None).unwrap().waiting_for, Some(2));
+    assert!(
+        game.view(Some(2))
+            .unwrap()
+            .choice
+            .unwrap()
+            .counter
+            .unwrap()
+            .negated
+    );
     select(&mut game, 1, vec![42]);
+    assert!(
+        !game
+            .view(Some(3))
+            .unwrap()
+            .choice
+            .unwrap()
+            .counter
+            .unwrap()
+            .negated
+    );
+    pass_counters(&mut game);
     assert_eq!(game.view(None).unwrap().waiting_for, Some(1));
     select(&mut game, 0, vec![]);
     assert_eq!(game.seat(1).unwrap().hp, 3);
+    pass_counters(&mut game);
     select(&mut game, 0, vec![]);
+    pass_counters(&mut game);
     select(&mut game, 0, vec![]);
     assert_eq!(game.seat(2).unwrap().hp, 3);
     assert_eq!(game.seat(3).unwrap().hp, 3);
@@ -209,6 +249,7 @@ fn lightning_non_hit_moves_to_next_seat_without_duplicate() {
     let flow = game.trick_judgment(0, lightning);
     game.scheduler.start(flow);
     game.run(None);
+    pass_counters(&mut game);
     assert!(game.seat(0).unwrap().judges.is_empty());
     assert_eq!(game.seat(2).unwrap().judges, vec![lightning]);
     assert_eq!(game.seat(0).unwrap().hp, 4);
@@ -228,6 +269,7 @@ fn lethal_lightning_discards_once_before_death_cleanup() {
     });
     game.scheduler.start(game.trick_judgment(0, lightning));
     game.run(None);
+    pass_counters(&mut game);
     while let Some(actor) = game.view(None).unwrap().waiting_for {
         let view = game.view(Some(actor)).unwrap();
         let choice = view.choice.unwrap();
@@ -255,6 +297,7 @@ fn borrowed_weapon_transfers_when_holder_declines_to_attack() {
     let weapon = card(50, CardKind::Zhuge);
     game.seat_mut(1).equipment.push(weapon);
     start_trick(&mut game, card(20, CardKind::Jiedao), vec![1, 2]);
+    pass_counters(&mut game);
     assert_eq!(game.view(None).unwrap().waiting_for, Some(1));
     select(&mut game, 0, vec![]);
     assert!(game.seat(1).unwrap().equipment.is_empty());
@@ -279,6 +322,7 @@ fn lebu_non_heart_skips_the_affected_turn_play_decision() {
         round: 1,
     }));
     game.run(None);
+    pass_counters(&mut game);
     assert_eq!(game.view(None).unwrap().waiting_for, Some(1));
     assert!(game.seat(0).unwrap().judges.is_empty());
     assert!(game.discard.iter().any(|c| c.id == delayed.id));
@@ -291,6 +335,7 @@ fn borrowed_weapon_attack_targets_designated_other_seat() {
     game.seat_mut(1).equipment.push(card(50, CardKind::Zhuge));
     game.seat_mut(1).hand.push(card(51, CardKind::Sha));
     start_trick(&mut game, card(20, CardKind::Jiedao), vec![1, 2]);
+    pass_counters(&mut game);
     select(&mut game, 1, vec![51]);
     let view = game.view(Some(2)).unwrap();
     let choice = view.choice.unwrap();
@@ -361,6 +406,7 @@ fn lightning_material_is_available_to_jianxiong_until_damage_finishes() {
     });
     game.scheduler.start(game.trick_judgment(0, lightning));
     game.run(None);
+    pass_counters(&mut game);
     assert_eq!(game.seat(0).unwrap().hp, 1);
     assert!(game.resolving.contains(&lightning));
     let choice = game.view(Some(0)).unwrap().choice.unwrap();
@@ -374,4 +420,149 @@ fn lightning_material_is_available_to_jianxiong_until_damage_finishes() {
     assert!(game.seat(0).unwrap().hand.contains(&lightning));
     assert!(!game.resolving.contains(&lightning));
     assert!(!game.discard.contains(&lightning));
+}
+
+#[test]
+fn seed_21_wugu_has_equal_public_windows_with_or_without_a_hidden_counter() {
+    let mut held = Game::classic(21, 0, "liubei", 4).unwrap();
+    let mut empty = Game::classic(21, 0, "liubei", 4).unwrap();
+    let hand = &mut held.seat_mut(1).hand;
+    if hand.iter().all(|card| card.kind != CardKind::Wuxie) {
+        hand[0].kind = CardKind::Wuxie;
+    }
+    for card in &mut empty.seat_mut(1).hand {
+        if card.kind == CardKind::Wuxie {
+            card.kind = CardKind::Sha;
+        }
+    }
+    let opening = held.view(Some(0)).unwrap();
+    let action = opening
+        .actions
+        .into_iter()
+        .find(|action| matches!(action, Action::PlayCard { card: 70, .. }))
+        .expect("seed 21 opens with the observed wugu play");
+    let command = Command {
+        version: opening.version,
+        seat: 0,
+        action,
+    };
+    held.submit(command.clone()).unwrap();
+    empty.submit(command).unwrap();
+
+    for actor in 0..4 {
+        assert_eq!(held.view(None).unwrap(), empty.view(None).unwrap());
+        assert_eq!(held.view(Some(0)).unwrap(), empty.view(Some(0)).unwrap());
+        let public = held.view(None).unwrap();
+        assert_eq!(public.waiting_for, Some(actor));
+        assert!(public.counter_window);
+        assert_eq!(public.resolving.len(), 5);
+        assert!(public.choice.is_none());
+        let left = held.view(Some(actor)).unwrap().choice.unwrap();
+        let right = empty.view(Some(actor)).unwrap().choice.unwrap();
+        assert_eq!(
+            left.counter,
+            Some(CounterContext {
+                card_kind: CardKind::Wugu,
+                source: Some(0),
+                target: 0,
+                negated: false,
+            })
+        );
+        assert_eq!(left.counter, right.counter);
+        assert_eq!(left.branches.len() != right.branches.len(), actor == 1);
+        select(&mut held, 0, vec![]);
+        select(&mut empty, 0, vec![]);
+    }
+    assert_eq!(held.view(None).unwrap(), empty.view(None).unwrap());
+    assert!(!held.view(None).unwrap().counter_window);
+    assert!(held
+        .view(Some(0))
+        .unwrap()
+        .choice
+        .unwrap()
+        .counter
+        .is_none());
+}
+
+#[test]
+fn seed_1_bot_keeps_its_wuxie_when_its_wuzhong_is_already_effective() {
+    let mut game = Game::classic(1, 0, "liubei", 4).unwrap();
+    let use_wuzhong = game.bot_command().unwrap();
+    assert_eq!(use_wuzhong.seat, 1);
+    assert_eq!(
+        use_wuzhong.action,
+        Action::PlayCard {
+            card: 83,
+            targets: vec![1]
+        }
+    );
+    game.submit(use_wuzhong).unwrap();
+    let paused = game.view(Some(1)).unwrap();
+    let before = paused.seats[1].hand_count;
+    let choice = paused.choice.unwrap();
+    assert_eq!(
+        choice.counter,
+        Some(CounterContext {
+            card_kind: CardKind::Wuzhong,
+            source: Some(1),
+            target: 1,
+            negated: false,
+        })
+    );
+    assert_eq!(choice.branches[1].cards, [97]);
+    let responds = game.bot_command().unwrap();
+    assert_eq!(responds.seat, 1);
+    assert_eq!(
+        responds.action,
+        Action::Select {
+            event: choice.event,
+            branch: 0,
+            cards: vec![],
+            targets: vec![]
+        }
+    );
+    game.submit(responds).unwrap();
+    pass_counters(&mut game);
+    let finished = game.view(Some(1)).unwrap();
+    assert_eq!(finished.seats[1].hand_count, before + 2);
+    assert!(finished.seats[1]
+        .hand
+        .as_ref()
+        .unwrap()
+        .iter()
+        .any(|card| card.id == 97));
+    assert!(!finished.discard.iter().any(|card| card.id == 97));
+}
+
+#[test]
+fn bot_considers_public_attitudes_and_the_current_counter_parity() {
+    let mut game = scene();
+    game.classic.as_mut().unwrap().human = 3;
+    for (seat, id) in [(0, 40), (1, 41), (2, 42)] {
+        game.seat_mut(seat).hand.push(card(id, CardKind::Wuxie));
+    }
+    start_trick(&mut game, card(20, CardKind::Wuzhong), vec![0]);
+
+    for (seat, expected_branch, negated) in
+        [(0, 0, false), (1, 0, false), (2, 1, false), (0, 1, true)]
+    {
+        pass_counters_until(&mut game, |choice| choice.seat == seat);
+        let choice = game.view(Some(seat)).unwrap().choice.unwrap();
+        assert_eq!(choice.counter.unwrap().negated, negated);
+        let command = game.bot_command().unwrap();
+        assert_eq!(command.seat, seat);
+        assert!(
+            matches!(command.action, Action::Select { branch, .. } if branch == expected_branch)
+        );
+        game.submit(command).unwrap();
+    }
+    pass_counters(&mut game);
+    assert_eq!(game.seat(0).unwrap().hand.len(), 2);
+    assert!(game
+        .seat(1)
+        .unwrap()
+        .hand
+        .contains(&card(41, CardKind::Wuxie)));
+    assert!(game.discard.contains(&card(40, CardKind::Wuxie)));
+    assert!(game.discard.contains(&card(42, CardKind::Wuxie)));
 }

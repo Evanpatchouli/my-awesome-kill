@@ -174,6 +174,105 @@ fn equipped_red_card_can_pay_wusheng_with_the_same_sha_target_validation() {
 }
 
 #[test]
+fn wusheng_cannot_spend_the_only_zhuge_for_a_second_sha() {
+    let mut game = Game::classic(57, 0, "guanyu", 2).unwrap();
+    command(
+        &mut game,
+        0,
+        Action::PlayCard {
+            card: 62,
+            targets: vec![0],
+        },
+    );
+    let can_convert = |view: &crate::GameView| {
+        view.virtual_plays
+            .iter()
+            .any(|play| play.kind == CardKind::Sha && play.branch.cards.contains(&62))
+    };
+    assert!(can_convert(&game.view(Some(0)).unwrap()));
+    command(
+        &mut game,
+        0,
+        Action::PlayCard {
+            card: 5,
+            targets: vec![1],
+        },
+    );
+    pass(&mut game, 1);
+
+    let before = game.view(Some(0)).unwrap();
+    assert_eq!(before.waiting_for, Some(0));
+    assert_eq!(before.seats[0].equipment, vec![card(62, CardKind::Zhuge)]);
+    let opponent_before = game.view(Some(1)).unwrap();
+    assert!(!can_convert(&before));
+    let forged = Command {
+        seat: 0,
+        version: before.version,
+        action: Action::PlayVirtual {
+            kind: CardKind::Sha,
+            cards: vec![62],
+            targets: vec![1],
+        },
+    };
+    assert_eq!(game.submit(forged), Err(RuleError::InvalidSelection));
+    assert_eq!(game.view(Some(0)).unwrap(), before);
+    assert_eq!(game.view(Some(1)).unwrap(), opponent_before);
+}
+
+#[test]
+fn wusheng_can_spend_zhuge_for_a_second_sha_when_paoxiao_remains() {
+    use crate::classic_data::General;
+    use std::sync::OnceLock;
+
+    static COMBINED_SKILLS: OnceLock<General> = OnceLock::new();
+    let hero = COMBINED_SKILLS.get_or_init(|| {
+        let mut hero = roster()
+            .iter()
+            .find(|hero| hero.id == "guanyu")
+            .unwrap()
+            .clone();
+        let zhangfei = roster().iter().find(|hero| hero.id == "zhangfei").unwrap();
+        hero.skills.extend(zhangfei.skills.clone());
+        hero
+    });
+    let mut game = assigned(&["guanyu", "lvbu"], 0);
+    game.seat_mut(0).hero = Some(hero);
+    let zhuge = card(1, CardKind::Zhuge);
+    game.seat_mut(0).equipment.push(zhuge);
+    game.seat_mut(0).hand.push(card(2, CardKind::Sha));
+    set_face(&mut game, zhuge.id, Suit::Diamond, 1);
+    play_phase(&mut game, 0);
+    command(
+        &mut game,
+        0,
+        Action::PlayCard {
+            card: 2,
+            targets: vec![1],
+        },
+    );
+    pass(&mut game, 1);
+
+    let view = game.view(Some(0)).unwrap();
+    assert!(view
+        .virtual_plays
+        .iter()
+        .any(|play| play.kind == CardKind::Sha && play.branch.cards.contains(&zhuge.id)));
+    command(
+        &mut game,
+        0,
+        Action::PlayVirtual {
+            kind: CardKind::Sha,
+            cards: vec![zhuge.id],
+            targets: vec![1],
+        },
+    );
+    pass(&mut game, 1);
+    assert_eq!(game.seat(1).unwrap().hp, 2);
+    assert!(game.seat(0).unwrap().equipment.is_empty());
+    assert!(game.discard.contains(&zhuge));
+}
+
+#[test]
 fn rende_recovers_only_when_the_second_card_is_given() {
     let mut game = assigned(&["liubei", "zhouyu", "lvbu"], 0);
     game.seat_mut(0).hand = vec![

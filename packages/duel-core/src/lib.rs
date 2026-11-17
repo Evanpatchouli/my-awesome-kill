@@ -84,6 +84,10 @@ enum Program {
         card: Card,
     },
     Choose(ChoiceRequest),
+    CounterChoice {
+        request: ChoiceRequest,
+        context: CounterContext,
+    },
     Judge {
         seat: SeatId,
     },
@@ -113,7 +117,10 @@ impl Program {
         match self {
             Self::Event(kind) => *kind,
             Self::DiscardFrom { card, .. } => EventKind::Discard { card: *card },
-            Self::Choose(choice) => EventKind::ChooseContent {
+            Self::Choose(choice)
+            | Self::CounterChoice {
+                request: choice, ..
+            } => EventKind::ChooseContent {
                 seat: choice.seat,
                 target: choice.target,
             },
@@ -360,6 +367,7 @@ impl Game {
             resolving: self.resolving.clone(),
             discard: self.discard.clone(),
             waiting_for: self.decision.as_ref().map(Decision::seat),
+            counter_window: matches!(&self.decision, Some(Decision::Cards(choice)) if choice.counter.is_some()),
             choice,
             actions,
             virtual_plays: match self.decision.as_ref() {
@@ -676,7 +684,10 @@ impl Game {
             Program::Equipment(flow) => return self.resolve_equipment(event, flow, child),
             Program::Trick(flow) => return self.resolve_trick(event, flow, child),
             Program::Hero(flow) => return self.resolve_hero(event, flow, child),
-            Program::Choose(choice) => return self.resolve_selection(event, choice, answer),
+            Program::Choose(choice) => return self.resolve_selection(event, choice, None, answer),
+            Program::CounterChoice { request, context } => {
+                return self.resolve_selection(event, request, Some(context), answer)
+            }
             Program::Judge { seat } => {
                 self.scheduler
                     .replace_current(self.judge_program(seat, false));
@@ -793,6 +804,7 @@ impl Game {
         &mut self,
         event: EventRef,
         choice: ChoiceRequest,
+        counter: Option<CounterContext>,
         answer: &mut Option<Answer>,
     ) {
         match answer.take() {
@@ -809,6 +821,7 @@ impl Game {
                     max: 0,
                     cards: vec![],
                     branches: choice.branches,
+                    counter,
                 }));
             }
             _ => unreachable!("a content choice receives a selection"),
@@ -866,6 +879,7 @@ impl Game {
             max: 1,
             cards,
             branches: vec![],
+            counter: None,
         }));
     }
 

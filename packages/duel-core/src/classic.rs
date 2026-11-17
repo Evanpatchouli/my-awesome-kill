@@ -12,8 +12,8 @@ mod tricks_tests;
 
 use crate::classic_data::{self, Role, Side};
 use crate::{
-    Action, Card, CardFace, CardId, CardKind, ChoiceKind, Command, Decision, EventKind, Game,
-    Program, RuleError, Seat, SeatId, TurnView,
+    Action, Card, CardFace, CardId, CardKind, ChoiceKind, Command, CounterContext, Decision,
+    EventKind, Game, Program, RuleError, Seat, SeatId, TurnView,
 };
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -346,11 +346,15 @@ impl Game {
                     card: choice.cards.first().copied(),
                 },
                 ChoiceKind::Content => {
+                    let counter = choice
+                        .counter
+                        .is_some_and(|context| self.bot_wants_counter(player, context, state.lord));
                     let branch = choice
                         .branches
                         .iter()
                         .filter(|branch| {
-                            branch.min_cards <= branch.max_cards
+                            (choice.counter.is_none() || counter || branch.id == 0)
+                                && branch.min_cards <= branch.max_cards
                                 && branch.min_cards <= branch.cards.len()
                                 && branch.min_targets <= branch.max_targets
                                 && branch.min_targets <= branch.targets.len()
@@ -406,6 +410,49 @@ impl Game {
             .expect("ending play is always available")
     }
 
+    fn bot_wants_counter(&self, actor: &Seat, context: CounterContext, lord: SeatId) -> bool {
+        use CardKind::*;
+        let attitude = |target| {
+            if target == actor.id {
+                return 2;
+            }
+            if target != lord {
+                return 0;
+            }
+            match actor.role {
+                Some(Role::Lord | Role::Loyalist) => 2,
+                Some(Role::Rebel) => -2,
+                Some(Role::Renegade)
+                    if self.seats.iter().filter(|seat| seat.alive).count() == 2 =>
+                {
+                    -2
+                }
+                Some(Role::Renegade) if self.seat(lord).is_ok_and(|seat| seat.hp <= 2) => 1,
+                _ => 0,
+            }
+        };
+        let target_attitude = attitude(context.target);
+        let source_attitude = context.source.map_or(0, attitude);
+        let value = match context.card_kind {
+            Wuzhong | Wugu => target_attitude,
+            Taoyuan
+                if self
+                    .seat(context.target)
+                    .is_ok_and(|seat| seat.hp < i32::from(seat.max_hp)) =>
+            {
+                target_attitude
+            }
+            Juedou | Shunshou | Guohe | Jiedao => -2 * target_attitude + source_attitude,
+            Nanman | Wanjian | Lebu | Shandian => -target_attitude,
+            _ => 0,
+        };
+        if context.negated {
+            value > 0
+        } else {
+            value < 0
+        }
+    }
+
     fn bot_card_priority(
         &self,
         actor: &Seat,
@@ -417,6 +464,7 @@ impl Game {
         let court = matches!(actor.role, Some(Role::Lord | Role::Loyalist));
         let targets_lord = targets.contains(&lord);
         match kind {
+            Wuzhong => (5, 0),
             Sha | Juedou | Guohe | Shunshou | Lebu | Jiedao => {
                 let target = if kind == Jiedao {
                     targets.get(1)

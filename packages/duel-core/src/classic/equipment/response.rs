@@ -2,7 +2,10 @@ use super::{branch, Flow};
 use crate::classic::skills::HeroMoment;
 use crate::classic_data::Suit;
 use crate::scheduler::Outcome;
-use crate::{Card, CardKind, ChoiceBranch, EventKind, Game, Program, Resolution, SeatId};
+use crate::{
+    Card, CardKind, ChoiceBranch, ChoiceRequest, CounterContext, EventKind, Game, Program,
+    Resolution, SeatId,
+};
 
 #[derive(Clone, Copy)]
 enum Step {
@@ -22,6 +25,7 @@ pub(crate) struct Response {
     ignore_armor: bool,
     allow_lord: bool,
     step: Step,
+    counter: Option<CounterContext>,
 }
 
 impl Response {
@@ -32,6 +36,14 @@ impl Response {
             ignore_armor,
             allow_lord: true,
             step: Step::Start,
+            counter: None,
+        }
+    }
+
+    pub(super) fn counter(seat: SeatId, context: CounterContext) -> Self {
+        Self {
+            counter: Some(context),
+            ..Self::new(seat, CardKind::Wuxie, false)
         }
     }
 }
@@ -108,11 +120,7 @@ impl Game {
                     self.response_card_branches(seat, kind)
                 };
                 self.append_lord_branch(response, &mut branches);
-                if kind == CardKind::Wuxie && branches.len() == 1 {
-                    self.scheduler.end(Finished(Passed));
-                } else {
-                    self.choose_response(response, branches);
-                }
+                self.choose_response(response, branches);
             }
             (Step::OfferArmor, Some(Finished(Selected(selection)))) => {
                 if selection.branch == 1 {
@@ -194,10 +202,29 @@ impl Game {
         branches
     }
 
-    fn choose_response(&mut self, mut response: Response, branches: Vec<ChoiceBranch>) {
+    fn choose_response(&mut self, mut response: Response, mut branches: Vec<ChoiceBranch>) {
         response.step = Step::Choose;
         self.continue_equipment(Flow::Response(response));
-        self.choose_equipment(response.seat, None, branches);
+        if let Some(context) = response.counter {
+            if let Some(play) = branches.iter_mut().find(|branch| branch.id == 1) {
+                play.label = if context.negated {
+                    "无懈可击：恢复原效果"
+                } else {
+                    "无懈可击：抵消原效果"
+                }
+                .into();
+            }
+            self.scheduler.next(Program::CounterChoice {
+                request: ChoiceRequest {
+                    seat: response.seat,
+                    target: Some(context.target),
+                    branches,
+                },
+                context,
+            });
+        } else {
+            self.choose_equipment(response.seat, None, branches);
+        }
     }
 
     fn response_hand_shan(&mut self, mut response: Response) {

@@ -52,6 +52,7 @@ pub(crate) struct HeroTurn {
 pub(crate) enum HeroFlow {
     Triggers(triggers::Queue),
     Trigger(triggers::Trigger),
+    Activation { seat: SeatId, skill: SkillId },
     Active(active::Active),
     LordRequest(active::LordRequest),
 }
@@ -63,6 +64,10 @@ impl HeroFlow {
                 seat: queue.moment.seat(),
             },
             Self::Trigger(trigger) => trigger.kind(),
+            Self::Activation { seat, skill } => EventKind::Skill {
+                seat: *seat,
+                skill: *skill,
+            },
             Self::Active(active) => active.kind(),
             Self::LordRequest(request) => request.kind(),
         }
@@ -188,6 +193,7 @@ impl Game {
         match flow {
             HeroFlow::Triggers(queue) => self.resolve_hero_triggers(queue, child),
             HeroFlow::Trigger(trigger) => self.resolve_hero_trigger(trigger, child),
+            HeroFlow::Activation { .. } => self.finish(),
             HeroFlow::Active(active) => self.resolve_hero_active(active, child),
             HeroFlow::LordRequest(request) => self.resolve_hero_lord_request(request, child),
         }

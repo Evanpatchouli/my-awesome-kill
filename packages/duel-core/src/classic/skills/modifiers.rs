@@ -216,9 +216,7 @@ impl Game {
                 continue;
             }
             if kind == CardKind::Sha {
-                if self.may_play_sha(seat) {
-                    plays.extend(self.hero_sha_conversion_plays(seat, costs));
-                }
+                plays.extend(self.hero_sha_conversion_plays(seat, costs));
                 continue;
             }
             let targets: Vec<_> = self
@@ -261,6 +259,9 @@ impl Game {
         for cost in costs {
             let mut compatible: Vec<ChoiceBranch> = Vec::new();
             for id in cost.cards {
+                if !self.may_play_sha_without(seat, Some(id)) {
+                    continue;
+                }
                 let targets: Vec<_> = living
                     .iter()
                     .copied()
@@ -303,16 +304,5 @@ impl Game {
             );
         }
         plays
-    }
-
-    pub(crate) fn hero_valid_conversion(
-        &self,
-        seat: SeatId,
-        kind: CardKind,
-        cards: &[CardId],
-    ) -> bool {
-        self.hero_conversion_costs(seat, kind, false)
-            .iter()
-            .any(|branch| Self::matches_branch(branch, cards, &[]))
     }
 }

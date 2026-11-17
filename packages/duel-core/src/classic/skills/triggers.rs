@@ -32,7 +32,7 @@ enum Stage {
 
 impl Trigger {
     pub(super) fn kind(&self) -> EventKind {
-        EventKind::Skill {
+        EventKind::SkillTrigger {
             seat: self.owner,
             skill: self.skill,
         }
@@ -181,6 +181,14 @@ impl Game {
         child: Option<Outcome<Resolution>>,
     ) {
         use SkillId::*;
+        if matches!(trigger.stage, Stage::Option | Stage::Repeat)
+            && matches!(&child, Some(Outcome::Finished(Resolution::Selected(choice))) if choice.branch != 0)
+        {
+            self.scheduler.next(Program::Hero(HeroFlow::Activation {
+                seat: trigger.owner,
+                skill: trigger.skill,
+            }));
+        }
         match trigger.skill {
             Biyue | Jizhi | Lianying | Xiaoji => self.resolve_hero_optional_draw(trigger, child),
             Guanxing => self.resolve_guanxing(trigger, child),

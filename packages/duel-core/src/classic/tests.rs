@@ -45,6 +45,29 @@ pub(super) fn scene(roles: &[Role], active: SeatId) -> Game {
     game
 }
 
+pub(super) fn pass_counters(game: &mut Game) {
+    pass_counters_until(game, |_| false);
+}
+
+pub(super) fn pass_counters_until(game: &mut Game, stop: impl Fn(&crate::ChoiceView) -> bool) {
+    while let Some(crate::Decision::Cards(choice)) = game.decision.as_ref() {
+        if choice.counter.is_none() || stop(choice) {
+            break;
+        }
+        game.submit(Command {
+            version: game.version,
+            seat: choice.seat,
+            action: Action::Select {
+                event: choice.event,
+                branch: 0,
+                cards: vec![],
+                targets: vec![],
+            },
+        })
+        .unwrap();
+    }
+}
+
 fn damage(game: &mut Game, source: SeatId, target: SeatId, amount: u16) {
     game.scheduler.start(Program::event(EventKind::Damage {
         source: Some(source),

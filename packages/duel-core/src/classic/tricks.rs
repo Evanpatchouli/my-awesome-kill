@@ -379,8 +379,16 @@ impl Game {
                     passed,
                     negated,
                 };
+                let context = crate::CounterContext {
+                    card_kind: flow.kind,
+                    source: (!flow.judgment).then_some(flow.seat),
+                    target,
+                    negated,
+                };
                 self.scheduler.replace_current(Program::Trick(flow));
-                self.scheduler.next(Program::respond(actor, Wuxie));
+                self.scheduler.next(Program::Equipment(
+                    super::equipment::Flow::counter_response(actor, context),
+                ));
             }
             CounterWait {
                 index,

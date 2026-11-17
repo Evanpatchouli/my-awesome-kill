@@ -124,6 +124,7 @@ pub struct GameView {
     pub resolving: Vec<Card>,
     pub discard: Vec<Card>,
     pub waiting_for: Option<SeatId>,
+    pub counter_window: bool,
     pub choice: Option<ChoiceView>,
     pub actions: Vec<Action>,
     pub virtual_plays: Vec<VirtualPlay>,
@@ -196,6 +197,17 @@ pub struct ChoiceView {
     pub max: usize,
     pub cards: Vec<CardId>,
     pub branches: Vec<ChoiceBranch>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub counter: Option<CounterContext>,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CounterContext {
+    pub card_kind: CardKind,
+    pub source: Option<SeatId>,
+    pub target: SeatId,
+    pub negated: bool,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -353,6 +365,11 @@ pub enum EventKind {
         amount: u16,
     },
     Skill {
+        seat: SeatId,
+        skill: SkillId,
+    },
+    /// A registered skill is being evaluated and may offer a choice.
+    SkillTrigger {
         seat: SeatId,
         skill: SkillId,
     },
