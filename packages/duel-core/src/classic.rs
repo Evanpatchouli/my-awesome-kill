@@ -1,7 +1,9 @@
 pub(crate) mod equipment;
 #[cfg(test)]
 mod equipment_tests;
+pub(crate) mod hero_integration;
 mod lifecycle;
+pub(crate) mod skills;
 #[cfg(test)]
 mod tests;
 pub(crate) mod tricks;
@@ -37,6 +39,7 @@ pub(super) struct Classic {
     random: TableRandom,
     pub(super) turn: Option<TurnView>,
     sha_played: bool,
+    hero_turn: skills::HeroTurn,
     skip_play: bool,
     pub(super) result: Option<MatchResult>,
     result_announced: bool,
@@ -149,6 +152,7 @@ impl Game {
             random,
             turn: None,
             sha_played: false,
+            hero_turn: skills::HeroTurn::default(),
             skip_play: false,
             result: None,
             result_announced: false,
@@ -292,7 +296,14 @@ impl Game {
         }
         let player = self.seat(seat).ok()?;
         let action = match decision {
-            Decision::Play(_) => self.bot_play(player),
+            Decision::Play(_) => {
+                let action = self.bot_play(player);
+                if action == Action::EndPlay {
+                    self.bot_hero_play(seat).unwrap_or(action)
+                } else {
+                    action
+                }
+            }
             Decision::Cards(choice) => match choice.kind {
                 ChoiceKind::Discard => {
                     let mut cards: Vec<_> = player
@@ -338,8 +349,13 @@ impl Game {
                     let branch = choice
                         .branches
                         .iter()
-                        .find(|branch| branch.id != 0)
-                        .or_else(|| choice.branches.first())?;
+                        .filter(|branch| {
+                            branch.min_cards <= branch.max_cards
+                                && branch.min_cards <= branch.cards.len()
+                                && branch.min_targets <= branch.max_targets
+                                && branch.min_targets <= branch.targets.len()
+                        })
+                        .min_by_key(|branch| branch.id == 0)?;
                     Action::Select {
                         event: choice.event,
                         branch: branch.id,
@@ -381,24 +397,53 @@ impl Game {
                         (6, 0)
                     } else if equipment::is_equipment(held.kind) {
                         (5, 0)
-                    } else if held.kind != CardKind::Sha {
-                        (2, 0)
                     } else {
-                        let target = self
-                            .seat(*targets.first().expect("sha offers a target"))
-                            .expect("the option names a living target");
-                        let priority = if target.id != lord {
-                            2
-                        } else if player.role == Some(Role::Loyalist) {
-                            0
-                        } else {
-                            3
-                        };
-                        (priority, -target.hp)
+                        self.bot_card_priority(player, held.kind, targets, lord)
                     }
                 }
                 _ => (1, 0),
             })
             .expect("ending play is always available")
+    }
+
+    fn bot_card_priority(
+        &self,
+        actor: &Seat,
+        kind: CardKind,
+        targets: &[SeatId],
+        lord: SeatId,
+    ) -> (u8, i32) {
+        use CardKind::*;
+        let court = matches!(actor.role, Some(Role::Lord | Role::Loyalist));
+        let targets_lord = targets.contains(&lord);
+        match kind {
+            Sha | Juedou | Guohe | Shunshou | Lebu | Jiedao => {
+                let target = if kind == Jiedao {
+                    targets.get(1)
+                } else {
+                    targets.first()
+                };
+                let priority = match target.copied() {
+                    Some(target) if target == actor.id || (target == lord && court) => 0,
+                    Some(target) if target == lord => 4,
+                    _ => 3,
+                };
+                let hp = target
+                    .and_then(|target| self.seat(*target).ok())
+                    .map_or(0, |target| target.hp);
+                (priority, -hp)
+            }
+            Nanman | Wanjian if targets_lord && court => (0, 0),
+            Taoyuan
+                if targets_lord
+                    && !court
+                    && self
+                        .seat(lord)
+                        .is_ok_and(|lord| lord.hp < i32::from(lord.max_hp)) =>
+            {
+                (0, 0)
+            }
+            _ => (2, 0),
+        }
     }
 }

@@ -37,6 +37,7 @@ pub(super) fn scene(roles: &[Role], active: SeatId) -> Game {
             phase: Phase::Play,
         }),
         sha_played: false,
+        hero_turn: super::skills::HeroTurn::default(),
         skip_play: false,
         result: None,
         result_announced: false,
@@ -303,4 +304,79 @@ fn refill_reuses_only_discarded_cards_and_exhaustion_draws_the_game() {
         exhausted.events.last().unwrap().kind,
         EventKind::GameOver { winner: None }
     );
+}
+
+#[test]
+#[ignore = "run in release mode to record the 100-game benchmark"]
+fn benchmark_seeded_eight_player_games() {
+    use std::collections::HashSet;
+    use std::time::Instant;
+
+    let mut rules_times = Vec::new();
+    let mut frame_times = Vec::new();
+    let mut counts = Vec::new();
+    let mut max_events = 0;
+    let mut max_bytes = 0;
+    let mut timeout_seeds = Vec::new();
+    let roster = crate::classic_data::roster();
+    for seed in 1..=100 {
+        let hero = &roster[seed as usize % roster.len()].id;
+        let mut game = Game::classic(seed, 0, hero, 8).unwrap();
+        game.classic.as_mut().unwrap().human = SeatId::MAX;
+        let mut steps = 0;
+        while game.match_result().is_none() && steps < 3_000 {
+            let started = Instant::now();
+            let command = game
+                .bot_command()
+                .unwrap_or_else(|| panic!("seed {seed} stalled at version {}", game.version));
+            let result = game.submit(command.clone());
+            assert_eq!(result, Ok(()), "seed {seed}, command {command:?}");
+            rules_times.push(started.elapsed().as_nanos());
+
+            let started = Instant::now();
+            let view = game.view(Some(0)).unwrap();
+            let bytes = serde_json::to_vec(&view).unwrap();
+            frame_times.push(started.elapsed().as_nanos());
+            max_events = max_events.max(view.events.len());
+            max_bytes = max_bytes.max(bytes.len());
+            steps += 1;
+        }
+        counts.push(steps);
+        if game.match_result().is_none() {
+            timeout_seeds.push(seed);
+            continue;
+        }
+        assert!(
+            game.decision.is_none(),
+            "seed {seed} requested input after termination"
+        );
+        assert!(
+            game.resolving.is_empty(),
+            "seed {seed} left cards resolving"
+        );
+        let zones = game
+            .seats
+            .iter()
+            .flat_map(|seat| seat.hand.iter().chain(&seat.equipment).chain(&seat.judges))
+            .chain(&game.discard)
+            .chain(&game.classic.as_ref().unwrap().deck);
+        let mut physical_ids = HashSet::new();
+        for card in zones {
+            assert!(
+                physical_ids.insert(card.id),
+                "seed {seed} duplicated card {}",
+                card.id
+            );
+        }
+        assert_eq!(physical_ids.len(), 104, "seed {seed} lost physical cards");
+    }
+    rules_times.sort_unstable();
+    frame_times.sort_unstable();
+    counts.sort_unstable();
+    let p95 = (95 * rules_times.len()).div_ceil(100) - 1;
+    println!(
+        "games=100 nonterminal={timeout_seeds:?} decisions={} min={} median={} max={} rules_p95_ns={} frame_and_json_p95_ns={} max_events={max_events} max_bytes={max_bytes}",
+        rules_times.len(), counts[0], counts[49], counts[99], rules_times[p95], frame_times[p95],
+    );
+    assert!(timeout_seeds.is_empty());
 }

@@ -6,6 +6,9 @@ mod scheduler;
 use std::collections::{HashMap, HashSet};
 
 use classic::equipment;
+use classic::hero_integration::{CardDamage, Judgment};
+pub use classic::skills::SkillId;
+use classic::skills::{HeroAdjustment, HeroFlow};
 use classic::tricks::Trick;
 use classic::{Classic, MatchResult};
 use classic_data::{General, Role};
@@ -23,9 +26,9 @@ enum Resolution {
     Selected(Selection),
     Responded,
     Judged(Card),
-    Revealed(Card),
     HpChanged,
     ForcedHit,
+    Hero(HeroAdjustment),
 }
 
 enum Answer {
@@ -86,6 +89,19 @@ enum Program {
     },
     Equipment(equipment::Flow),
     Trick(Trick),
+    Hero(HeroFlow),
+    Judgment(Judgment),
+    CardDamage(CardDamage),
+    DiscardGroup {
+        seat: SeatId,
+        cards: Vec<(Zone, Card)>,
+    },
+    Discarded(Card),
+    VirtualTao {
+        seat: SeatId,
+        target: SeatId,
+        card: Card,
+    },
 }
 
 impl Program {
@@ -104,6 +120,20 @@ impl Program {
             Self::Judge { seat } => EventKind::Judge { seat: *seat },
             Self::Equipment(flow) => flow.kind(),
             Self::Trick(flow) => flow.kind(),
+            Self::Hero(flow) => flow.kind(),
+            Self::Judgment(judgment) => EventKind::Judge {
+                seat: judgment.seat,
+            },
+            Self::CardDamage(damage) => damage.kind(),
+            Self::DiscardGroup { seat, cards } => EventKind::DiscardGroup {
+                seat: *seat,
+                amount: cards.len(),
+            },
+            Self::Discarded(card) => EventKind::Discard { card: *card },
+            Self::VirtualTao { seat, .. } => EventKind::UseVirtual {
+                seat: *seat,
+                kind: CardKind::Tao,
+            },
         }
     }
 
@@ -228,6 +258,15 @@ impl Game {
 
     /// Count the shortest path through the living seats in either direction.
     pub fn distance(&self, from: SeatId, to: SeatId) -> Result<usize, RuleError> {
+        self.distance_without(from, to, None)
+    }
+
+    fn distance_without(
+        &self,
+        from: SeatId,
+        to: SeatId,
+        ignored: Option<CardId>,
+    ) -> Result<usize, RuleError> {
         for id in [from, to] {
             if !self.seat(id)?.alive {
                 return Err(RuleError::InactiveSeat { seat: id });
@@ -241,8 +280,15 @@ impl Game {
         let raw = clockwise.min(living.len() - clockwise);
         let rider = self.seat(from)?;
         let target = self.seat(to)?;
-        let adjustment = i32::from(equipment::has_slot(target, equipment::Slot::DefenseHorse))
-            - i32::from(equipment::has_slot(rider, equipment::Slot::AttackHorse));
+        let adjustment = i32::from(equipment::has_slot(
+            target,
+            equipment::Slot::DefenseHorse,
+            None,
+        )) - i32::from(equipment::has_slot(
+            rider,
+            equipment::Slot::AttackHorse,
+            ignored,
+        )) + self.hero_distance_modifier(from);
         Ok(if raw == 0 {
             0
         } else {
@@ -295,8 +341,12 @@ impl Game {
             Some(Decision::Play(seat)) if viewer == Some(*seat) => (None, self.play_choices(*seat)),
             _ => (None, vec![]),
         };
+        let private_choice_cards = choice
+            .as_ref()
+            .map(|choice| self.hero_private_choice_cards(choice))
+            .unwrap_or_default();
         let card_faces = state
-            .map(|state| self.visible_faces(state, &seats))
+            .map(|state| self.visible_faces(state, &seats, &private_choice_cards))
             .unwrap_or_default();
         Ok(GameView {
             version: self.version,
@@ -316,12 +366,22 @@ impl Game {
                 Some(Decision::Play(seat)) if viewer == Some(*seat) => self.virtual_plays(*seat),
                 _ => vec![],
             },
+            skill_plays: match self.decision.as_ref() {
+                Some(Decision::Play(seat)) if viewer == Some(*seat) => self.hero_skill_plays(*seat),
+                _ => vec![],
+            },
+            private_choice_cards,
             card_faces,
             events: self.events.clone(),
         })
     }
 
-    fn visible_faces(&self, state: &Classic, seats: &[SeatView]) -> Vec<CardFace> {
+    fn visible_faces(
+        &self,
+        state: &Classic,
+        seats: &[SeatView],
+        private_choice_cards: &[Card],
+    ) -> Vec<CardFace> {
         use EventKind::{
             Discard, Equip, Reveal, UseCost, UseResponseCard, UseSha, UseShaTargets, UseShan,
             UseTao, UseTrick,
@@ -351,6 +411,7 @@ impl Game {
         });
         let visible: HashSet<_> = public_zones
             .chain(seat_zones)
+            .chain(private_choice_cards)
             .map(|card| card.id)
             .chain(revealed_events)
             .collect();
@@ -427,6 +488,16 @@ impl Game {
             } => Some(Answer::Play(self.plan_virtual(
                 command.seat,
                 kind,
+                cards,
+                targets,
+            )?)),
+            Action::UseSkill {
+                skill,
+                cards,
+                targets,
+            } => Some(Answer::Play(self.plan_hero_skill(
+                command.seat,
+                skill,
                 cards,
                 targets,
             )?)),
@@ -604,8 +675,22 @@ impl Game {
         let program = match program {
             Program::Equipment(flow) => return self.resolve_equipment(event, flow, child),
             Program::Trick(flow) => return self.resolve_trick(event, flow, child),
+            Program::Hero(flow) => return self.resolve_hero(event, flow, child),
             Program::Choose(choice) => return self.resolve_selection(event, choice, answer),
-            Program::Judge { seat } => return self.resolve_judge(seat, child),
+            Program::Judge { seat } => {
+                self.scheduler
+                    .replace_current(self.judge_program(seat, false));
+                return;
+            }
+            Program::Judgment(judgment) => return self.resolve_judgment(judgment, child),
+            Program::CardDamage(damage) => return self.resolve_card_damage(damage, child),
+            Program::DiscardGroup { seat, cards } => {
+                return self.resolve_discard_group(seat, cards)
+            }
+            Program::Discarded(_) => return self.finish(),
+            Program::VirtualTao { seat, target, card } => {
+                return self.resolve_virtual_tao(seat, target, card, child)
+            }
             program => program,
         };
         match (kind, child) {
@@ -634,19 +719,24 @@ impl Game {
             (ChooseShan { .. }, Some(Finished(Dodged))) => self.scheduler.end(Finished(Dodged)),
             (UseShan { seat, card }, None) => {
                 self.move_to_resolving(seat, card.id);
+                self.queue_hero_losses(seat, 1, 0);
                 self.scheduler.after(Program::event(Discard { card }));
                 self.scheduler.end(Finished(Dodged));
             }
             (UseTao { seat, target, card }, None) => {
                 self.move_to_resolving(seat, card.id);
+                self.queue_hero_losses(seat, 1, 0);
                 self.next(Recover {
                     seat,
                     target,
-                    amount: 1,
+                    amount: 1 + self.hero_tao_bonus(seat, target),
                 });
                 self.scheduler.after(Program::event(Discard { card }));
             }
             (UseTao { .. }, Some(_)) => self.finish(),
+            (Recover { .. }, None) if self.match_result().is_some() => {
+                self.scheduler.end(Cancelled)
+            }
             (Recover { target, amount, .. }, None) => {
                 self.queue_hp_change(target, i32::from(amount))
             }
@@ -668,17 +758,31 @@ impl Game {
                 }
                 self.scheduler.end(Finished(Resolution::HpChanged));
             }
-            (Reveal { card, .. }, None) => self.scheduler.end(Finished(Resolution::Revealed(card))),
+            (Reveal { .. }, None) => self.finish(),
             (UseCost { seat, card }, None) => {
                 self.move_to_resolving(seat, card.id);
                 self.finish();
             }
             (Discard { card }, None) => {
-                let card = match program {
-                    Program::DiscardFrom { seat, zone, .. } => self.take_card(seat, zone, card.id),
-                    _ => self.take_resolving(card.id),
-                };
-                self.discard.push(card);
+                match program {
+                    Program::DiscardFrom { seat, zone, .. } => {
+                        let card = self.take_card(seat, zone, card.id);
+                        self.discard.push(card);
+                        self.queue_hero_losses(
+                            seat,
+                            usize::from(matches!(zone, Zone::Hand)),
+                            usize::from(matches!(zone, Zone::Equipment)),
+                        );
+                    }
+                    _ if self.resolving.contains(&card) => {
+                        let card = self.take_resolving(card.id);
+                        self.discard.push(card);
+                    }
+                    _ => {
+                        self.scheduler.end(Cancelled);
+                        return;
+                    }
+                }
                 self.finish();
             }
             (kind, child) => self.resolve_classic(event, kind, child, answer),
@@ -711,26 +815,6 @@ impl Game {
         }
     }
 
-    fn resolve_judge(&mut self, seat: SeatId, child: Option<Outcome<Resolution>>) {
-        match child {
-            None => {
-                let Some(cards) = self.reveal_cards(1) else {
-                    self.scheduler.end(Outcome::Cancelled);
-                    return;
-                };
-                let card = cards[0];
-                self.next(EventKind::Reveal { seat, card });
-                self.scheduler
-                    .after(Program::event(EventKind::Discard { card }));
-            }
-            Some(Outcome::Finished(Resolution::Revealed(card))) => {
-                self.scheduler
-                    .end(Outcome::Finished(Resolution::Judged(card)));
-            }
-            _ => unreachable!("a judge only waits for a revealed card"),
-        }
-    }
-
     fn resolve_damage(
         &mut self,
         source: Option<SeatId>,
@@ -738,16 +822,7 @@ impl Game {
         amount: u16,
         child: Option<Outcome<Resolution>>,
     ) {
-        match child {
-            None => self.queue_hp_change(target, -i32::from(amount)),
-            Some(Outcome::Finished(Resolution::HpChanged))
-                if self.classic.is_some()
-                    && self.seat(target).expect("the damage target exists").hp <= 0 =>
-            {
-                self.next(EventKind::Dying { source, target });
-            }
-            Some(_) => self.finish(),
-        }
+        self.resolve_card_damage(self.damage_context(source, target, amount, vec![]), child);
     }
 
     fn queue_hp_change(&mut self, target: SeatId, delta: i32) {

@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::classic_data::{Role, Side, Suit};
+use crate::SkillId;
 
 pub type SeatId = u32;
 pub type CardId = u32;
@@ -102,6 +103,11 @@ pub enum Action {
         cards: Vec<CardId>,
         targets: Vec<SeatId>,
     },
+    UseSkill {
+        skill: SkillId,
+        cards: Vec<CardId>,
+        targets: Vec<SeatId>,
+    },
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -121,6 +127,8 @@ pub struct GameView {
     pub choice: Option<ChoiceView>,
     pub actions: Vec<Action>,
     pub virtual_plays: Vec<VirtualPlay>,
+    pub skill_plays: Vec<SkillPlay>,
+    pub private_choice_cards: Vec<Card>,
     pub card_faces: Vec<CardFace>,
     /// Lifecycle records emitted since the latest accepted command, or during setup.
     pub events: Vec<GameEvent>,
@@ -216,6 +224,13 @@ pub struct ChoiceBranch {
 #[serde(rename_all = "camelCase")]
 pub struct VirtualPlay {
     pub kind: CardKind,
+    pub branch: ChoiceBranch,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SkillPlay {
+    pub skill: SkillId,
     pub branch: ChoiceBranch,
 }
 
@@ -332,6 +347,21 @@ pub enum EventKind {
         seat: SeatId,
         before: i32,
         after: i32,
+    },
+    LoseHp {
+        seat: SeatId,
+        amount: u16,
+    },
+    Skill {
+        seat: SeatId,
+        skill: SkillId,
+    },
+    Trigger {
+        seat: SeatId,
+    },
+    DiscardGroup {
+        seat: SeatId,
+        amount: usize,
     },
     Recover {
         seat: SeatId,

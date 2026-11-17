@@ -68,6 +68,7 @@ fn scene() -> Game {
         .collect();
     let mut game = Game::with_seats(seats, 0);
     game.classic = Some(Classic {
+        hero_turn: Default::default(),
         human: 0,
         lord: 0,
         deck: (100..120).map(|id| card(id, CardKind::Sha)).collect(),
@@ -343,4 +344,34 @@ fn virtual_duel_skips_wuxie_and_has_no_fabricated_card() {
     assert_eq!(game.seat(1).unwrap().hp, 3);
     assert!(game.seat(3).unwrap().hand.iter().any(|c| c.id == 42));
     assert!(!game.discard.iter().any(|c| c.id == 0));
+}
+
+#[test]
+fn lightning_material_is_available_to_jianxiong_until_damage_finishes() {
+    use crate::classic_data::{roster, Suit};
+    use crate::CardFace;
+    let mut game = scene();
+    game.seat_mut(0).hero = roster().iter().find(|g| g.id == "caocao");
+    let lightning = card(20, CardKind::Shandian);
+    game.seat_mut(0).judges.push(lightning);
+    game.classic.as_mut().unwrap().faces.push(CardFace {
+        id: 119,
+        suit: Suit::Spade,
+        rank: 5,
+    });
+    game.scheduler.start(game.trick_judgment(0, lightning));
+    game.run(None);
+    assert_eq!(game.seat(0).unwrap().hp, 1);
+    assert!(game.resolving.contains(&lightning));
+    let choice = game.view(Some(0)).unwrap().choice.unwrap();
+    let accept = choice
+        .branches
+        .iter()
+        .find(|b| b.label.contains("奸雄") && b.id != 0)
+        .unwrap()
+        .id;
+    select(&mut game, accept, vec![]);
+    assert!(game.seat(0).unwrap().hand.contains(&lightning));
+    assert!(!game.resolving.contains(&lightning));
+    assert!(!game.discard.contains(&lightning));
 }

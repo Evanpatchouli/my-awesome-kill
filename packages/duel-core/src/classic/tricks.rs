@@ -24,6 +24,8 @@ pub(crate) struct Trick {
 enum TrickStage {
     Start,
     AfterCosts,
+    BeginEffects,
+    BorrowedRequest,
     Counter {
         index: usize,
         passed: usize,
@@ -40,6 +42,7 @@ enum TrickStage {
     },
     Duel {
         actor: SeatId,
+        remaining: u8,
     },
     Select,
     Judgment,
@@ -76,16 +79,21 @@ impl Game {
             Wugu | Taoyuan => vec![living],
             Nanman | Wanjian => vec![others],
             Wuzhong | Shandian => vec![vec![seat]],
-            Juedou => others.into_iter().map(|target| vec![target]).collect(),
+            Juedou => others
+                .into_iter()
+                .filter(|target| self.hero_allows_target(*target, Juedou))
+                .map(|target| vec![target])
+                .collect(),
             Lebu => others
                 .into_iter()
                 .filter(|target| {
-                    !self
-                        .seat(*target)
-                        .expect("living target")
-                        .judges
-                        .iter()
-                        .any(|c| self.judgment_kind(*c) == Lebu)
+                    self.hero_allows_target(*target, Lebu)
+                        && !self
+                            .seat(*target)
+                            .expect("living target")
+                            .judges
+                            .iter()
+                            .any(|c| self.judgment_kind(*c) == Lebu)
                 })
                 .map(|target| vec![target])
                 .collect(),
@@ -93,7 +101,10 @@ impl Game {
                 .into_iter()
                 .filter(|target| {
                     let p = self.seat(*target).expect("living target");
-                    (card.kind != Shunshou || self.distance(seat, *target) == Ok(1))
+                    self.hero_allows_target(*target, card.kind)
+                        && (card.kind != Shunshou
+                            || self.hero_trick_unlimited_range(seat)
+                            || self.distance(seat, *target) == Ok(1))
                         && (!p.hand.is_empty() || !p.equipment.is_empty() || !p.judges.is_empty())
                 })
                 .map(|target| vec![target])
@@ -106,6 +117,7 @@ impl Game {
                         .filter(move |target| {
                             *target != holder
                                 && self.weapon(holder).is_some()
+                                && self.hero_allows_target(*target, Sha)
                                 && self.in_sha_range(holder, *target)
                         })
                         .map(move |target| vec![holder, target])
@@ -216,6 +228,31 @@ impl Game {
         })
     }
 
+    fn pass_lightning(&mut self, target: SeatId, material: Card) {
+        let next = self
+            .living_order_from(target)
+            .into_iter()
+            .skip(1)
+            .find(|id| {
+                !self
+                    .seat(*id)
+                    .expect("living seat")
+                    .judges
+                    .iter()
+                    .any(|card| self.judgment_kind(*card) == CardKind::Shandian)
+            });
+        if let Some(next) = next {
+            let card = self.take_card(target, Zone::Judgment, material.id);
+            self.put_in_judgment(next, card, CardKind::Shandian);
+        } else {
+            self.scheduler.next(Program::DiscardFrom {
+                seat: target,
+                zone: Zone::Judgment,
+                card: material,
+            });
+        }
+    }
+
     fn advance_trick(&mut self, mut flow: Trick) {
         flow.target_index = if flow.kind == CardKind::Jiedao {
             flow.targets.len()
@@ -248,20 +285,21 @@ impl Game {
         }
         match flow.stage.clone() {
             Start => {
-                if let Some(card) = flow.card {
-                    self.move_to_resolving(flow.seat, card.id);
-                } else {
-                    for card in &flow.costs {
-                        self.next(EventKind::UseCost {
-                            seat: flow.seat,
-                            card: *card,
-                        });
-                    }
-                }
+                self.queue_use_costs(flow.seat, &flow.costs);
                 flow.stage = AfterCosts;
                 self.scheduler.replace_current(Program::Trick(flow));
             }
             AfterCosts => {
+                if !matches!(flow.kind, Lebu | Shandian) {
+                    self.queue_hero_moment(super::skills::HeroMoment::UseTrick {
+                        seat: flow.seat,
+                        kind: flow.kind,
+                    });
+                }
+                flow.stage = BeginEffects;
+                self.scheduler.replace_current(Program::Trick(flow));
+            }
+            BeginEffects => {
                 if matches!(flow.kind, Lebu | Shandian) {
                     let target = flow.targets[0];
                     let material = flow.costs[0];
@@ -313,7 +351,13 @@ impl Game {
                 let order = self.living_order_from(self.active_seat);
                 if passed >= order.len() {
                     if negated {
-                        if flow.judgment {
+                        if flow.judgment && flow.kind == Shandian {
+                            self.pass_lightning(
+                                target,
+                                flow.card.expect("lightning has a physical card"),
+                            );
+                            self.finish();
+                        } else if flow.judgment {
                             self.scheduler.next(Program::DiscardFrom {
                                 seat: target,
                                 zone: Zone::Judgment,
@@ -373,7 +417,10 @@ impl Game {
                         self.scheduler.next(Program::respond(target, kind));
                     }
                     Juedou => {
-                        flow.stage = Duel { actor: target };
+                        flow.stage = Duel {
+                            actor: target,
+                            remaining: self.hero_response_count(flow.seat, Sha),
+                        };
                         self.scheduler.replace_current(Program::Trick(flow));
                         self.scheduler.next(Program::respond(target, Sha));
                     }
@@ -444,7 +491,19 @@ impl Game {
                     }
                     Jiedao => {
                         let victim = flow.targets[1];
-                        let branches = self.sha_use_branches(target, &[victim]);
+                        let mut branches = self.sha_use_branches(target, &[victim]);
+                        if self.hero_lord_request_available(target, Sha) {
+                            branches.push(ChoiceBranch {
+                                id: 1000,
+                                label: "激将".into(),
+                                cards: vec![],
+                                min_cards: 0,
+                                max_cards: 0,
+                                targets: vec![],
+                                min_targets: 0,
+                                max_targets: 0,
+                            });
+                        }
                         flow.stage = Select;
                         self.scheduler.replace_current(Program::Trick(flow));
                         self.scheduler.next(Program::Choose(ChoiceRequest {
@@ -458,22 +517,36 @@ impl Game {
             }
             Response { actor } => {
                 if !matches!(child, Some(Outcome::Finished(Resolution::Responded))) {
-                    self.next(EventKind::Damage {
-                        source: Some(flow.seat),
-                        target: actor,
-                        amount: 1,
-                    });
+                    self.scheduler.next(self.damage_program(
+                        Some(flow.seat),
+                        actor,
+                        1,
+                        Some(flow.kind),
+                        flow.costs.clone(),
+                    ));
                 }
                 self.advance_trick(flow);
             }
-            Duel { actor } => {
+            Duel { actor, remaining } => {
                 if matches!(child, Some(Outcome::Finished(Resolution::Responded))) {
+                    if remaining > 1 {
+                        flow.stage = Duel {
+                            actor,
+                            remaining: remaining - 1,
+                        };
+                        self.scheduler.replace_current(Program::Trick(flow));
+                        self.scheduler.next(Program::respond(actor, Sha));
+                        return;
+                    }
                     let next = if actor == flow.seat {
                         flow.targets[flow.target_index]
                     } else {
                         flow.seat
                     };
-                    flow.stage = Duel { actor: next };
+                    flow.stage = Duel {
+                        actor: next,
+                        remaining: self.hero_response_count(actor, Sha),
+                    };
                     self.scheduler.replace_current(Program::Trick(flow));
                     self.scheduler.next(Program::respond(next, Sha));
                 } else {
@@ -482,11 +555,13 @@ impl Game {
                     } else {
                         flow.seat
                     };
-                    self.next(EventKind::Damage {
-                        source: Some(source),
-                        target: actor,
-                        amount: 1,
-                    });
+                    self.scheduler.next(self.damage_program(
+                        Some(source),
+                        actor,
+                        1,
+                        Some(flow.kind),
+                        flow.costs.clone(),
+                    ));
                     self.advance_trick(flow);
                 }
             }
@@ -526,6 +601,11 @@ impl Game {
                             if flow.kind == Shunshou {
                                 let card = self.take_card(target, zone, card.id);
                                 self.put_in_hand(flow.seat, card);
+                                self.queue_hero_losses(
+                                    target,
+                                    usize::from(matches!(zone, Zone::Hand)),
+                                    usize::from(matches!(zone, Zone::Equipment)),
+                                );
                             } else {
                                 self.scheduler.next(Program::DiscardFrom {
                                     seat: target,
@@ -536,24 +616,22 @@ impl Game {
                         }
                     }
                     Jiedao => {
-                        if selection.branch == 0 {
+                        if selection.branch == 1000 {
+                            let request = self
+                                .hero_lord_request(target, Sha, vec![flow.targets[1]])
+                                .expect("offered lord request");
+                            flow.stage = BorrowedRequest;
+                            self.scheduler.replace_current(Program::Trick(flow));
+                            self.scheduler.next(request);
+                            return;
+                        } else if selection.branch == 0 {
                             if let Some(weapon) = self.weapon(target) {
                                 let card = self.take_card(target, Zone::Equipment, weapon.id);
                                 self.put_in_hand(flow.seat, card);
+                                self.queue_hero_losses(target, 0, 1);
                             }
                         } else {
-                            let cards = selection
-                                .cards
-                                .iter()
-                                .filter_map(|id| {
-                                    self.seat(target)
-                                        .ok()?
-                                        .hand
-                                        .iter()
-                                        .find(|c| c.id == *id)
-                                        .copied()
-                                })
-                                .collect();
+                            let cards = self.hero_cards_by_id(target, &selection.cards);
                             self.scheduler.next(self.attack_program(
                                 target,
                                 cards,
@@ -564,6 +642,21 @@ impl Game {
                     _ => {}
                 }
                 self.advance_trick(flow);
+            }
+            BorrowedRequest => {
+                if matches!(child, Some(Outcome::Finished(Resolution::Passed))) {
+                    let holder = flow.targets[0];
+                    let branches = self.sha_use_branches(holder, &[flow.targets[1]]);
+                    flow.stage = Select;
+                    self.scheduler.replace_current(Program::Trick(flow));
+                    self.scheduler.next(Program::Choose(ChoiceRequest {
+                        seat: holder,
+                        target: None,
+                        branches,
+                    }));
+                } else {
+                    self.advance_trick(flow);
+                }
             }
             Judgment => {
                 let target = flow.targets[0];
@@ -590,43 +683,20 @@ impl Game {
                         card: flow.card.expect("judgment has a physical card"),
                     });
                 } else if hit {
-                    self.scheduler.next(Program::DiscardFrom {
-                        seat: target,
-                        zone: Zone::Judgment,
-                        card: flow.card.expect("judgment has a physical card"),
-                    });
-                    self.next(EventKind::Damage {
-                        source: None,
+                    let material = flow.card.expect("lightning has a physical card");
+                    let material = self.take_card(target, Zone::Judgment, material.id);
+                    self.resolving.push(material);
+                    self.scheduler.next(self.damage_program(
+                        None,
                         target,
-                        amount: 3,
-                    });
+                        3,
+                        Some(Shandian),
+                        vec![material],
+                    ));
+                    self.scheduler
+                        .after(Program::event(EventKind::Discard { card: material }));
                 } else {
-                    let next = self
-                        .living_order_from(target)
-                        .into_iter()
-                        .skip(1)
-                        .find(|id| {
-                            !self
-                                .seat(*id)
-                                .expect("living seat")
-                                .judges
-                                .iter()
-                                .any(|card| self.judgment_kind(*card) == Shandian)
-                        });
-                    if let Some(next) = next {
-                        let card = self.take_card(
-                            target,
-                            Zone::Judgment,
-                            flow.card.expect("judgment has a physical card").id,
-                        );
-                        self.put_in_judgment(next, card, flow.kind);
-                    } else {
-                        self.scheduler.next(Program::DiscardFrom {
-                            seat: target,
-                            zone: Zone::Judgment,
-                            card: flow.card.expect("judgment has a physical card"),
-                        });
-                    }
+                    self.pass_lightning(target, flow.card.expect("lightning has a physical card"));
                 }
                 self.finish();
             }

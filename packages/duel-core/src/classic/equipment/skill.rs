@@ -140,13 +140,19 @@ impl Game {
                         }
                     }
                     CardKind::Guanshi => {
-                        for card in selection.cards {
-                            self.queue_equipment_discard(seat, card);
-                        }
+                        let costs = selection
+                            .cards
+                            .into_iter()
+                            .map(|id| {
+                                self.hero_card_zone(seat, id)
+                                    .expect("the selected cost is held")
+                            })
+                            .collect();
+                        self.queue_discard_batch(seat, costs);
                         self.scheduler.end(Outcome::Finished(Resolution::ForcedHit));
                     }
                     CardKind::Qinglong => {
-                        let cards = self.hand_cards_by_id(seat, &selection.cards);
+                        let cards = self.hero_cards_by_id(seat, &selection.cards);
                         self.scheduler
                             .next(self.attack_program(seat, cards, vec![target]));
                         self.finish();

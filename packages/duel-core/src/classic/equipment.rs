@@ -34,10 +34,10 @@ pub(crate) fn is_equipment(kind: CardKind) -> bool {
     slot(kind).is_some()
 }
 
-pub(crate) fn has_slot(seat: &Seat, wanted: Slot) -> bool {
+pub(crate) fn has_slot(seat: &Seat, wanted: Slot, ignored: Option<CardId>) -> bool {
     seat.equipment
         .iter()
-        .any(|card| slot(card.kind) == Some(wanted))
+        .any(|card| Some(card.id) != ignored && slot(card.kind) == Some(wanted))
 }
 
 #[derive(Clone)]
@@ -66,7 +66,7 @@ impl Flow {
             Self::ShaDamage(damage) => EventKind::Damage {
                 source: Some(damage.seat),
                 target: damage.target,
-                amount: 1,
+                amount: damage.amount,
             },
             Self::Response(response) => EventKind::Respond {
                 seat: response.seat,
@@ -108,7 +108,7 @@ impl Game {
     ) {
         match flow {
             Flow::Equip { seat, card } => self.resolve_equip(seat, card, child.is_none()),
-            Flow::Attack(attack) => self.resolve_attack(attack),
+            Flow::Attack(attack) => self.resolve_attack(attack, child),
             Flow::Target(target) => self.resolve_sha_target(target, child),
             Flow::ShaDamage(damage) => self.resolve_sha_damage(damage, child),
             Flow::Response(response) => self.resolve_response(response, child),
@@ -129,6 +129,7 @@ impl Game {
     fn resolve_equip(&mut self, seat: SeatId, card: Card, first: bool) {
         if first {
             self.move_to_resolving(seat, card.id);
+            self.queue_hero_losses(seat, 1, 0);
             let current = self.seat(seat).expect("the equipping seat exists");
             let old = current
                 .equipment
@@ -163,14 +164,24 @@ impl Game {
     }
 
     pub(crate) fn in_sha_range(&self, seat: SeatId, target: SeatId) -> bool {
-        let range = match self.weapon(seat).map(|card| card.kind) {
+        self.in_sha_range_without(seat, target, None)
+    }
+
+    pub(crate) fn in_sha_range_without(
+        &self,
+        seat: SeatId,
+        target: SeatId,
+        ignored: Option<CardId>,
+    ) -> bool {
+        let weapon = self.weapon(seat).filter(|card| Some(card.id) != ignored);
+        let range = match weapon.map(|card| card.kind) {
             Some(CardKind::Cixiong | CardKind::Qinggang) => 2,
             Some(CardKind::Qinglong | CardKind::Zhangba | CardKind::Guanshi) => 3,
             Some(CardKind::Fangtian) => 4,
             Some(CardKind::Qilin) => 5,
             _ => 1,
         };
-        self.distance(seat, target)
+        self.distance_without(seat, target, ignored)
             .is_ok_and(|distance| distance > 0 && distance <= range)
     }
 
@@ -181,6 +192,7 @@ impl Game {
             .expect("the table is classic")
             .sha_played
             || self.has_weapon(seat, CardKind::Zhuge)
+            || self.hero_unlimited_sha(seat)
     }
 
     pub(crate) fn physical_sha_uses(&self, player: &Seat, card: Card) -> Vec<PlannedUse> {
@@ -190,7 +202,9 @@ impl Game {
         let targets: Vec<_> = self
             .living_order_from(player.id)
             .into_iter()
-            .filter(|&seat| self.in_sha_range(player.id, seat))
+            .filter(|&seat| {
+                self.in_sha_range(player.id, seat) && self.hero_allows_target(seat, CardKind::Sha)
+            })
             .collect();
         let mut selections = Vec::new();
         let extra = self.has_weapon(player.id, CardKind::Fangtian) && player.hand.len() == 1;
@@ -215,22 +229,25 @@ impl Game {
     }
 
     pub(crate) fn virtual_plays(&self, seat: SeatId) -> Vec<VirtualPlay> {
+        let mut plays = self.hero_play_conversions(seat);
         let Ok(actor) = self.seat(seat) else {
-            return vec![];
+            return plays;
         };
         if actor.hand.len() < 2
             || !self.has_weapon(seat, CardKind::Zhangba)
             || !self.may_play_sha(seat)
         {
-            return vec![];
+            return plays;
         }
         let targets: Vec<_> = self
             .living_order_from(seat)
             .into_iter()
-            .filter(|&target| self.in_sha_range(seat, target))
+            .filter(|&target| {
+                self.in_sha_range(seat, target) && self.hero_allows_target(target, CardKind::Sha)
+            })
             .collect();
         if targets.is_empty() {
-            return vec![];
+            return plays;
         }
         let mut cost = branch(
             0,
@@ -241,10 +258,11 @@ impl Game {
         cost.targets = targets;
         cost.min_targets = 1;
         cost.max_targets = 1;
-        vec![VirtualPlay {
+        plays.push(VirtualPlay {
             kind: CardKind::Sha,
             branch: cost,
-        }]
+        });
+        plays
     }
 
     pub(crate) fn plan_virtual(
@@ -255,14 +273,33 @@ impl Game {
         targets: Vec<SeatId>,
     ) -> Result<Program, RuleError> {
         self.checked_play_seat(seat)?;
-        if !self
-            .virtual_plays(seat)
-            .iter()
-            .any(|play| play.kind == kind && Self::matches_branch(&play.branch, &ids, &targets))
-        {
+        if !self.virtual_plays(seat).iter().any(|play| {
+            play.kind == kind
+                && Self::matches_branch(&play.branch, &ids, &targets)
+                && (play.branch.id == 0 || self.hero_valid_conversion(seat, kind, &ids))
+        }) {
             return Err(RuleError::InvalidSelection);
         }
-        Ok(self.attack_program(seat, self.hand_cards_by_id(seat, &ids), targets))
+        self.virtual_program(seat, kind, self.hero_cards_by_id(seat, &ids), targets)
+    }
+
+    pub(crate) fn virtual_program(
+        &self,
+        seat: SeatId,
+        kind: CardKind,
+        cards: Vec<Card>,
+        targets: Vec<SeatId>,
+    ) -> Result<Program, RuleError> {
+        if kind == CardKind::Sha {
+            let targets = self
+                .living_order_from(seat)
+                .into_iter()
+                .filter(|target| targets.contains(target))
+                .collect();
+            Ok(self.attack_program(seat, cards, targets))
+        } else {
+            self.virtual_trick_program(seat, kind, cards, targets)
+        }
     }
 
     pub(crate) fn hand_cards_by_id(&self, seat: SeatId, ids: &[CardId]) -> Vec<Card> {
@@ -280,10 +317,9 @@ impl Game {
 
     pub(crate) fn sha_use_branches(&self, seat: SeatId, targets: &[SeatId]) -> Vec<ChoiceBranch> {
         let mut branches = vec![branch(0, "放弃", vec![], 0)];
-        if !targets
-            .iter()
-            .all(|&target| self.in_sha_range(seat, target))
-        {
+        if !targets.iter().all(|&target| {
+            self.in_sha_range(seat, target) && self.hero_allows_target(target, CardKind::Sha)
+        }) {
             return branches;
         }
         let actor = self.seat(seat).expect("the responding seat exists");
@@ -304,6 +340,18 @@ impl Game {
                 2,
             ));
         }
+        branches.extend(
+            self.hero_response_conversions(seat, CardKind::Sha)
+                .into_iter()
+                .filter_map(|mut branch| {
+                    branch.cards.retain(|card| {
+                        targets
+                            .iter()
+                            .all(|&target| self.in_sha_range_without(seat, target, Some(*card)))
+                    });
+                    (!branch.cards.is_empty()).then_some(branch)
+                }),
+        );
         branches
     }
 

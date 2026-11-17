@@ -1,9 +1,10 @@
+use super::skills::{HeroAdjustment, HeroMoment, HeroTurn};
 use super::MatchResult;
 use crate::classic_data::{self, Role};
 use crate::scheduler::{EventRef, Outcome};
 use crate::{
-    Answer, CardId, CardKind, ChoiceKind, ChoiceView, Decision, DrawReason, EventKind, Game, Phase,
-    Program, Resolution, SeatId, TurnView, Zone,
+    Answer, CardId, CardKind, ChoiceBranch, ChoiceKind, ChoiceRequest, ChoiceView, Decision,
+    DrawReason, EventKind, Game, Phase, Program, Resolution, SeatId, TurnView, Zone,
 };
 
 impl Game {
@@ -52,6 +53,7 @@ impl Game {
         let state = self.classic.as_mut().expect("the table is classic");
         state.turn = Some(turn);
         state.sha_played = false;
+        state.hero_turn = HeroTurn::default();
         state.skip_play = false;
         self.active_seat = turn.seat;
         self.scheduler.start(Program::event(EventKind::Turn {
@@ -87,7 +89,7 @@ impl Game {
             EventKind::Draw { seat, amount, .. } => self.resolve_draw(seat, amount),
             EventKind::Dying { source, target } => self.resolve_dying(source, target, child),
             EventKind::ChooseSave { seat, target } => {
-                self.resolve_save(event, seat, target, answer)
+                self.resolve_save(event, seat, target, child, answer)
             }
             EventKind::Death {
                 source,
@@ -145,6 +147,9 @@ impl Game {
             return;
         }
         match phase {
+            Phase::Preparation
+                if child.is_none() && self.queue_hero_moment(HeroMoment::Preparation { seat }) => {}
+            Phase::End if child.is_none() && self.queue_hero_moment(HeroMoment::End { seat }) => {}
             Phase::Judgment => {
                 if let Some(card) = self
                     .seat(seat)
@@ -158,13 +163,33 @@ impl Game {
                     self.finish_phase(phase);
                 }
             }
-            Phase::Draw if child.is_none() => self.next(EventKind::Draw {
-                seat,
-                amount: 2,
-                reason: DrawReason::Phase,
-            }),
+            Phase::Draw => match child {
+                None => {
+                    if !self.queue_hero_moment(HeroMoment::Draw { seat, amount: 2 }) {
+                        self.queue_draw(seat, 2, DrawReason::Phase);
+                    }
+                }
+                Some(Outcome::Finished(Resolution::Hero(HeroAdjustment::Draw(amount))))
+                    if amount > 0 =>
+                {
+                    self.queue_draw(seat, amount, DrawReason::Phase);
+                }
+                Some(_) => self.finish_phase(phase),
+            },
             Phase::Play => self.resolve_play(seat, answer),
-            Phase::Discard => self.resolve_discard_phase(event, seat, answer),
+            Phase::Discard => {
+                if matches!(
+                    child,
+                    Some(Outcome::Finished(Resolution::Hero(HeroAdjustment::Skip)))
+                ) {
+                    self.finish_phase(phase);
+                } else if child.is_some()
+                    || answer.is_some()
+                    || !self.queue_hero_moment(HeroMoment::Discard { seat })
+                {
+                    self.resolve_discard_phase(event, seat, answer);
+                }
+            }
             _ => self.finish_phase(phase),
         }
     }
@@ -179,6 +204,15 @@ impl Game {
             None => self.decision = Some(Decision::Play(seat)),
             Some(Answer::EndPlay) => self.finish_phase(Phase::Play),
             Some(Answer::Play(program)) => {
+                if !matches!(
+                    program.kind(),
+                    EventKind::Skill {
+                        skill: crate::SkillId::Jijiang,
+                        ..
+                    }
+                ) {
+                    self.note_hero_non_jijiang_play(seat);
+                }
                 if matches!(
                     program.kind(),
                     EventKind::UseSha { .. }
@@ -231,21 +265,12 @@ impl Game {
     }
 
     fn queue_hand_discards(&mut self, seat: SeatId, ids: &[CardId]) {
-        for id in ids {
-            let card = self
-                .seat(seat)
-                .expect("the seat exists")
-                .hand
-                .iter()
-                .find(|card| card.id == *id)
-                .copied()
-                .expect("the discarded cards were validated");
-            self.scheduler.next(Program::DiscardFrom {
-                seat,
-                zone: Zone::Hand,
-                card,
-            });
-        }
+        let cards = self
+            .hand_cards_by_id(seat, ids)
+            .into_iter()
+            .map(|card| (Zone::Hand, card))
+            .collect();
+        self.queue_discard_batch(seat, cards);
     }
 
     fn queue_zone_discards(&mut self, seat: SeatId, zones: &[Zone]) {
@@ -254,20 +279,19 @@ impl Game {
             .iter()
             .find(|player| player.id == seat)
             .expect("the seat exists");
-        for zone in zones.iter().copied() {
-            let cards = match zone {
-                Zone::Hand => &player.hand,
-                Zone::Equipment => &player.equipment,
-                Zone::Judgment => &player.judges,
-            };
-            for card in cards {
-                self.scheduler.next(Program::DiscardFrom {
-                    seat,
-                    zone,
-                    card: *card,
-                });
-            }
-        }
+        let cards = zones
+            .iter()
+            .copied()
+            .flat_map(|zone| {
+                let cards = match zone {
+                    Zone::Hand => &player.hand,
+                    Zone::Equipment => &player.equipment,
+                    Zone::Judgment => &player.judges,
+                };
+                cards.iter().copied().map(move |card| (zone, card))
+            })
+            .collect();
+        self.queue_discard_batch(seat, cards);
     }
 
     fn resolve_draw(&mut self, seat: SeatId, amount: u16) {
@@ -293,7 +317,8 @@ impl Game {
         target: SeatId,
         child: Option<Outcome<Resolution>>,
     ) {
-        if self.seat(target).expect("the dying seat exists").hp > 0
+        if self.match_result().is_some()
+            || self.seat(target).expect("the dying seat exists").hp > 0
             || matches!(child, Some(Outcome::Finished(Resolution::Complete)))
         {
             self.finish();
@@ -336,6 +361,7 @@ impl Game {
         event: EventRef,
         seat: SeatId,
         target: SeatId,
+        child: Option<Outcome<Resolution>>,
         answer: &mut Option<Answer>,
     ) {
         if self.seat(target).expect("the dying seat exists").hp > 0 {
@@ -343,8 +369,47 @@ impl Game {
                 .end(Outcome::Finished(Resolution::SavePassed(seat)));
             return;
         }
+        if let Some(Outcome::Finished(Resolution::Selected(selection))) = child {
+            if selection.branch == 0 {
+                self.scheduler
+                    .end(Outcome::Finished(Resolution::SavePassed(seat)));
+            } else {
+                let card = self.hero_cards_by_id(seat, &selection.cards)[0];
+                if selection.branch == 1 {
+                    self.next(EventKind::UseTao { seat, target, card });
+                } else {
+                    self.scheduler
+                        .next(Program::VirtualTao { seat, target, card });
+                }
+            }
+            return;
+        }
         match answer.take() {
-            None => self.ask_for_card(event, seat, ChoiceKind::Save, Some(target), CardKind::Tao),
+            None => {
+                let conversions = self.hero_response_conversions(seat, CardKind::Tao);
+                if conversions.is_empty() {
+                    self.ask_for_card(event, seat, ChoiceKind::Save, Some(target), CardKind::Tao);
+                } else {
+                    let mut branches = vec![save_branch(0, "放弃救援", vec![], 0)];
+                    let cards: Vec<_> = self
+                        .seat(seat)
+                        .expect("the saving actor exists")
+                        .hand
+                        .iter()
+                        .filter(|card| card.kind == CardKind::Tao)
+                        .map(|card| card.id)
+                        .collect();
+                    if !cards.is_empty() {
+                        branches.push(save_branch(1, "使用桃救援", cards, 1));
+                    }
+                    branches.extend(conversions);
+                    self.scheduler.next(Program::Choose(ChoiceRequest {
+                        seat,
+                        target: Some(target),
+                        branches,
+                    }));
+                }
+            }
             Some(Answer::Pass) => self
                 .scheduler
                 .end(Outcome::Finished(Resolution::SavePassed(seat))),
@@ -386,5 +451,18 @@ impl Game {
             }
         }
         self.finish();
+    }
+}
+
+fn save_branch(id: u32, label: &str, cards: Vec<CardId>, count: usize) -> ChoiceBranch {
+    ChoiceBranch {
+        id,
+        label: label.into(),
+        cards,
+        min_cards: count,
+        max_cards: count,
+        targets: vec![],
+        min_targets: 0,
+        max_targets: 0,
     }
 }

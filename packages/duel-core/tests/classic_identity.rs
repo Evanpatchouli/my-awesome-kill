@@ -2,8 +2,8 @@ use std::collections::HashSet;
 
 use duel_core::classic_data::{self, Role};
 use duel_core::{
-    Action, CardKind, ChoiceKind, Command, DrawReason, EventKind, EventStatus, Game, GameView,
-    Phase, RuleError,
+    Action, CardKind, ChoiceKind, Command, DrawReason, EventKind, EventStatus, Game, GameEvent,
+    GameView, Phase, RuleError,
 };
 
 fn command(view: &GameView, action: Action) -> Command {
@@ -19,6 +19,45 @@ fn discard_action(view: &GameView) -> Action {
     Action::Discard {
         event: choice.event,
         cards: choice.cards[..choice.min].to_vec(),
+    }
+}
+
+fn resolve_optional_content(game: &mut Game, events: &mut Vec<GameEvent>) {
+    loop {
+        let public = game.view(None).unwrap();
+        let Some(actor) = public.waiting_for else {
+            break;
+        };
+        let view = game.view(Some(actor)).unwrap();
+        let Some(choice) = view
+            .choice
+            .as_ref()
+            .filter(|choice| choice.kind == ChoiceKind::Content)
+        else {
+            break;
+        };
+        let branch = &choice.branches[0];
+        game.submit(command(
+            &view,
+            Action::Select {
+                event: choice.event,
+                branch: branch.id,
+                cards: branch
+                    .cards
+                    .iter()
+                    .take(branch.min_cards)
+                    .copied()
+                    .collect(),
+                targets: branch
+                    .targets
+                    .iter()
+                    .take(branch.min_targets)
+                    .copied()
+                    .collect(),
+            },
+        ))
+        .unwrap();
+        events.extend(game.view(None).unwrap().events);
     }
 }
 
@@ -94,6 +133,7 @@ fn discarding_is_versioned_and_atomic_across_a_complete_round() {
     let lord = initial.active_seat;
     let order = game.seat_order_from(lord).unwrap();
     let mut events = initial.events;
+    resolve_optional_content(&mut game, &mut events);
 
     for (index, seat) in order.iter().copied().enumerate() {
         let playing = game.view(Some(seat)).unwrap();
@@ -101,8 +141,9 @@ fn discarding_is_versioned_and_atomic_across_a_complete_round() {
         assert_eq!(playing.turn.unwrap().phase, Phase::Play);
         game.submit(command(&playing, Action::EndPlay)).unwrap();
 
+        events.extend(game.view(None).unwrap().events);
+        resolve_optional_content(&mut game, &mut events);
         let discarding = game.view(Some(seat)).unwrap();
-        events.extend(&discarding.events);
         let choice = discarding.choice.as_ref().unwrap();
         assert_eq!(choice.kind, ChoiceKind::Discard);
         assert!(choice.min >= 2);
@@ -136,8 +177,9 @@ fn discarding_is_versioned_and_atomic_across_a_complete_round() {
 
         game.submit(command(&discarding, discard_action(&discarding)))
             .unwrap();
+        events.extend(game.view(None).unwrap().events);
+        resolve_optional_content(&mut game, &mut events);
         let next = game.view(Some(seat)).unwrap();
-        events.extend(&next.events);
         assert_eq!(
             next.seats[seat as usize].hand_count,
             next.seats[seat as usize].hp as usize
@@ -321,11 +363,11 @@ fn seeded_identity_games_reach_terminal_and_conserve_physical_cards() {
             let public = game.view(None).unwrap();
             records += public.events.len();
             assert!(
-                public.events.len() <= 60,
+                public.events.len() <= 256,
                 "one batch grew to {} records",
                 public.events.len()
             );
-            assert!(serde_json::to_vec(&public).unwrap().len() < 16 * 1024);
+            assert!(serde_json::to_vec(&public).unwrap().len() < 48 * 1024);
             if public.winner.is_some() || public.drawn {
                 break;
             }
