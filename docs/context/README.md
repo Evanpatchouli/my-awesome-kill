@@ -13,10 +13,12 @@
 
 ## 模块索引
 
-仓库目前尚无应用代码或测试入口。随着项目形成稳定模块后再维护模块索引；以下是规划文档入口，均描述待实现目标。
+P1 运行入口在 apps/game，纯规则与确定性测试在 packages/rules。
 
 | 领域 | 相关文档 | 检索关键词 |
 | --- | --- | --- |
+| 双人规则与牌堆 | [P1 对局契约](../specs/classic-duel.md) | createMatch、standardDeck、trickPlayable、attack、judgePhase |
+| 运行与验证 | [启动](../runbooks/development.md)、[验证](../runbooks/testing.md) | Tauri、pnpm、战绩、种子 |
 | 产品方向与平台 | [产品愿景](../specs/product-vision.md) | 单机、自定义卡牌、Android、横屏 |
 | 技术选型与动效 | [目标架构](../architecture/target-architecture.md) | Tauri、Vue、SQLite、Tailwind、GSAP、motion |
 | 阶段目标 | [路线图](../roadmap/roadmap.md) | MVP、游戏模式 |

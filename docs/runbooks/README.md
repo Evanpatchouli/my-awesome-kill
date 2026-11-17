@@ -1,12 +1,5 @@
-# Runbooks
+# 运行手册
 
-保存可重复执行的开发、测试、部署、排障与恢复步骤。
-
-当前应用尚未实现，下列文档是待补充的模板，不包含可执行流程。
-
-入口：
-- `development.md`
-- `testing.md`
-- `deployment.md`
-
-命令或流程发生变化时同步更新；不要保留已经无法运行的历史命令。
+- [启动、原生环境与存储](development.md)
+- [规则测试、性能与真实入口验证](testing.md)
+- [Windows 与 Android 制品](deployment.md)
