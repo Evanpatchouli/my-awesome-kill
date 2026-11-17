@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import { readFile, writeFile } from 'node:fs/promises';
+import { installTriggerOrderScenario } from './reference-trigger-order-cancel.mjs';
 
 // This is an optional oracle runner. It needs a running, separate upstream dev
 // server and Playwright; neither is a runtime dependency of the game.
@@ -25,6 +26,13 @@ const sourceHashes = {
 };
 
 const argv = process.argv.slice(2);
+let scenario = 'sha-no-shan';
+const scenarioIndex = argv.indexOf('--scenario');
+if (scenarioIndex !== -1) {
+  scenario = argv[scenarioIndex + 1];
+  argv.splice(scenarioIndex, 2);
+}
+if (!['sha-no-shan', 'trigger-order-cancel'].includes(scenario)) throw new Error(`Unknown scenario: ${scenario}`);
 if (argv.length && (argv.length !== 2 || !['--check', '--write'].includes(argv[0]))) {
   throw new Error('Usage: node scripts/reference-trace.mjs [--check|--write path]');
 }
@@ -49,6 +57,8 @@ try {
     localStorage.setItem('noname_0.9_directstart', 'true');
     localStorage.setItem('noname_0.9_disable_extension', 'true');
   });
+
+  await context.addInitScript({ content: `window.__installTriggerOrderScenario = ${installTriggerOrderScenario.toString()};` });
 
   const page = await context.newPage();
   page.on('pageerror', error => errors.push(error.stack || error.message));
@@ -75,7 +85,7 @@ try {
   await page.getByText('跳过向导', { exact: true }).first().click({ timeout: 45000 });
   await page.locator('.button.character.selectable').first().waitFor({ state: 'visible', timeout: 45000 });
 
-  await page.evaluate(async () => {
+  await page.evaluate(async scenario => {
     const { lib, game, ui, get, _status } = await import('/noname.js');
     window.__referenceStages = ['fixture installed'];
 
@@ -147,21 +157,41 @@ try {
             throw new Error(`Invalid scenario setup: ${JSON.stringify(setup)}`);
           }
 
+          const scenarioFixture = scenario === 'trigger-order-cancel'
+            ? await window.__installTriggerOrderScenario({ actor, target, game, lib }) : null;
           const labels = player => player === actor ? 'A' : player === target ? 'B' : player ? 'other' : null;
           const events = [];
           const proto = lib.element.GameEvent.prototype;
           const originalTrigger = proto.trigger;
           proto.trigger = function (name) {
-            events.push([
+            const row = [
               name, this.name, labels(this.player), labels(this.source), labels(this.target),
               target.hp, get.position(card, true),
-            ]);
+            ];
+            if (scenario === 'trigger-order-cancel') row.push(this.getParent()?.name || null);
+            events.push(row);
             return originalTrigger.apply(this, arguments);
           };
           try {
             await actor.useCard(card, target);
           } finally {
             proto.trigger = originalTrigger;
+          }
+          if (scenario === 'trigger-order-cancel') {
+            const { material, skillSequence, filterResults } = scenarioFixture;
+            const choiceEvent = scenarioFixture.getChoiceEvent();
+            const choice = choiceEvent && { player: labels(choiceEvent.player), options: choiceEvent.controls.slice(), result: { control: choiceEvent.result.control, index: choiceEvent.result.index }, parent: choiceEvent.getParent()?.name || null };
+            const final = { targetHp: target.hp, cardPosition: get.position(card, true), inDiscard: ui.discardPile.contains(card), materialPosition: get.position(material, true), materialInDiscard: ui.discardPile.contains(material), useCount: actor.getStat('card').sha };
+            const hooks = events.map(row => row[0]);
+            if (!choice || choice.result.index !== 1 || !filterResults.includes(true) || !filterResults.includes(false) || skillSequence.map(item => item.skill).join(',') !== 'first,beta,alpha,cost,target,last' ||
+                !hooks.includes('damageCancelled') || hooks.includes('damageEnd') || hooks.includes('damageAfter') ||
+                !hooks.includes('useCardAfter') || !events.some(row => row[0] === 'cardsDiscardEnd' && row[7] === 'orderingDiscard') ||
+                final.targetHp !== 4 || final.useCount !== 1 || !final.inDiscard || !final.materialInDiscard) {
+              throw new Error(`Invalid cancellation trace: ${JSON.stringify({ choice, skillSequence, final })}`);
+            }
+            window.__referenceResult = { setup, skillSequence, filterResults, choice, eventColumns: ['hook', 'event', 'player', 'source', 'target', 'targetHp', 'cardPosition', 'parent'], events, final };
+            game.pause();
+            return;
           }
           window.__referenceResult = {
             setup,
@@ -186,9 +216,16 @@ try {
       game.finishSkill(skill);
       game.addGlobalSkill(skill);
     }
-  });
+  }, scenario);
 
   await page.locator('.button.character.selectable').first().click({ timeout: 45000 });
+  if (scenario === 'trigger-order-cancel') {
+    void (async () => {
+      try {
+        await page.locator('.control').getByText('Beta', { exact: true }).first().click({ timeout: 85000 });
+      } catch { /* AI choice or scenario completion requires no click. */ }
+    })();
+  }
   try {
     await page.waitForFunction(() => window.__referenceResult || window.__referenceError, null, { timeout: 90000 });
   } catch (error) {
@@ -201,14 +238,14 @@ try {
   const captured = await page.evaluate(() => ({ value: window.__referenceResult, error: window.__referenceError }));
   if (captured.error) throw new Error(captured.error);
   assert.deepEqual(errors, [], 'Upstream page errors occurred');
-  assert.deepEqual(captured.value.final, {
+  if (scenario === 'sha-no-shan') assert.deepEqual(captured.value.final, {
     targetHp: 3, cardPosition: 'd', inActorHand: false, inDiscard: true, useCount: 1, targetAlive: true,
   });
   result = {
     schema: 'noname-reference-trace-v1',
     referenceCommit: commit,
     mode: 'identity',
-    scenario: 'ordinary physical sha against an adjacent AI target with no shan',
+    scenario: scenario === 'sha-no-shan' ? 'ordinary physical sha against an adjacent AI target with no shan' : 'damage trigger ordering, cost, and cancellation for physical sha',
     ...captured.value,
   };
 } finally {
