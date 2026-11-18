@@ -10,6 +10,7 @@ import { checkCompareBoundaries, installCompareBoundaries } from './reference-co
 import { checkReferenceHp, installReferenceHp } from './reference-hp.mjs';
 import { checkReferenceExpansion, installReferenceExpansion } from './reference-expansion.mjs';
 import { checkZhongyiBoundaries, installZhongyiBoundaries } from './reference-zhongyi-boundaries.mjs';
+import { checkZhongyiTransitDeath, installZhongyiTransitDeath } from './reference-zhongyi-transit-death.mjs';
 
 // This is an optional oracle runner. It needs a running, separate upstream dev
 // server and Playwright; neither is a runtime dependency of the game.
@@ -45,6 +46,7 @@ const descriptions = new Map([
   ['compare-boundaries', 'hidden hand knowledge and cancellation of paid pindian cards'],
   ['zhongyi-expansion', 'zhongyi expansion, limited use and cleanup at the next round'],
   ['zhongyi-boundaries', 'active zhongyi, expansion interruptions, holder death and stacked damage'],
+  ['zhongyi-transit-death', 'holder death during zhongyi material transit through the public special pile'],
   ['damage-callback-cancel', 'damage callback cancellation after HP change for physical sha'],
   ['hp-cancel', 'cancelling changeHpBefore and changeHpEnd during a linked armored fire sha'],
 ]);
@@ -59,13 +61,19 @@ if (argv.length && (argv.length !== 2 || !['--check', '--write'].includes(argv[0
   throw new Error('Usage: node scripts/reference-trace.mjs [--scenario name] [--check|--write path]');
 }
 const isRecast = scenario === 'tiesuo-recast' || scenario === 'recast-callbacks';
-if (['zhongyi-expansion', 'zhongyi-boundaries', 'qiaoshui-targets'].includes(scenario)) {
+if (['zhongyi-expansion', 'zhongyi-boundaries', 'zhongyi-transit-death', 'qiaoshui-targets'].includes(scenario)) {
   sourceHashes['/character/standard/skill.js'] = 'ee769399395b93f3d8293cd5b880b8e708864329bd0d79a0b4f0d8bd6f855a9e';
 }
 if (isRecast || ['linked-damage', 'qiaoshui-targets'].includes(scenario)) sourceHashes['/card/extra.js'] = '8a73678a49b4fc413d6dc0d506733e594fae619d91dc8013cd441a6cd107c35d';
-if (['recast-callbacks', 'compare', 'compare-boundaries', 'zhongyi-boundaries'].includes(scenario)) sourceHashes['/noname/library/element/card.js'] = '5d3a07fadafa1c5661ec197edb8c71f613b3db1129933fdf7d8aa311f5811f8d';
-if (scenario === 'zhongyi-boundaries') {
+if (['recast-callbacks', 'compare', 'compare-boundaries', 'zhongyi-boundaries', 'zhongyi-transit-death'].includes(scenario)) sourceHashes['/noname/library/element/card.js'] = '5d3a07fadafa1c5661ec197edb8c71f613b3db1129933fdf7d8aa311f5811f8d';
+if (['zhongyi-boundaries', 'zhongyi-transit-death'].includes(scenario)) {
   sourceHashes['/noname/get/index.js'] = '8515ed7242d2638720180507a778cb273d8f33743eac12c5237d2f50e805823d';
+}
+if (scenario === 'zhongyi-transit-death') {
+  sourceHashes['/noname/library/element/GameEvent/compilers/ContentCompilerBase.ts'] = 'ea0174cdbc2ce664532335df11e120efa45b5c35253ecba5f28a73e0271c6cee';
+  sourceHashes['/noname/library/element/GameEvent/compilers/ArrayCompiler.ts'] = '78d495e8871751bc38749775c1b402f810e234547ab4e6a12565160d4950853e';
+}
+if (scenario === 'zhongyi-boundaries') {
   sourceHashes['/noname/ai/basic.js'] = 'c32e43e690563d685929838635a40878baeb3333f52a2f585638fbe37655d83d';
   sourceHashes['/noname/game/check.js'] = '802b65210f6dc7eb76e22af82e8f95706b445f9c3b15c297750f6202ec287c9d';
   sourceHashes['/noname/ui/click/index.js'] = '6c85a0c7a1ecf7bc23534349fb82de18a1c2f436b882189dae5341fa5e6d69e1';
@@ -107,6 +115,8 @@ try {
     await context.addInitScript(installReferenceExpansion);
   } else if (scenario === 'zhongyi-boundaries') {
     await context.addInitScript(installZhongyiBoundaries);
+  } else if (scenario === 'zhongyi-transit-death') {
+    await context.addInitScript(installZhongyiTransitDeath);
   } else if (scenario === 'compare-boundaries') {
     await context.addInitScript(installCompareBoundaries);
   } else if (scenario === 'compare') {
@@ -184,6 +194,7 @@ try {
             'linked-damage': window.__runReferenceLinkedDamage,
             'zhongyi-expansion': window.__runReferenceExpansion,
             'zhongyi-boundaries': window.__runZhongyiBoundaries,
+            'zhongyi-transit-death': window.__runZhongyiTransitDeath,
             'compare-boundaries': window.__runCompareBoundaries,
           };
           const run = multiTurn[scenario];
@@ -350,6 +361,7 @@ try {
   if (scenario === 'compare-boundaries') checkCompareBoundaries(captured.value);
   if (scenario === 'zhongyi-expansion') checkReferenceExpansion(captured.value);
   if (scenario === 'zhongyi-boundaries') checkZhongyiBoundaries(captured.value);
+  if (scenario === 'zhongyi-transit-death') checkZhongyiTransitDeath(captured.value);
   if (scenario === 'recast-callbacks') checkReferenceRecastCallbacks(captured.value);
   if (scenario === 'sha-no-shan') assert.deepEqual(captured.value.final, {
     targetHp: 3, cardPosition: 'd', inActorHand: false, inDiscard: true, useCount: 1, targetAlive: true,

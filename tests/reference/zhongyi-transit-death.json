@@ -1,0 +1,83 @@
+{
+  "schema": "noname-reference-trace-v1",
+  "referenceCommit": "c73270948d72949aa80009536b9fd5400767d091",
+  "mode": "identity",
+  "scenario": "holder death during zhongyi material transit through the public special pile",
+  "material": [
+    "qinggang",
+    "spade",
+    6
+  ],
+  "slots": 8,
+  "remainingPlayers": 7,
+  "turnOwner": "current-turn",
+  "gameOver": false,
+  "holderIsLord": false,
+  "before": {
+    "zone": "e",
+    "owner": "holder",
+    "parentNode": null,
+    "special": false,
+    "discard": false,
+    "ordering": false,
+    "equipped": true,
+    "inExpansion": false,
+    "knownToSpectator": true,
+    "alive": true,
+    "tag": false,
+    "mark": false,
+    "buff": false,
+    "spent": false,
+    "disabled": false
+  },
+  "after": {
+    "zone": "s",
+    "owner": null,
+    "parentNode": "special",
+    "special": true,
+    "discard": false,
+    "ordering": false,
+    "equipped": false,
+    "inExpansion": false,
+    "knownToSpectator": true,
+    "alive": false,
+    "tag": false,
+    "mark": false,
+    "buff": false,
+    "spent": true,
+    "disabled": true
+  },
+  "outer": {
+    "finished": true,
+    "cancelled": false,
+    "forceDie": false,
+    "result": null,
+    "hasMaterial": true
+  },
+  "use": {
+    "finished": true,
+    "cancelled": false,
+    "forceDie": true,
+    "result": null,
+    "hasMaterial": true
+  },
+  "events": [
+    {"kind":"request","timing":"useSkillBegin","event":"useSkill","parent":"reference_fixture_use","zone":"e","owner":"holder","parentNode":null,"special":false,"discard":false,"ordering":false,"equipped":true,"inExpansion":false,"knownToSpectator":true,"alive":true,"tag":false,"mark":false,"buff":false,"spent":false,"disabled":false},
+    {"kind":"request","timing":"addToExpansionBefore","event":"addToExpansion","parent":"zhongyi","zone":"e","owner":"holder","parentNode":null,"special":false,"discard":false,"ordering":false,"equipped":true,"inExpansion":false,"knownToSpectator":true,"alive":true,"tag":false,"mark":false,"buff":true,"spent":true,"disabled":true,"expansion":{"finished":false,"cancelled":false,"forceDie":false,"result":null,"hasMaterial":true}},
+    {"kind":"request","timing":"addToExpansionBegin","event":"addToExpansion","parent":"zhongyi","zone":"e","owner":"holder","parentNode":null,"special":false,"discard":false,"ordering":false,"equipped":true,"inExpansion":false,"knownToSpectator":true,"alive":true,"tag":false,"mark":false,"buff":true,"spent":true,"disabled":true,"expansion":{"finished":false,"cancelled":false,"forceDie":false,"result":null,"hasMaterial":true}},
+    {"kind":"request","timing":"loseBefore","event":"lose","parent":"addToExpansion","zone":"e","owner":"holder","parentNode":null,"special":false,"discard":false,"ordering":false,"equipped":true,"inExpansion":false,"knownToSpectator":true,"alive":true,"tag":false,"mark":false,"buff":true,"spent":true,"disabled":true},
+    {"kind":"request","timing":"loseAfter","event":"lose","parent":"addToExpansion","zone":"s","owner":null,"parentNode":"special","special":true,"discard":false,"ordering":false,"equipped":false,"inExpansion":false,"knownToSpectator":true,"alive":true,"tag":false,"mark":false,"buff":true,"spent":true,"disabled":true},
+    {"kind":"callback","timing":"loseAfter","event":"lose","parent":"addToExpansion","zone":"s","owner":null,"parentNode":"special","special":true,"discard":false,"ordering":false,"equipped":false,"inExpansion":false,"knownToSpectator":true,"alive":true,"tag":false,"mark":false,"buff":true,"spent":true,"disabled":true},
+    {"kind":"request","timing":"dieBefore","event":"die","parent":"reference_zhongyi_transit_death","zone":"s","owner":null,"parentNode":"special","special":true,"discard":false,"ordering":false,"equipped":false,"inExpansion":false,"knownToSpectator":true,"alive":true,"tag":false,"mark":false,"buff":true,"spent":true,"disabled":true},
+    {"kind":"request","timing":"die","event":"die","parent":"reference_zhongyi_transit_death","zone":"s","owner":null,"parentNode":"special","special":true,"discard":false,"ordering":false,"equipped":false,"inExpansion":false,"knownToSpectator":true,"alive":false,"tag":false,"mark":false,"buff":true,"spent":true,"disabled":true},
+    {"kind":"callback","timing":"die","event":"die","parent":"reference_zhongyi_transit_death","zone":"s","owner":null,"parentNode":"special","special":true,"discard":false,"ordering":false,"equipped":false,"inExpansion":false,"knownToSpectator":true,"alive":false,"tag":false,"mark":false,"buff":true,"spent":true,"disabled":true},
+    {"kind":"request","timing":"dieAfter","event":"die","parent":"reference_zhongyi_transit_death","zone":"s","owner":null,"parentNode":"special","special":true,"discard":false,"ordering":false,"equipped":false,"inExpansion":false,"knownToSpectator":true,"alive":false,"tag":false,"mark":false,"buff":false,"spent":true,"disabled":true},
+    {"kind":"callback","timing":"dieAfter","event":"die","parent":"reference_zhongyi_transit_death","zone":"s","owner":null,"parentNode":"special","special":true,"discard":false,"ordering":false,"equipped":false,"inExpansion":false,"knownToSpectator":true,"alive":false,"tag":false,"mark":false,"buff":false,"spent":true,"disabled":true},
+    {"kind":"callback","timing":"returned-from-die","event":"lose","parent":"addToExpansion","zone":"s","owner":null,"parentNode":"special","special":true,"discard":false,"ordering":false,"equipped":false,"inExpansion":false,"knownToSpectator":true,"alive":false,"tag":false,"mark":false,"buff":false,"spent":true,"disabled":true},
+    {"kind":"request","timing":"addToExpansionEnd","event":"addToExpansion","parent":"zhongyi","zone":"s","owner":null,"parentNode":"special","special":true,"discard":false,"ordering":false,"equipped":false,"inExpansion":false,"knownToSpectator":true,"alive":false,"tag":false,"mark":false,"buff":false,"spent":true,"disabled":true,"expansion":{"finished":true,"cancelled":false,"forceDie":false,"result":null,"hasMaterial":true}},
+    {"kind":"request","timing":"addToExpansionAfter","event":"addToExpansion","parent":"zhongyi","zone":"s","owner":null,"parentNode":"special","special":true,"discard":false,"ordering":false,"equipped":false,"inExpansion":false,"knownToSpectator":true,"alive":false,"tag":false,"mark":false,"buff":false,"spent":true,"disabled":true,"expansion":{"finished":true,"cancelled":false,"forceDie":false,"result":null,"hasMaterial":true}},
+    {"kind":"callback","timing":"addToExpansionAfter","event":"addToExpansion","parent":"zhongyi","zone":"s","owner":null,"parentNode":"special","special":true,"discard":false,"ordering":false,"equipped":false,"inExpansion":false,"knownToSpectator":true,"alive":false,"tag":false,"mark":false,"buff":false,"spent":true,"disabled":true,"expansion":{"finished":true,"cancelled":false,"forceDie":false,"result":null,"hasMaterial":true}},
+    {"kind":"request","timing":"useSkillEnd","event":"useSkill","parent":"reference_fixture_use","zone":"s","owner":null,"parentNode":"special","special":true,"discard":false,"ordering":false,"equipped":false,"inExpansion":false,"knownToSpectator":true,"alive":false,"tag":false,"mark":false,"buff":false,"spent":true,"disabled":true},
+    {"kind":"request","timing":"useSkillAfter","event":"useSkill","parent":"reference_fixture_use","zone":"s","owner":null,"parentNode":"special","special":true,"discard":false,"ordering":false,"equipped":false,"inExpansion":false,"knownToSpectator":true,"alive":false,"tag":false,"mark":false,"buff":false,"spent":true,"disabled":true}
+  ]
+}
