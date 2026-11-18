@@ -20,6 +20,8 @@
 
 `choices` 来自法恩的真实 `chooseBool` 结果。`effects` 通过原版内容执行回调记录铁索的横置变化和法恩实际摸到的牌。`events` 只收集所列相关时机，`request` 是调用 `GameEvent.trigger` 当时的状态，`callback` 是首个观察技能执行时的状态。两者之间的子事件可以改变体力、护甲和横置状态。
 
+`recast-callbacks.json` 在同样的局面注册上游观察技能，把时机请求、创建移牌子事件的函数调用、实际技能回调分别记录到一条时间线。请求 `recastingLost` 时材料仍在 A 手中，技能执行时材料已进入弃牌堆或 B 手牌。普通摸到的桃只对 A 可见，显式 `gain2` 获得的闪在 A 手牌中也为第三席所知。两种中断有独立实测：在 `recast` 时机取消保留已弃的材料，获得函数虽被调用，替代牌仍留在牌堆；在 `loseBefore` 将材料转交给 B 时，外层重铸继续摸牌。可检查 `subjectCards`、各席位置以及 `interrupted` 终态。
+
 ## 复现
 
 1. 在独立临时目录检出上述上游提交，保留 `apps/core`、`packages/fs`、`packages/jit` 和根目录的 `scripts`；可从本机 `.reference/noname` 用 `git clone --shared --sparse` 复用已有对象。通过 `git rev-parse HEAD` 确认提交。不要在项目运行时依赖该参考检出。
@@ -32,7 +34,8 @@
    node scripts/reference-trace.mjs --scenario trigger-order-cancel --check tests/reference/trigger-order-cancel.json
    node scripts/reference-trace.mjs --scenario damage-callback-cancel --check tests/reference/damage-callback-cancel.json
    node scripts/reference-trace.mjs --scenario tiesuo-recast --check tests/reference/tiesuo-recast.json
+   node scripts/reference-trace.mjs --scenario recast-callbacks --check tests/reference/recast-callbacks.json
    node scripts/reference-trace.mjs --scenario linked-damage --check tests/reference/linked-damage.json
    ```
 
-运行器在隔离浏览器内核对八个共同上游源文件的 LF 归一化 SHA-256。重铸和连环伤害场景还校验 `card/extra.js`，连环伤害另校验 `character/yijiang/skill.js`。随后执行场景并逐项比较事件和结果。整个检出的版本由第 1 步确认。`--write <path>` 用于重新采集，默认将结果写至标准输出。
+运行器在隔离浏览器内核对八个共同上游源文件的 LF 归一化 SHA-256。重铸和连环伤害场景还校验 `card/extra.js`，重铸知情状态另核对 `element/card.js`，连环伤害另校验 `character/yijiang/skill.js`。随后执行场景并逐项比较事件和结果。整个检出的版本由第 1 步确认。`--write <path>` 用于重新采集，默认将结果写至标准输出。

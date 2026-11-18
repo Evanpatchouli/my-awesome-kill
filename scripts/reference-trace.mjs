@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import { readFile, writeFile } from 'node:fs/promises';
 import { installTriggerOrderScenario } from './reference-trigger-order-cancel.mjs';
-import { installReferenceRecast } from './reference-recast.mjs';
+import { checkReferenceRecastCallbacks, installReferenceRecast } from './reference-recast.mjs';
 import { checkReferenceLinkedDamage, installReferenceLinkedDamage } from './reference-linked-damage.mjs';
 
 // This is an optional oracle runner. It needs a running, separate upstream dev
@@ -32,6 +32,7 @@ const descriptions = new Map([
   ['sha-no-shan', 'ordinary physical sha against an adjacent AI target with no shan'],
   ['trigger-order-cancel', 'damage trigger ordering, cost, and cancellation for physical sha'],
   ['tiesuo-recast', 'default and custom loss and gain when recasting a physical tiesuo'],
+  ['recast-callbacks', 'executed loss and gain callbacks when recasting a physical tiesuo'],
   ['linked-damage', 'tiesuo, faen, armor, and fire sha propagation across three turns'],
   ['damage-callback-cancel', 'damage callback cancellation after HP change for physical sha'],
 ]);
@@ -45,8 +46,9 @@ if (!descriptions.has(scenario)) throw new Error(`Unknown scenario: ${scenario}`
 if (argv.length && (argv.length !== 2 || !['--check', '--write'].includes(argv[0]))) {
   throw new Error('Usage: node scripts/reference-trace.mjs [--scenario name] [--check|--write path]');
 }
-const isRecast = scenario === 'tiesuo-recast';
+const isRecast = scenario === 'tiesuo-recast' || scenario === 'recast-callbacks';
 if (isRecast || scenario === 'linked-damage') sourceHashes['/card/extra.js'] = '8a73678a49b4fc413d6dc0d506733e594fae619d91dc8013cd441a6cd107c35d';
+if (scenario === 'recast-callbacks') sourceHashes['/noname/library/element/card.js'] = '5d3a07fadafa1c5661ec197edb8c71f613b3db1129933fdf7d8aa311f5811f8d';
 if (scenario === 'linked-damage') sourceHashes['/character/yijiang/skill.js'] = '5b0eb965a8428535bf3cd7d369c261b8ad95cccbeac8d8c817cad3490643a54f';
 
 const browser = await chromium.launch({ headless: true, executablePath });
@@ -149,8 +151,10 @@ try {
             }
             return;
           }
-          if (scenario === 'tiesuo-recast') {
-            window.__referenceResult = await window.__runReferenceRecast({ lib, game, ui, get, actor, target });
+          if (scenario === 'tiesuo-recast' || scenario === 'recast-callbacks') {
+            window.__referenceResult = await window.__runReferenceRecast({
+              lib, game, ui, get, actor, target, observeCallbacks: scenario === 'recast-callbacks',
+            });
             game.pause();
             return;
           }
@@ -289,6 +293,7 @@ try {
   if (captured.error) throw new Error(captured.error);
   assert.deepEqual(errors, [], 'Upstream page errors occurred');
   if (scenario === 'linked-damage') checkReferenceLinkedDamage(captured.value);
+  if (scenario === 'recast-callbacks') checkReferenceRecastCallbacks(captured.value);
   if (scenario === 'sha-no-shan') assert.deepEqual(captured.value.final, {
     targetHp: 3, cardPosition: 'd', inActorHand: false, inDiscard: true, useCount: 1, targetAlive: true,
   });
