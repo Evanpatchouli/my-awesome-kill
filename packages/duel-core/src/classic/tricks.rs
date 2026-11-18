@@ -609,11 +609,7 @@ impl Game {
                             if flow.kind == Shunshou {
                                 let card = self.take_card(target, zone, card.id);
                                 self.put_in_hand(flow.seat, card);
-                                self.queue_hero_losses(
-                                    target,
-                                    usize::from(matches!(zone, Zone::Hand)),
-                                    usize::from(matches!(zone, Zone::Equipment)),
-                                );
+                                self.queue_hero_losses(target, vec![(zone, card)]);
                             } else {
                                 self.scheduler.next(Program::DiscardFrom {
                                     seat: target,
@@ -636,7 +632,7 @@ impl Game {
                             if let Some(weapon) = self.weapon(target) {
                                 let card = self.take_card(target, Zone::Equipment, weapon.id);
                                 self.put_in_hand(flow.seat, card);
-                                self.queue_hero_losses(target, 0, 1);
+                                self.queue_hero_losses(target, vec![(Zone::Equipment, card)]);
                             }
                         } else {
                             let cards = self.hero_cards_by_id(target, &selection.cards);

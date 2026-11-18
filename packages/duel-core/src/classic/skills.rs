@@ -46,6 +46,7 @@ pub(crate) struct HeroTurn {
     used: Vec<SkillId>,
     rende_given: usize,
     played_sha: bool,
+    pub(super) recast_attempted: bool,
     preview: Vec<Card>,
 }
 
@@ -116,8 +117,7 @@ pub(crate) enum HeroMoment {
     },
     LostCards {
         seat: SeatId,
-        hand_count: usize,
-        equipment_count: usize,
+        cards: Vec<(Zone, Card)>,
     },
 }
 
@@ -251,11 +251,7 @@ impl Game {
     fn hero_transfer_card(&mut self, seat: SeatId, zone: Zone, id: CardId, target: SeatId) {
         let card = self.take_card(seat, zone, id);
         self.put_in_hand(target, card);
-        self.queue_hero_losses(
-            seat,
-            usize::from(matches!(zone, Zone::Hand)),
-            usize::from(matches!(zone, Zone::Equipment)),
-        );
+        self.queue_hero_losses(seat, vec![(zone, card)]);
     }
 
     pub(crate) fn hero_private_choice_cards(&self, choice: &ChoiceView) -> Vec<Card> {

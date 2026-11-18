@@ -3,6 +3,7 @@ pub(crate) mod equipment;
 mod equipment_tests;
 pub(crate) mod hero_integration;
 mod lifecycle;
+pub(crate) mod recast;
 pub(crate) mod skills;
 #[cfg(test)]
 mod tests;
@@ -238,6 +239,9 @@ impl Game {
         let player = self.seat(seat).expect("the acting seat exists");
         let mut actions = vec![Action::EndPlay];
         for card in &player.hand {
+            if self.can_recast(seat, card.id) {
+                actions.push(Action::Recast { card: card.id });
+            }
             if let Some(uses) = self.card_uses(player, *card) {
                 actions.extend(uses.into_iter().map(|planned| Action::PlayCard {
                     card: card.id,
@@ -401,7 +405,8 @@ impl Game {
     }
 
     fn bot_play(&self, player: &Seat) -> Action {
-        let lord = self.classic.as_ref().expect("the table is classic").lord;
+        let state = self.classic.as_ref().expect("the table is classic");
+        let lord = state.lord;
         self.play_choices(player.id)
             .into_iter()
             .max_by_key(|action| match action {
@@ -419,6 +424,9 @@ impl Game {
                         self.bot_card_priority(player, held.kind, targets, lord)
                     }
                 }
+                // Cycle one card as a fallback. A cancelled attempt must not keep the turn alive.
+                Action::Recast { .. } if !state.hero_turn.recast_attempted => (1, 1),
+                Action::Recast { .. } => (0, 0),
                 _ => (1, 0),
             })
             .expect("ending play is always available")

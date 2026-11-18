@@ -103,7 +103,14 @@ impl Game {
                 0,
                 vec![],
             ),
-            LostCards { seat, .. } => ("loseAfter", Some(*seat), None, None, 0, vec![]),
+            LostCards { seat, cards } => (
+                "loseAfter",
+                Some(*seat),
+                None,
+                None,
+                cards.len() as u16,
+                cards.iter().map(|(_, card)| *card).collect(),
+            ),
         };
         crate::TriggerEvent {
             timing: timing.into(),
@@ -668,15 +675,20 @@ impl Game {
             }
             ShaRedirect { target, .. } => register(target, Liuli, 1),
             ShaTarget { seat, .. } => register(seat, Tieji, 1),
-            LostCards {
-                seat,
-                hand_count,
-                equipment_count,
-            } => {
-                if hand_count > 0 && self.seat(seat).is_ok_and(|player| player.hand.is_empty()) {
+            LostCards { seat, ref cards } => {
+                if cards.iter().any(|(zone, _)| matches!(zone, Zone::Hand))
+                    && self.seat(seat).is_ok_and(|player| player.hand.is_empty())
+                {
                     register(seat, Lianying, 1);
                 }
-                register(seat, Xiaoji, equipment_count);
+                register(
+                    seat,
+                    Xiaoji,
+                    cards
+                        .iter()
+                        .filter(|(zone, _)| matches!(zone, Zone::Equipment))
+                        .count(),
+                );
             }
             _ => {}
         }
@@ -1075,7 +1087,7 @@ impl Game {
                 } else if let Some(choice) = selection(child).filter(|choice| choice.branch == 1) {
                     let replacement = self.take_card(owner, Zone::Hand, choice.cards[0]);
                     self.resolving.push(replacement);
-                    self.queue_hero_losses(owner, 1, 0);
+                    self.queue_hero_losses(owner, vec![(Zone::Hand, replacement)]);
                     self.next(EventKind::Discard { card });
                     self.next(EventKind::Reveal {
                         seat,

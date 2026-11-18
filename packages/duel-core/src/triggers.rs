@@ -102,12 +102,7 @@ impl TriggerContext<'_> {
     /// If an intervening skill moves a promised card, this skill ends before its continuation.
     pub fn discard_hand(&mut self, seat: SeatId, ids: &[CardId]) -> Result<(), RuleError> {
         let hand = &self.game.seat(seat)?.hand;
-        let mut claimed = HashSet::new();
-        for operation in &self.operations {
-            if let TriggerOperation::DiscardHand { cards, .. } = operation {
-                claimed.extend(cards.iter().map(|card| card.id));
-            }
-        }
+        let mut claimed = self.claimed_cards();
         let mut cards = Vec::with_capacity(ids.len());
         for id in ids {
             if !claimed.insert(*id) {
@@ -125,6 +120,47 @@ impl TriggerContext<'_> {
                 .push_back(TriggerOperation::DiscardHand { seat, cards });
         }
         Ok(())
+    }
+
+    /// Recast one held card at this skill's timing, even outside its owner's play phase.
+    /// The skill supplies permission for an ordinary card. Registered filters and
+    /// movement overrides still apply. A cancelled payment stops this continuation.
+    pub fn recast(&mut self, seat: SeatId, card: CardId) -> Result<(), RuleError> {
+        if self.claimed_cards().contains(&card) {
+            return Err(RuleError::InvalidSelection);
+        }
+        self.game.recast_terms(seat, card, false)?;
+        self.operations
+            .push_back(TriggerOperation::Recast { seat, card });
+        Ok(())
+    }
+
+    /// Give one held card using the ordinary gain/lose lifecycle. A publicly
+    /// known card stays known and a hidden card stays private to its holders.
+    pub fn give_hand(&mut self, from: SeatId, to: SeatId, card: CardId) -> Result<(), RuleError> {
+        if self.claimed_cards().contains(&card) {
+            return Err(RuleError::InvalidSelection);
+        }
+        self.game.give_hand_program(from, to, card)?;
+        self.operations
+            .push_back(TriggerOperation::GiveHand { from, to, card });
+        Ok(())
+    }
+
+    fn claimed_cards(&self) -> HashSet<CardId> {
+        let mut claimed = HashSet::new();
+        for operation in &self.operations {
+            match operation {
+                TriggerOperation::DiscardHand { cards, .. } => {
+                    claimed.extend(cards.iter().map(|c| c.id))
+                }
+                TriggerOperation::Recast { card, .. } | TriggerOperation::GiveHand { card, .. } => {
+                    claimed.insert(*card);
+                }
+                TriggerOperation::Emit(_) => {}
+            }
+        }
+        claimed
     }
     /// Enqueue a nested timing, returning whether a matching registration exists.
     pub fn emit(
@@ -149,7 +185,19 @@ impl TriggerContext<'_> {
 
 #[derive(Clone)]
 enum TriggerOperation {
-    DiscardHand { seat: SeatId, cards: Vec<Card> },
+    DiscardHand {
+        seat: SeatId,
+        cards: Vec<Card>,
+    },
+    Recast {
+        seat: SeatId,
+        card: CardId,
+    },
+    GiveHand {
+        from: SeatId,
+        to: SeatId,
+        card: CardId,
+    },
     Emit(TriggerEvent),
 }
 
@@ -160,6 +208,7 @@ enum RegisteredState {
     Operations {
         remaining: VecDeque<TriggerOperation>,
         then: TriggerStep,
+        require_success: bool,
     },
 }
 
@@ -229,7 +278,7 @@ impl Game {
         true
     }
 
-    fn prepare_timing(
+    pub(crate) fn prepare_timing(
         &self,
         timing: &'static str,
         player: Option<SeatId>,
@@ -279,7 +328,23 @@ impl Game {
         child: Option<Outcome<Resolution>>,
     ) {
         let (stage, selected) = match std::mem::replace(&mut flow.state, RegisteredState::Call(0)) {
-            RegisteredState::Operations { remaining, then } => {
+            RegisteredState::Operations {
+                require_success: true,
+                ..
+            } if matches!(
+                child,
+                Some(
+                    Outcome::Cancelled
+                        | Outcome::Finished(Resolution::RecastMove { card: None, .. })
+                )
+            ) =>
+            {
+                self.finish();
+                return;
+            }
+            RegisteredState::Operations {
+                remaining, then, ..
+            } => {
                 return self.advance_registered(flow, remaining, then);
             }
             RegisteredState::Call(stage) => (stage, None),
@@ -318,6 +383,10 @@ impl Game {
         if let Some(operation) = operations.pop_front() {
             // Earlier children may have triggered other skills or paused for a decision.
             // Recheck the entire next payment before allowing any card in it to move.
+            let require_success = matches!(
+                operation,
+                TriggerOperation::Recast { .. } | TriggerOperation::GiveHand { .. }
+            );
             let program = match operation {
                 TriggerOperation::DiscardHand { seat, cards } => {
                     if !self
@@ -332,11 +401,26 @@ impl Game {
                         cards: cards.into_iter().map(|card| (Zone::Hand, card)).collect(),
                     }
                 }
+                TriggerOperation::Recast { seat, card } => {
+                    let Ok(program) = self.recast_program(seat, card, false) else {
+                        self.finish();
+                        return;
+                    };
+                    program
+                }
+                TriggerOperation::GiveHand { from, to, card } => {
+                    let Ok(program) = self.give_hand_program(from, to, card) else {
+                        self.finish();
+                        return;
+                    };
+                    program
+                }
                 TriggerOperation::Emit(event) => Program::Dispatch(self.dispatch_for_timing(event)),
             };
             flow.state = RegisteredState::Operations {
                 remaining: operations,
                 then,
+                require_success,
             };
             self.scheduler.replace_current(Program::Registered(flow));
             self.scheduler.next(program);

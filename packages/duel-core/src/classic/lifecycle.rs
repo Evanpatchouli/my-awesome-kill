@@ -204,6 +204,13 @@ impl Game {
             None => self.decision = Some(Decision::Play(seat)),
             Some(Answer::EndPlay) => self.finish_phase(Phase::Play),
             Some(Answer::Play(program)) => {
+                if matches!(program.kind(), EventKind::Recast { .. }) {
+                    self.classic
+                        .as_mut()
+                        .expect("the table is classic")
+                        .hero_turn
+                        .recast_attempted = true;
+                }
                 if !matches!(
                     program.kind(),
                     EventKind::Skill {

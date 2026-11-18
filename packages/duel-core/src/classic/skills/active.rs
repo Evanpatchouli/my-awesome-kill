@@ -235,11 +235,13 @@ impl Game {
                 }
                 match active.skill {
                     Rende => {
+                        let mut given = Vec::with_capacity(active.cards.len());
                         for id in &active.cards {
                             let card = self.take_card(seat, Zone::Hand, *id);
                             self.put_in_hand(active.targets[0], card);
+                            given.push((Zone::Hand, card));
                         }
-                        self.queue_hero_losses(seat, active.cards.len(), 0);
+                        self.queue_hero_losses(seat, given);
                         let turn = &mut self
                             .classic
                             .as_mut()

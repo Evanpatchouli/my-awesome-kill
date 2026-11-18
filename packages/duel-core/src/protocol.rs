@@ -75,6 +75,9 @@ pub struct Command {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum Action {
+    Recast {
+        card: CardId,
+    },
     PlaySha {
         card: CardId,
         target: SeatId,
@@ -146,6 +149,9 @@ pub struct SeatView {
     pub role: Option<Role>,
     pub hand_count: usize,
     pub hand: Option<Vec<Card>>,
+    /// Cards publicly known to remain in this hand.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub known_hand: Vec<Card>,
     pub equipment: Vec<Card>,
     pub judges: Vec<Card>,
     pub judge_assignments: Vec<JudgmentAssignment>,
@@ -267,6 +273,28 @@ pub enum EventStatus {
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum EventKind {
+    Recast {
+        seat: SeatId,
+    },
+    RecastReveal {
+        seat: SeatId,
+        card: Card,
+    },
+    LoseToDiscardpile {
+        seat: SeatId,
+        amount: usize,
+    },
+    Lose {
+        seat: SeatId,
+        amount: usize,
+    },
+    Gain {
+        seat: SeatId,
+        source: Option<SeatId>,
+        amount: usize,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        card: Option<Card>,
+    },
     Opening {
         lord: SeatId,
     },

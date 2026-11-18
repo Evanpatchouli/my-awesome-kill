@@ -304,53 +304,40 @@ impl Game {
     }
 
     pub(crate) fn resolve_discard_group(&mut self, seat: SeatId, cards: Vec<(Zone, Card)>) {
-        let mut hand = 0;
-        let mut equipment = 0;
-        for (zone, card) in cards {
+        for &(zone, card) in &cards {
             let card = self.take_card(seat, zone, card.id);
             self.discard.push(card);
             self.scheduler.next(Program::Discarded(card));
-            hand += usize::from(matches!(zone, Zone::Hand));
-            equipment += usize::from(matches!(zone, Zone::Equipment));
         }
-        self.queue_hero_losses(seat, hand, equipment);
+        self.queue_hero_losses(seat, cards);
         self.finish();
     }
 
-    pub(crate) fn queue_hero_losses(
-        &mut self,
-        seat: SeatId,
-        hand_count: usize,
-        equipment_count: usize,
-    ) {
-        if hand_count > 0 || equipment_count > 0 {
-            self.queue_hero_moment(HeroMoment::LostCards {
-                seat,
-                hand_count,
-                equipment_count,
-            });
-        }
+    pub(crate) fn queue_hero_losses(&mut self, seat: SeatId, cards: Vec<(Zone, Card)>) -> bool {
+        cards
+            .iter()
+            .any(|(zone, _)| matches!(zone, Zone::Hand | Zone::Equipment))
+            && self.queue_hero_moment(HeroMoment::LostCards { seat, cards })
     }
 
     pub(crate) fn queue_use_costs(&mut self, seat: SeatId, cards: &[Card]) {
         let mut hand = 0;
-        let mut equipment = 0;
+        let mut losses = Vec::with_capacity(cards.len());
         for &card in cards {
             let zone = self.zone_for_held_card(seat, card.id);
             self.next(EventKind::UseCost { seat, card });
             hand += usize::from(matches!(zone, Zone::Hand));
-            equipment += usize::from(matches!(zone, Zone::Equipment));
+            losses.push((zone, card));
         }
         let moment = HeroMoment::LostCards {
             seat,
-            hand_count: hand,
-            equipment_count: equipment,
+            cards: losses,
         };
         let empties_hand = hand > 0
             && self
                 .seat(seat)
                 .is_ok_and(|player| player.hand.len() == hand);
-        if (hand > 0 || equipment > 0)
+        if !cards.is_empty()
             && (self.has_hero_triggers(&moment)
                 || (empties_hand && self.has_skill(seat, "lianying"))
                 || self.has_timing_registrations("loseAfter"))

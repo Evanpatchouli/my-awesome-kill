@@ -127,7 +127,7 @@ impl Game {
     fn resolve_equip(&mut self, seat: SeatId, card: Card, first: bool) {
         if first {
             self.move_to_resolving(seat, card.id);
-            self.queue_hero_losses(seat, 1, 0);
+            self.queue_hero_losses(seat, vec![(Zone::Hand, card)]);
             let current = self.seat(seat).expect("the equipping seat exists");
             let old = current
                 .equipment

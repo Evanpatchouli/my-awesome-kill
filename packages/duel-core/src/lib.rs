@@ -12,6 +12,10 @@ use std::collections::{HashMap, HashSet};
 
 use classic::equipment;
 use classic::hero_integration::{CardDamage, Judgment};
+pub use classic::recast::{
+    RecastFilter, RecastGain, RecastGainFactory, RecastKey, RecastLoss, RecastLossFactory,
+    RecastMovement, RecastRule, RecastSeat, RecastState,
+};
 pub use classic::skills::SkillId;
 use classic::skills::{HeroAdjustment, HeroFlow};
 use classic::tricks::Trick;
@@ -23,6 +27,11 @@ use scheduler::{EventRef, Outcome, Scheduler, Work};
 
 #[derive(Clone)]
 enum Resolution {
+    RecastMove {
+        event: EventId,
+        card: Option<Card>,
+        cancelled: bool,
+    },
     Complete,
     Passed,
     Dodged,
@@ -82,6 +91,7 @@ enum Zone {
 
 #[derive(Clone)]
 enum Program {
+    Recast(classic::recast::Flow),
     Event(EventKind),
     DiscardFrom {
         seat: SeatId,
@@ -123,6 +133,7 @@ impl Program {
     fn kind(&self) -> EventKind {
         match self {
             Self::Event(kind) => *kind,
+            Self::Recast(flow) => flow.kind(),
             Self::DiscardFrom { card, .. } => EventKind::Discard { card: *card },
             Self::Choose(choice)
             | Self::CounterChoice {
@@ -200,6 +211,9 @@ impl From<SeatSetup> for Seat {
 }
 
 pub struct Game {
+    recast_rules: Vec<(RecastKey, RecastRule)>,
+    transferring: Vec<Card>,
+    public_hand_cards: HashSet<CardId>,
     seats: Vec<Seat>,
     active_seat: SeatId,
     version: u32,
@@ -249,6 +263,9 @@ impl Game {
 
     fn with_seats(seats: Vec<Seat>, active_seat: SeatId) -> Self {
         Self {
+            recast_rules: Vec::new(),
+            transferring: Vec::new(),
+            public_hand_cards: HashSet::new(),
             seats,
             active_seat,
             version: 0,
@@ -343,6 +360,12 @@ impl Game {
                     role: seat.role.filter(|_| role_visible),
                     hand_count: seat.hand.len(),
                     hand: own.then(|| seat.hand.clone()),
+                    known_hand: seat
+                        .hand
+                        .iter()
+                        .filter(|c| self.public_hand_cards.contains(&c.id))
+                        .copied()
+                        .collect(),
                     equipment: seat.equipment.clone(),
                     judges: seat.judges.clone(),
                     judge_assignments: seat
@@ -417,6 +440,7 @@ impl Game {
                 .as_deref()
                 .unwrap_or_default()
                 .iter()
+                .chain(&seat.known_hand)
                 .chain(&seat.equipment)
                 .chain(&seat.judges)
         });
@@ -428,6 +452,10 @@ impl Game {
             | UseTrick { card, .. }
             | UseCost { card, .. }
             | UseResponseCard { card, .. }
+            | EventKind::RecastReveal { card, .. }
+            | EventKind::Gain {
+                card: Some(card), ..
+            }
             | Equip { card, .. }
             | Reveal { card, .. }
             | Discard { card } => Some(card.id),
@@ -464,6 +492,7 @@ impl Game {
             .checked_add(1)
             .ok_or(RuleError::VersionExhausted)?;
         let answer = match command.action {
+            Action::Recast { card } => Some(Answer::Play(self.plan_recast(command.seat, card)?)),
             Action::PlaySha { card, target } if self.classic.is_none() => {
                 let use_sha = self.plan_sha(command.seat, card, target)?;
                 self.scheduler.start(use_sha);
@@ -672,8 +701,11 @@ impl Game {
                 }
                 Work::Ended(event, program, outcome) => {
                     let status = match outcome {
+                        Outcome::Cancelled
+                        | Outcome::Finished(Resolution::RecastMove {
+                            cancelled: true, ..
+                        }) => EventStatus::Cancelled,
                         Outcome::Finished(_) => EventStatus::Finished,
-                        Outcome::Cancelled => EventStatus::Cancelled,
                     };
                     self.record(event, program.kind(), status);
                 }
@@ -697,6 +729,7 @@ impl Game {
 
         let kind = program.kind();
         let program = match program {
+            Program::Recast(flow) => return self.resolve_recast(event, flow, child),
             Program::Equipment(flow) => return self.resolve_equipment(event, flow, child),
             Program::Trick(flow) => return self.resolve_trick(event, flow, child),
             Program::Hero(flow) => return self.resolve_hero(event, flow, child),
@@ -732,13 +765,13 @@ impl Game {
             (ChooseShan { .. }, Some(Finished(Dodged))) => self.scheduler.end(Finished(Dodged)),
             (UseShan { seat, card }, None) => {
                 self.move_to_resolving(seat, card.id);
-                self.queue_hero_losses(seat, 1, 0);
+                self.queue_hero_losses(seat, vec![(Zone::Hand, card)]);
                 self.scheduler.after(Program::event(Discard { card }));
                 self.scheduler.end(Finished(Dodged));
             }
             (UseTao { seat, target, card }, None) => {
                 self.move_to_resolving(seat, card.id);
-                self.queue_hero_losses(seat, 1, 0);
+                self.queue_hero_losses(seat, vec![(Zone::Hand, card)]);
                 self.next(Recover {
                     seat,
                     target,
@@ -771,7 +804,7 @@ impl Game {
                 }
                 self.scheduler.end(Finished(Resolution::HpChanged));
             }
-            (Reveal { .. }, None) => self.finish(),
+            (Reveal { .. } | RecastReveal { .. }, None) => self.finish(),
             (UseCost { seat, card }, None) => {
                 self.move_to_resolving(seat, card.id);
                 self.finish();
@@ -781,11 +814,7 @@ impl Game {
                     Program::DiscardFrom { seat, zone, .. } => {
                         let card = self.take_card(seat, zone, card.id);
                         self.discard.push(card);
-                        self.queue_hero_losses(
-                            seat,
-                            usize::from(matches!(zone, Zone::Hand)),
-                            usize::from(matches!(zone, Zone::Equipment)),
-                        );
+                        self.queue_hero_losses(seat, vec![(zone, card)]);
                     }
                     _ if self.resolving.contains(&card) => {
                         let card = self.take_resolving(card.id);
@@ -946,6 +975,9 @@ impl Game {
 
     fn take_card(&mut self, seat: SeatId, zone: Zone, id: CardId) -> Card {
         let card = Self::remove_card(self.seat_mut(seat).zone_mut(zone), id);
+        if matches!(zone, Zone::Hand) {
+            self.public_hand_cards.remove(&id);
+        }
         if matches!(zone, Zone::Judgment) {
             self.judgment_overrides.remove(&id);
         }
