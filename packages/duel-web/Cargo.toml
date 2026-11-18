@@ -11,6 +11,7 @@ crate-type = ["cdylib"]
 qa-compare = []
 qa-elemental = []
 qa-recast = []
+qa-qiaoshui = ["duel-core/content-qiaoshui"]
 
 [dependencies]
 duel-core = { path = "../duel-core" }

@@ -57,3 +57,7 @@ node apps/game/smoke-recast.mjs
 - 稳定可重现的平局有 Rust 测试，未从普通 UI 种子观察到平局画面。Android 设备运行情况见开发手册。这些用例证明对应的经典玩法行为。全底座的剩余机制依[覆盖清单](../exec-plans/active/noname-coverage.md)继续验证。
 
 2026-11-19 对 `bbe1f51` 的收口复验通过 147 项 Rust 常规测试，另跑 100 局八席，全部终局并通过实体守恒。共 55,247 次决策，规则 p95 为 7.9 µs，单席投影与序列化 p95 为 13.0 µs。`pnpm engine:test`、`pnpm test`、`pnpm typecheck`、`pnpm build` 通过。普通生产入口 smoke 和三条独立 WASM 内容烟测顺序复跑均通过。默认发行绑定未导出 QA 工厂。
+
+### 巧说的真实目标选择
+
+按重铸流程使用 `qa-qiaoshui` 构建独立绑定，将目录设为 `MAK_QIAOSHUI_BINDINGS`，运行 `node apps/game/smoke-qiaoshui.mjs`。种子 317 从普通首页进入八席，真实巧说选择对手并以 13 比 1 获胜；实体杀先按普通范围选择 1 号席，再由私有选择增加范围外的 3 号席，两席各受一点伤害。随后实体决斗只作用于 1 号席。普通发行绑定不包含该测试工厂。
