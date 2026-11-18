@@ -10,6 +10,7 @@ pub(crate) mod hero_integration;
 mod lifecycle;
 pub(crate) mod multi_compare;
 pub(crate) mod phases;
+pub(crate) mod pile_order;
 pub(crate) mod recast;
 pub(crate) mod skills;
 pub(crate) mod target_timing;
@@ -213,6 +214,7 @@ impl Game {
             if state.deck.is_empty() {
                 for card in &self.discard {
                     self.known_to_all.remove(&card.id);
+                    self.known_to_seats.remove(&card.id);
                 }
                 state.deck.append(&mut self.discard);
                 state.random.shuffle(&mut state.deck);

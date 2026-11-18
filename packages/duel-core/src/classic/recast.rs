@@ -1382,7 +1382,7 @@ impl Game {
                         if public {
                             self.known_to_all.insert(card.id);
                         } else {
-                            self.known_to_giver.insert(card.id, from);
+                            self.mark_known_to(card.id, from);
                         }
                     }
                     movement.committed = card;

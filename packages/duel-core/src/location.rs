@@ -22,7 +22,7 @@ pub struct CardLocation {
 impl Game {
     /// A hidden hand loss obscures old knowledge of the remaining cards.
     pub(crate) fn obscure_remaining_hand(&mut self, owner: SeatId) {
-        if !self.known_to_all.is_empty() || !self.known_to_giver.is_empty() {
+        if !self.known_to_all.is_empty() || !self.known_to_seats.is_empty() {
             let player = self
                 .seats
                 .iter()
@@ -30,7 +30,7 @@ impl Game {
                 .expect("validated payer");
             for held in &player.hand {
                 self.known_to_all.remove(&held.id);
-                self.known_to_giver.remove(&held.id);
+                self.known_to_seats.remove(&held.id);
             }
         }
     }

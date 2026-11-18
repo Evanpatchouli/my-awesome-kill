@@ -45,6 +45,7 @@ pub use classic::elemental::{DamageNature, DamageRecord};
 use classic::equipment;
 use classic::hero_integration::Judgment;
 pub use classic::phases::PhaseInfo;
+pub use classic::pile_order::PileOrderResult;
 pub use classic::recast::{
     LossRecord, RecastBatchGain, RecastBatchGainFactory, RecastBatchLossFactory,
     RecastBatchMovement, RecastBatchRule, RecastFilter, RecastGain, RecastGainFactory, RecastKey,
@@ -91,6 +92,7 @@ enum Resolution {
     SavePassed(SeatId),
     Selected(Selection),
     MovedCards(MoveResult),
+    PileOrdered(PileOrderResult),
     Responded,
     Judged(Card),
     HpChanged {
@@ -168,6 +170,7 @@ enum Program {
     },
     ActiveSkill(active_skill::Flow),
     MoveChoice(move_choice::Flow),
+    PileOrder(classic::pile_order::Flow),
     Expansion(classic::expansion::Flow),
     BasicUse(classic::basic_use::Flow),
     Compare(classic::compare::Flow),
@@ -263,6 +266,7 @@ impl Program {
             },
             Self::ActiveSkill(flow) => flow.kind(),
             Self::MoveChoice(flow) => flow.kind(),
+            Self::PileOrder(flow) => flow.kind(),
             Self::Expansion(flow) => flow.kind(),
             Self::BasicUse(flow) => flow.kind(),
             Self::Event(kind) => *kind,
@@ -367,6 +371,7 @@ pub struct Game {
     group_compares: classic::multi_compare::State,
     group_updates: Vec<GroupAnnouncement>,
     ordering_owners: HashMap<CardId, EventId>,
+    private_ordering: HashSet<EventId>,
     marks: marks::State,
     indexed_triggers: HashMap<TriggerId, triggers::TriggerIndex>,
     turns: classic::turns::State,
@@ -384,7 +389,7 @@ pub struct Game {
     reserved_draws: Vec<Card>,
     transferring: Vec<Card>,
     known_to_all: HashSet<CardId>,
-    known_to_giver: HashMap<CardId, SeatId>,
+    known_to_seats: HashMap<CardId, Vec<SeatId>>,
     seats: Vec<Seat>,
     active_seat: SeatId,
     version: u32,
@@ -437,6 +442,7 @@ impl Game {
             group_compares: classic::multi_compare::State::default(),
             group_updates: Vec::new(),
             ordering_owners: HashMap::new(),
+            private_ordering: HashSet::new(),
             marks: marks::State::default(),
             indexed_triggers: HashMap::new(),
             turns: classic::turns::State::default(),
@@ -454,7 +460,7 @@ impl Game {
             reserved_draws: Vec::new(),
             transferring: Vec::new(),
             known_to_all: HashSet::new(),
-            known_to_giver: HashMap::new(),
+            known_to_seats: HashMap::new(),
             seats,
             active_seat,
             version: 0,
@@ -529,7 +535,18 @@ impl Game {
 
     fn is_known_hand_identity(&self, card: CardId, viewer: Option<SeatId>) -> bool {
         self.known_to_all.contains(&card)
-            || viewer.is_some_and(|viewer| self.known_to_giver.get(&card) == Some(&viewer))
+            || viewer.is_some_and(|viewer| {
+                self.known_to_seats
+                    .get(&card)
+                    .is_some_and(|seats| seats.contains(&viewer))
+            })
+    }
+
+    fn mark_known_to(&mut self, card: CardId, viewer: SeatId) {
+        let seats = self.known_to_seats.entry(card).or_default();
+        if !seats.contains(&viewer) {
+            seats.push(viewer);
+        }
     }
 
     /// Walk the table once, starting at `start` and following the setup order.
@@ -664,7 +681,13 @@ impl Game {
         let resolving: Vec<_> = self
             .resolving
             .iter()
-            .filter(|c| !self.compares.hidden(c.id))
+            .filter(|c| {
+                !self.compares.hidden(c.id)
+                    && !self
+                        .ordering_owners
+                        .get(&c.id)
+                        .is_some_and(|event| self.private_ordering.contains(event))
+            })
             .copied()
             .collect();
         let known_special: Vec<_> = self
@@ -1052,6 +1075,10 @@ impl Game {
                             cancelled: true, ..
                         })
                         | Outcome::Finished(Resolution::HpChanged { cancelled: true })
+                        | Outcome::Finished(Resolution::PileOrdered(PileOrderResult {
+                            cancelled: true,
+                            ..
+                        }))
                         | Outcome::Finished(Resolution::MovedCards(MoveResult {
                             cancelled: true,
                             ..
@@ -1096,6 +1123,7 @@ impl Game {
                 stage,
             } => return self.resolve_death(source, target, role, stage),
             Program::ActiveSkill(flow) => return self.resolve_active_skill(flow, child),
+            Program::PileOrder(flow) => return self.resolve_pile_order(event, flow, child),
             Program::MoveChoice(flow) => {
                 return self.resolve_move_choice(event, flow, child, answer)
             }
@@ -1337,7 +1365,7 @@ impl Game {
         let card = Self::remove_card(self.seat_mut(seat).zone_mut(zone), id);
         if matches!(zone, Zone::Hand) {
             self.known_to_all.remove(&id);
-            self.known_to_giver.remove(&id);
+            self.known_to_seats.remove(&id);
         }
         if matches!(zone, Zone::Judgment) {
             self.judgment_overrides.remove(&id);

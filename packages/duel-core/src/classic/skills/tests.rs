@@ -360,8 +360,31 @@ fn guanxing_hides_the_preview_and_keeps_the_selected_deck_order() {
             && public.card_faces.is_empty()
             && public.resolving.is_empty()
     );
-    select(&mut game, 0, 1, vec![107, 109], vec![]);
-    select(&mut game, 0, 1, vec![106, 108], vec![]);
+    let event = private.choice.unwrap().event;
+    command(
+        &mut game,
+        0,
+        Action::MoveCards {
+            event,
+            moves: Some(vec![
+                crate::MoveStep {
+                    card: 106,
+                    row: 1,
+                    index: 0,
+                },
+                crate::MoveStep {
+                    card: 108,
+                    row: 1,
+                    index: 1,
+                },
+                crate::MoveStep {
+                    card: 107,
+                    row: 0,
+                    index: 0,
+                },
+            ]),
+        },
+    );
 
     // The next seat has already drawn the two final top cards.
     assert_eq!(
@@ -383,6 +406,11 @@ fn guanxing_hides_the_preview_and_keeps_the_selected_deck_order() {
         .map(|card| card.id)
         .collect();
     assert_eq!(bottom, vec![108, 106]);
+    assert_eq!(
+        game.view(Some(0)).unwrap().seats[1].known_hand,
+        game.seat(1).unwrap().hand
+    );
+    assert!(game.view(None).unwrap().seats[1].known_hand.is_empty());
 }
 
 #[test]

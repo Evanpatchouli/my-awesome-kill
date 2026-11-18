@@ -83,6 +83,13 @@ pub(crate) struct Flow {
     request: MoveChoiceRequest,
     stage: Stage,
     result: Option<MoveResult>,
+    bot_plan: Option<BotPlan>,
+}
+
+#[derive(Clone)]
+enum BotPlan {
+    Submit(Vec<MoveStep>),
+    Decline,
 }
 
 impl Flow {
@@ -125,6 +132,9 @@ impl Game {
         if !self.seat(request.seat)?.alive {
             return Err(RuleError::InactiveSeat { seat: request.seat });
         }
+        if self.match_result().is_some() {
+            return Err(RuleError::GameOver);
+        }
         if request.rows.is_empty() || request.rows.iter().any(|row| row.min > row.max) {
             return Err(RuleError::InvalidSelection);
         }
@@ -139,6 +149,7 @@ impl Game {
             request,
             stage: Stage::Before,
             result: None,
+            bot_plan: None,
         }))
     }
 
@@ -158,15 +169,24 @@ impl Game {
         else {
             return Err(RuleError::WrongEvent);
         };
+        self.check_move_steps(flow, moves.as_deref())
+            .map(Answer::MoveCards)
+    }
+
+    fn check_move_steps(
+        &self,
+        flow: &Flow,
+        moves: Option<&[MoveStep]>,
+    ) -> Result<Option<Vec<Vec<Card>>>, RuleError> {
         let Some(moves) = moves else {
             return if flow.request.allow_decline {
-                Ok(Answer::MoveCards(None))
+                Ok(None)
             } else {
                 Err(RuleError::InvalidSelection)
             };
         };
         let mut rows = flow.rows();
-        for step in moves {
+        for &step in moves {
             let Some((old_row, old_index)) = rows.iter().enumerate().find_map(|(row, cards)| {
                 cards
                     .iter()
@@ -206,40 +226,39 @@ impl Game {
         {
             return Err(RuleError::InvalidSelection);
         }
-        Ok(Answer::MoveCards(Some(rows)))
+        Ok(Some(rows))
+    }
+
+    fn plan_move_bot(&self, flow: &Flow) -> Option<BotPlan> {
+        if let Some(bot) = &flow.request.bot {
+            match bot(self, &flow.rows()) {
+                Some(moves) if self.check_move_steps(flow, Some(&moves)).is_ok() => {
+                    return Some(BotPlan::Submit(moves));
+                }
+                None if flow.request.allow_decline => return Some(BotPlan::Decline),
+                _ => {}
+            }
+        }
+        if self.check_move_steps(flow, Some(&[])).is_ok() {
+            return Some(BotPlan::Submit(Vec::new()));
+        }
+        if let Some(moves) = fill_move_rows(flow) {
+            if self.check_move_steps(flow, Some(&moves)).is_ok() {
+                return Some(BotPlan::Submit(moves));
+            }
+        }
+        flow.request.allow_decline.then_some(BotPlan::Decline)
     }
 
     pub(crate) fn bot_move_choice(&self, event: EventId) -> Option<Action> {
         let (_, Program::MoveChoice(flow)) = self.scheduler.active_frame(event)? else {
             return None;
         };
-        let seat = flow.request.seat;
-        if let Some(moves) = flow
-            .request
-            .bot
-            .as_ref()
-            .and_then(|bot| bot(self, &flow.rows()))
-        {
-            if self
-                .validate_move_choice(seat, event, Some(moves.clone()))
-                .is_ok()
-            {
-                return Some(Action::MoveCards {
-                    event,
-                    moves: Some(moves),
-                });
-            }
-        }
-        if self.validate_move_choice(seat, event, Some(vec![])).is_ok() {
-            return Some(Action::MoveCards {
-                event,
-                moves: Some(vec![]),
-            });
-        }
-        if self.validate_move_choice(seat, event, None).is_ok() {
-            return Some(Action::MoveCards { event, moves: None });
-        }
-        None
+        let moves = match flow.bot_plan.as_ref()? {
+            BotPlan::Submit(steps) => Some(steps.clone()),
+            BotPlan::Decline => None,
+        };
+        Some(Action::MoveCards { event, moves })
     }
 
     pub fn move_choice_result(&self, event: EventId) -> Option<&MoveResult> {
@@ -281,7 +300,8 @@ impl Game {
             });
         }
         if (matches!(child, Some(Outcome::Cancelled))
-            || (matches!(flow.stage, Choose) && !self.is_alive(flow.request.seat)))
+            || (matches!(flow.stage, Choose)
+                && (!self.is_alive(flow.request.seat) || self.match_result().is_some())))
             && !matches!(flow.stage, CancelNotify | CancelFinish)
         {
             flow.result.as_mut().unwrap().cancelled = true;
@@ -308,6 +328,15 @@ impl Game {
                     self.scheduler.replace_current(Program::MoveChoice(flow));
                 }
                 None => {
+                    if self.classic.as_ref().is_some_and(|mode| mode.human != seat) {
+                        flow.bot_plan = self.plan_move_bot(&flow);
+                        if flow.bot_plan.is_none() {
+                            flow.result.as_mut().unwrap().cancelled = true;
+                            flow.stage = CancelNotify;
+                            self.scheduler.replace_current(Program::MoveChoice(flow));
+                            return;
+                        }
+                    }
                     let view = flow.view();
                     let cards = view
                         .rows
@@ -328,6 +357,7 @@ impl Game {
                         compare_group: None,
                         move_cards: Some(view),
                     }));
+                    self.scheduler.replace_current(Program::MoveChoice(flow));
                 }
                 _ => unreachable!("a move choice receives a move answer"),
             },
@@ -341,4 +371,32 @@ impl Game {
             ))),
         }
     }
+}
+
+fn fill_move_rows(flow: &Flow) -> Option<Vec<MoveStep>> {
+    let mut rows = flow.rows();
+    let rules = &flow.request.rows;
+    let mut steps = Vec::new();
+    let mut transfer = |rows: &mut [Vec<Card>], source: usize, target: usize| {
+        let card = rows[source].pop().expect("the source has a spare card");
+        steps.push(MoveStep {
+            card: card.id,
+            row: target,
+            index: rows[target].len(),
+        });
+        rows[target].push(card);
+    };
+    for target in 0..rows.len() {
+        while rows[target].len() < rules[target].min {
+            let source = (0..rows.len()).find(|&row| rows[row].len() > rules[row].min)?;
+            transfer(&mut rows, source, target);
+        }
+    }
+    for source in 0..rows.len() {
+        while rows[source].len() > rules[source].max {
+            let target = (0..rows.len()).find(|&row| rows[row].len() < rules[row].max)?;
+            transfer(&mut rows, source, target);
+        }
+    }
+    Some(steps)
 }

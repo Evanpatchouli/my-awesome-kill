@@ -228,8 +228,21 @@ fn validates_each_step_and_final_layout_before_consuming_a_private_choice() {
 
 #[test]
 fn declining_and_cancelling_have_distinct_results_and_the_bot_uses_checked_moves() {
-    for case in ["decline", "cancel", "bot"] {
+    for case in [
+        "decline",
+        "cancel",
+        "bot",
+        "auto",
+        "bot-decline",
+        "impossible",
+    ] {
         let mut game = table();
+        let automated = matches!(case, "bot" | "auto" | "bot-decline" | "impossible");
+        let expected_cancel = matches!(case, "cancel" | "impossible");
+        let should_move = matches!(case, "bot" | "auto");
+        if automated {
+            game.classic.as_mut().unwrap().human = 1;
+        }
         let card = game.classic.as_ref().unwrap().deck[0];
         let results = Arc::new(Mutex::new(Vec::new()));
         let timings = observe(&mut game);
@@ -248,20 +261,26 @@ fn declining_and_cancelling_have_distinct_results_and_the_bot_uses_checked_moves
                     MoveRow {
                         label: "下".into(),
                         cards: vec![],
-                        min: 1,
+                        min: if case == "bot-decline" { 0 } else { 1 },
                         max: 1,
                     },
                 ],
-                allow_decline: case != "bot",
-                filter_move: None,
+                allow_decline: matches!(case, "decline" | "cancel" | "bot-decline"),
+                filter_move: (case == "impossible").then(|| {
+                    Arc::new(|_: &Game, _: &[Vec<Card>], _: MoveStep| false) as MoveFilter
+                }),
                 filter_ok: None,
-                bot: Some(Arc::new(move |_, _| {
-                    Some(vec![MoveStep {
-                        card: card.id,
-                        row: 1,
-                        index: 0,
-                    }])
-                })),
+                bot: match case {
+                    "bot" => Some(Arc::new(move |_, _| {
+                        Some(vec![MoveStep {
+                            card: card.id,
+                            row: 1,
+                            index: 0,
+                        }])
+                    })),
+                    "bot-decline" => Some(Arc::new(|_, _| None)),
+                    _ => None,
+                },
             },
             results.clone(),
         );
@@ -290,24 +309,30 @@ fn declining_and_cancelling_have_distinct_results_and_the_bot_uses_checked_moves
                 action: Action::MoveCards { event, moves: None },
             })
             .unwrap();
-        } else if case == "bot" {
-            game.classic.as_mut().unwrap().human = 1;
+        } else if automated && !expected_cancel {
             let command = game.bot_command().expect("one checked bot action");
-            assert!(
-                matches!(command.action, Action::MoveCards { moves: Some(ref moves), .. } if moves.len() == 1)
-            );
+            if should_move {
+                assert!(
+                    matches!(command.action, Action::MoveCards { moves: Some(ref moves), .. } if moves.len() == 1)
+                );
+            } else {
+                assert!(matches!(
+                    command.action,
+                    Action::MoveCards { moves: None, .. }
+                ));
+            }
             game.submit(command).unwrap();
         } else {
             assert!(choice.is_none());
         }
         let results = results.lock().unwrap();
         assert_eq!(results.len(), 1);
-        assert_eq!(results[0].cancelled, case == "cancel");
+        assert_eq!(results[0].cancelled, expected_cancel);
         assert_eq!(
             results[0].rows,
-            (case == "bot").then_some(vec![vec![], vec![card]])
+            should_move.then_some(vec![vec![], vec![card]])
         );
-        let expected: &[&str] = if case == "cancel" {
+        let expected: &[&str] = if expected_cancel {
             &[
                 "chooseToMoveBefore",
                 "chooseToMoveBegin",
@@ -322,7 +347,7 @@ fn declining_and_cancelling_have_distinct_results_and_the_bot_uses_checked_moves
             ]
         };
         assert_eq!(*timings.lock().unwrap(), expected);
-        let status = if case == "cancel" {
+        let status = if expected_cancel {
             EventStatus::Cancelled
         } else {
             EventStatus::Finished
@@ -332,4 +357,52 @@ fn declining_and_cancelling_have_distinct_results_and_the_bot_uses_checked_moves
             .iter()
             .any(|event| event.id == results[0].event && event.status == status));
     }
+}
+
+#[test]
+fn a_terminal_effect_during_begin_cancels_the_choice_for_a_surviving_seat() {
+    let mut game = table();
+    let card = game.classic.as_ref().unwrap().deck[0];
+    let results = Arc::new(Mutex::new(Vec::new()));
+    let id = queue_choice(
+        &mut game,
+        MoveChoiceRequest {
+            seat: 1,
+            prompt: "分组".into(),
+            rows: vec![MoveRow {
+                label: "上".into(),
+                cards: vec![card],
+                min: 0,
+                max: 1,
+            }],
+            allow_decline: false,
+            filter_move: None,
+            filter_ok: None,
+            bot: None,
+        },
+        results.clone(),
+    );
+    game.register_trigger(TriggerRegistration {
+        owner: 1,
+        skill: "move_test_terminal".into(),
+        timing: "chooseToMoveBegin".into(),
+        role: TriggerRole::Player,
+        order: TriggerOrder::First,
+        priority: 0,
+        label: None,
+        silent: true,
+        filter: Arc::new(|_, _, _| true),
+        effect: Arc::new(|ctx, _, _| {
+            ctx.die(0, None).unwrap();
+            TriggerStep::Done
+        }),
+    })
+    .unwrap();
+    start_choice(&mut game, id);
+    let view = game.view(Some(1)).unwrap();
+    assert!(view.seats[1].alive);
+    assert!(view.winner.is_some());
+    assert!(view.waiting_for.is_none());
+    assert!(view.choice.is_none());
+    assert!(results.lock().unwrap()[0].cancelled);
 }

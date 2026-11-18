@@ -469,6 +469,14 @@ pub enum EventKind {
     CardsDiscard {
         amount: usize,
     },
+    CardsGotoOrdering {
+        seat: SeatId,
+        amount: usize,
+    },
+    CardsGotoPile {
+        seat: SeatId,
+        amount: usize,
+    },
     Link {
         seat: SeatId,
         linked: bool,
@@ -593,6 +601,10 @@ pub enum EventKind {
     },
     ChooseToMove {
         seat: SeatId,
+    },
+    ChoosePileOrder {
+        seat: SeatId,
+        amount: u16,
     },
     Judge {
         seat: SeatId,

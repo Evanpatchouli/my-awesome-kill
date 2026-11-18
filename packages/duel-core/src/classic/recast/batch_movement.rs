@@ -384,7 +384,7 @@ impl Game {
                         for card in cards {
                             if let Some(taken) = self.batch_remove_transfer(card) {
                                 if !self.known_to_all.contains(&taken.id) {
-                                    self.known_to_giver.insert(taken.id, from);
+                                    self.mark_known_to(taken.id, from);
                                 }
                                 movement.committed.push(taken);
                             }

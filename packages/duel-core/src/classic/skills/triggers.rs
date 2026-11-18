@@ -1,7 +1,7 @@
 use super::{branch, option, selection, HeroAdjustment, HeroFlow, HeroMoment, SkillId};
 use crate::classic_data::Suit;
 use crate::scheduler::Outcome;
-use crate::{CardId, CardKind, DrawReason, EventKind, Game, Program, Resolution, SeatId, Zone};
+use crate::{CardKind, DrawReason, EventKind, Game, Program, Resolution, SeatId, Zone};
 
 #[derive(Clone)]
 pub(crate) struct Queue {
@@ -56,8 +56,7 @@ enum Stage {
     Option,
     Judge,
     Discard,
-    GuanxingTop,
-    GuanxingBottom { top: Vec<CardId> },
+    PileOrdered,
     Distribute,
     Repeat,
 }
@@ -1195,86 +1194,15 @@ impl Game {
                 return;
             }
             Stage::Option if accepted(&child) => {
-                let amount = self.living_order_from(owner).len().min(5);
-                if let Some(cards) = self.draw_from_piles(amount) {
-                    let ids = cards.iter().map(|card| card.id).collect();
-                    self.classic
-                        .as_mut()
-                        .expect("the table is classic")
-                        .hero_turn
-                        .preview = cards;
-                    self.continue_hero_trigger(trigger, Stage::GuanxingTop);
-                    self.choose_hero(
-                        owner,
-                        None,
-                        vec![branch(
-                            1,
-                            "观星：按顺序放在牌堆顶",
-                            ids,
-                            (0, amount),
-                            vec![],
-                            (0, 0),
-                        )],
-                    );
-                    return;
-                }
-            }
-            Stage::GuanxingTop => {
-                let top = selection(child).expect("the top order is required").cards;
-                let preview = &self
-                    .classic
-                    .as_ref()
-                    .expect("the table is classic")
-                    .hero_turn
-                    .preview;
-                let bottom: Vec<_> = preview
-                    .iter()
-                    .filter(|card| !top.contains(&card.id))
-                    .map(|card| card.id)
-                    .collect();
-                if bottom.len() <= 1 {
-                    self.place_guanxing_cards(&top, &bottom);
-                } else {
-                    let count = bottom.len();
-                    self.continue_hero_trigger(trigger, Stage::GuanxingBottom { top });
-                    self.choose_hero(
-                        owner,
-                        None,
-                        vec![branch(
-                            1,
-                            "观星：按顺序放在牌堆底",
-                            bottom,
-                            (count, count),
-                            vec![],
-                            (0, 0),
-                        )],
-                    );
-                    return;
-                }
-            }
-            Stage::GuanxingBottom { top } => {
-                let bottom = selection(child)
-                    .expect("the bottom order is required")
-                    .cards;
-                self.place_guanxing_cards(&top, &bottom);
+                let amount = self.living_order_from(owner).len().min(5) as u16;
+                let order = self.pile_order_program(owner, amount, "观星");
+                self.continue_hero_trigger(trigger, Stage::PileOrdered);
+                self.scheduler.next(order);
+                return;
             }
             _ => {}
         }
         self.finish_hero(HeroAdjustment::None);
-    }
-
-    fn place_guanxing_cards(&mut self, top: &[CardId], bottom: &[CardId]) {
-        let state = self.classic.as_mut().expect("the table is classic");
-        let preview = &mut state.hero_turn.preview;
-        let bottom_cards: Vec<_> = bottom
-            .iter()
-            .rev()
-            .map(|id| Self::remove_card(preview, *id))
-            .collect();
-        state.deck.splice(..0, bottom_cards);
-        state
-            .deck
-            .extend(top.iter().rev().map(|id| Self::remove_card(preview, *id)));
     }
 
     fn resolve_luoshen(&mut self, trigger: Trigger, child: Option<Outcome<Resolution>>) {
