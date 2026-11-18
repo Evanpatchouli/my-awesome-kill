@@ -22,6 +22,8 @@
 
 `recast-callbacks.json` 在同样的局面注册上游观察技能，把时机请求、创建移牌子事件的函数调用、实际技能回调分别记录到一条时间线。请求 `recastingLost` 时材料仍在 A 手中，技能执行时材料已进入弃牌堆或 B 手牌。普通摸到的桃只对 A 可见，显式 `gain2` 获得的闪在 A 手牌中也为第三席所知。两种中断有独立实测：在 `recast` 时机取消保留已弃的材料，获得函数虽被调用，替代牌仍留在牌堆；在 `loseBefore` 将材料转交给 B 时，外层重铸继续摸牌。可检查 `subjectCards`、各席位置以及 `interrupted` 终态。
 
+前置技能取消和底层移牌取消的观测也在这份轨迹中。取消 `recastingGain` 时已经排队的摸牌先完成；只取消 `drawBefore` 时上层仍完成重铸。只取消 `loseBefore` 时材料留在 A 手中，外层也继续摸到一张。这些场景共记录 184 次时机请求、177 次技能执行和 16 次工厂调用。
+
 ## 复现
 
 1. 在独立临时目录检出上述上游提交，保留 `apps/core`、`packages/fs`、`packages/jit` 和根目录的 `scripts`；可从本机 `.reference/noname` 用 `git clone --shared --sparse` 复用已有对象。通过 `git rev-parse HEAD` 确认提交。不要在项目运行时依赖该参考检出。

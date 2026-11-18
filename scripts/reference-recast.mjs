@@ -57,13 +57,20 @@ export function installReferenceRecast() {
         zone(observedReplacement), actor.countCards('h'), cards, actor.getKnownCards(observer).includes(observedReplacement)]);
     };
     let intercepted = false;
+    const cancelTimings = {
+      'cancel-after-loss': 'recast',
+      'cancel-recasting-lose': 'recastingLose',
+      'cancel-recasting-gain': 'recastingGain',
+      'cancel-draw-child': 'drawBefore',
+      'cancel-loss-child': 'loseBefore',
+    };
     if (observeCallbacks) {
       lib.skill[observationSkill] = {
         trigger: { global: [...timings] }, firstDo: true, forced: true, silent: true,
         async content(event, subject) {
           const timing = event.triggername;
           observe('effect', timing, subject);
-          if (phase === 'cancel-after-loss' && timing === 'recast') subject.cancel();
+          if (cancelTimings[phase] === timing) subject.cancel();
           if (phase === 'material-intercept' && timing === 'loseBefore' && !intercepted &&
               subject.player === actor && subject.cards?.includes(observedMaterial)) {
             intercepted = true;
@@ -129,7 +136,8 @@ export function installReferenceRecast() {
       };
       const interrupted = [];
       if (observeCallbacks) {
-        for (const name of ['cancel-after-loss', 'material-intercept']) {
+        for (const name of ['cancel-after-loss', 'material-intercept', 'cancel-recasting-lose',
+          'cancel-recasting-gain', 'cancel-draw-child', 'cancel-loss-child']) {
           phase = null;
           observedMaterial = game.createCard2('tiesuo', 'club', 12);
           observedReplacement = game.createCard2('tao', 'heart', 4);
@@ -188,4 +196,29 @@ export function checkReferenceRecastCallbacks(result) {
   assert.equal(intercepted.endingHand, intercepted.startingHand);
   assert.equal(intercepted.material, 'B:h');
   assert.equal(intercepted.replacement, 'A:h');
+  for (const [phase, replacement, order] of [
+    ['cancel-recasting-lose', 'c', ['recastingLose', 'loseAfter', 'recastCancelled']],
+    ['cancel-recasting-gain', 'A:h', ['recastingGain', 'gainAfter', 'recastCancelled']],
+    ['cancel-draw-child', 'c', ['drawCancelled', 'recastingGained', 'recastEnd', 'recastAfter']],
+  ]) {
+    const final = result.interrupted.find(item => item.phase === phase);
+    assert.equal(final.material, 'd');
+    assert.equal(final.replacement, replacement);
+    assert.equal(final.endingHand, final.startingHand - Number(replacement === 'c'));
+    const effects = result.events
+      .filter(row => row[columns.phase] === phase && row[columns.observation] === 'effect')
+      .map(row => row[columns.timing]);
+    assert.deepEqual(effects.filter(timing => order.includes(timing)), order);
+    assert.ok(!effects.includes(phase === 'cancel-draw-child' ? 'recastCancelled' : 'recastEnd'));
+  }
+  const lost = result.interrupted.find(item => item.phase === 'cancel-loss-child');
+  assert.equal(lost.material, 'A:h');
+  assert.equal(lost.replacement, 'A:h');
+  assert.equal(lost.endingHand, lost.startingHand + 1);
+  const lossEffects = result.events
+    .filter(row => row[columns.phase] === lost.phase && row[columns.observation] === 'effect')
+    .map(row => row[columns.timing]);
+  assert.deepEqual(lossEffects.filter(t => ['loseCancelled', 'loseAfter', 'loseToDiscardpileAfter',
+    'recastingLost', 'recastingGained', 'recastAfter', 'recastCancelled'].includes(t)),
+    ['loseCancelled', 'loseToDiscardpileAfter', 'recastingLost', 'recastingGained', 'recastAfter']);
 }

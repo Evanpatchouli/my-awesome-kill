@@ -40,6 +40,6 @@
 - **铁索与法恩。** 已在三个真实上游回合捕获 106 条请求和执行观测。B 的一甲可以完全吸收火杀，B 仍解除横置，并向 C 传导原先的一点火焰伤害。第三回合待传播的 D 先被解除横置，受伤历史为零。轨迹包含同一实体杀、来源、座次、法恩的实际选择与摸牌。Rust 对照进行中。[连环伤害轨迹](../../../tests/reference/linked-damage.json)
 - **巧说与纵适。** character/yijiang/skill.js 的 qiaoshui、jyzongshi 与 content.ts 的 chooseToCompare。两席先分别暗选再共同亮牌，核实点数修改、平点、胜败后牌的归属、下张牌的合法目标和临时技过期。
 - **忠义扩展区。** mode/versus.js 中对关羽的技能配置、character/standard/skill.js 的 zhongyi/zhongyi2、addToExpansion/roundStart。实体牌离开原区并获得标签，限定技一次，友方杀伤害增加，下轮移除效果和弃牌各一次。
-- **铁索重铸。** 上游 `Player.recast` 默认和替换 lose/gain 的结算分别记录 30 和 21 次时机请求。另一份 202 条观测的轨迹分别标记请求、工厂调用与技能实际执行。支付后取消时替代牌仍在牌堆；失去材料前被另一席截走时外层重铸仍实际摸牌。默认暗摸和显式明获对第三席的知情结果也有实测。Rust 使用同一组局面逐项验收。[时机请求](../../../tests/reference/tiesuo-recast.json) · [回调、知情状态与中断](../../../tests/reference/recast-callbacks.json)
+- **铁索重铸。** 上游 `Player.recast` 默认和替换 lose/gain 的结算分别记录 30 和 21 次时机请求。另一份 377 条观测的轨迹分别标记请求、工厂调用与技能实际执行。支付后取消时替代牌仍在牌堆；失去材料前被另一席截走时外层重铸仍实际摸牌。还实测了仅取消内层失去或摸牌、已排队的移动去向，以及暗摸和明获对第三席的知情结果。Rust 使用同一组局面逐项验收。[时机请求](../../../tests/reference/tiesuo-recast.json) · [回调、知情状态与中断](../../../tests/reference/recast-callbacks.json)
 
 按探针扩展通用接口，每个可验证部分按 AGENTS.md 提交，并继续更新此表。上述探针通过以后仍须逐族对账并完成真实应用验收。
