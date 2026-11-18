@@ -1,7 +1,13 @@
 use super::{DamageCard, Rule};
 use crate::classic::skills::HeroMoment;
 use crate::scheduler::{EventRef, Outcome};
-use crate::{Card, CardKind, EventKind, Game, Program, Resolution, SeatId, TriggerEvent};
+use crate::{
+    Card, CardKind, EventId, EventKind, Game, Program, Resolution, RuleError, SeatId, TriggerEvent,
+};
+
+#[cfg(test)]
+#[path = "damage_tests.rs"]
+mod damage_tests;
 
 #[derive(Clone, Copy)]
 enum Stage {
@@ -31,6 +37,10 @@ pub(crate) struct CardDamage {
 }
 
 impl CardDamage {
+    pub(crate) fn amount(&self) -> u16 {
+        self.amount
+    }
+
     pub(crate) fn kind(&self) -> EventKind {
         if self.lose_hp {
             EventKind::LoseHp {
@@ -48,6 +58,41 @@ impl CardDamage {
 }
 
 impl Game {
+    /// Return the current kind of a live event frame.
+    pub fn event_kind(&self, id: EventId) -> Option<EventKind> {
+        self.scheduler
+            .active_frame(id)
+            .map(|(_, program)| program.kind())
+    }
+
+    pub(crate) fn add_event_damage(
+        &mut self,
+        event: &TriggerEvent,
+        amount: u16,
+    ) -> Result<(), RuleError> {
+        let expected_stage = match event.timing.as_str() {
+            "damageBegin1" => 3,
+            "damageBegin2" => 4,
+            "damageBegin3" => 5,
+            "damageBegin4" => 6,
+            _ => return Err(RuleError::WrongEvent),
+        };
+        let Some(Program::CardDamage(damage)) = self.scheduler.active_program_mut(event.subject)
+        else {
+            return Err(RuleError::WrongEvent);
+        };
+        if damage.lose_hp || !matches!(damage.stage, Stage::Before(stage) if stage == expected_stage)
+        {
+            return Err(RuleError::WrongEvent);
+        }
+        let next = damage
+            .amount
+            .checked_add(amount)
+            .ok_or(RuleError::InvalidSelection)?;
+        damage.amount = next;
+        Ok(())
+    }
+
     pub(crate) fn live_damage_source(&self, source: Option<SeatId>) -> Option<SeatId> {
         source.filter(|id| self.seat(*id).is_ok_and(|seat| seat.alive))
     }

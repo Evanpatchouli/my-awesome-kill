@@ -224,6 +224,11 @@ impl Game {
         mut queue: Queue,
         child: Option<Outcome<Resolution>>,
     ) {
+        if let Some((_, Program::CardDamage(damage))) =
+            self.scheduler.active_frame(queue.event.subject)
+        {
+            queue.event.amount = damage.amount();
+        }
         if queue.event.source.is_some()
             && matches!(
                 self.scheduler.active_frame(queue.event.subject),

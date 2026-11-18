@@ -96,6 +96,11 @@ pub struct TriggerContext<'a> {
     operations: VecDeque<TriggerOperation>,
 }
 impl TriggerContext<'_> {
+    /// Increase the current damage before it is committed.
+    pub fn add_damage(&mut self, amount: u16) -> Result<(), RuleError> {
+        self.game.add_event_damage(self.event, amount)
+    }
+
     /// Append a legal primary target to the current paid useCard2 subject.
     pub fn add_use_target(&mut self, target: SeatId) -> Result<(), RuleError> {
         self.game.edit_use_target(self.event, target, true)
