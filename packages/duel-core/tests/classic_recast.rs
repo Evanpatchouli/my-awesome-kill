@@ -201,7 +201,8 @@ fn skill_recast(payment: Payment) {
     if payment == Payment::AlreadyGiven {
         assert!(recasts.is_empty());
         assert!(other.seats[1].hand.as_ref().unwrap().contains(&material));
-        assert!(actor.seats[1].known_hand.is_empty());
+        assert_eq!(actor.seats[1].known_hand, [material]);
+        assert!(game.view(None).unwrap().seats[1].known_hand.is_empty());
         assert!(actor.discard.contains(&cost));
     } else {
         assert_eq!(recasts.len(), 2);
