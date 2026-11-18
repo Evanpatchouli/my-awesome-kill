@@ -625,3 +625,15 @@
   text-shadow: none;
 }
 .classic-skills[open] summary { color: #573d30; text-shadow: none; }
+.classic-limited { color: #742e1b; }
+.classic-expansions { position: relative; }
+.classic-expansions summary { cursor: pointer; color: #742e1b; }
+.classic-expansions[open] { z-index: 15; }
+.classic-expansion-list {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 15; display: flex; gap: 5px;
+  padding: 6px; background: #f3e9da; border: 1px solid #b7a38b;
+  max-width: min(70vw, 300px); max-height: 50vh; overflow: auto;
+}
+.classic-expansion-list > div { min-width: 68px; font-size: 10px; }
+.classic-expansion-list .playing-card { width: 68px; height: 96px; padding: 4px; }
+.classic-expansion-list .playing-card strong { font-size: 16px; }

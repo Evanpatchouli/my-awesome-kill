@@ -9,7 +9,8 @@ export const generalById = new Map(roster.map((g) => [g.id, g]))
 const skillTitles = new Map(
   roster.flatMap((hero) => hero.skills.map((skill) => [skill.id, skill.name] as const)),
 )
-export const skillName = (id: string) => skillTitles.get(id) ?? id
+const extraSkillTitles: Record<string, string> = { zhongyi: '忠义', zhongyi2: '忠义' }
+export const skillName = (id: string) => extraSkillTitles[id] ?? skillTitles.get(id) ?? id
 export const factions: Record<string, string> = { wei: '魏', shu: '蜀', wu: '吴', qun: '群' }
 export const roles = { lord: '主公', loyalist: '忠臣', rebel: '反贼', renegade: '内奸' }
 export const sides = { court: '主忠方', rebels: '反贼方', renegade: '内奸' }
@@ -66,6 +67,7 @@ export type Action =
   | { type: 'select'; event: number; branch: number; cards: number[]; targets: number[] }
   | { type: 'playVirtual'; kind: string; cards: number[]; targets: number[] }
   | { type: 'useSkill'; skill: string; cards: number[]; targets: number[] }
+  | { type: 'activateSkill'; registration: number; cards: number[]; targets: number[] }
 export interface SeatView {
   id: number
   hero: string
@@ -79,6 +81,8 @@ export interface SeatView {
   handCount: number
   hand: Entity[] | null
   knownHand?: Entity[]
+  expansions?: { card: Entity; tags: string[] }[]
+  limitedSpent?: string[]
   equipment: Entity[]
   judges: Entity[]
   judgeAssignments: Entity[]
@@ -129,12 +133,14 @@ export interface TableView {
   drawn: boolean
   deckCount: number
   resolving: Entity[]
+  knownSpecial?: Entity[]
   discard: Entity[]
   choice: Choice | null
   actions: Action[]
   events: EventRecord[]
   virtualPlays: { kind: string; branch: Branch }[]
   skillPlays: { skill: string; branch: Branch }[]
+  activePlays?: { registration: number; skill: string; branch: Branch }[]
   privateChoiceCards: Entity[]
   cardFaces?: { id: number; suit: Card['suit']; rank: number }[]
   cardNatures?: Record<number, DamageNature>

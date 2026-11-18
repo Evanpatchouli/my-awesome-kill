@@ -37,7 +37,7 @@ const selectedCard = ref<number | null>(null)
 const selectedCards = ref<number[]>([])
 const selectedTargets = ref<number[]>([])
 const selectedBranch = ref<number | null>(null)
-const selectedMode = ref<'card' | 'virtual' | 'skill' | 'choice' | null>(null)
+const selectedMode = ref<'card' | 'virtual' | 'skill' | 'active' | 'choice' | null>(null)
 const selectedPlay = ref<number | null>(null)
 const me = computed(() => props.view.seats.find((seat) => seat.id === props.view.humanSeat))
 const others = computed(() => props.view.seats.filter((seat) => seat.id !== props.view.humanSeat))
@@ -66,6 +66,7 @@ const playable = computed(
 const branches = computed(() => (choice.value?.kind === 'content' ? choice.value.branches : []))
 const virtuals = computed(() => props.view.virtualPlays ?? [])
 const skills = computed(() => props.view.skillPlays ?? [])
+const activePlays = computed(() => props.view.activePlays ?? [])
 const branch = computed<Branch | null>(() => {
   if (choice.value?.compare) return choice.value.branches[0] ?? null
   if (selectedMode.value === 'choice')
@@ -73,6 +74,7 @@ const branch = computed<Branch | null>(() => {
   if (selectedMode.value === 'virtual')
     return virtuals.value[selectedPlay.value ?? -1]?.branch ?? null
   if (selectedMode.value === 'skill') return skills.value[selectedPlay.value ?? -1]?.branch ?? null
+  if (selectedMode.value === 'active') return activePlays.value[selectedPlay.value ?? -1]?.branch ?? null
   return null
 })
 const handOptions = computed(() => new Set(choice.value?.cards ?? []))
@@ -182,7 +184,7 @@ function reset() {
   selectedPlay.value = null
 }
 watch(() => props.view.version, reset)
-function setMode(mode: 'choice' | 'virtual' | 'skill', index: number) {
+function setMode(mode: 'choice' | 'virtual' | 'skill' | 'active', index: number) {
   reset()
   selectedMode.value = mode
   if (mode === 'choice') selectedBranch.value = index
@@ -260,6 +262,13 @@ function confirm() {
     action = {
       type: 'useSkill',
       skill: skills.value[selectedPlay.value]!.skill,
+      cards: [...selectedCards.value],
+      targets: [...selectedTargets.value],
+    }
+  else if (selectedMode.value === 'active' && branch.value && selectedPlay.value !== null)
+    action = {
+      type: 'activateSkill',
+      registration: activePlays.value[selectedPlay.value]!.registration,
       cards: [...selectedCards.value],
       targets: [...selectedTargets.value],
     }
@@ -372,6 +381,7 @@ function canPickCard(id: number) {
           :equipment="seatCards(seat, 'equipment')"
           :judges="seatCards(seat, 'judges')"
           :known-hand="seat.knownHand?.map((card) => faceOf(view, card))"
+          :expansions="seat.expansions?.map((item) => ({ ...item, card: faceOf(view, item.card) }))"
         />
       </div>
     </div>
@@ -423,6 +433,7 @@ function canPickCard(id: number) {
           :seat="me"
           :equipment="seatCards(me, 'equipment')"
           :judges="seatCards(me, 'judges')"
+          :expansions="me.expansions?.map((item) => ({ ...item, card: faceOf(view, item.card) }))"
         />
       </div>
       <div class="classic-hand-zone">
@@ -481,7 +492,7 @@ function canPickCard(id: number) {
             {{ item.label }}
           </button>
         </div>
-        <div v-if="!choice && (virtuals.length || skills.length)" class="classic-options">
+        <div v-if="!choice && (virtuals.length || skills.length || activePlays.length)" class="classic-options">
           <button
             v-for="(item, i) in virtuals"
             :key="`v${i}`"
@@ -496,6 +507,14 @@ function canPickCard(id: number) {
             :class="{ selected: selectedMode === 'skill' && selectedPlay === i }"
             :disabled="!active"
             @click="setMode('skill', i)"
+          >
+            {{ item.branch.label }}
+          </button><button
+            v-for="(item, i) in activePlays"
+            :key="`a${item.registration}`"
+            :class="{ selected: selectedMode === 'active' && selectedPlay === i }"
+            :disabled="!active"
+            @click="setMode('active', i)"
           >
             {{ item.branch.label }}
           </button>

@@ -10,6 +10,8 @@ mod qa_elemental;
 mod qa_qiaoshui;
 #[cfg(feature = "qa-recast")]
 mod qa_recast;
+#[cfg(feature = "qa-zhongyi")]
+mod qa_zhongyi;
 
 #[wasm_bindgen]
 pub struct Duel {
