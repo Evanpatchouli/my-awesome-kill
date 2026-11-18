@@ -452,6 +452,48 @@ impl TriggerContext<'_> {
         Ok(())
     }
 
+    /// Recast an ordered selection authorized by this skill.
+    pub fn recast_batch(
+        &mut self,
+        seat: SeatId,
+        cards: &[CardId],
+        rule: crate::RecastBatchRule,
+    ) -> Result<(), RuleError> {
+        let claimed = self.claimed_cards();
+        if cards.iter().any(|card| claimed.contains(card)) {
+            return Err(RuleError::InvalidSelection);
+        }
+        self.game.recast_materials(seat, cards)?;
+        self.operations.push_back(TriggerOperation::RecastBatch {
+            seat,
+            cards: cards.to_vec(),
+            rule,
+        });
+        Ok(())
+    }
+
+    /// Transfer one or more hand or equipment cards as a single gain.
+    pub fn give_cards(
+        &mut self,
+        from: SeatId,
+        to: SeatId,
+        cards: &[CardId],
+        visible: bool,
+    ) -> Result<(), RuleError> {
+        let claimed = self.claimed_cards();
+        if cards.iter().any(|card| claimed.contains(card)) {
+            return Err(RuleError::InvalidSelection);
+        }
+        self.game.give_cards_program(from, to, cards, visible)?;
+        self.operations.push_back(TriggerOperation::GiveCards {
+            from,
+            to,
+            cards: cards.to_vec(),
+            visible,
+        });
+        Ok(())
+    }
+
     /// Give one held card using the ordinary gain/lose lifecycle. A publicly
     /// known card stays known and a hidden card stays private to its holders.
     pub fn give_hand(&mut self, from: SeatId, to: SeatId, card: CardId) -> Result<(), RuleError> {
@@ -470,6 +512,10 @@ impl TriggerContext<'_> {
             match operation {
                 TriggerOperation::DiscardOwned { cards, .. } => {
                     claimed.extend(cards.iter().map(|(_, c)| c.id))
+                }
+                TriggerOperation::RecastBatch { cards, .. }
+                | TriggerOperation::GiveCards { cards, .. } => {
+                    claimed.extend(cards.iter().copied())
                 }
                 TriggerOperation::Recast { card, .. }
                 | TriggerOperation::GiveHand { card, .. }
@@ -568,6 +614,17 @@ enum TriggerOperation {
     Recast {
         seat: SeatId,
         card: CardId,
+    },
+    RecastBatch {
+        seat: SeatId,
+        cards: Vec<CardId>,
+        rule: crate::RecastBatchRule,
+    },
+    GiveCards {
+        from: SeatId,
+        to: SeatId,
+        cards: Vec<CardId>,
+        visible: bool,
     },
     GiveHand {
         from: SeatId,
@@ -841,11 +898,14 @@ impl Game {
                 require_success: true,
                 ..
             } if matches!(
-                child,
+                &child,
                 Some(
                     Outcome::Cancelled
                         | Outcome::Finished(Resolution::RecastMove { card: None, .. })
                 )
+            ) || matches!(
+                &child,
+                Some(Outcome::Finished(Resolution::BatchMove { cards, .. })) if cards.is_empty()
             ) =>
             {
                 self.finish();
@@ -897,6 +957,8 @@ impl Game {
             let require_success = matches!(
                 operation,
                 TriggerOperation::Recast { .. }
+                    | TriggerOperation::RecastBatch { .. }
+                    | TriggerOperation::GiveCards { .. }
                     | TriggerOperation::Expand { .. }
                     | TriggerOperation::GainExpansion { .. }
                     | TriggerOperation::GiveHand { .. }
@@ -993,6 +1055,25 @@ impl Game {
                 }
                 TriggerOperation::Recast { seat, card } => {
                     let Ok(program) = self.recast_program(seat, card, false) else {
+                        self.finish();
+                        return;
+                    };
+                    program
+                }
+                TriggerOperation::RecastBatch { seat, cards, rule } => {
+                    let Ok(program) = self.recast_batch_program(seat, &cards, rule) else {
+                        self.finish();
+                        return;
+                    };
+                    program
+                }
+                TriggerOperation::GiveCards {
+                    from,
+                    to,
+                    cards,
+                    visible,
+                } => {
+                    let Ok(program) = self.give_cards_program(from, to, &cards, visible) else {
                         self.finish();
                         return;
                     };

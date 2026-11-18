@@ -37,8 +37,9 @@ use classic::equipment;
 use classic::hero_integration::Judgment;
 pub use classic::phases::PhaseInfo;
 pub use classic::recast::{
-    RecastFilter, RecastGain, RecastGainFactory, RecastKey, RecastLoss, RecastLossFactory,
-    RecastMovement, RecastRule, RecastSeat, RecastState,
+    LossRecord, RecastBatchGain, RecastBatchGainFactory, RecastBatchLossFactory,
+    RecastBatchMovement, RecastBatchRule, RecastFilter, RecastGain, RecastGainFactory, RecastKey,
+    RecastLoss, RecastLossFactory, RecastMovement, RecastRule, RecastSeat, RecastState,
 };
 pub use classic::skills::SkillId;
 use classic::skills::{HeroAdjustment, HeroFlow};
@@ -68,6 +69,11 @@ enum Resolution {
     RecastMove {
         event: EventId,
         card: Option<Card>,
+        cancelled: bool,
+    },
+    BatchMove {
+        event: EventId,
+        cards: Vec<Card>,
         cancelled: bool,
     },
     Complete,
@@ -121,8 +127,8 @@ impl Decision {
     }
 }
 
-#[derive(Clone, Copy)]
-enum Zone {
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Zone {
     Hand,
     Equipment,
     Judgment,
@@ -361,8 +367,11 @@ pub struct Game {
     timing_observer: Option<triggers::TimingObserver>,
     elemental: elemental::State,
     recast_rules: Vec<(RecastKey, RecastRule)>,
+    loss_history: Vec<LossRecord>,
+    reserved_draws: Vec<Card>,
     transferring: Vec<Card>,
     known_to_all: HashSet<CardId>,
+    known_to_giver: HashMap<CardId, SeatId>,
     seats: Vec<Seat>,
     active_seat: SeatId,
     version: u32,
@@ -428,8 +437,11 @@ impl Game {
             elemental: elemental::State::default(),
             compares: classic::compare::State::default(),
             recast_rules: Vec::new(),
+            loss_history: Vec::new(),
+            reserved_draws: Vec::new(),
             transferring: Vec::new(),
             known_to_all: HashSet::new(),
+            known_to_giver: HashMap::new(),
             seats,
             active_seat,
             version: 0,
@@ -487,7 +499,7 @@ impl Game {
 
     /// Knowledge of a physical identity. An expansion's public mark may separately show its face.
     pub fn is_known_by(&self, card: CardId, viewer: Option<SeatId>) -> bool {
-        self.known_to_all.contains(&card)
+        self.is_known_hand_identity(card, viewer)
             || self.seats.iter().any(|seat| {
                 seat.equipment
                     .iter()
@@ -500,6 +512,11 @@ impl Game {
                             .chain(&seat.expansions)
                             .any(|held| held.id == card)
             })
+    }
+
+    fn is_known_hand_identity(&self, card: CardId, viewer: Option<SeatId>) -> bool {
+        self.known_to_all.contains(&card)
+            || viewer.is_some_and(|viewer| self.known_to_giver.get(&card) == Some(&viewer))
     }
 
     /// Walk the table once, starting at `start` and following the setup order.
@@ -597,7 +614,7 @@ impl Game {
                     known_hand: seat
                         .hand
                         .iter()
-                        .filter(|c| self.known_to_all.contains(&c.id))
+                        .filter(|c| self.is_known_hand_identity(c.id, viewer))
                         .copied()
                         .collect(),
                     equipment: seat.equipment.clone(),
@@ -1013,6 +1030,9 @@ impl Game {
                             cancelled: true, ..
                         })
                         | Outcome::Finished(Resolution::HpChanged { cancelled: true })
+                        | Outcome::Finished(Resolution::BatchMove {
+                            cancelled: true, ..
+                        })
                         | Outcome::Finished(Resolution::RecastMove {
                             cancelled: true, ..
                         }) => EventStatus::Cancelled,
@@ -1286,6 +1306,7 @@ impl Game {
         let card = Self::remove_card(self.seat_mut(seat).zone_mut(zone), id);
         if matches!(zone, Zone::Hand) {
             self.known_to_all.remove(&id);
+            self.known_to_giver.remove(&id);
         }
         if matches!(zone, Zone::Judgment) {
             self.judgment_overrides.remove(&id);

@@ -395,6 +395,7 @@ impl Game {
             .chain(&self.resolving)
             .chain(&self.discard)
             .chain(&self.transferring)
+            .chain(&self.reserved_draws)
     }
 
     pub(crate) fn create_content_card(

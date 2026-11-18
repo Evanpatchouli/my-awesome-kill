@@ -7,6 +7,48 @@ use crate::{
 };
 use std::sync::Arc;
 
+mod batch_movement;
+use batch_movement::BatchMovement;
+pub use batch_movement::LossRecord;
+
+pub type RecastBatchLossFactory =
+    Arc<dyn Fn(RecastState<'_>, SeatId, &[Card]) -> RecastLoss + Send + Sync>;
+pub type RecastBatchGainFactory = Arc<
+    dyn Fn(RecastState<'_>, SeatId, &[Card], &RecastBatchMovement) -> RecastBatchGain + Send + Sync,
+>;
+
+#[derive(Clone)]
+pub struct RecastBatchRule {
+    pub loss: RecastBatchLossFactory,
+    pub gain: RecastBatchGainFactory,
+}
+
+impl Default for RecastBatchRule {
+    fn default() -> Self {
+        Self {
+            loss: Arc::new(|_, _, _| RecastLoss::Discard),
+            gain: Arc::new(|_, _, _, _| RecastBatchGain::Draw),
+        }
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum RecastBatchGain {
+    Draw,
+    /// Gain these physical draw-pile cards face up in the supplied order.
+    FromDeck {
+        cards: Vec<CardId>,
+    },
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct RecastBatchMovement {
+    pub event: EventId,
+    pub kind: RecastLoss,
+    pub moved: Vec<Card>,
+    pub cancelled: bool,
+}
+
 /// Read-only table state for trusted card content. Reading it never enumerates player actions.
 #[derive(Clone, Copy)]
 pub struct RecastState<'a>(&'a Game);
@@ -125,6 +167,7 @@ pub struct RecastMovement {
 pub(crate) enum Flow {
     Recast(Recasting),
     Movement(Movement),
+    BatchMovement(BatchMovement),
 }
 
 impl Flow {
@@ -132,6 +175,7 @@ impl Flow {
         match self {
             Self::Recast(event) => EventKind::Recast { seat: event.seat },
             Self::Movement(event) => event.event_kind(),
+            Self::BatchMovement(event) => event.event_kind(),
         }
     }
 }
@@ -139,14 +183,40 @@ impl Flow {
 #[derive(Clone)]
 pub(crate) struct Recasting {
     seat: SeatId,
-    card: Card,
-    rule: RecastRule,
+    terms: RecastTerms,
     stage: RecastStage,
     post: Option<crate::classic::skills::Dispatch>,
     cancelled_before_movement: bool,
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone)]
+enum RecastTerms {
+    Single(Card, RecastRule),
+    Batch(Arc<[Card]>, RecastBatchRule),
+}
+
+#[derive(Clone)]
+enum RecastPayment {
+    Single(RecastMovement),
+    Batch(RecastBatchMovement),
+}
+
+#[derive(Clone)]
+enum RecastChild {
+    Single(Movement),
+    Batch(BatchMovement),
+}
+
+impl RecastChild {
+    fn program(self) -> Program {
+        Program::Recast(match self {
+            Self::Single(movement) => Flow::Movement(movement),
+            Self::Batch(movement) => Flow::BatchMovement(movement),
+        })
+    }
+}
+
+#[derive(Clone)]
 enum RecastStage {
     Before,
     Begin,
@@ -154,9 +224,9 @@ enum RecastStage {
     LossFactory,
     RunLoss(RecastLoss),
     Lost(RecastLoss),
-    Paid(RecastMovement),
-    GainFactory(RecastMovement),
-    RunGain(Option<Movement>),
+    Paid(RecastPayment),
+    GainFactory(RecastPayment),
+    RunGain(Option<RecastChild>),
     Gained,
     End,
     After,
@@ -165,35 +235,89 @@ enum RecastStage {
     FinishCancelled(Option<RemainingRecast>),
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 enum RemainingRecast {
-    AfterLoss(RecastMovement),
-    Gain(RecastMovement),
+    AfterLoss(RecastPayment),
+    Gain(RecastPayment),
 }
 
 impl Recasting {
+    fn cards(&self) -> &[Card] {
+        match &self.terms {
+            RecastTerms::Single(card, _) => std::slice::from_ref(card),
+            RecastTerms::Batch(cards, _) => cards,
+        }
+    }
+
     fn request(
         &self,
         game: &mut Game,
         name: &'static str,
     ) -> Option<crate::classic::skills::Dispatch> {
-        game.prepare_timing(name, Some(self.seat), None, None, 1, &[self.card])
+        game.prepare_timing(
+            name,
+            Some(self.seat),
+            None,
+            None,
+            self.cards().len() as u16,
+            self.cards(),
+        )
     }
 
-    fn plan_gain(
-        &self,
-        game: &mut Game,
-        loss: RecastMovement,
-    ) -> (
-        Option<crate::classic::skills::Dispatch>,
-        RecastGain,
-        Option<crate::classic::skills::Dispatch>,
-    ) {
-        let before = self.request(game, "recastingGain");
-        let gain = (self.rule.gain)(RecastState(game), self.seat, self.card, &loss);
-        let after = self.request(game, "recastingGained");
-        (before, gain, after)
+    fn gain_movement(&self, state: RecastState<'_>, loss: &RecastPayment) -> Option<RecastChild> {
+        let seat = self.seat;
+        match (&self.terms, loss) {
+            (RecastTerms::Single(card, rule), RecastPayment::Single(loss)) => {
+                match (rule.gain)(state, seat, *card, loss) {
+                    RecastGain::Draw => Some(Movement::new(seat, MoveKind::Draw)),
+                    RecastGain::FromDeck { card: id } => {
+                        state.draw_pile().iter().find(|c| c.id == id).map(|&card| {
+                            Movement::new(
+                                seat,
+                                MoveKind::Gain {
+                                    card,
+                                    origin: GainOrigin::DrawPile,
+                                },
+                            )
+                        })
+                    }
+                }
+                .map(RecastChild::Single)
+            }
+            (RecastTerms::Batch(cards, rule), RecastPayment::Batch(loss)) => {
+                let movement = match (rule.gain)(state, seat, cards, loss) {
+                    RecastBatchGain::Draw => BatchMovement::draw(seat, cards.len() as u16),
+                    RecastBatchGain::FromDeck { cards } => BatchMovement::gain_from_deck(
+                        seat,
+                        select_cards(&cards, |id| {
+                            state.draw_pile().iter().copied().find(|card| card.id == id)
+                        })
+                        .ok()?,
+                    ),
+                };
+                Some(RecastChild::Batch(movement))
+            }
+            _ => unreachable!("the payment comes from this recast"),
+        }
     }
+}
+
+fn select_cards(
+    ids: &[CardId],
+    mut card_for: impl FnMut(CardId) -> Option<Card>,
+) -> Result<Arc<[Card]>, RuleError> {
+    if ids.is_empty() || ids.len() > usize::from(u16::MAX) {
+        return Err(RuleError::InvalidSelection);
+    }
+    let mut seen = std::collections::HashSet::with_capacity(ids.len());
+    ids.iter()
+        .map(|&id| {
+            if !seen.insert(id) {
+                return Err(RuleError::InvalidSelection);
+            }
+            card_for(id).ok_or(RuleError::InvalidCard)
+        })
+        .collect()
 }
 
 #[derive(Clone, Copy)]
@@ -376,6 +500,18 @@ impl Movement {
 }
 
 impl Game {
+    /// Committed loss records from the movement flow, including empty successful losses.
+    pub fn loss_history(&self) -> &[LossRecord] {
+        &self.loss_history
+    }
+
+    pub fn loss_record(&self, event: EventId) -> Option<&LossRecord> {
+        self.loss_history
+            .iter()
+            .rev()
+            .find(|record| record.event == event)
+    }
+
     pub(crate) fn gain_judgment_program(
         &self,
         seat: SeatId,
@@ -549,7 +685,7 @@ impl Game {
         Ok((card, rule))
     }
 
-    fn recast_hand_card(&self, seat: SeatId, id: CardId) -> Result<Card, RuleError> {
+    fn check_movement_seat(&self, seat: SeatId) -> Result<&crate::Seat, RuleError> {
         if self.match_result().is_some() {
             return Err(RuleError::GameOver);
         }
@@ -560,7 +696,11 @@ impl Game {
         if !player.alive {
             return Err(RuleError::InactiveSeat { seat });
         }
-        player
+        Ok(player)
+    }
+
+    fn recast_hand_card(&self, seat: SeatId, id: CardId) -> Result<Card, RuleError> {
+        self.check_movement_seat(seat)?
             .hand
             .iter()
             .copied()
@@ -570,6 +710,53 @@ impl Game {
 
     pub fn can_recast(&self, seat: SeatId, id: CardId) -> bool {
         self.recast_terms(seat, id, true).is_ok()
+    }
+
+    /// Eligibility for material selected by a skill that supplies recast permission.
+    pub fn can_recast_material(&self, seat: SeatId, id: CardId) -> bool {
+        self.recast_materials(seat, &[id]).is_ok()
+    }
+
+    pub(crate) fn recast_materials(
+        &self,
+        seat: SeatId,
+        ids: &[CardId],
+    ) -> Result<Arc<[Card]>, RuleError> {
+        let cards = self.held_materials(seat, ids)?;
+        if cards.iter().any(|&card| {
+            self.recast_rule(card)
+                .and_then(|rule| rule.filter.as_ref())
+                .is_some_and(|filter| !filter(RecastState(self), seat, card))
+        }) {
+            return Err(RuleError::InvalidCard);
+        }
+        Ok(cards)
+    }
+
+    pub(crate) fn held_materials(
+        &self,
+        seat: SeatId,
+        ids: &[CardId],
+    ) -> Result<Arc<[Card]>, RuleError> {
+        let player = self.check_movement_seat(seat)?;
+        select_cards(ids, |id| {
+            player
+                .hand
+                .iter()
+                .chain(&player.equipment)
+                .copied()
+                .find(|card| card.id == id)
+        })
+    }
+
+    pub(crate) fn recast_batch_program(
+        &self,
+        seat: SeatId,
+        ids: &[CardId],
+        rule: RecastBatchRule,
+    ) -> Result<Program, RuleError> {
+        let cards = self.recast_materials(seat, ids)?;
+        Ok(self.recasting_program(seat, RecastTerms::Batch(cards, rule)))
     }
 
     pub(crate) fn plan_recast(&self, seat: SeatId, id: CardId) -> Result<Program, RuleError> {
@@ -584,14 +771,34 @@ impl Game {
         strict: bool,
     ) -> Result<Program, RuleError> {
         let (card, rule) = self.recast_terms(seat, id, strict)?;
-        Ok(Program::Recast(Flow::Recast(Recasting {
+        Ok(self.recasting_program(
             seat,
-            card,
-            rule: rule.cloned().unwrap_or_default(),
+            RecastTerms::Single(card, rule.cloned().unwrap_or_default()),
+        ))
+    }
+
+    fn recasting_program(&self, seat: SeatId, terms: RecastTerms) -> Program {
+        Program::Recast(Flow::Recast(Recasting {
+            seat,
+            terms,
             stage: RecastStage::Before,
             post: None,
             cancelled_before_movement: false,
-        })))
+        }))
+    }
+
+    pub(crate) fn give_cards_program(
+        &self,
+        from: SeatId,
+        to: SeatId,
+        ids: &[CardId],
+        visible: bool,
+    ) -> Result<Program, RuleError> {
+        let cards = self.held_materials(from, ids)?;
+        if from == to || !self.seat(to)?.alive {
+            return Err(RuleError::InvalidTarget);
+        }
+        Ok(RecastChild::Batch(BatchMovement::give(from, to, cards, visible)).program())
     }
 
     pub(crate) fn give_hand_program(
@@ -625,6 +832,7 @@ impl Game {
         match flow {
             Flow::Recast(recast) => self.resolve_recasting(recast, child),
             Flow::Movement(movement) => self.resolve_recast_movement(event, movement, child),
+            Flow::BatchMovement(movement) => self.resolve_batch_movement(event, movement, child),
         }
     }
 
@@ -645,11 +853,11 @@ impl Game {
         false
     }
 
-    fn resolve_recasting(&mut self, mut recast: Recasting, child: Option<Outcome<Resolution>>) {
+    fn resolve_recasting(&mut self, mut recast: Recasting, mut child: Option<Outcome<Resolution>>) {
         use RecastStage::*;
-        let (seat, card) = (recast.seat, recast.card);
+        let seat = recast.seat;
         if matches!(child, Some(Outcome::Cancelled)) {
-            match recast.stage {
+            match recast.stage.clone() {
                 // The factory already queued the movement. Cancellation requests its
                 // notification now, but the existing child runs before its callbacks.
                 RunLoss(_) | RunGain(_) => {
@@ -662,44 +870,67 @@ impl Game {
                 _ => recast.stage = Cancel(None),
             }
         }
-        let hook =
-            |game: &mut Self, name| game.queue_timing(name, Some(seat), None, None, 1, &[card]);
         loop {
-            let queued = match recast.stage {
+            let queued = match recast.stage.clone() {
                 Before => {
                     recast.stage = Begin;
-                    hook(self, "recastBefore")
+                    let timing = recast.request(self, "recastBefore");
+                    self.dispatch_recast_hook(timing)
                 }
                 Begin => {
                     recast.stage = Announce;
-                    hook(self, "recastBegin")
+                    let timing = recast.request(self, "recastBegin");
+                    self.dispatch_recast_hook(timing)
                 }
                 Announce => {
-                    if self.recast_held(seat, card) {
-                        self.known_to_all.insert(card.id);
+                    if let RecastTerms::Single(card, _) = &recast.terms {
+                        if self.recast_held(seat, *card) {
+                            self.known_to_all.insert(card.id);
+                        }
+                    }
+                    for &card in recast.cards() {
+                        self.next(EventKind::RecastReveal { seat, card });
                     }
                     recast.stage = LossFactory;
-                    self.next(EventKind::RecastReveal { seat, card });
                     true
                 }
                 LossFactory => {
                     let pre = recast.request(self, "recastingLose");
-                    let loss = (recast.rule.loss)(RecastState(self), seat, card);
+                    let loss = match &recast.terms {
+                        RecastTerms::Single(card, rule) => {
+                            (rule.loss)(RecastState(self), seat, *card)
+                        }
+                        RecastTerms::Batch(cards, rule) => {
+                            (rule.loss)(RecastState(self), seat, cards)
+                        }
+                    };
                     recast.post = recast.request(self, "recastingLost");
                     recast.stage = RunLoss(loss);
                     self.dispatch_recast_hook(pre)
                 }
                 RunLoss(loss) => {
-                    let movement = match loss {
-                        RecastLoss::Discard => Movement::new(seat, MoveKind::DiscardToPile(card)),
-                        RecastLoss::Give { to } if to != seat && self.recast_alive(to) => {
-                            Movement::new(
+                    let movement = match (&recast.terms, loss) {
+                        (RecastTerms::Single(card, _), RecastLoss::Discard) => {
+                            RecastChild::Single(Movement::new(seat, MoveKind::DiscardToPile(*card)))
+                        }
+                        (RecastTerms::Single(card, _), RecastLoss::Give { to })
+                            if to != seat && self.recast_alive(to) =>
+                        {
+                            RecastChild::Single(Movement::new(
                                 to,
                                 MoveKind::Gain {
-                                    card,
+                                    card: *card,
                                     origin: GainOrigin::Hand { seat, public: true },
                                 },
-                            )
+                            ))
+                        }
+                        (RecastTerms::Batch(cards, _), RecastLoss::Discard) => {
+                            RecastChild::Batch(BatchMovement::discard(seat, cards.clone()))
+                        }
+                        (RecastTerms::Batch(cards, _), RecastLoss::Give { to })
+                            if to != seat && self.recast_alive(to) =>
+                        {
+                            RecastChild::Batch(BatchMovement::give(seat, to, cards.clone(), true))
                         }
                         _ => {
                             recast.stage = Cancel(None);
@@ -707,23 +938,41 @@ impl Game {
                         }
                     };
                     recast.stage = Lost(loss);
-                    self.scheduler
-                        .next(Program::Recast(Flow::Movement(movement)));
+                    self.scheduler.next(movement.program());
                     true
                 }
                 Lost(kind) => {
-                    let Some(Outcome::Finished(Resolution::RecastMove {
-                        event, card: moved, ..
-                    })) = child
-                    else {
-                        recast.stage = Cancel(None);
-                        continue;
-                    };
-                    let movement = RecastMovement {
-                        event,
-                        kind,
-                        card,
-                        moved: moved == Some(card),
+                    let movement = match (&recast.terms, child.take()) {
+                        (
+                            RecastTerms::Single(card, _),
+                            Some(Outcome::Finished(Resolution::RecastMove {
+                                event,
+                                card: moved,
+                                ..
+                            })),
+                        ) => RecastPayment::Single(RecastMovement {
+                            event,
+                            kind,
+                            card: *card,
+                            moved: moved == Some(*card),
+                        }),
+                        (
+                            RecastTerms::Batch(..),
+                            Some(Outcome::Finished(Resolution::BatchMove {
+                                event,
+                                cards,
+                                cancelled,
+                            })),
+                        ) => RecastPayment::Batch(RecastBatchMovement {
+                            event,
+                            kind,
+                            moved: cards,
+                            cancelled,
+                        }),
+                        _ => {
+                            recast.stage = Cancel(None);
+                            continue;
+                        }
                     };
                     if recast.cancelled_before_movement {
                         recast.stage = Cancel(Some(RemainingRecast::AfterLoss(movement)));
@@ -734,34 +983,19 @@ impl Game {
                 }
                 Paid(movement) => {
                     recast.stage = GainFactory(movement);
-                    hook(self, "recast")
+                    let timing = recast.request(self, "recast");
+                    self.dispatch_recast_hook(timing)
                 }
                 GainFactory(loss) => {
-                    let (pre, gain, post) = recast.plan_gain(self, loss);
-                    let movement = match gain {
-                        RecastGain::Draw => Some(Movement::new(seat, MoveKind::Draw)),
-                        RecastGain::FromDeck { card: id } => RecastState(self)
-                            .draw_pile()
-                            .iter()
-                            .find(|c| c.id == id)
-                            .map(|&card| {
-                                Movement::new(
-                                    seat,
-                                    MoveKind::Gain {
-                                        card,
-                                        origin: GainOrigin::DrawPile,
-                                    },
-                                )
-                            }),
-                    };
-                    recast.post = post;
+                    let pre = recast.request(self, "recastingGain");
+                    let movement = recast.gain_movement(RecastState(self), &loss);
+                    recast.post = recast.request(self, "recastingGained");
                     recast.stage = RunGain(movement);
                     self.dispatch_recast_hook(pre)
                 }
                 RunGain(Some(movement)) => {
                     recast.stage = Gained;
-                    self.scheduler
-                        .next(Program::Recast(Flow::Movement(movement)));
+                    self.scheduler.next(movement.program());
                     true
                 }
                 RunGain(None) => {
@@ -778,18 +1012,21 @@ impl Game {
                 }
                 End => {
                     recast.stage = After;
-                    hook(self, "recastEnd")
+                    let timing = recast.request(self, "recastEnd");
+                    self.dispatch_recast_hook(timing)
                 }
                 After => {
                     recast.stage = Finish;
-                    hook(self, "recastAfter")
+                    let timing = recast.request(self, "recastAfter");
+                    self.dispatch_recast_hook(timing)
                 }
                 Cancel(remaining) => {
                     recast.stage = FinishCancelled(remaining);
                     if recast.cancelled_before_movement {
                         self.dispatch_recast_hook(recast.post.take())
                     } else {
-                        hook(self, "recastCancelled")
+                        let timing = recast.request(self, "recastCancelled");
+                        self.dispatch_recast_hook(timing)
                     }
                 }
                 FinishCancelled(remaining) => {
@@ -803,7 +1040,9 @@ impl Game {
                             }
                             RemainingRecast::Gain(loss) => loss,
                         };
-                        let _ = recast.plan_gain(self, loss);
+                        let _ = recast.request(self, "recastingGain");
+                        let _ = recast.gain_movement(RecastState(self), &loss);
+                        let _ = recast.request(self, "recastingGained");
                     }
                     self.scheduler.end(Outcome::Cancelled);
                     return;
@@ -1056,6 +1295,18 @@ impl Game {
                                 }
                             );
                         movement.stage = if movement.committed.is_some() || intercepted {
+                            if let Lose { card, zone, .. } = movement.kind {
+                                self.loss_history.push(LossRecord {
+                                    event: event.id,
+                                    seat,
+                                    stockcards: vec![card],
+                                    cards: movement
+                                        .committed
+                                        .into_iter()
+                                        .map(|card| (zone, card))
+                                        .collect(),
+                                });
+                            }
                             End
                         } else {
                             Cancel(MoveCancellation::InvalidMovement)
@@ -1106,6 +1357,8 @@ impl Game {
                         self.seat_mut(seat).hand.push(card);
                         if public {
                             self.known_to_all.insert(card.id);
+                        } else {
+                            self.known_to_giver.insert(card.id, from);
                         }
                     }
                     movement.committed = card;
@@ -1155,5 +1408,9 @@ impl Game {
     }
 }
 
+#[cfg(test)]
+mod batch_tests;
+#[cfg(test)]
+mod batch_trace;
 #[cfg(test)]
 mod tests;
