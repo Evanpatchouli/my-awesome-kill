@@ -58,6 +58,8 @@
 
 时机请求、首个观察技能回调与实际技能或乐不思蜀内容分别记为 `request`、`callback`、`content`。`stage` 和 `state` 使用各自的列名表，`state.flags` 使用 `flagColumns`。当前席为空表示原版尚未赋值或已经清除该状态。牌区前缀为持有席，`c`、`o`、`d`、`s` 分别为牌堆、处理区、弃牌堆、暂存区。
 
+`judgment-zones.json` 在八席身份局独立复跑六种延时判定，区分放入判定区的实体牌和从牌堆翻开的判定牌。乐不思蜀失败时只登记跳过出牌，天妒可获得成功的判定牌；闪电命中造成无来源三点雷伤，未命中或被无懈抵消则转入下家判定区。无懈抵消乐时不开始判定，预置判定牌留在牌堆。两张牌各自只移动一次：延时牌先经以 `phaseJudge` 为父的失牌进入处理区，判定事件的父也是 `phaseJudge`；通常判定牌在效果前弃置，延时牌在阶段 `After` 后弃置或在效果中迁走。`judge` 请求瞬间上游 `get.position` 尚无结果，但 `get.owner` 已指向判定者；到 `judgeFixing` 才观察到判定牌位于处理区。`revealedOwner` 和 `revealed` 分别保留这两项观测。
+
 `phase-queue.json` 在另一局八席身份牌桌用观察技能直接调用上游 `Player.insertPhase`，并用原版 `die` 让排队的非主公 E 死亡。`operation` 给出每次调用使用的前插参数与队列前后状态。第一轮的 A 自然回合结束时追加 C、D、E，再把 B 前插到尚未出队的 A 之前。
 
 - A 的 `phaseAfter` 请求仍显示 B 在队首。随后的第一个额外回合是 C，B 的额外事件已不在队列、未开始也未完成。B 随后正常进入自然回合。这个样本覆盖已有自然回合占队首时调用 `insertPhase(source, true)` 的行为。
@@ -86,6 +88,7 @@
    node scripts/reference-trace.mjs --scenario compare-boundaries --check tests/reference/compare-boundaries.json
    node scripts/reference-trace.mjs --scenario phase-scheduling --check tests/reference/phase-scheduling.json
    node scripts/reference-trace.mjs --scenario phase-queue --check tests/reference/phase-queue.json
+   node scripts/reference-trace.mjs --scenario judgment-zones --check tests/reference/judgment-zones.json
    node scripts/reference-trace.mjs --scenario zhongyi-expansion --check tests/reference/zhongyi-expansion.json
    node scripts/reference-trace.mjs --scenario zhongyi-boundaries --check tests/reference/zhongyi-boundaries.json
    node scripts/reference-trace.mjs --scenario zhongyi-transit-death --check tests/reference/zhongyi-transit-death.json

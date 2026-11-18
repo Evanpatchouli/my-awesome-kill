@@ -13,6 +13,7 @@ import { checkZhongyiBoundaries, installZhongyiBoundaries } from './reference-zh
 import { checkZhongyiTransitDeath, installZhongyiTransitDeath } from './reference-zhongyi-transit-death.mjs';
 import { checkPhaseScheduling, installPhaseScheduling } from './reference-phase-scheduling.mjs';
 import { checkPhaseQueue, installPhaseQueue } from './reference-phase-queue.mjs';
+import { checkJudgmentZones, installJudgmentZones } from './reference-judgment-zones.mjs';
 
 // This is an optional oracle runner. It needs a running, separate upstream dev
 // server and Playwright; neither is a runtime dependency of the game.
@@ -51,6 +52,7 @@ const descriptions = new Map([
   ['zhongyi-transit-death', 'holder death during zhongyi material transit through the public special pile'],
   ['phase-scheduling', 'dangxian play segments and fangquan extra turns in one natural seat cycle'],
   ['phase-queue', 'insertPhase queue ordering, a nested append, and a queued player who dies'],
+  ['judgment-zones', 'delayed-card and judgment-card zones across ordinary and cancelled judgments'],
   ['damage-callback-cancel', 'damage callback cancellation after HP change for physical sha'],
   ['hp-cancel', 'cancelling changeHpBefore and changeHpEnd during a linked armored fire sha'],
 ]);
@@ -65,7 +67,7 @@ if (argv.length && (argv.length !== 2 || !['--check', '--write'].includes(argv[0
   throw new Error('Usage: node scripts/reference-trace.mjs [--scenario name] [--check|--write path]');
 }
 const isRecast = scenario === 'tiesuo-recast' || scenario === 'recast-callbacks';
-if (['zhongyi-expansion', 'zhongyi-boundaries', 'zhongyi-transit-death', 'qiaoshui-targets'].includes(scenario)) {
+if (['zhongyi-expansion', 'zhongyi-boundaries', 'zhongyi-transit-death', 'qiaoshui-targets', 'judgment-zones'].includes(scenario)) {
   sourceHashes['/character/standard/skill.js'] = 'ee769399395b93f3d8293cd5b880b8e708864329bd0d79a0b4f0d8bd6f855a9e';
 }
 if (isRecast || ['linked-damage', 'qiaoshui-targets'].includes(scenario)) sourceHashes['/card/extra.js'] = '8a73678a49b4fc413d6dc0d506733e594fae619d91dc8013cd441a6cd107c35d';
@@ -128,6 +130,8 @@ try {
     await context.addInitScript(installPhaseScheduling);
   } else if (scenario === 'phase-queue') {
     await context.addInitScript(installPhaseQueue);
+  } else if (scenario === 'judgment-zones') {
+    await context.addInitScript(installJudgmentZones);
   } else if (scenario === 'compare-boundaries') {
     await context.addInitScript(installCompareBoundaries);
   } else if (scenario === 'compare') {
@@ -207,6 +211,7 @@ try {
             'zhongyi-boundaries': window.__runZhongyiBoundaries,
             'zhongyi-transit-death': window.__runZhongyiTransitDeath,
             'compare-boundaries': window.__runCompareBoundaries,
+            'judgment-zones': window.__runJudgmentZones,
           };
           const run = multiTurn[scenario];
           if (run) {
@@ -377,6 +382,7 @@ try {
   if (scenario === 'zhongyi-transit-death') checkZhongyiTransitDeath(captured.value);
   if (scenario === 'phase-scheduling') checkPhaseScheduling(captured.value);
   if (scenario === 'phase-queue') checkPhaseQueue(captured.value);
+  if (scenario === 'judgment-zones') checkJudgmentZones(captured.value);
   if (scenario === 'recast-callbacks') checkReferenceRecastCallbacks(captured.value);
   if (scenario === 'sha-no-shan') assert.deepEqual(captured.value.final, {
     targetHp: 3, cardPosition: 'd', inActorHand: false, inDiscard: true, useCount: 1, targetAlive: true,
