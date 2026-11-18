@@ -387,10 +387,16 @@ impl Rule {
 }
 
 impl Game {
-    fn physical_cards(&self) -> impl Iterator<Item = &Card> {
+    pub(crate) fn physical_cards(&self) -> impl Iterator<Item = &Card> {
         self.seats
             .iter()
-            .flat_map(|s| s.hand.iter().chain(&s.equipment).chain(&s.judges))
+            .flat_map(|s| {
+                s.hand
+                    .iter()
+                    .chain(&s.equipment)
+                    .chain(&s.judges)
+                    .chain(&s.expansions)
+            })
             .chain(self.classic.iter().flat_map(|table| &table.deck))
             .chain(&self.resolving)
             .chain(&self.discard)

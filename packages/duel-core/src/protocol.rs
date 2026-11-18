@@ -129,6 +129,10 @@ pub enum Action {
         cards: Vec<CardId>,
         targets: Vec<SeatId>,
     },
+    MoveCards {
+        event: EventId,
+        moves: Option<Vec<crate::MoveStep>>,
+    },
     PlayVirtual {
         kind: CardKind,
         cards: Vec<CardId>,
@@ -249,6 +253,8 @@ pub enum Phase {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ChoiceView {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub move_cards: Option<crate::MoveChoiceView>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub compare_group: Option<CompareGroup>,
     pub event: EventId,
@@ -584,6 +590,9 @@ pub enum EventKind {
     ChooseContent {
         seat: SeatId,
         target: Option<SeatId>,
+    },
+    ChooseToMove {
+        seat: SeatId,
     },
     Judge {
         seat: SeatId,

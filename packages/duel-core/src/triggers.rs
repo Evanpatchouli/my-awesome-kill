@@ -104,6 +104,10 @@ pub enum TriggerStep {
     Continue(u16),
     /// Resume with a new callback carrying data from this invocation.
     ContinueWith(TriggerEffect),
+    MoveCards {
+        request: crate::MoveChoiceRequest,
+        then: u16,
+    },
     Choose {
         branches: Vec<ChoiceBranch>,
         then: u16,
@@ -116,9 +120,14 @@ pub struct TriggerContext<'a> {
     event: &'a TriggerEvent,
     last_compare: Option<crate::CompareResult>,
     last_group: Option<EventId>,
+    last_move: Option<&'a crate::MoveResult>,
     operations: VecDeque<TriggerOperation>,
 }
 impl TriggerContext<'_> {
+    pub fn move_result(&self) -> Option<&crate::MoveResult> {
+        self.last_move
+    }
+
     /// Cause a direct death without a rescue window, as requested by the acting rules content.
     pub fn die(&mut self, target: SeatId, source: Option<SeatId>) -> Result<(), RuleError> {
         if let Some(source) = source {
@@ -671,6 +680,7 @@ enum RegisteredState {
     Activate(TriggerSelection),
     Call(u16),
     Choice(u16),
+    MoveChoice(u16),
     Operations {
         remaining: VecDeque<TriggerOperation>,
         then: TriggerStep,
@@ -682,6 +692,7 @@ enum RegisteredState {
 pub(crate) struct Registered {
     pair_callback: Option<SeatId>,
     last_group: Option<EventId>,
+    last_move: Option<crate::MoveResult>,
     active_skill: bool,
     last_compare: Option<crate::CompareResult>,
     pub id: TriggerId,
@@ -747,6 +758,7 @@ impl Registered {
             active_skill: false,
             pair_callback: None,
             last_group: None,
+            last_move: None,
             id,
             owner,
             event,
@@ -963,6 +975,16 @@ impl Game {
                     return;
                 }
             },
+            RegisteredState::MoveChoice(stage) => match child {
+                Some(Outcome::Finished(Resolution::MovedCards(result))) => {
+                    flow.last_move = Some(result);
+                    (stage, None)
+                }
+                _ => {
+                    self.finish();
+                    return;
+                }
+            },
         };
         let mut context = TriggerContext {
             game: self,
@@ -970,6 +992,7 @@ impl Game {
             event: &flow.event,
             last_compare: flow.last_compare,
             last_group: flow.last_group,
+            last_move: flow.last_move.as_ref(),
             operations: VecDeque::new(),
         };
         let then = (flow.effect)(&mut context, stage, selected.as_ref());
@@ -1148,6 +1171,15 @@ impl Game {
                 flow.effect = effect;
                 flow.state = RegisteredState::Call(0);
                 self.scheduler.replace_current(Program::Registered(flow));
+            }
+            TriggerStep::MoveCards { request, then } => {
+                let Ok(program) = self.plan_move_choice(request) else {
+                    self.finish();
+                    return;
+                };
+                flow.state = RegisteredState::MoveChoice(then);
+                self.scheduler.replace_current(Program::Registered(flow));
+                self.scheduler.next(program);
             }
             TriggerStep::Choose { branches, then } => {
                 let seat = flow.owner;

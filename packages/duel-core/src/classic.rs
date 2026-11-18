@@ -418,6 +418,9 @@ impl Game {
                     event: choice.event,
                     card: choice.cards.first().copied(),
                 },
+                ChoiceKind::Content if choice.move_cards.is_some() => {
+                    self.bot_move_choice(choice.event)?
+                }
                 ChoiceKind::Content
                     if choice.compare.is_some() || choice.compare_group.is_some() =>
                 {

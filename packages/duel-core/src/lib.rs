@@ -15,6 +15,13 @@ mod classic;
 pub mod classic_data;
 #[cfg(any(test, feature = "content-mingdian"))]
 pub mod mingdian;
+mod move_choice;
+#[cfg(test)]
+mod move_choice_tests;
+pub use move_choice::{
+    MoveBot, MoveChoiceRequest, MoveChoiceView, MoveConfirmFilter, MoveFilter, MoveResult, MoveRow,
+    MoveRowView, MoveStep,
+};
 #[cfg(any(test, feature = "content-phase-skills"))]
 pub mod phase_content;
 mod protocol;
@@ -83,6 +90,7 @@ enum Resolution {
     Dodged,
     SavePassed(SeatId),
     Selected(Selection),
+    MovedCards(MoveResult),
     Responded,
     Judged(Card),
     HpChanged {
@@ -99,6 +107,7 @@ enum Answer {
     EndPlay,
     Discard(Vec<CardId>),
     Select(Selection),
+    MoveCards(Option<Vec<Vec<Card>>>),
 }
 
 #[derive(Clone)]
@@ -158,6 +167,7 @@ enum Program {
         stage: DeathStage,
     },
     ActiveSkill(active_skill::Flow),
+    MoveChoice(move_choice::Flow),
     Expansion(classic::expansion::Flow),
     BasicUse(classic::basic_use::Flow),
     Compare(classic::compare::Flow),
@@ -252,6 +262,7 @@ impl Program {
                 role: *role,
             },
             Self::ActiveSkill(flow) => flow.kind(),
+            Self::MoveChoice(flow) => flow.kind(),
             Self::Expansion(flow) => flow.kind(),
             Self::BasicUse(flow) => flow.kind(),
             Self::Event(kind) => *kind,
@@ -642,7 +653,13 @@ impl Game {
         };
         let private_choice_cards = choice
             .as_ref()
-            .map(|choice| self.hero_private_choice_cards(choice))
+            .map(|choice| {
+                if choice.move_cards.is_some() {
+                    self.move_choice_cards(choice.event)
+                } else {
+                    self.hero_private_choice_cards(choice)
+                }
+            })
             .unwrap_or_default();
         let resolving: Vec<_> = self
             .resolving
@@ -844,6 +861,9 @@ impl Game {
             Action::Discard { event, cards } => {
                 Some(self.validate_discard(command.seat, event, cards)?)
             }
+            Action::MoveCards { event, moves } => {
+                Some(self.validate_move_choice(command.seat, event, moves)?)
+            }
             Action::Select {
                 event,
                 branch,
@@ -1032,6 +1052,10 @@ impl Game {
                             cancelled: true, ..
                         })
                         | Outcome::Finished(Resolution::HpChanged { cancelled: true })
+                        | Outcome::Finished(Resolution::MovedCards(MoveResult {
+                            cancelled: true,
+                            ..
+                        }))
                         | Outcome::Finished(Resolution::BatchMove {
                             cancelled: true, ..
                         })
@@ -1072,6 +1096,9 @@ impl Game {
                 stage,
             } => return self.resolve_death(source, target, role, stage),
             Program::ActiveSkill(flow) => return self.resolve_active_skill(flow, child),
+            Program::MoveChoice(flow) => {
+                return self.resolve_move_choice(event, flow, child, answer)
+            }
             Program::Expansion(flow) => return self.resolve_expansion(event, flow, child),
             Program::Compare(flow) => return self.resolve_compare(event, flow, child, answer),
             Program::Turn(flow) => return self.resolve_turn_flow(flow, child),
@@ -1191,6 +1218,7 @@ impl Game {
                 .end(Outcome::Finished(Resolution::Selected(selected))),
             None => {
                 self.decision = Some(Decision::Cards(ChoiceView {
+                    move_cards: None,
                     event: event.id,
                     seat: choice.seat,
                     kind: ChoiceKind::Content,
@@ -1225,6 +1253,7 @@ impl Game {
             .map(|card| card.id)
             .collect();
         self.decision = Some(Decision::Cards(ChoiceView {
+            move_cards: None,
             event: event.id,
             seat,
             kind,

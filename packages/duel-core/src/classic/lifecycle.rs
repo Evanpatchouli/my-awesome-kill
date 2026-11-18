@@ -99,6 +99,7 @@ impl Game {
         } else {
             let cards = player.hand.iter().map(|card| card.id).collect();
             self.decision = Some(Decision::Cards(ChoiceView {
+                move_cards: None,
                 event: event.id,
                 seat,
                 kind: ChoiceKind::Discard,

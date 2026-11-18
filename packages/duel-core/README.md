@@ -72,6 +72,12 @@
 
 `TriggerContext::recast_batch` 接受技能授权的一组有序手牌或装备。两次工厂各接收同一组原始材料。失牌使用一个包装和一个底层事件，`Game::loss_record` 记录原选择及按实际来源移走的牌。包装取消时没有底层失牌记录；所有材料先被移走时，底层仍记录一次实际牌列表为空的失牌。默认通过一次摸牌和一次暗获按原选择数量补牌；工厂也可明获指定的有序实体。牌桌公告展示材料，手牌知情仍按移动事件结算。暗给的原持有席知道实际交出的实体，其他席只看到原本公开的装备或明确公开的转交。[批量对照](../../tests/reference/recast-batch.json) · [包装取消与全部截获](../../tests/reference/recast-batch-boundaries.json)
 
+### 有序实体分区
+
+`TriggerStep::MoveCards` 使用 `MoveChoiceRequest` 定义候选实体及初始分区。选择席的 `moveCards` 视图包含各行、牌面和行容量。提交按顺序发送实体、目标行及插入位置，索引指从原行取走后的目标位置。引擎依次校验移动和最终分区，非法提交保留版本和待选状态。AI 的计划通过同一校验。
+
+`TriggerContext::move_result` 返回分区的选择结果，区域移动由技能后续结算。事件取消会设置 `cancelled`；可选选择的普通放弃会以空分区结果完成结束时机。其他席在选择期间看到等待席。
+
 ### 两席拼点
 
 内容可先用 `Game::can_compare` 检查双方资格，在技能回调里调用 `TriggerContext::compare(initiator, target)`，并用 `TriggerStep::Continue` 等待结算。两席依次通过普通 `Select` 各选一张自己的手牌，持有席的 `choice.compare` 标明拼点双方。锁定原实体后，双方的失牌事件分别结算。每次实际暗付会清除旁观者对该席剩余手牌的公开知情。`compareReveal` 同时公开锁定的两张牌，随后依次派发双方的 `showCardsAfter`。单个失牌事件被取消时，那张牌仍参与揭示和计分，其实体保留在当前牌区。单机 AI 从当前持有席的合法选项中提交一张牌。轮到人类席时，对局保留该席的选择和版本，等待输入。
