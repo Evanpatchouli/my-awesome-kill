@@ -64,6 +64,13 @@ impl<P: Clone, R: Clone> Scheduler<P, R> {
         self.stack.iter().rev().map(|frame| &frame.program)
     }
 
+    pub fn active_events(&self) -> impl Iterator<Item = (EventRef, &P)> {
+        self.stack
+            .iter()
+            .rev()
+            .map(|frame| (frame.event, &frame.program))
+    }
+
     pub fn active_frame(&self, id: EventId) -> Option<(EventRef, &P)> {
         self.stack
             .iter()

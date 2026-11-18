@@ -40,6 +40,16 @@
 
 每份生效目标的无懈链有单独的父事件。实际持有可用无懈的响应者先完成 `chooseToUse`，随后在反制事件中用牌。杀的防御者使用闪则是在完成 `chooseToUse` 之前结算。无懈与反无懈复用同一链和逐席私有窗口。[判定、天妒与无懈实测](../../tests/reference/judgment-zones.json) · [主动用闪实测](../../tests/reference/qiaoshui-targets.json)
 
+### 多人拼点
+
+`TriggerContext::compare_many` 在同一个根事件里接收发起席、目标、`CompareMode` 和可选的逐对内容回调。各席通过 `choice.compareGroup` 私下提交一张实体手牌，最后才统一处理支付。`Game::group_comparison` 和 `compare_many_result` 是可信内容接口；桌面端以 `groupUpdates` 接收已经公开的牌面和结果。
+
+- `Pairwise` 每次只亮发起者与当前对手的两张牌。该对点数修正后写入结果，逐对内容及其中的选择结算完才公开下一对。发起者沿用同一实体和已修正的点数。
+- `Simultaneous` 一次公开全部实体，以当时的有效点数记录数组和唯一最高席。随后的 fixing 回调仍可读取并修改工作点数，已记录的数组保持原值，最终处理显式指定的赢家。并列最高时没有赢家。
+- 取消一席的失牌可以令其实体留在手中并参与比较；公共翻牌与该席手牌的知情记录各有独立状态。在支付后、首次亮牌前取消根事件，等待的内容仍可取得已初始化的结果。收尾只处理仍由该根在处理区持有的实体。
+
+`content-multi-compare` 提供鼓舌和胆烈。`TriggerStep::ChooseFor` 可让另一席在逐对回调内作私有选择。主动技能可通过 `active_skill_uses_this_phase` 查询本出牌段的实际使用次数。[五个实测八席场景](../../tests/reference/compare-multiple.json)
+
 ### 伤害数值
 
 `TriggerContext::add_damage` 可在同一伤害帧的 `damageBegin1` 到 `damageBegin4` 增加结算值。每个实际回调读取之前技能已经修改的数值。体力、护甲、历史以及连环传导在该帧提交后使用同一数值。`Game::event_kind` 可按活跃父事件 ID 区分杀的直接伤害和带有同一实体牌的传导伤害。

@@ -8,6 +8,7 @@ mod equipment_tests;
 pub(crate) mod expansion;
 pub(crate) mod hero_integration;
 mod lifecycle;
+pub(crate) mod multi_compare;
 pub(crate) mod phases;
 pub(crate) mod recast;
 pub(crate) mod skills;

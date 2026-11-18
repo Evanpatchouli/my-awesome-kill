@@ -94,6 +94,11 @@ pub struct TriggerSelection {
 /// The continuation to run once this stage's queued operations have settled.
 #[derive(Clone)]
 pub enum TriggerStep {
+    ChooseFor {
+        seat: SeatId,
+        branches: Vec<ChoiceBranch>,
+        then: u16,
+    },
     Done,
     CancelSubject,
     Continue(u16),
@@ -108,9 +113,52 @@ pub struct TriggerContext<'a> {
     owner: SeatId,
     event: &'a TriggerEvent,
     last_compare: Option<crate::CompareResult>,
+    last_group: Option<EventId>,
     operations: VecDeque<TriggerOperation>,
 }
 impl TriggerContext<'_> {
+    /// Cause a direct death without a rescue window, as requested by the acting rules content.
+    pub fn die(&mut self, target: SeatId, source: Option<SeatId>) -> Result<(), RuleError> {
+        if let Some(source) = source {
+            self.game.seat(source)?;
+        }
+        if !self.game.seat(target)?.alive {
+            return Err(RuleError::InactiveSeat { seat: target });
+        }
+        if self.game.seat(target)?.role.is_none() {
+            return Err(RuleError::WrongEvent);
+        }
+        self.operations
+            .push_back(TriggerOperation::Death { target, source });
+        Ok(())
+    }
+    /// Lock one bid from every seat, then settle the group using the requested mode.
+    pub fn compare_many(
+        &mut self,
+        initiator: SeatId,
+        targets: &[SeatId],
+        mode: crate::CompareMode,
+        callback: Option<TriggerEffect>,
+    ) -> Result<(), RuleError> {
+        self.game
+            .compare_many_program(initiator, targets.to_vec(), mode, callback.clone())?;
+        self.operations.push_back(TriggerOperation::CompareMany {
+            initiator,
+            targets: targets.to_vec(),
+            mode,
+            callback,
+        });
+        Ok(())
+    }
+
+    pub fn compare_many_result(&self) -> Option<&crate::CompareManyFrame> {
+        self.last_group
+            .and_then(|id| self.game.group_comparison(id))
+    }
+
+    pub fn force_group_winner(&mut self, winner: Option<SeatId>) -> Result<(), RuleError> {
+        self.game.force_group_winner(self.event, winner)
+    }
     /// Set the damage a paid Sha, Duel or mass attack will start with for each affected target.
     pub fn set_base_damage(&mut self, amount: u16) -> Result<(), RuleError> {
         if self.event.timing != "useCard2" {
@@ -307,6 +355,9 @@ impl TriggerContext<'_> {
 
     /// Replace an effective score on the current compare or compareFixing subject.
     pub fn set_compare_number(&mut self, seat: SeatId, number: i32) -> Result<(), RuleError> {
+        if self.game.group_comparison(self.event.subject).is_some() {
+            return self.game.set_group_number(self.event, seat, number);
+        }
         self.game.change_compare_number(self.event, seat, number)
     }
 
@@ -352,23 +403,38 @@ impl TriggerContext<'_> {
     /// Schedule one atomic hand payment. Each physical card can be promised once per stage.
     /// If an intervening skill moves a promised card, this skill ends before its continuation.
     pub fn discard_hand(&mut self, seat: SeatId, ids: &[CardId]) -> Result<(), RuleError> {
-        let hand = &self.game.seat(seat)?.hand;
+        self.discard_owned(seat, ids, &[Zone::Hand])
+    }
+
+    pub fn discard_held(&mut self, seat: SeatId, ids: &[CardId]) -> Result<(), RuleError> {
+        self.discard_owned(seat, ids, &[Zone::Hand, Zone::Equipment])
+    }
+
+    fn discard_owned(
+        &mut self,
+        seat: SeatId,
+        ids: &[CardId],
+        zones: &[Zone],
+    ) -> Result<(), RuleError> {
+        let player = self.game.seat(seat)?;
         let mut claimed = self.claimed_cards();
         let mut cards = Vec::with_capacity(ids.len());
         for id in ids {
             if !claimed.insert(*id) {
                 return Err(RuleError::InvalidSelection);
             }
-            cards.push(
-                *hand
+            let held = zones.iter().find_map(|&zone| {
+                player
+                    .zone(zone)
                     .iter()
                     .find(|card| card.id == *id)
-                    .ok_or(RuleError::InvalidCard)?,
-            );
+                    .map(|&card| (zone, card))
+            });
+            cards.push(held.ok_or(RuleError::InvalidCard)?);
         }
         if !cards.is_empty() {
             self.operations
-                .push_back(TriggerOperation::DiscardHand { seat, cards });
+                .push_back(TriggerOperation::DiscardOwned { seat, cards });
         }
         Ok(())
     }
@@ -402,8 +468,8 @@ impl TriggerContext<'_> {
         let mut claimed = HashSet::new();
         for operation in &self.operations {
             match operation {
-                TriggerOperation::DiscardHand { cards, .. } => {
-                    claimed.extend(cards.iter().map(|c| c.id))
+                TriggerOperation::DiscardOwned { cards, .. } => {
+                    claimed.extend(cards.iter().map(|(_, c)| c.id))
                 }
                 TriggerOperation::Recast { card, .. }
                 | TriggerOperation::GiveHand { card, .. }
@@ -414,7 +480,9 @@ impl TriggerContext<'_> {
                 | TriggerOperation::GainExpansion { card, .. } => {
                     claimed.insert(card.id);
                 }
-                TriggerOperation::VirtualSha { .. }
+                TriggerOperation::Death { .. }
+                | TriggerOperation::CompareMany { .. }
+                | TriggerOperation::VirtualSha { .. }
                 | TriggerOperation::Emit(_)
                 | TriggerOperation::Elemental(_)
                 | TriggerOperation::Compare { .. } => {}
@@ -458,6 +526,16 @@ impl TriggerContext<'_> {
 
 #[derive(Clone)]
 enum TriggerOperation {
+    Death {
+        target: SeatId,
+        source: Option<SeatId>,
+    },
+    CompareMany {
+        initiator: SeatId,
+        targets: Vec<SeatId>,
+        mode: crate::CompareMode,
+        callback: Option<TriggerEffect>,
+    },
     VirtualSha {
         source: SeatId,
         target: SeatId,
@@ -483,9 +561,9 @@ enum TriggerOperation {
         card: CardId,
     },
     Elemental(crate::elemental::ContentAction),
-    DiscardHand {
+    DiscardOwned {
         seat: SeatId,
-        cards: Vec<Card>,
+        cards: Vec<(Zone, Card)>,
     },
     Recast {
         seat: SeatId,
@@ -513,6 +591,8 @@ enum RegisteredState {
 
 #[derive(Clone)]
 pub(crate) struct Registered {
+    pair_callback: Option<SeatId>,
+    last_group: Option<EventId>,
     active_skill: bool,
     last_compare: Option<crate::CompareResult>,
     pub id: TriggerId,
@@ -523,6 +603,17 @@ pub(crate) struct Registered {
 }
 
 impl Registered {
+    pub(crate) fn pair(
+        owner: SeatId,
+        target: SeatId,
+        event: TriggerEvent,
+        effect: TriggerEffect,
+    ) -> Self {
+        Self {
+            pair_callback: Some(target),
+            ..Self::new(event.subject, owner, event, effect)
+        }
+    }
     pub(crate) fn active(
         id: u64,
         owner: SeatId,
@@ -538,7 +629,13 @@ impl Registered {
     }
 
     pub(crate) fn kind(&self) -> crate::EventKind {
-        if self.active_skill {
+        if let Some(target) = self.pair_callback {
+            crate::EventKind::ComparePairCallback {
+                seat: self.owner,
+                target,
+                comparison: self.event.subject,
+            }
+        } else if self.active_skill {
             crate::EventKind::ActiveSkillEffect {
                 seat: self.owner,
                 registration: self.id,
@@ -559,6 +656,8 @@ impl Registered {
     ) -> Self {
         Self {
             active_skill: false,
+            pair_callback: None,
+            last_group: None,
             id,
             owner,
             event,
@@ -733,6 +832,9 @@ impl Game {
         if let Some(Outcome::Finished(Resolution::Compared(result))) = &child {
             flow.last_compare = Some(*result);
         }
+        if let Some(Outcome::Finished(Resolution::ComparedMany { event, .. })) = &child {
+            flow.last_group = Some(*event);
+        }
         let (stage, selected) = match std::mem::replace(&mut flow.state, RegisteredState::Call(0)) {
             RegisteredState::Activate(selection) => (0, Some(selection)),
             RegisteredState::Operations {
@@ -775,6 +877,7 @@ impl Game {
             owner: flow.owner,
             event: &flow.event,
             last_compare: flow.last_compare,
+            last_group: flow.last_group,
             operations: VecDeque::new(),
         };
         let then = (flow.effect)(&mut context, stage, selected.as_ref());
@@ -798,9 +901,38 @@ impl Game {
                     | TriggerOperation::GainExpansion { .. }
                     | TriggerOperation::GiveHand { .. }
                     | TriggerOperation::Compare { .. }
+                    | TriggerOperation::CompareMany { .. }
                     | TriggerOperation::GainCompare { .. }
             );
             let program = match operation {
+                TriggerOperation::Death { target, source } => {
+                    let Some(role) = self
+                        .seat(target)
+                        .ok()
+                        .filter(|s| s.alive)
+                        .and_then(|s| s.role)
+                    else {
+                        continue;
+                    };
+                    Program::event(crate::EventKind::Death {
+                        source,
+                        target,
+                        role,
+                    })
+                }
+                TriggerOperation::CompareMany {
+                    initiator,
+                    targets,
+                    mode,
+                    callback,
+                } => {
+                    let Ok(program) = self.compare_many_program(initiator, targets, mode, callback)
+                    else {
+                        self.finish();
+                        return;
+                    };
+                    program
+                }
                 TriggerOperation::VirtualSha {
                     source,
                     target,
@@ -848,18 +980,16 @@ impl Game {
                     Some(program) => program,
                     None => continue,
                 },
-                TriggerOperation::DiscardHand { seat, cards } => {
-                    if !self
-                        .seat(seat)
-                        .is_ok_and(|player| cards.iter().all(|card| player.hand.contains(card)))
-                    {
+                TriggerOperation::DiscardOwned { seat, cards } => {
+                    if !self.seat(seat).is_ok_and(|player| {
+                        cards
+                            .iter()
+                            .all(|(zone, card)| player.zone(*zone).contains(card))
+                    }) {
                         self.finish();
                         return;
                     }
-                    Program::DiscardGroup {
-                        seat,
-                        cards: cards.into_iter().map(|card| (Zone::Hand, card)).collect(),
-                    }
+                    Program::DiscardGroup { seat, cards }
                 }
                 TriggerOperation::Recast { seat, card } => {
                     let Ok(program) = self.recast_program(seat, card, false) else {
@@ -894,15 +1024,34 @@ impl Game {
                 self.scheduler.replace_current(Program::Registered(flow));
             }
             TriggerStep::Choose { branches, then } => {
-                flow.state = RegisteredState::Choice(then);
                 let seat = flow.owner;
-                self.scheduler.replace_current(Program::Registered(flow));
-                self.scheduler.next(Program::Choose(ChoiceRequest {
-                    seat,
-                    target: None,
-                    branches,
-                }));
+                self.registered_choice(flow, seat, branches, then);
             }
+            TriggerStep::ChooseFor {
+                seat,
+                branches,
+                then,
+            } => self.registered_choice(flow, seat, branches, then),
         }
+    }
+
+    fn registered_choice(
+        &mut self,
+        mut flow: Registered,
+        seat: SeatId,
+        branches: Vec<ChoiceBranch>,
+        then: u16,
+    ) {
+        if !self.is_alive(seat) || self.match_result().is_some() {
+            self.finish();
+            return;
+        }
+        flow.state = RegisteredState::Choice(then);
+        self.scheduler.replace_current(Program::Registered(flow));
+        self.scheduler.next(Program::Choose(ChoiceRequest {
+            seat,
+            target: None,
+            branches,
+        }));
     }
 }

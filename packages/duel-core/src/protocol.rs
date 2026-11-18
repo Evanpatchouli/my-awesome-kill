@@ -144,6 +144,8 @@ pub enum Action {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GameView {
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub group_updates: Vec<crate::GroupAnnouncement>,
     pub version: u32,
     pub active_seat: SeatId,
     pub human_seat: Option<SeatId>,
@@ -384,6 +386,16 @@ pub enum CardTargetTiming {
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum EventKind {
+    CompareMany {
+        seat: SeatId,
+        count: usize,
+        mode: crate::CompareMode,
+    },
+    ComparePairCallback {
+        seat: SeatId,
+        target: SeatId,
+        comparison: EventId,
+    },
     GroupChoices {
         seat: SeatId,
         count: usize,

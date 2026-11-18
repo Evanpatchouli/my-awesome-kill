@@ -1,6 +1,12 @@
 mod active_skill;
 pub use active_skill::{ActiveSkillId, ActiveSkillRegistration};
 mod card_use;
+#[cfg(any(test, feature = "content-multi-compare"))]
+pub mod compare_content;
+mod group_compare;
+pub use group_compare::{
+    CompareManyFrame, CompareManyResult, CompareMode, GroupAnnouncement, RevealedBid,
+};
 mod location;
 pub use location::{CardLocation, CardZone};
 mod marks;
@@ -46,6 +52,10 @@ use scheduler::{EventRef, Outcome, Scheduler, Work};
 
 #[derive(Clone)]
 enum Resolution {
+    ComparedMany {
+        event: EventId,
+        cancelled: bool,
+    },
     CounterUse {
         seat: SeatId,
         cards: Vec<Card>,
@@ -130,6 +140,7 @@ enum DeathStage {
 
 #[derive(Clone)]
 enum Program {
+    GroupCompare(classic::multi_compare::Flow),
     Bids(classic::compare::bids::BidFlow),
     Counter(classic::counter::Flow),
     Death {
@@ -219,6 +230,7 @@ impl Program {
 
     fn kind(&self) -> EventKind {
         match self {
+            Self::GroupCompare(flow) => flow.kind(),
             Self::Bids(flow) => flow.kind(),
             Self::Counter(flow) => flow.kind(),
             Self::Death {
@@ -294,6 +306,14 @@ struct Seat {
 }
 
 impl Seat {
+    fn zone(&self, zone: Zone) -> &[Card] {
+        match zone {
+            Zone::Hand => &self.hand,
+            Zone::Equipment => &self.equipment,
+            Zone::Judgment => &self.judges,
+            Zone::Expansion => &self.expansions,
+        }
+    }
     fn zone_mut(&mut self, zone: Zone) -> &mut Vec<Card> {
         match zone {
             Zone::Hand => &mut self.hand,
@@ -325,6 +345,8 @@ impl From<SeatSetup> for Seat {
 }
 
 pub struct Game {
+    group_compares: classic::multi_compare::State,
+    group_updates: Vec<GroupAnnouncement>,
     ordering_owners: HashMap<CardId, EventId>,
     marks: marks::State,
     indexed_triggers: HashMap<TriggerId, triggers::TriggerIndex>,
@@ -390,6 +412,8 @@ impl Game {
 
     fn with_seats(seats: Vec<Seat>, active_seat: SeatId) -> Self {
         Self {
+            group_compares: classic::multi_compare::State::default(),
+            group_updates: Vec::new(),
             ordering_owners: HashMap::new(),
             marks: marks::State::default(),
             indexed_triggers: HashMap::new(),
@@ -448,6 +472,12 @@ impl Game {
 
     pub fn is_alive(&self, seat: SeatId) -> bool {
         self.seat(seat).is_ok_and(|player| player.alive)
+    }
+
+    pub fn health(&self, seat: SeatId) -> Option<(i32, u16)> {
+        self.seat(seat)
+            .ok()
+            .map(|player| (player.hp, player.max_hp))
     }
 
     /// The unowned special zone, including material that an interrupted recipient could not take.
@@ -608,6 +638,11 @@ impl Game {
             .filter(|card| self.is_known_by(card.id, viewer))
             .collect();
         let mut visible = self.visible_card_ids(&seats, &private_choice_cards, &resolving);
+        for update in &self.group_updates {
+            if let GroupAnnouncement::Reveal { bids, .. } = update {
+                visible.extend(bids.iter().map(|bid| bid.card.id));
+            }
+        }
         visible.extend(known_special.iter().map(|card| card.id));
         let card_faces = state
             .iter()
@@ -623,6 +658,7 @@ impl Game {
             .map(|(&id, &nature)| (id, nature))
             .collect();
         Ok(GameView {
+            group_updates: self.group_updates.clone(),
             turn_reason: self
                 .scheduler
                 .active_programs()
@@ -826,6 +862,7 @@ impl Game {
         };
         self.decision = None;
         self.events.clear();
+        self.group_updates.clear();
         self.run(answer);
         self.version = next_version;
         Ok(())
@@ -972,6 +1009,9 @@ impl Game {
                 Work::Ended(event, program, outcome) => {
                     let status = match outcome {
                         Outcome::Cancelled
+                        | Outcome::Finished(Resolution::ComparedMany {
+                            cancelled: true, ..
+                        })
                         | Outcome::Finished(Resolution::HpChanged { cancelled: true })
                         | Outcome::Finished(Resolution::RecastMove {
                             cancelled: true, ..
@@ -1000,6 +1040,7 @@ impl Game {
 
         let kind = program.kind();
         let program = match program {
+            Program::GroupCompare(flow) => return self.resolve_group_compare(event, flow, child),
             Program::Bids(flow) => return self.resolve_bids(event, flow, child, answer),
             Program::Counter(flow) => return self.resolve_counter_window(flow, child),
             Program::Death {

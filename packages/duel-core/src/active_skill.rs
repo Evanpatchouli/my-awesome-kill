@@ -27,6 +27,7 @@ pub(crate) struct State {
     registrations: BTreeMap<ActiveSkillId, ActiveSkillRegistration>,
     spent: BTreeSet<(SeatId, String)>,
     last_attempt: BTreeMap<ActiveSkillId, crate::EventId>,
+    phase_uses: BTreeMap<(SeatId, String), (crate::EventId, u32)>,
 }
 
 #[derive(Clone, Copy)]
@@ -39,6 +40,7 @@ enum Stage {
 
 #[derive(Clone)]
 pub(crate) struct Flow {
+    phase: crate::EventId,
     owner: SeatId,
     registration: ActiveSkillId,
     skill: String,
@@ -57,6 +59,26 @@ impl Flow {
 }
 
 impl Game {
+    pub fn active_skill_uses_this_phase(&self, owner: SeatId, skill: &str) -> u32 {
+        let Some((phase, count)) = self
+            .active_skills
+            .phase_uses
+            .get(&(owner, skill.to_owned()))
+        else {
+            return 0;
+        };
+        self.scheduler
+            .active_events()
+            .find_map(|(event, program)| match program.kind() {
+                EventKind::Phase {
+                    seat,
+                    phase: crate::Phase::Play,
+                } if seat == owner => Some(event.id),
+                _ => None,
+            })
+            .filter(|event| event == phase)
+            .map_or(0, |_| *count)
+    }
     pub(crate) fn bot_active_skill(&self, seat: SeatId) -> Option<crate::Action> {
         let phase = self.scheduler.current_id();
         self.active_plays(seat).into_iter().find_map(|play| {
@@ -180,6 +202,7 @@ impl Game {
             return Err(RuleError::InvalidCard);
         }
         Ok(Program::ActiveSkill(Flow {
+            phase: self.scheduler.current_id(),
             owner: seat,
             registration,
             skill: r.skill.clone(),
@@ -227,6 +250,19 @@ impl Game {
                         .spent
                         .insert((flow.owner, flow.skill.clone()));
                 }
+                let uses = self
+                    .active_skills
+                    .phase_uses
+                    .entry((flow.owner, flow.skill.clone()))
+                    .or_insert((flow.phase, 0));
+                *uses = (
+                    flow.phase,
+                    if uses.0 == flow.phase {
+                        uses.1.saturating_add(1)
+                    } else {
+                        1
+                    },
+                );
                 let event = self.subject_timing("useSkill", Some(flow.owner), None, None, 0, &[]);
                 let effect = crate::triggers::Registered::active(
                     flow.registration,
