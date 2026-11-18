@@ -9,7 +9,7 @@ export const generalById = new Map(roster.map((g) => [g.id, g]))
 const skillTitles = new Map(
   roster.flatMap((hero) => hero.skills.map((skill) => [skill.id, skill.name] as const)),
 )
-const extraSkillTitles: Record<string, string> = { zhongyi: '忠义', zhongyi2: '忠义', dangxian: '当先', fangquan: '放权', fangquan2: '放权' }
+const extraSkillTitles: Record<string, string> = { zhongyi: '忠义', zhongyi2: '忠义', dangxian: '当先', fangquan: '放权', fangquan2: '放权', gushe: '鼓舌', twdanlie: '胆烈' }
 export const skillName = (id: string) => extraSkillTitles[id] ?? skillTitles.get(id) ?? id
 export const factions: Record<string, string> = { wei: '魏', shu: '蜀', wu: '吴', qun: '群' }
 export const roles = { lord: '主公', loyalist: '忠臣', rebel: '反贼', renegade: '内奸' }
@@ -30,6 +30,15 @@ interface CompareParticipants {
   initiator: number
   target: number
 }
+interface CompareGroup {
+  initiator: number
+  targets: number[]
+}
+type CompareMode = 'pairwise' | 'simultaneous'
+export type GroupAnnouncement =
+  | { type: 'reveal'; comparison: number; mode: CompareMode; bids: { seat: number; card: Entity }[] }
+  | { type: 'pair'; comparison: number; initiator: number; target: number; numbers: [number, number]; winner: number | null }
+  | { type: 'result'; comparison: number; mode: CompareMode; group: CompareGroup; numbers: [number, number][]; winner: number | null }
 interface CompareResult {
   event: number
   parent: number | null
@@ -100,6 +109,7 @@ export interface Choice {
   prompt?: string
   counter?: { cardKind: string; source: number | null; target: number; negated: boolean } | null
   compare?: CompareParticipants
+  compareGroup?: CompareGroup
 }
 interface EventRecord {
   id: number
@@ -123,6 +133,7 @@ interface EventRecord {
   delta?: number
 }
 export interface TableView {
+  groupUpdates?: GroupAnnouncement[]
   version: number
   activeSeat: number
   humanSeat: number
@@ -192,8 +203,42 @@ function comparedBids(
 }
 export interface PublicComparison {
   event: number
+  target?: number
   bids: ReturnType<typeof comparedBids>
   outcome?: string
+  rounds?: { target: string; first: number; second: number }[]
+}
+
+/** Assemble only the card faces and scores that the engine has announced publicly. */
+export function updateGroupComparison(view: TableView, previous: PublicComparison[], update: GroupAnnouncement): PublicComparison[] {
+  const rows = previous.filter((item) => item.event === update.comparison)
+  if (update.type === 'reveal') {
+    const target = update.mode === 'pairwise' ? update.bids[1]?.seat : undefined
+    const bids = update.bids.map(({ seat, card: entity }) => {
+      const card = faceOf(view, entity)
+      return { seat, name: seatName(view, seat), card, face: printedFace(card), points: undefined }
+    })
+    return [...rows.filter((row) => row.target !== target), { event: update.comparison, target, bids }]
+  }
+  if (update.type === 'pair') {
+    return rows.map((row) => row.target !== update.target ? row : {
+      ...row,
+      outcome: update.winner == null ? '拼点平局' : `${seatName(view, update.winner)}拼点获胜`,
+      bids: row.bids.map((bid, index) => ({ ...bid, points: update.numbers[index] })),
+    })
+  }
+  if (update.mode === 'pairwise') return rows
+  const first = update.numbers[0]?.[0]
+  const varies = update.numbers.some(([points]) => points !== first)
+  return rows.map((row) => ({
+    ...row,
+    outcome: update.winner == null ? '最高点并列' : `${seatName(view, update.winner)}拼点获胜`,
+    rounds: varies ? update.numbers.map(([a, b], index) => ({ target: seatName(view, update.group.targets[index]), first: a, second: b })) : undefined,
+    bids: row.bids.map((bid) => ({
+      ...bid,
+      points: bid.seat === update.group.initiator ? (varies ? undefined : first) : update.numbers[update.group.targets.indexOf(bid.seat)]?.[1],
+    })),
+  }))
 }
 export function publicComparison(view: TableView, e: EventRecord): PublicComparison | undefined {
   if (e.status !== 'started') return

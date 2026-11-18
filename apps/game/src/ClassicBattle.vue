@@ -68,8 +68,9 @@ const branches = computed(() => (choice.value?.kind === 'content' ? choice.value
 const virtuals = computed(() => props.view.virtualPlays ?? [])
 const skills = computed(() => props.view.skillPlays ?? [])
 const activePlays = computed(() => props.view.activePlays ?? [])
+const privateBid = computed(() => !!(choice.value?.compare || choice.value?.compareGroup))
 const branch = computed<Branch | null>(() => {
-  if (choice.value?.compare) return choice.value.branches[0] ?? null
+  if (privateBid.value) return choice.value?.branches[0] ?? null
   if (selectedMode.value === 'choice')
     return branches.value.find((item) => item.id === selectedBranch.value) ?? null
   if (selectedMode.value === 'virtual')
@@ -156,6 +157,11 @@ const prompt = computed(() => {
     return `${seatName(props.view, props.view.waitingFor ?? props.view.activeSeat)}正在思考`
   const counter = counterPrompt(props.view)
   if (counter) return counter
+  if (choice.value?.compareGroup) {
+    const group = choice.value.compareGroup
+    const others = [group.initiator, ...group.targets].filter((id) => id !== choice.value?.seat)
+    return `与${others.map((id) => seatName(props.view, id)).join('、')}拼点，暗选一张手牌`
+  }
   if (choice.value?.compare) {
     const { initiator, target } = choice.value.compare
     const other = choice.value.seat === initiator ? target : initiator
@@ -199,7 +205,7 @@ function chooseHand(id: number) {
   if (!active.value) return
   if (branch.value) {
     if (!branchCards.value.has(id)) return
-    if (choice.value?.compare) selectedCards.value = selectedCards.value.includes(id) ? [] : [id]
+    if (privateBid.value) selectedCards.value = selectedCards.value.includes(id) ? [] : [id]
     else selectedCards.value = toggle(selectedCards.value, id, branch.value.maxCards)
   } else if (choice.value?.kind === 'discard') {
     if (handOptions.value.has(id))
@@ -484,7 +490,7 @@ function canPickCard(id: number) {
         </div>
       </div>
       <div class="classic-controls" aria-label="对局操作">
-        <div v-if="branches.length && !choice?.compare" class="classic-options">
+        <div v-if="branches.length && !privateBid" class="classic-options">
           <button
             v-for="item in branches"
             :key="item.id"
@@ -519,7 +525,7 @@ function canPickCard(id: number) {
             :disabled="!active"
             @click="setMode('active', i)"
           >
-            {{ item.branch.label }}
+            {{ item.branch.label === item.skill ? skillName(item.skill) : item.branch.label }}
           </button>
         </div>
         <div v-if="pool.length" class="classic-pool">
@@ -534,7 +540,7 @@ function canPickCard(id: number) {
             {{ card.name }} {{ card.rank }}
           </button>
         </div>
-        <p v-if="branch && !choice?.compare">
+        <p v-if="branch && !privateBid">
           选牌 {{ selectedCards.length }}/{{ branch.minCards }}–{{ branch.maxCards }} · 目标
           {{ selectedTargets.length }}/{{ branch.minTargets }}–{{ branch.maxTargets }}
         </p>

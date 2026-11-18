@@ -6,6 +6,8 @@ use wasm_bindgen::prelude::*;
 mod qa_compare;
 #[cfg(feature = "qa-elemental")]
 mod qa_elemental;
+#[cfg(feature = "qa-multi-compare")]
+mod qa_multi_compare;
 #[cfg(feature = "qa-phase-skills")]
 mod qa_phase_skills;
 #[cfg(feature = "qa-qiaoshui")]

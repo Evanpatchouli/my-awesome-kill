@@ -1,23 +1,36 @@
 <script setup lang="ts">
 import { onBeforeUnmount, ref, shallowRef, watch } from 'vue'
 import CardFace from './CardFace.vue'
-import { publicComparison, type PublicComparison, type TableView } from './classicProtocol'
+import { publicComparison, updateGroupComparison, type PublicComparison, type TableView } from './classicProtocol'
 
 const props = defineProps<{ view: TableView }>()
 const comparisons = shallowRef<PublicComparison[]>([])
+const activeGroups = new Map<number, PublicComparison[]>()
 const open = ref(false)
 let timer: ReturnType<typeof setTimeout>
 
 watch(
   () => props.view,
-  (view) => {
+  (view, prior) => {
+    if (view.version === 0 && prior) {
+      comparisons.value = []
+      activeGroups.clear()
+      open.value = false
+    }
     const announced = new Map<number, PublicComparison>()
     for (const event of view.events) {
       const published = publicComparison(view, event)
       if (published) announced.set(published.event, published)
     }
-    if (!announced.size) return
-    comparisons.value = [...announced.values()]
+    if (!announced.size && !view.groupUpdates?.length) return
+    const groups = new Map<number, PublicComparison[]>()
+    for (const update of view.groupUpdates ?? []) {
+      const rows = updateGroupComparison(view, activeGroups.get(update.comparison) ?? [], update)
+      groups.set(update.comparison, rows)
+      if (update.type === 'result') activeGroups.delete(update.comparison)
+      else activeGroups.set(update.comparison, rows)
+    }
+    comparisons.value = [...announced.values(), ...[...groups.values()].flat()]
     open.value = true
     clearTimeout(timer)
     timer = setTimeout(() => {
@@ -48,7 +61,7 @@ onBeforeUnmount(() => clearTimeout(timer))
     <div v-show="open" id="compare-panel" class="compare-panel" aria-live="polite">
       <section
         v-for="comparison in comparisons"
-        :key="comparison.event"
+        :key="`${comparison.event}-${comparison.target ?? 'table'}`"
         :data-comparison="comparison.event"
       >
         <h2>{{ comparison.outcome ?? '拼点亮牌' }}</h2>
@@ -71,6 +84,9 @@ onBeforeUnmount(() => clearTimeout(timer))
             </figcaption>
           </figure>
         </div>
+        <ul v-if="comparison.rounds" class="compare-rounds">
+          <li v-for="(round, index) in comparison.rounds" :key="index">对{{ round.target }} · {{ round.first }} 比 {{ round.second }}</li>
+        </ul>
       </section>
     </div>
   </div>
@@ -94,6 +110,7 @@ onBeforeUnmount(() => clearTimeout(timer))
   position: absolute;
   inset: calc(100% + 4px) 0 auto auto;
   width: max-content;
+  max-width: min(83vw, 38rem);
   max-height: 65dvh;
   overflow: auto;
   padding: 8px 12px;
@@ -111,8 +128,14 @@ onBeforeUnmount(() => clearTimeout(timer))
 .compare-panel section + section {
   margin-top: 8px;
 }
+.compare-rounds {
+  list-style: none;
+  padding: 0;
+  margin: 6px 0 0;
+}
 .compare-bids {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   gap: 12px;
 }
