@@ -33,7 +33,7 @@ pub(crate) struct CardDamage {
     lose_hp: bool,
     propagated: bool,
     record: Option<usize>,
-    on_damage: Option<TriggerEvent>,
+    on_damage: Option<crate::classic::skills::Dispatch>,
     stage: Stage,
 }
 
@@ -59,6 +59,9 @@ impl CardDamage {
 }
 
 impl Game {
+    pub(crate) fn is_propagated_damage(&self, id: EventId) -> bool {
+        matches!(self.scheduler.active_frame(id), Some((_, Program::CardDamage(damage))) if damage.propagated)
+    }
     /// Return the current kind of a live event frame.
     pub fn event_kind(&self, id: EventId) -> Option<EventKind> {
         self.scheduler
@@ -119,7 +122,6 @@ impl Game {
         nature: Option<DamageNature>,
     ) -> Program {
         let source = self.live_damage_source(source);
-        let amount = amount.saturating_add(self.hero_damage_bonus(source, kind));
         let mut card = self.physical_damage_card(kind, cards);
         if nature.is_some() {
             card.nature = nature;
@@ -267,8 +269,7 @@ impl Game {
                     }
                     damage.stage = CheckDying;
                     if let Some(on_damage) = damage.on_damage.take() {
-                        self.scheduler
-                            .next(Program::Dispatch(self.dispatch_for_timing(on_damage)));
+                        self.scheduler.next(Program::Dispatch(on_damage));
                         true
                     } else {
                         false

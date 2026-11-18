@@ -63,28 +63,16 @@ fn cancelling_the_hp_child_matches_all_reference_requests_and_callbacks() {
             0,
         );
         game.classic.as_mut().unwrap().turn = None;
-        // Luoyi supplies a real two-point Sha through the normal play path.
-        game.seat_mut(0).hero = crate::classic_data::roster()
-            .iter()
-            .find(|h| h.id == "xuzhu");
+        // The upstream fixture sets use.baseDamage=2 on the physical Sha.
         game.run(None);
-        let choice = game.view(Some(0)).unwrap().choice.unwrap();
-        let branch = choice
-            .branches
-            .iter()
-            .find(|b| b.label == "裸衣")
-            .unwrap()
-            .id;
-        submit(
-            &mut game,
-            0,
-            Action::Select {
-                event: choice.event,
-                branch,
-                cards: vec![],
-                targets: vec![],
-            },
-        );
+        let mut base = registration(0, "reference_base_damage", "useCard2");
+        base.role = TriggerRole::Player;
+        base.filter = Arc::new(|_, event, _| event.card_kind == Some(CardKind::Sha));
+        base.effect = Arc::new(|ctx, _, _| {
+            ctx.set_base_damage(2).unwrap();
+            TriggerStep::Done
+        });
+        game.register_trigger(base).unwrap();
         let sha = card(80, CardKind::Sha);
         game.seat_mut(0).hand.push(sha);
         game.set_sha_nature(sha.id, Some(DamageNature::Fire))

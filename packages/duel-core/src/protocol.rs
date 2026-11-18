@@ -148,6 +148,10 @@ pub struct GameView {
     pub active_seat: SeatId,
     pub human_seat: Option<SeatId>,
     pub turn: Option<TurnView>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub turn_reason: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub phase_reason: Option<String>,
     pub winner: Option<Side>,
     pub drawn: bool,
     pub seats: Vec<SeatView>,
@@ -177,6 +181,8 @@ pub struct GameView {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SeatView {
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub marks: Vec<crate::SkillMark>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub expansions: Vec<ExpansionCard>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -369,6 +375,7 @@ pub enum CardTargetTiming {
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum EventKind {
+    PhaseLoop,
     ActivateSkill {
         seat: SeatId,
         registration: u64,

@@ -8,6 +8,7 @@ use crate::{
 // A trick is one scheduler event; its private state is carried across child choices.
 #[derive(Clone)]
 pub(crate) struct Trick {
+    base_damage: u16,
     seat: SeatId,
     card: Option<Card>,
     kind: CardKind,
@@ -61,6 +62,14 @@ enum TrickStage {
 }
 
 impl Trick {
+    pub(crate) fn base_damage_mut(&mut self) -> Option<&mut u16> {
+        (matches!(self.stage, TrickStage::AfterUseCard2)
+            && matches!(
+                self.kind,
+                CardKind::Juedou | CardKind::Nanman | CardKind::Wanjian
+            ))
+        .then_some(&mut self.base_damage)
+    }
     pub(crate) fn use_targets(&self) -> Option<&[SeatId]> {
         (!self.judgment).then_some(&self.targets)
     }
@@ -167,6 +176,7 @@ impl Game {
                 .map(|targets| PlannedUse {
                     targets: targets.clone(),
                     program: Program::Trick(Trick {
+                        base_damage: 1,
                         seat,
                         card: Some(card),
                         kind: card.kind,
@@ -231,6 +241,7 @@ impl Game {
 
     pub(crate) fn virtual_duel_without_counter(&self, seat: SeatId, target: SeatId) -> Program {
         Program::Trick(Trick {
+            base_damage: 1,
             seat,
             card: None,
             kind: CardKind::Juedou,
@@ -250,6 +261,7 @@ impl Game {
 impl Game {
     pub(crate) fn trick_judgment(&self, seat: SeatId, card: Card) -> Program {
         Program::Trick(Trick {
+            base_damage: 1,
             seat,
             card: Some(card),
             kind: self.judgment_kind(card),
@@ -688,7 +700,7 @@ impl Game {
                     self.scheduler.next(self.damage_program(
                         Some(flow.seat),
                         actor,
-                        1,
+                        flow.base_damage,
                         Some(flow.kind),
                         flow.costs.clone(),
                     ));
@@ -726,7 +738,7 @@ impl Game {
                     self.scheduler.next(self.damage_program(
                         Some(source),
                         actor,
-                        1,
+                        flow.base_damage,
                         Some(flow.kind),
                         flow.costs.clone(),
                     ));

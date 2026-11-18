@@ -500,10 +500,8 @@ fn damaging_card_only_enables_the_matching_luoyi_turn_bonus() {
             amount: 1,
             reason: DrawReason::Phase
         }));
-    assert_eq!(game.hero_damage_bonus(Some(0), Some(CardKind::Sha)), 1);
-    assert_eq!(game.hero_damage_bonus(Some(0), Some(CardKind::Juedou)), 1);
-    assert_eq!(game.hero_damage_bonus(Some(0), Some(CardKind::Nanman)), 0);
-    assert_eq!(game.hero_damage_bonus(Some(1), Some(CardKind::Sha)), 0);
+    assert!(game.has_skill(0, "luoyi2"));
+    assert!(!game.has_skill(1, "luoyi2"));
     command(
         &mut game,
         0,

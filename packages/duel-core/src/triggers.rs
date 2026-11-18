@@ -8,6 +8,7 @@ use std::sync::Arc;
 
 /// A registration handle, unique for the lifetime of a game.
 pub type TriggerId = u64;
+pub type TriggerIndex = Arc<dyn Fn(&Game, &TriggerEvent, SeatId) -> u32 + Send + Sync>;
 #[cfg(test)]
 pub(crate) type TimingObserver = Arc<dyn Fn(&Game, &TriggerEvent) + Send + Sync>;
 pub type TriggerFilter = Arc<dyn Fn(&Game, &TriggerEvent, SeatId) -> bool + Send + Sync>;
@@ -110,6 +111,68 @@ pub struct TriggerContext<'a> {
     operations: VecDeque<TriggerOperation>,
 }
 impl TriggerContext<'_> {
+    /// Set the damage a paid Sha, Duel or mass attack will start with for each affected target.
+    pub fn set_base_damage(&mut self, amount: u16) -> Result<(), RuleError> {
+        if self.event.timing != "useCard2" {
+            return Err(RuleError::WrongEvent);
+        }
+        let base = match self.game.scheduler.active_program_mut(self.event.subject) {
+            Some(Program::Equipment(crate::equipment::Flow::Attack(attack))) => {
+                attack.base_damage_mut()
+            }
+            Some(Program::Trick(trick)) => trick.base_damage_mut(),
+            _ => None,
+        }
+        .ok_or(RuleError::WrongEvent)?;
+        *base = amount;
+        Ok(())
+    }
+    pub fn add_skill_mark(
+        &mut self,
+        seat: SeatId,
+        skill: &str,
+        source: Option<SeatId>,
+        count: u32,
+    ) -> Result<(), RuleError> {
+        self.game.add_skill_mark(seat, skill, source, count)
+    }
+    pub fn remove_skill_mark(
+        &mut self,
+        seat: SeatId,
+        skill: &str,
+        source: Option<SeatId>,
+        count: u32,
+    ) -> Result<(), RuleError> {
+        self.game.remove_skill_mark(seat, skill, source, count)
+    }
+    pub fn clear_skill_mark(&mut self, seat: SeatId, skill: &str, source: Option<SeatId>) {
+        self.game.clear_skill_mark(seat, skill, source);
+    }
+    pub fn skip_next_phase(&mut self, seat: SeatId, phase: crate::Phase) -> Result<(), RuleError> {
+        self.game.skip_next_phase(seat, phase)
+    }
+
+    pub fn insert_next_phase(
+        &mut self,
+        phase: crate::Phase,
+        reason: &str,
+    ) -> Result<(), RuleError> {
+        self.game.insert_next_phase(self.event, phase, reason)
+    }
+
+    pub fn insert_extra_turn(&mut self, seat: SeatId, reason: &str) -> Result<(), RuleError> {
+        self.game.insert_extra_turn(seat, reason)
+    }
+
+    pub fn insert_extra_turn_at(
+        &mut self,
+        seat: SeatId,
+        reason: &str,
+        position: crate::TurnPosition,
+    ) -> Result<(), RuleError> {
+        self.game.insert_extra_turn_at(seat, reason, position)
+    }
+
     /// Increase the current damage before it is committed.
     pub fn add_damage(&mut self, amount: u16) -> Result<(), RuleError> {
         self.game.add_event_damage(self.event, amount)
@@ -135,6 +198,15 @@ impl TriggerContext<'_> {
     ) -> Result<TriggerId, RuleError> {
         self.game.register_trigger(registration)
     }
+    /// Register an indexed callback; its count is sampled when it joins a timing request.
+    pub fn register_indexed_trigger(
+        &mut self,
+        registration: TriggerRegistration,
+        count: TriggerIndex,
+    ) -> Result<TriggerId, RuleError> {
+        self.game.register_indexed_trigger(registration, count)
+    }
+
     /// Revoke a registration, including a pending candidate in this event.
     pub fn unregister_trigger(&mut self, id: TriggerId) -> bool {
         self.game.unregister_trigger(id)
@@ -424,7 +496,7 @@ enum TriggerOperation {
         to: SeatId,
         card: CardId,
     },
-    Emit(TriggerEvent),
+    Emit(crate::classic::skills::Dispatch),
 }
 
 #[derive(Clone)]
@@ -511,8 +583,18 @@ impl Game {
         self.trigger_registrations.insert(id, registration);
         Ok(id)
     }
+    pub fn register_indexed_trigger(
+        &mut self,
+        registration: TriggerRegistration,
+        count: TriggerIndex,
+    ) -> Result<TriggerId, RuleError> {
+        let id = self.register_trigger(registration)?;
+        self.indexed_triggers.insert(id, count);
+        Ok(id)
+    }
     /// Revoke a callback, including any pending, unconsumed occurrence.
     pub fn unregister_trigger(&mut self, id: TriggerId) -> bool {
+        self.indexed_triggers.remove(&id);
         self.trigger_registrations.remove(&id).is_some()
     }
     pub(crate) fn has_timing_registrations(&self, timing: &str) -> bool {
@@ -534,8 +616,7 @@ impl Game {
         let Some(event) = self.prepare_timing(timing, player, source, target, amount, cards) else {
             return false;
         };
-        self.scheduler
-            .next(Program::Dispatch(self.dispatch_for_timing(event)));
+        self.scheduler.next(Program::Dispatch(event));
         true
     }
 
@@ -547,12 +628,16 @@ impl Game {
         target: Option<SeatId>,
         amount: u16,
         cards: &[Card],
-    ) -> Option<TriggerEvent> {
+    ) -> Option<crate::classic::skills::Dispatch> {
         if !self.wants_timing(timing) {
             return None;
         }
         let event = self.subject_timing(timing, player, source, target, amount, cards);
-        self.begin_timing_request(&event).then_some(event)
+        if self.begin_timing_request(&event) {
+            Some(self.dispatch_for_timing(event))
+        } else {
+            None
+        }
     }
 
     pub(crate) fn wants_timing(&self, timing: &str) -> bool {
@@ -790,7 +875,7 @@ impl Game {
                     };
                     program
                 }
-                TriggerOperation::Emit(event) => Program::Dispatch(self.dispatch_for_timing(event)),
+                TriggerOperation::Emit(queue) => Program::Dispatch(queue),
             };
             flow.state = RegisteredState::Operations {
                 remaining: operations,

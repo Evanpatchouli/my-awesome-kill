@@ -184,7 +184,6 @@ fn scene() -> Game {
             phase: Phase::Play,
         }),
         sha_played: false,
-        skip_play: false,
         result: None,
         result_announced: false,
     });

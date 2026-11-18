@@ -116,7 +116,8 @@ impl Game {
     }
 
     pub fn has_active_skill(&self, seat: SeatId, skill: &str) -> bool {
-        self.is_alive(seat)
+        !self.active_skills.registrations.is_empty()
+            && self.is_alive(seat)
             && self
                 .active_skills
                 .registrations

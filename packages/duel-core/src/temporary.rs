@@ -18,6 +18,9 @@ pub struct SkillRemoval<'a> {
 }
 
 impl SkillRemoval<'_> {
+    pub fn clear_mark(&mut self, skill: &str, source: Option<SeatId>) {
+        self.game.clear_skill_mark(self.owner, skill, source);
+    }
     pub fn discard_expansions(&mut self, tag: &str) {
         if let Some(program) = self.game.discard_expansions_program(self.owner, tag) {
             self.game.scheduler.next_cleanup(program);
@@ -50,6 +53,7 @@ pub struct TemporarySkill {
     pub name: String,
     pub expires: Vec<SkillExpiry>,
     pub triggers: Vec<TriggerRegistration>,
+    pub indexed_triggers: Vec<(TriggerRegistration, crate::triggers::TriggerIndex)>,
     pub card_enabled: Option<CardEnabled>,
     pub on_remove: Option<SkillRemovalEffect>,
 }
@@ -60,9 +64,15 @@ impl TemporarySkill {
             name: name.into(),
             expires,
             triggers: Vec::new(),
+            indexed_triggers: Vec::new(),
             card_enabled: None,
             on_remove: None,
         }
+    }
+
+    /// Stays active until a skill callback revokes the grant or its holder dies.
+    pub fn until_removed(name: impl Into<String>) -> Self {
+        Self::new(name, Vec::new())
     }
 
     /// Default addTempSkill lifetime, including the next-turn fallback after interruption.
@@ -91,10 +101,10 @@ impl Game {
     pub fn has_skill(&self, seat: SeatId, id: &str) -> bool {
         self.seat(seat).is_ok_and(|player| {
             player.alive
-                && (self.has_active_skill(seat, id)
-                    || player
-                        .hero
-                        .is_some_and(|hero| hero.skills.iter().any(|skill| skill.id == id)))
+                && (player
+                    .hero
+                    .is_some_and(|hero| hero.skills.iter().any(|skill| skill.id == id))
+                    || self.has_active_skill(seat, id))
                 || self
                     .temporary_skills
                     .iter()
@@ -123,9 +133,9 @@ impl Game {
             return Err(RuleError::InactiveSeat { seat: owner });
         }
         if skill.name.is_empty()
-            || skill.expires.is_empty()
             || skill.expires.iter().any(|term| term.timing.is_empty())
             || skill.triggers.iter().any(|r| r.owner != owner)
+            || skill.indexed_triggers.iter().any(|(r, _)| r.owner != owner)
         {
             return Err(RuleError::InvalidSelection);
         }
@@ -142,11 +152,14 @@ impl Game {
         }
         // Validate every registration and the entire ID range before mutating the table.
         self.next_trigger_id
-            .checked_add(skill.triggers.len() as u64)
+            .checked_add(skill.triggers.len() as u64 + skill.indexed_triggers.len() as u64)
             .ok_or(RuleError::VersionExhausted)?;
         let mut triggers = Vec::with_capacity(skill.triggers.len());
         for registration in skill.triggers {
             triggers.push(self.register_trigger(registration)?);
+        }
+        for (registration, count) in skill.indexed_triggers {
+            triggers.push(self.register_indexed_trigger(registration, count)?);
         }
         self.temporary_skills.push(Grant {
             owner,

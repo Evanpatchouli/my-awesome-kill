@@ -49,18 +49,6 @@ impl Game {
         )
     }
 
-    pub(crate) fn hero_damage_bonus(&self, source: Option<SeatId>, kind: Option<CardKind>) -> u16 {
-        let luoyi = self.classic.as_ref().and_then(|state| {
-            let active = state.turn.filter(|turn| turn.phase != Phase::End)?.seat;
-            state.hero_turn.luoyi.filter(|&seat| seat == active)
-        });
-        u16::from(
-            source.is_some()
-                && source == luoyi
-                && matches!(kind, Some(CardKind::Sha | CardKind::Juedou)),
-        )
-    }
-
     pub(crate) fn note_hero_sha_play(&mut self, seat: SeatId) {
         if let Some(state) = &mut self.classic {
             if state

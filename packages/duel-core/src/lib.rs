@@ -1,8 +1,12 @@
 mod active_skill;
 pub use active_skill::{ActiveSkillId, ActiveSkillRegistration};
 mod card_use;
+mod marks;
+pub use marks::SkillMark;
 mod classic;
 pub mod classic_data;
+#[cfg(any(test, feature = "content-phase-skills"))]
+pub mod phase_content;
 mod protocol;
 #[cfg(any(test, feature = "content-qiaoshui"))]
 pub mod qiaoshui;
@@ -13,8 +17,8 @@ mod triggers;
 pub mod zhongyi;
 pub use temporary::{CardEnabled, SkillExpiry, SkillRemoval, SkillRemovalEffect, TemporarySkill};
 pub use triggers::{
-    TriggerContext, TriggerEffect, TriggerEvent, TriggerFilter, TriggerId, TriggerOrder,
-    TriggerRegistration, TriggerRole, TriggerSelection, TriggerStep,
+    TriggerContext, TriggerEffect, TriggerEvent, TriggerFilter, TriggerId, TriggerIndex,
+    TriggerOrder, TriggerRegistration, TriggerRole, TriggerSelection, TriggerStep,
 };
 
 use std::collections::{HashMap, HashSet};
@@ -23,6 +27,7 @@ use classic::elemental::{self, CardDamage};
 pub use classic::elemental::{DamageNature, DamageRecord};
 use classic::equipment;
 use classic::hero_integration::Judgment;
+pub use classic::phases::PhaseInfo;
 pub use classic::recast::{
     RecastFilter, RecastGain, RecastGainFactory, RecastKey, RecastLoss, RecastLossFactory,
     RecastMovement, RecastRule, RecastSeat, RecastState,
@@ -30,6 +35,7 @@ pub use classic::recast::{
 pub use classic::skills::SkillId;
 use classic::skills::{HeroAdjustment, HeroFlow};
 use classic::tricks::Trick;
+pub use classic::turns::{PhasePlan, QueuedTurn, TurnInfo, TurnPosition};
 use classic::{Classic, MatchResult};
 use classic_data::{General, Role};
 pub use protocol::*;
@@ -50,7 +56,6 @@ enum Resolution {
     Complete,
     Passed,
     Dodged,
-    PhaseFinished(Phase),
     SavePassed(SeatId),
     Selected(Selection),
     Responded,
@@ -117,26 +122,6 @@ enum DeathStage {
 }
 
 #[derive(Clone)]
-struct TurnFlow {
-    seat: SeatId,
-    number: u64,
-    round: u64,
-    stage: TurnStage,
-    round_start: bool,
-}
-
-#[derive(Clone, Copy)]
-enum TurnStage {
-    RoundStart,
-    BeforeStart,
-    StartPhases,
-    Phases,
-    End,
-    After,
-    Finish,
-}
-
-#[derive(Clone)]
 enum Program {
     Death {
         source: Option<SeatId>,
@@ -148,9 +133,9 @@ enum Program {
     Expansion(classic::expansion::Flow),
     BasicUse(classic::basic_use::Flow),
     Compare(classic::compare::Flow),
-    Turn(TurnFlow),
-    PlayAfterBegin(SeatId),
-    PlayAfterEnd(SeatId),
+    Turn(classic::turns::TurnFlow),
+    PhaseLoop(classic::turns::LoopFlow),
+    Phase(classic::phases::Flow),
     Elemental(elemental::Flow),
     Recast(classic::recast::Flow),
     Event(EventKind),
@@ -210,13 +195,17 @@ impl Program {
                 seat,
                 number,
                 round,
-            } => Self::Turn(TurnFlow {
+            } => Self::Turn(classic::turns::TurnFlow::new(
                 seat,
                 number,
                 round,
-                stage: TurnStage::RoundStart,
-                round_start: number == 1,
-            }),
+                number == 1,
+                None,
+            )),
+            EventKind::Phase { seat, phase } => {
+                Self::Phase(classic::phases::Flow::new(seat, phase, None, 0))
+            }
+            EventKind::PhaseLoop => Self::PhaseLoop(classic::turns::LoopFlow::new()),
             _ => Self::Event(kind),
         }
     }
@@ -238,15 +227,9 @@ impl Program {
             Self::BasicUse(flow) => flow.kind(),
             Self::Event(kind) => *kind,
             Self::Compare(flow) => flow.kind(),
-            Self::Turn(flow) => EventKind::Turn {
-                seat: flow.seat,
-                number: flow.number,
-                round: flow.round,
-            },
-            Self::PlayAfterBegin(seat) | Self::PlayAfterEnd(seat) => EventKind::Phase {
-                seat: *seat,
-                phase: Phase::Play,
-            },
+            Self::Turn(flow) => flow.kind(),
+            Self::PhaseLoop(flow) => flow.kind(),
+            Self::Phase(flow) => flow.kind(),
             Self::Elemental(flow) => flow.kind(),
             Self::Recast(flow) => flow.kind(),
             Self::DiscardFrom { card, .. } => EventKind::Discard { card: *card },
@@ -333,6 +316,10 @@ impl From<SeatSetup> for Seat {
 }
 
 pub struct Game {
+    marks: marks::State,
+    indexed_triggers: HashMap<TriggerId, triggers::TriggerIndex>,
+    turns: classic::turns::State,
+    phase_state: classic::phases::State,
     active_skills: active_skill::State,
     expansion_tags: HashMap<CardId, Vec<String>>,
     teams: HashMap<SeatId, u32>,
@@ -393,6 +380,10 @@ impl Game {
 
     fn with_seats(seats: Vec<Seat>, active_seat: SeatId) -> Self {
         Self {
+            marks: marks::State::default(),
+            indexed_triggers: HashMap::new(),
+            turns: classic::turns::State::default(),
+            phase_state: classic::phases::State::default(),
             active_skills: active_skill::State::default(),
             expansion_tags: HashMap::new(),
             teams: HashMap::new(),
@@ -541,6 +532,7 @@ impl Game {
                 let role_visible =
                     own || !seat.alive || seat.role == Some(Role::Lord) || result.is_some();
                 SeatView {
+                    marks: self.skill_marks(seat.id),
                     expansions: seat
                         .expansions
                         .iter()
@@ -620,6 +612,24 @@ impl Game {
             .map(|(&id, &nature)| (id, nature))
             .collect();
         Ok(GameView {
+            turn_reason: self
+                .scheduler
+                .active_programs()
+                .find_map(|program| match program {
+                    Program::Turn(flow) => Some(flow.reason()),
+                    _ => None,
+                })
+                .flatten()
+                .map(str::to_owned),
+            phase_reason: self
+                .scheduler
+                .active_programs()
+                .find_map(|program| match program {
+                    Program::Phase(flow) => Some(flow.reason()),
+                    _ => None,
+                })
+                .flatten()
+                .map(str::to_owned),
             version: self.version,
             active_seat: self.active_seat,
             human_seat: state.map(|state| state.human),
@@ -989,20 +999,8 @@ impl Game {
             Program::Expansion(flow) => return self.resolve_expansion(event, flow, child),
             Program::Compare(flow) => return self.resolve_compare(event, flow, child, answer),
             Program::Turn(flow) => return self.resolve_turn_flow(flow, child),
-            Program::PlayAfterBegin(seat) => {
-                return self.resume_play_begin(event, seat, child, answer)
-            }
-            Program::PlayAfterEnd(_) => {
-                if matches!(child, Some(Outcome::Cancelled)) {
-                    self.scheduler.end(Outcome::Cancelled);
-                } else {
-                    self.scheduler
-                        .end(Outcome::Finished(Resolution::PhaseFinished(
-                            crate::Phase::Play,
-                        )));
-                }
-                return;
-            }
+            Program::PhaseLoop(flow) => return self.resolve_phase_loop(flow, child),
+            Program::Phase(flow) => return self.resolve_phase_flow(event, flow, child, answer),
             Program::Elemental(flow) => return self.resolve_elemental(flow, child),
             Program::Recast(flow) => return self.resolve_recast(event, flow, child),
             Program::Equipment(flow) => return self.resolve_equipment(event, flow, child),

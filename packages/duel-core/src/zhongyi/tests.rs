@@ -47,6 +47,7 @@ fn name(game: &Game, event: Option<EventId>) -> &'static str {
         Some(EventKind::Damage { .. }) => "damage",
         Some(EventKind::ShaEffect { .. }) => "sha",
         Some(EventKind::Turn { .. }) => "phase",
+        Some(EventKind::PhaseLoop) => "phaseLoop",
         Some(EventKind::Phase { .. }) | None => "reference_fixture_use",
         other => panic!("unexpected frame {other:?}"),
     }

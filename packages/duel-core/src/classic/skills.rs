@@ -42,12 +42,19 @@ skill_ids! {
 
 #[derive(Default)]
 pub(crate) struct HeroTurn {
-    luoyi: Option<SeatId>,
     used: Vec<SkillId>,
     rende_given: usize,
     played_sha: bool,
     pub(super) recast_attempted: bool,
     preview: Vec<Card>,
+}
+
+impl HeroTurn {
+    pub(crate) fn reset_play_phase(&mut self) {
+        self.used.clear();
+        self.rende_given = 0;
+        self.recast_attempted = false;
+    }
 }
 
 #[derive(Clone)]

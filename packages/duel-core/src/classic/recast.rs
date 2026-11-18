@@ -1,7 +1,9 @@
 use crate::scheduler::{EventRef, Outcome};
+#[cfg(test)]
+use crate::TriggerEvent;
 use crate::{
     Card, CardFace, CardId, CardKind, DrawReason, EventId, EventKind, Game, Program, Resolution,
-    RuleError, SeatId, TriggerEvent, TurnView, Zone,
+    RuleError, SeatId, TurnView, Zone,
 };
 use std::sync::Arc;
 
@@ -140,7 +142,7 @@ pub(crate) struct Recasting {
     card: Card,
     rule: RecastRule,
     stage: RecastStage,
-    post: Option<TriggerEvent>,
+    post: Option<crate::classic::skills::Dispatch>,
     cancelled_before_movement: bool,
 }
 
@@ -170,7 +172,11 @@ enum RemainingRecast {
 }
 
 impl Recasting {
-    fn request(&self, game: &mut Game, name: &'static str) -> Option<TriggerEvent> {
+    fn request(
+        &self,
+        game: &mut Game,
+        name: &'static str,
+    ) -> Option<crate::classic::skills::Dispatch> {
         game.prepare_timing(name, Some(self.seat), None, None, 1, &[self.card])
     }
 
@@ -178,7 +184,11 @@ impl Recasting {
         &self,
         game: &mut Game,
         loss: RecastMovement,
-    ) -> (Option<TriggerEvent>, RecastGain, Option<TriggerEvent>) {
+    ) -> (
+        Option<crate::classic::skills::Dispatch>,
+        RecastGain,
+        Option<crate::classic::skills::Dispatch>,
+    ) {
         let before = self.request(game, "recastingGain");
         let gain = (self.rule.gain)(RecastState(game), self.seat, self.card, &loss);
         let after = self.request(game, "recastingGained");
@@ -563,10 +573,9 @@ impl Game {
             .is_ok_and(|s| s.alive && s.hand.contains(&card))
     }
 
-    fn dispatch_recast_hook(&mut self, event: Option<TriggerEvent>) -> bool {
+    fn dispatch_recast_hook(&mut self, event: Option<crate::classic::skills::Dispatch>) -> bool {
         if let Some(event) = event {
-            self.scheduler
-                .next(Program::Dispatch(self.dispatch_for_timing(event)));
+            self.scheduler.next(Program::Dispatch(event));
             return true;
         }
         false

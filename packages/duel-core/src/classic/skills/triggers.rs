@@ -13,6 +13,7 @@ pub(crate) struct Queue {
     choice_indices: Vec<usize>,
     anchor: SeatId,
     scanned_registrations: std::collections::HashSet<crate::TriggerId>,
+    index_snapshot: std::collections::HashMap<crate::TriggerId, u32>,
     completed: std::collections::HashSet<(SeatId, String)>,
     cursor: Option<(u8, usize)>,
 }
@@ -20,7 +21,7 @@ pub(crate) struct Queue {
 enum Candidate {
     Elemental(crate::elemental::Rule),
     Native(SeatId, SkillId),
-    Registered(crate::TriggerId),
+    Registered(crate::TriggerId, u32),
     Qilin { source: SeatId, target: SeatId },
 }
 impl Queue {
@@ -145,20 +146,26 @@ impl Game {
         };
         let event = self.moment_event(&moment);
         self.begin_timing_request(&event);
-        Program::Dispatch(Queue {
-            moment: Some(moment),
-            event,
-            pending: None,
-            adjustment,
-            choosing: false,
-            choice_indices: Vec::new(),
-            anchor: self.active_seat,
-            scanned_registrations: Default::default(),
-            completed: Default::default(),
-            cursor: None,
-        })
+        let mut queue = self.dispatch_for_timing(event);
+        queue.moment = Some(moment);
+        queue.adjustment = adjustment;
+        Program::Dispatch(queue)
+    }
+    fn snapshot_trigger_indices(
+        &self,
+        event: &crate::TriggerEvent,
+    ) -> std::collections::HashMap<crate::TriggerId, u32> {
+        self.indexed_triggers
+            .iter()
+            .filter_map(|(&id, index)| {
+                let registration = self.trigger_registrations.get(&id)?;
+                (registration.timing == event.timing)
+                    .then(|| (id, index(self, event, registration.owner)))
+            })
+            .collect()
     }
     pub(crate) fn dispatch_for_timing(&self, event: crate::TriggerEvent) -> Queue {
+        let index_snapshot = self.snapshot_trigger_indices(&event);
         Queue {
             moment: None,
             event,
@@ -168,6 +175,7 @@ impl Game {
             choice_indices: Vec::new(),
             anchor: self.active_seat,
             scanned_registrations: Default::default(),
+            index_snapshot,
             completed: Default::default(),
             cursor: None,
         }
@@ -321,11 +329,18 @@ impl Game {
                 if queue.cursor.is_some_and(|cursor| group < cursor) {
                     continue;
                 }
-                queue
-                    .pending
-                    .as_mut()
-                    .unwrap()
-                    .push(Candidate::Registered(id));
+                let count = queue.index_snapshot.get(&id).copied().unwrap_or_else(|| {
+                    self.indexed_triggers
+                        .get(&id)
+                        .map_or(1, |index| index(self, &queue.event, registration.owner))
+                });
+                if count > 0 {
+                    queue
+                        .pending
+                        .as_mut()
+                        .unwrap()
+                        .push(Candidate::Registered(id, count));
+                }
             }
         }
         let pending = queue.pending.as_ref().unwrap();
@@ -338,7 +353,7 @@ impl Game {
                 ),
                 Candidate::Native(owner, _) => (*owner, crate::TriggerOrder::Normal, 0),
                 Candidate::Qilin { source, .. } => (*source, crate::TriggerOrder::Normal, 0),
-                Candidate::Registered(id) => {
+                Candidate::Registered(id, _) => {
                     let r = self.trigger_registrations.get(id)?;
                     (r.owner, r.order, r.priority)
                 }
@@ -347,7 +362,7 @@ impl Game {
             let subpriority = match candidate {
                 Candidate::Elemental(_) => -1,
                 Candidate::Qilin { .. } => 25,
-                Candidate::Registered(id) if self.trigger_registrations[id].silent => -1,
+                Candidate::Registered(id, _) if self.trigger_registrations[id].silent => -1,
                 _ => 0,
             };
             Some(match group {
@@ -376,7 +391,7 @@ impl Game {
                         .as_ref()
                         .is_some_and(|moment| self.native_trigger_eligible(*owner, *skill, moment))
             }
-            Candidate::Registered(id) => self.registered_matches(*id, &queue.event),
+            Candidate::Registered(id, _) => self.registered_matches(*id, &queue.event),
             Candidate::Qilin { source, target } => self.qilin_program(*source, *target).is_some(),
         };
         let selected = if queue.choosing {
@@ -401,7 +416,7 @@ impl Game {
                         self.seat(*owner).is_ok_and(|s| s.alive)
                             && self.has_skill(*owner, skill.as_str())
                     }
-                    Candidate::Registered(id) => self.trigger_registrations.contains_key(id),
+                    Candidate::Registered(id, _) => self.registered_matches(*id, &queue.event),
                     Candidate::Qilin { source, target } => {
                         self.qilin_program(*source, *target).is_some()
                     }
@@ -426,7 +441,7 @@ impl Game {
                         Candidate::Elemental(rule) => (rule.owner(self), rule.skill().to_owned()),
                         Candidate::Native(owner, skill) => (*owner, skill.as_str().to_owned()),
                         Candidate::Qilin { source, .. } => (*source, "qilin_skill".to_owned()),
-                        Candidate::Registered(id) => {
+                        Candidate::Registered(id, _) => {
                             let r = &self.trigger_registrations[id];
                             (r.owner, r.skill.clone())
                         }
@@ -460,6 +475,7 @@ impl Game {
             {
                 queue.event.timing = "phaseDrawBegin2".into();
                 self.begin_timing_request(&queue.event);
+                queue.index_snapshot = self.snapshot_trigger_indices(&queue.event);
                 queue.pending = None;
                 queue.scanned_registrations.clear();
                 queue.completed.clear();
@@ -489,7 +505,7 @@ impl Game {
                 })
                 .map(|definition| definition.name.clone()),
             Candidate::Qilin { .. } => Some("麒麟弓".into()),
-            Candidate::Registered(id) => self.trigger_registrations.get(id).and_then(|r| {
+            Candidate::Registered(id, _) => self.trigger_registrations.get(id).and_then(|r| {
                 if r.silent {
                     None
                 } else {
@@ -501,7 +517,7 @@ impl Game {
             Candidate::Elemental(rule) => rule.owner(self),
             Candidate::Native(s, _) => *s,
             Candidate::Qilin { source, .. } => *source,
-            Candidate::Registered(id) => self.trigger_registrations[id].owner,
+            Candidate::Registered(id, _) => self.trigger_registrations[id].owner,
         };
         if selected.is_none()
             && best_key.0 == 1
@@ -540,13 +556,13 @@ impl Game {
             Candidate::Elemental(rule) => (rule.owner(self), rule.skill().to_owned()),
             Candidate::Native(owner, skill) => (*owner, skill.as_str().to_owned()),
             Candidate::Qilin { source, .. } => (*source, "qilin_skill".to_owned()),
-            Candidate::Registered(id) => {
+            Candidate::Registered(id, _) => {
                 let r = &self.trigger_registrations[id];
                 (r.owner, r.skill.clone())
             }
         };
-        let registered_chosen = matches!(chosen_candidate, Candidate::Registered(_));
-        let pruned: Vec<_> = pending
+        let registered_chosen = matches!(chosen_candidate, Candidate::Registered(..));
+        let mut pruned: Vec<_> = pending
             .iter()
             .enumerate()
             .filter(|(i, c)| {
@@ -558,7 +574,7 @@ impl Game {
                     Candidate::Elemental(rule) => {
                         (rule.owner(self), rule.skill()) != (identity.0, identity.1.as_str())
                     }
-                    Candidate::Registered(id) => {
+                    Candidate::Registered(id, _) => {
                         let r = &self.trigger_registrations[id];
                         (r.owner, r.skill.as_str()) != (identity.0, identity.1.as_str())
                     }
@@ -574,6 +590,11 @@ impl Game {
             })
             .map(|(_, c)| c.clone())
             .collect();
+        if let Candidate::Registered(id, count) = &chosen_candidate {
+            if *count > 1 {
+                pruned.push(Candidate::Registered(*id, count - 1));
+            }
+        }
         queue.pending = Some(pruned);
         queue.cursor = Some((best_key.0, best_key.1));
         queue.completed.insert(identity);
@@ -596,7 +617,7 @@ impl Game {
                         stage: Stage::Start,
                     })))
             }
-            Candidate::Registered(id) => {
+            Candidate::Registered(id, _) => {
                 let owner = self.trigger_registrations[&id].owner;
                 let effect = self.trigger_registrations[&id].effect.clone();
                 self.scheduler
@@ -628,14 +649,9 @@ impl Game {
                 })
             }
             (Luoyi | Yingzi, HeroMoment::Draw { amount, .. }) => *amount > 0,
-            (Keji, HeroMoment::Discard { .. }) => {
-                self.classic
-                    .as_ref()
-                    .is_some_and(|state| !state.hero_turn.played_sha)
-                    && self
-                        .seat(owner)
-                        .is_ok_and(|seat| seat.hand.len() > usize::try_from(seat.hp).unwrap_or(0))
-            }
+            (Keji, HeroMoment::Discard { .. }) => self.classic.as_ref().is_some_and(|state| {
+                !state.hero_turn.played_sha || self.phase_state.skipped_play(owner)
+            }),
             (Guicai, HeroMoment::JudgeBefore { .. }) => {
                 !self.hero_owned_card_ids(owner, false).is_empty()
             }
@@ -821,13 +837,9 @@ impl Game {
                     }
                     Luoyi if amount > 0 => vec![option(0, "正常摸牌"), option(1, "裸衣")],
                     Yingzi if amount > 0 => vec![option(0, "正常摸牌"), option(1, "英姿")],
-                    Keji if self
-                        .classic
-                        .as_ref()
-                        .is_some_and(|state| !state.hero_turn.played_sha)
-                        && self.seat(owner).is_ok_and(|seat| {
-                            seat.hand.len() > usize::try_from(seat.hp).unwrap_or(0)
-                        }) =>
+                    Keji if self.classic.as_ref().is_some_and(|state| {
+                        !state.hero_turn.played_sha || self.phase_state.skipped_play(owner)
+                    }) =>
                     {
                         vec![option(0, "正常弃牌"), option(1, "克己")]
                     }
@@ -851,7 +863,33 @@ impl Game {
                         HeroAdjustment::Draw(0)
                     }
                     Luoyi => {
-                        self.classic.as_mut().expect("classic turn").hero_turn.luoyi = Some(owner);
+                        let mut buff = crate::TemporarySkill::new(
+                            "luoyi2",
+                            vec![crate::SkillExpiry::new(
+                                crate::TriggerRole::Global,
+                                "phaseJieshuBegin",
+                            )],
+                        );
+                        buff.triggers.push(crate::TriggerRegistration {
+                            owner,
+                            skill: "luoyi2".into(),
+                            timing: "damageBegin1".into(),
+                            role: crate::TriggerRole::Source,
+                            order: crate::TriggerOrder::Normal,
+                            priority: 0,
+                            label: None,
+                            silent: true,
+                            filter: std::sync::Arc::new(|game, event, _| {
+                                matches!(event.card_kind, Some(CardKind::Sha | CardKind::Juedou))
+                                    && !game.is_propagated_damage(event.subject)
+                            }),
+                            effect: std::sync::Arc::new(|ctx, _, _| {
+                                ctx.add_damage(1).expect("live damage can be modified");
+                                crate::TriggerStep::Done
+                            }),
+                        });
+                        self.grant_temporary(owner, buff)
+                            .expect("native luoyi grant is valid");
                         HeroAdjustment::Draw(amount - 1)
                     }
                     Yingzi => HeroAdjustment::Draw(amount + 1),

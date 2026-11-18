@@ -20,6 +20,14 @@
 
 `TemporarySkill::until_turn_end` 在全局 `phaseAfter` 或下次 `phaseBeforeStart` 到期。时机请求先记录当时状态，随即撤销这次授予的登记和修饰，然后选择实际执行的技能。`Game::has_skill` 和 `Game::card_enabled` 供可信内容查询。经典选牌、直接提交和 AI 使用相同的生效牌种约束，重铸、打出和救援分别走对应的规则。在巧说的八人平局和负局中，`phaseAfter` 请求时决斗仍被禁止，第一个技能回调里已可使用。[上游观测](../../tests/reference/compare.json)
 
+### 自然轮转、额外回合和阶段
+
+经典模式的 `PhaseLoop` 保存自然席次，所有普通与额外回合都是它的子事件。`TriggerContext::insert_next_phase` 可在 `phaseBegin` 或 `phaseChange` 修改当前回合仍待执行的阶段。`skip_next_phase` 在指定席位下次进入该阶段时生效，同一席位同一阶段的重复申请只消费一次。普通跳过发出 `Skipped`，时机回调取消正在运行的主体会发出 `Cancelled`。每个实际出牌阶段有独立的使用次数。克己读取整回合的出牌与跳过记录。
+
+`insert_extra_turn` 将回合追加到自然循环的待办队列。当前自然回合的 `phaseAfter` 后会执行全部待办，然后才对原自然席请求 `phaseOver`。额外回合有独立的回合号。排队期间阵亡的额外席仍处理回合首尾，但不进入六个阶段；翻面席则翻正并取消该回合。`queued_turns` 可查看包含运行中事件的队列。`TurnPosition::Front` 保留锁定上游的出队行为。在自然回合运行中把 B 前插到该事件之前，B 会在当前等待结束时从队首移除，没有启动。`turn_info`、`phase_info`、`turn_history` 与 `current_phase_player` 可分别查询帧、来源与活动状态。[自然与额外阶段](../../tests/reference/phase-scheduling.json) · [队列实测](../../tests/reference/phase-queue.json)
+
+`register_indexed_trigger` 可为一次请求登记多次激活。已有登记在请求时确定次数，每次运行前重新检查资格，持有者能在同组具名技能间继续选择。`content-phase-skills` 用原版当先与放权验证这些规则，玩家可以在每个出牌段独立决定是否放权。回合末实际弃置一张手牌后，才选择获得额外回合的角色。
+
 ### 已支付用牌的目标
 
 `useCard2` 在实体进入处理区并完成失牌回调之后、逐目标结算之前派发。`Game::use_targets(subject)` 读取该次用牌的主目标，`additional_use_targets` 和 `removable_use_targets` 返回当前合法选项。内容响应这个时机时，可以调用 `TriggerContext::add_use_target` 或 `remove_use_target`。两者只修改本次用牌，保留事件 ID、支付和清理，并在执行时重新核对目标。额外的杀与顺手目标仍须满足牌面、武将和牌区条件，可以越过通常的距离限制。

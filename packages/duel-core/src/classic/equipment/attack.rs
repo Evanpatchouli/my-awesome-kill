@@ -22,6 +22,7 @@ enum AttackStep {
 
 #[derive(Clone)]
 pub(crate) struct Attack {
+    base_damage: u16,
     seat: SeatId,
     payer: SeatId,
     cards: Vec<Card>,
@@ -35,6 +36,9 @@ pub(crate) struct Attack {
 }
 
 impl Attack {
+    pub(crate) fn base_damage_mut(&mut self) -> Option<&mut u16> {
+        matches!(self.step, AttackStep::TargetsChanged).then_some(&mut self.base_damage)
+    }
     pub(crate) fn use_targets(&self) -> &[SeatId] {
         &self.targets
     }
@@ -74,6 +78,7 @@ enum TargetStep {
 
 #[derive(Clone)]
 pub(crate) struct Target {
+    base_damage: u16,
     pub(super) seat: SeatId,
     pub(super) target: SeatId,
     step: TargetStep,
@@ -106,6 +111,7 @@ impl Game {
             weapon.kind == CardKind::Qinggang && (payer != seat || !cards.contains(&weapon))
         });
         Program::Equipment(Flow::Attack(Attack {
+            base_damage: 1,
             seat,
             payer,
             cards,
@@ -322,6 +328,7 @@ impl Game {
                     return;
                 };
                 let target = Target {
+                    base_damage: attack.base_damage,
                     seat,
                     target,
                     step: TargetStep::Defend,
@@ -358,7 +365,7 @@ impl Game {
                 let damage = self.damage_program_with_nature(
                     Some(seat),
                     target,
-                    1,
+                    attack.base_damage,
                     Some(CardKind::Sha),
                     attack.cards.clone(),
                     attack.nature,

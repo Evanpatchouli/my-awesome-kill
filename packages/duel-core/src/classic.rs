@@ -7,14 +7,16 @@ mod equipment_tests;
 pub(crate) mod expansion;
 pub(crate) mod hero_integration;
 mod lifecycle;
+pub(crate) mod phases;
 pub(crate) mod recast;
 pub(crate) mod skills;
 pub(crate) mod target_timing;
 #[cfg(test)]
-mod tests;
+pub(crate) mod tests;
 pub(crate) mod tricks;
 #[cfg(test)]
 mod tricks_tests;
+pub(crate) mod turns;
 
 use crate::classic_data::{self, Role, Side};
 use crate::{
@@ -46,7 +48,6 @@ pub(super) struct Classic {
     pub(super) turn: Option<TurnView>,
     sha_played: bool,
     hero_turn: skills::HeroTurn,
-    skip_play: bool,
     pub(super) result: Option<MatchResult>,
     result_announced: bool,
 }
@@ -174,7 +175,6 @@ impl Game {
             turn: None,
             sha_played: false,
             hero_turn: skills::HeroTurn::default(),
-            skip_play: false,
             result: None,
             result_announced: false,
         });
@@ -241,10 +241,8 @@ impl Game {
     }
 
     fn skip_play_phase(&mut self, seat: SeatId) {
-        let state = self.classic.as_mut().expect("the table is classic");
-        if state.turn.is_some_and(|turn| turn.seat == seat) {
-            state.skip_play = true;
-        }
+        self.skip_next_phase(seat, crate::Phase::Play)
+            .expect("judged seat exists");
     }
 
     pub(super) fn play_choices(&self, seat: SeatId) -> Vec<Action> {
