@@ -30,6 +30,11 @@
 - 只取消内层的整批 `lose` 时，三张材料留在手牌和装备区，A 仍摸三张。只取消 `drawBefore` 时，三张材料已弃，三张替代牌仍按原顺序留在牌堆顶。两次重铸都进入 `recastingGained`、`recastAfter`，被取消的事件仍可从其父或工厂事件列表找到。
 - 名典由真实 `damageEnd` 发起 `chooseCard`，选牌范围为手牌及装备区，至少一张，夹具只设置 AI 偏好。两个基本牌获选，非基本控制牌保留。选完时材料尚在手中，C 的知情记录未变。两个基本牌均通过宽松重铸检查，经名典进入同一重铸事件，一次弃两张、摸两张。
 
+`recast-batch-boundaries.json` 另观测两次完整批量重铸。每次提交明手铁索、暗手铁索和装备区青釭剑。
+
+- 在 `loseToDiscardpileBegin` 取消失牌包装时，包装请求 `loseToDiscardpileCancelled`，其状态从请求时的未完成变为首个实际回调时的已完成。包装保留在 `recastingLosingEvents`，没有创建内层 `lose`，没有失牌记录。三张材料和旁观者手牌知情维持原状。外层仍执行 `recastingLost`、一次摸三张和 `recastAfter`。
+- 在内层 `loseBefore` 把三张材料暗给 B 时，实体先经暂存区，再一起进入 B 手牌。原内层正常完成，`loseEnd` 和 `loseAfter` 的请求、回调及失牌历史均含空 `cards` 与完整 `stockcards`。父包装照常执行其主时机和结束时机，两次工厂都使用原三张有序数组，A 仍暗摸三张。C 只认识 B 新得的原装备牌，B 认识三张，C 对 A 原公开控制牌的手牌知情被清除。
+
 `compare.json` 记录八人离线身份局中的巧说和纵适。实际浏览器席 C 旁观三个 AI 出牌回合。每次 A、B 各暗摸两张实体牌。夹具给真实 `chooseTarget`、`chooseCard` 的 AI 指定偏好，巧说的目标过滤、选牌、移牌、比点和技能内容均由原版执行。巧说的 `qiaoshui_cost` 选中 B 时双方拼点牌仍在手中。三例的 `fixedResultSupplied` 均为 `false`。
 
 原版 `chooseToCompare` 通过 `chooseCardOL` 依次让 A、B 执行 `chooseCard`。`privateSelections` 在每次选择开始与结束时读取当前选择结果、A/B/C 的已知手牌及 C 牌桌上的公开拼点牌面。四个时刻双方均只知自己的两张手牌，C 的两组已知牌和公开牌面均为空。双方结果汇总后，两张牌依次由手牌移到处理区。原版以一次 `$compare` 将两张牌交给展示层，再分别为 A、B 调用 `showCards`。`reveals` 记录那一次双牌展示的输入，`spectatorSawFlip` 记录 C 的牌桌上实际翻为正面的两张牌。
@@ -101,6 +106,7 @@
    node scripts/reference-trace.mjs --scenario tiesuo-recast --check tests/reference/tiesuo-recast.json
    node scripts/reference-trace.mjs --scenario recast-callbacks --check tests/reference/recast-callbacks.json
    node scripts/reference-trace.mjs --scenario recast-batch --check tests/reference/recast-batch.json
+   node scripts/reference-trace.mjs --scenario recast-batch-boundaries --check tests/reference/recast-batch-boundaries.json
    node scripts/reference-trace.mjs --scenario linked-damage --check tests/reference/linked-damage.json
    node scripts/reference-trace.mjs --scenario compare --check tests/reference/compare.json
    node scripts/reference-trace.mjs --scenario qiaoshui-targets --check tests/reference/qiaoshui-targets.json

@@ -1,0 +1,327 @@
+{
+  "schema": "noname-reference-trace-v1",
+  "referenceCommit": "c73270948d72949aa80009536b9fd5400767d091",
+  "mode": "identity",
+  "scenario": "cancelled batch loss wrapper and a batch fully transferred before payment",
+  "players": 8,
+  "spectator": "C",
+  "labels": [
+    "shown",
+    "hidden",
+    "equipped",
+    "control",
+    "draw-1",
+    "draw-2",
+    "draw-3"
+  ],
+  "eventColumns": [
+    "sample",
+    "kind",
+    "timing",
+    "event",
+    "parent",
+    "player",
+    "source",
+    "zones",
+    "spectatorHands",
+    "detail"
+  ],
+  "trials": [
+    {
+      "name": "cancel-loss-wrapper",
+      "before": {
+        "zones": [
+          "A:h",
+          "A:h",
+          "A:e",
+          "A:h",
+          "c",
+          "c",
+          "c"
+        ],
+        "spectatorHands": [
+          [
+            "shown",
+            "control"
+          ],
+          []
+        ]
+      },
+      "after": {
+        "zones": [
+          "A:h",
+          "A:h",
+          "A:e",
+          "A:h",
+          "A:h",
+          "A:h",
+          "A:h"
+        ],
+        "spectatorHands": [
+          [
+            "shown",
+            "control"
+          ],
+          []
+        ],
+        "recipientHands": [
+          [
+            "shown",
+            "control"
+          ],
+          []
+        ],
+        "occurrences": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "losses": [
+          {
+            "event": "loseToDiscardpile",
+            "parent": "recast",
+            "cards": [
+              "shown",
+              "hidden",
+              "equipped"
+            ],
+            "finished": true,
+            "cancelled": true
+          }
+        ],
+        "innerLoss": null,
+        "gains": [
+          {
+            "event": "draw",
+            "parent": "recast",
+            "cards": [],
+            "finished": true,
+            "cancelled": false,
+            "amount": 3,
+            "drawn": [
+              "draw-1",
+              "draw-2",
+              "draw-3"
+            ]
+          }
+        ],
+        "root": {
+          "event": "recast",
+          "parent": "reference_fixture_use",
+          "cards": [
+            "shown",
+            "hidden",
+            "equipped"
+          ],
+          "finished": true,
+          "cancelled": false
+        },
+        "recordedLosses": []
+      }
+    },
+    {
+      "name": "intercept-all",
+      "before": {
+        "zones": [
+          "A:h",
+          "A:h",
+          "A:e",
+          "A:h",
+          "c",
+          "c",
+          "c"
+        ],
+        "spectatorHands": [
+          [
+            "shown",
+            "control"
+          ],
+          []
+        ]
+      },
+      "after": {
+        "zones": [
+          "B:h",
+          "B:h",
+          "B:h",
+          "A:h",
+          "A:h",
+          "A:h",
+          "A:h"
+        ],
+        "spectatorHands": [
+          [],
+          [
+            "equipped"
+          ]
+        ],
+        "recipientHands": [
+          [],
+          [
+            "shown",
+            "hidden",
+            "equipped"
+          ]
+        ],
+        "occurrences": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "losses": [
+          {
+            "event": "loseToDiscardpile",
+            "parent": "recast",
+            "cards": [
+              "shown",
+              "hidden",
+              "equipped"
+            ],
+            "finished": true,
+            "cancelled": false
+          }
+        ],
+        "innerLoss": {
+          "event": "lose",
+          "parent": "loseToDiscardpile",
+          "cards": [],
+          "finished": true,
+          "cancelled": false,
+          "stockcards": [
+            "shown",
+            "hidden",
+            "equipped"
+          ]
+        },
+        "gains": [
+          {
+            "event": "draw",
+            "parent": "recast",
+            "cards": [],
+            "finished": true,
+            "cancelled": false,
+            "amount": 3,
+            "drawn": [
+              "draw-1",
+              "draw-2",
+              "draw-3"
+            ]
+          }
+        ],
+        "root": {
+          "event": "recast",
+          "parent": "reference_fixture_use",
+          "cards": [
+            "shown",
+            "hidden",
+            "equipped"
+          ],
+          "finished": true,
+          "cancelled": false
+        },
+        "recordedLosses": [
+          {
+            "event": "lose",
+            "parent": "gain",
+            "cards": [
+              "shown",
+              "hidden",
+              "equipped"
+            ],
+            "finished": true,
+            "cancelled": false,
+            "stockcards": [
+              "shown",
+              "hidden",
+              "equipped"
+            ]
+          },
+          {
+            "event": "lose",
+            "parent": "loseToDiscardpile",
+            "cards": [],
+            "finished": true,
+            "cancelled": false,
+            "stockcards": [
+              "shown",
+              "hidden",
+              "equipped"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "events": [
+    ["cancel-loss-wrapper","request","recastBefore","recast","reference_fixture_use","A",null,["A:h","A:h","A:e","A:h","c","c","c"],[["shown","control"],[]],{"event":"recast","parent":"reference_fixture_use","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false}],
+    ["cancel-loss-wrapper","request","recastingLose","recast","reference_fixture_use","A",null,["A:h","A:h","A:e","A:h","c","c","c"],[["shown","control"],[]],{"event":"recast","parent":"reference_fixture_use","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false}],
+    ["cancel-loss-wrapper","factory","recastingLose","recast","reference_fixture_use","A",null,["A:h","A:h","A:e","A:h","c","c","c"],[["shown","control"],[]],{"cards":["shown","hidden","equipped"],"sameArray":true,"child":{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false}}],
+    ["cancel-loss-wrapper","request","recastingLost","recast","reference_fixture_use","A",null,["A:h","A:h","A:e","A:h","c","c","c"],[["shown","control"],[]],{"event":"recast","parent":"reference_fixture_use","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false}],
+    ["cancel-loss-wrapper","request","loseToDiscardpileBefore","loseToDiscardpile","recast","A",null,["A:h","A:h","A:e","A:h","c","c","c"],[["shown","control"],[]],{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false}],
+    ["cancel-loss-wrapper","request","loseToDiscardpileBegin","loseToDiscardpile","recast","A",null,["A:h","A:h","A:e","A:h","c","c","c"],[["shown","control"],[]],{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false}],
+    ["cancel-loss-wrapper","callback","loseToDiscardpileBegin","loseToDiscardpile","recast","A",null,["A:h","A:h","A:e","A:h","c","c","c"],[["shown","control"],[]],{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"callbackParent":"trigger"}],
+    ["cancel-loss-wrapper","request","loseToDiscardpileCancelled","loseToDiscardpile","recast","A",null,["A:h","A:h","A:e","A:h","c","c","c"],[["shown","control"],[]],{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"finished":false,"cancelled":true}],
+    ["cancel-loss-wrapper","callback","loseToDiscardpileCancelled","loseToDiscardpile","recast","A",null,["A:h","A:h","A:e","A:h","c","c","c"],[["shown","control"],[]],{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"finished":true,"cancelled":true,"callbackParent":"trigger"}],
+    ["cancel-loss-wrapper","callback","recastingLost","recast","reference_fixture_use","A",null,["A:h","A:h","A:e","A:h","c","c","c"],[["shown","control"],[]],{"event":"recast","parent":"reference_fixture_use","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"callbackParent":"trigger"}],
+    ["cancel-loss-wrapper","request","recast","recast","reference_fixture_use","A",null,["A:h","A:h","A:e","A:h","c","c","c"],[["shown","control"],[]],{"event":"recast","parent":"reference_fixture_use","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false}],
+    ["cancel-loss-wrapper","callback","recast","recast","reference_fixture_use","A",null,["A:h","A:h","A:e","A:h","c","c","c"],[["shown","control"],[]],{"event":"recast","parent":"reference_fixture_use","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"callbackParent":"trigger"}],
+    ["cancel-loss-wrapper","request","recastingGain","recast","reference_fixture_use","A",null,["A:h","A:h","A:e","A:h","c","c","c"],[["shown","control"],[]],{"event":"recast","parent":"reference_fixture_use","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false}],
+    ["cancel-loss-wrapper","factory","recastingGain","recast","reference_fixture_use","A",null,["A:h","A:h","A:e","A:h","c","c","c"],[["shown","control"],[]],{"cards":["shown","hidden","equipped"],"sameArray":true,"child":{"event":"draw","parent":"recast","cards":[],"finished":false,"cancelled":false,"amount":3,"drawn":[]}}],
+    ["cancel-loss-wrapper","request","recastingGained","recast","reference_fixture_use","A",null,["A:h","A:h","A:e","A:h","c","c","c"],[["shown","control"],[]],{"event":"recast","parent":"reference_fixture_use","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false}],
+    ["cancel-loss-wrapper","request","drawBefore","draw","recast","A","A",["A:h","A:h","A:e","A:h","c","c","c"],[["shown","control"],[]],{"event":"draw","parent":"recast","cards":[],"finished":false,"cancelled":false,"amount":3,"drawn":[]}],
+    ["cancel-loss-wrapper","request","gainAfter","gain","draw","A",null,["A:h","A:h","A:e","A:h","A:h","A:h","A:h"],[["shown","control"],[]],{"event":"gain","parent":"draw","cards":["draw-1","draw-2","draw-3"],"finished":true,"cancelled":false}],
+    ["cancel-loss-wrapper","request","drawAfter","draw","recast","A","A",["A:h","A:h","A:e","A:h","A:h","A:h","A:h"],[["shown","control"],[]],{"event":"draw","parent":"recast","cards":[],"finished":true,"cancelled":false,"amount":3,"drawn":["draw-1","draw-2","draw-3"]}],
+    ["cancel-loss-wrapper","callback","recastingGained","recast","reference_fixture_use","A",null,["A:h","A:h","A:e","A:h","A:h","A:h","A:h"],[["shown","control"],[]],{"event":"recast","parent":"reference_fixture_use","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"callbackParent":"trigger"}],
+    ["cancel-loss-wrapper","request","recastAfter","recast","reference_fixture_use","A",null,["A:h","A:h","A:e","A:h","A:h","A:h","A:h"],[["shown","control"],[]],{"event":"recast","parent":"reference_fixture_use","cards":["shown","hidden","equipped"],"finished":true,"cancelled":false}],
+    ["cancel-loss-wrapper","callback","recastAfter","recast","reference_fixture_use","A",null,["A:h","A:h","A:e","A:h","A:h","A:h","A:h"],[["shown","control"],[]],{"event":"recast","parent":"reference_fixture_use","cards":["shown","hidden","equipped"],"finished":true,"cancelled":false,"callbackParent":"trigger"}],
+    ["intercept-all","request","recastBefore","recast","reference_fixture_use","A",null,["A:h","A:h","A:e","A:h","c","c","c"],[["shown","control"],[]],{"event":"recast","parent":"reference_fixture_use","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false}],
+    ["intercept-all","request","recastingLose","recast","reference_fixture_use","A",null,["A:h","A:h","A:e","A:h","c","c","c"],[["shown","control"],[]],{"event":"recast","parent":"reference_fixture_use","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false}],
+    ["intercept-all","factory","recastingLose","recast","reference_fixture_use","A",null,["A:h","A:h","A:e","A:h","c","c","c"],[["shown","control"],[]],{"cards":["shown","hidden","equipped"],"sameArray":true,"child":{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false}}],
+    ["intercept-all","request","recastingLost","recast","reference_fixture_use","A",null,["A:h","A:h","A:e","A:h","c","c","c"],[["shown","control"],[]],{"event":"recast","parent":"reference_fixture_use","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false}],
+    ["intercept-all","request","loseToDiscardpileBefore","loseToDiscardpile","recast","A",null,["A:h","A:h","A:e","A:h","c","c","c"],[["shown","control"],[]],{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false}],
+    ["intercept-all","request","loseToDiscardpileBegin","loseToDiscardpile","recast","A",null,["A:h","A:h","A:e","A:h","c","c","c"],[["shown","control"],[]],{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false}],
+    ["intercept-all","callback","loseToDiscardpileBegin","loseToDiscardpile","recast","A",null,["A:h","A:h","A:e","A:h","c","c","c"],[["shown","control"],[]],{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"callbackParent":"trigger"}],
+    ["intercept-all","request","loseBefore","lose","loseToDiscardpile","A",null,["A:h","A:h","A:e","A:h","c","c","c"],[["shown","control"],[]],{"event":"lose","parent":"loseToDiscardpile","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"visible":true}],
+    ["intercept-all","callback","loseBefore","lose","loseToDiscardpile","A",null,["A:h","A:h","A:e","A:h","c","c","c"],[["shown","control"],[]],{"event":"lose","parent":"loseToDiscardpile","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"callbackParent":"trigger","visible":true}],
+    ["intercept-all","request","loseBefore","lose","gain","A",null,["A:h","A:h","A:e","A:h","c","c","c"],[["shown","control"],[]],{"event":"lose","parent":"gain","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false}],
+    ["intercept-all","callback","loseBefore","lose","gain","A",null,["A:h","A:h","A:e","A:h","c","c","c"],[["shown","control"],[]],{"event":"lose","parent":"gain","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"callbackParent":"trigger"}],
+    ["intercept-all","request","loseBegin","lose","gain","A",null,["A:h","A:h","A:e","A:h","c","c","c"],[["shown","control"],[]],{"event":"lose","parent":"gain","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false}],
+    ["intercept-all","request","loseEnd","lose","gain","A",null,["s","s","s","A:h","c","c","c"],[[],[]],{"event":"lose","parent":"gain","cards":["shown","hidden","equipped"],"finished":true,"cancelled":false,"stockcards":["shown","hidden","equipped"]}],
+    ["intercept-all","callback","loseEnd","lose","gain","A",null,["s","s","s","A:h","c","c","c"],[[],[]],{"event":"lose","parent":"gain","cards":["shown","hidden","equipped"],"finished":true,"cancelled":false,"stockcards":["shown","hidden","equipped"],"callbackParent":"trigger"}],
+    ["intercept-all","request","loseAfter","lose","gain","A",null,["s","s","s","A:h","c","c","c"],[[],[]],{"event":"lose","parent":"gain","cards":["shown","hidden","equipped"],"finished":true,"cancelled":false,"stockcards":["shown","hidden","equipped"]}],
+    ["intercept-all","callback","loseAfter","lose","gain","A",null,["s","s","s","A:h","c","c","c"],[[],[]],{"event":"lose","parent":"gain","cards":["shown","hidden","equipped"],"finished":true,"cancelled":false,"stockcards":["shown","hidden","equipped"],"callbackParent":"trigger"}],
+    ["intercept-all","request","gainAfter","gain","reference_recast_batch_boundary_observer","B","A",["B:h","B:h","B:h","A:h","c","c","c"],[[],["equipped"]],{"event":"gain","parent":"reference_recast_batch_boundary_observer","cards":["shown","hidden","equipped"],"finished":true,"cancelled":false}],
+    ["intercept-all","probe","intercept-returned","lose","loseToDiscardpile","A",null,["B:h","B:h","B:h","A:h","c","c","c"],[[],["equipped"]],{"event":"lose","parent":"loseToDiscardpile","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"visible":true}],
+    ["intercept-all","request","loseBegin","lose","loseToDiscardpile","A",null,["B:h","B:h","B:h","A:h","c","c","c"],[[],["equipped"]],{"event":"lose","parent":"loseToDiscardpile","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"visible":true}],
+    ["intercept-all","request","loseEnd","lose","loseToDiscardpile","A",null,["B:h","B:h","B:h","A:h","c","c","c"],[[],["equipped"]],{"event":"lose","parent":"loseToDiscardpile","cards":[],"finished":true,"cancelled":false,"stockcards":["shown","hidden","equipped"],"visible":true}],
+    ["intercept-all","callback","loseEnd","lose","loseToDiscardpile","A",null,["B:h","B:h","B:h","A:h","c","c","c"],[[],["equipped"]],{"event":"lose","parent":"loseToDiscardpile","cards":[],"finished":true,"cancelled":false,"stockcards":["shown","hidden","equipped"],"callbackParent":"trigger","visible":true}],
+    ["intercept-all","request","loseAfter","lose","loseToDiscardpile","A",null,["B:h","B:h","B:h","A:h","c","c","c"],[[],["equipped"]],{"event":"lose","parent":"loseToDiscardpile","cards":[],"finished":true,"cancelled":false,"stockcards":["shown","hidden","equipped"],"visible":true}],
+    ["intercept-all","callback","loseAfter","lose","loseToDiscardpile","A",null,["B:h","B:h","B:h","A:h","c","c","c"],[[],["equipped"]],{"event":"lose","parent":"loseToDiscardpile","cards":[],"finished":true,"cancelled":false,"stockcards":["shown","hidden","equipped"],"callbackParent":"trigger","visible":true}],
+    ["intercept-all","request","loseToDiscardpile","loseToDiscardpile","recast","A",null,["B:h","B:h","B:h","A:h","c","c","c"],[[],["equipped"]],{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false}],
+    ["intercept-all","callback","loseToDiscardpile","loseToDiscardpile","recast","A",null,["B:h","B:h","B:h","A:h","c","c","c"],[[],["equipped"]],{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"callbackParent":"trigger"}],
+    ["intercept-all","request","loseToDiscardpileEnd","loseToDiscardpile","recast","A",null,["B:h","B:h","B:h","A:h","c","c","c"],[[],["equipped"]],{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"finished":true,"cancelled":false}],
+    ["intercept-all","callback","loseToDiscardpileEnd","loseToDiscardpile","recast","A",null,["B:h","B:h","B:h","A:h","c","c","c"],[[],["equipped"]],{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"finished":true,"cancelled":false,"callbackParent":"trigger"}],
+    ["intercept-all","request","loseToDiscardpileAfter","loseToDiscardpile","recast","A",null,["B:h","B:h","B:h","A:h","c","c","c"],[[],["equipped"]],{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"finished":true,"cancelled":false}],
+    ["intercept-all","callback","loseToDiscardpileAfter","loseToDiscardpile","recast","A",null,["B:h","B:h","B:h","A:h","c","c","c"],[[],["equipped"]],{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"finished":true,"cancelled":false,"callbackParent":"trigger"}],
+    ["intercept-all","callback","recastingLost","recast","reference_fixture_use","A",null,["B:h","B:h","B:h","A:h","c","c","c"],[[],["equipped"]],{"event":"recast","parent":"reference_fixture_use","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"callbackParent":"trigger"}],
+    ["intercept-all","request","recast","recast","reference_fixture_use","A",null,["B:h","B:h","B:h","A:h","c","c","c"],[[],["equipped"]],{"event":"recast","parent":"reference_fixture_use","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false}],
+    ["intercept-all","callback","recast","recast","reference_fixture_use","A",null,["B:h","B:h","B:h","A:h","c","c","c"],[[],["equipped"]],{"event":"recast","parent":"reference_fixture_use","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"callbackParent":"trigger"}],
+    ["intercept-all","request","recastingGain","recast","reference_fixture_use","A",null,["B:h","B:h","B:h","A:h","c","c","c"],[[],["equipped"]],{"event":"recast","parent":"reference_fixture_use","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false}],
+    ["intercept-all","factory","recastingGain","recast","reference_fixture_use","A",null,["B:h","B:h","B:h","A:h","c","c","c"],[[],["equipped"]],{"cards":["shown","hidden","equipped"],"sameArray":true,"child":{"event":"draw","parent":"recast","cards":[],"finished":false,"cancelled":false,"amount":3,"drawn":[]}}],
+    ["intercept-all","request","recastingGained","recast","reference_fixture_use","A",null,["B:h","B:h","B:h","A:h","c","c","c"],[[],["equipped"]],{"event":"recast","parent":"reference_fixture_use","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false}],
+    ["intercept-all","request","drawBefore","draw","recast","A","A",["B:h","B:h","B:h","A:h","c","c","c"],[[],["equipped"]],{"event":"draw","parent":"recast","cards":[],"finished":false,"cancelled":false,"amount":3,"drawn":[]}],
+    ["intercept-all","request","gainAfter","gain","draw","A",null,["B:h","B:h","B:h","A:h","A:h","A:h","A:h"],[[],["equipped"]],{"event":"gain","parent":"draw","cards":["draw-1","draw-2","draw-3"],"finished":true,"cancelled":false}],
+    ["intercept-all","request","drawAfter","draw","recast","A","A",["B:h","B:h","B:h","A:h","A:h","A:h","A:h"],[[],["equipped"]],{"event":"draw","parent":"recast","cards":[],"finished":true,"cancelled":false,"amount":3,"drawn":["draw-1","draw-2","draw-3"]}],
+    ["intercept-all","callback","recastingGained","recast","reference_fixture_use","A",null,["B:h","B:h","B:h","A:h","A:h","A:h","A:h"],[[],["equipped"]],{"event":"recast","parent":"reference_fixture_use","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"callbackParent":"trigger"}],
+    ["intercept-all","request","recastAfter","recast","reference_fixture_use","A",null,["B:h","B:h","B:h","A:h","A:h","A:h","A:h"],[[],["equipped"]],{"event":"recast","parent":"reference_fixture_use","cards":["shown","hidden","equipped"],"finished":true,"cancelled":false}],
+    ["intercept-all","callback","recastAfter","recast","reference_fixture_use","A",null,["B:h","B:h","B:h","A:h","A:h","A:h","A:h"],[[],["equipped"]],{"event":"recast","parent":"reference_fixture_use","cards":["shown","hidden","equipped"],"finished":true,"cancelled":false,"callbackParent":"trigger"}]
+  ]
+}

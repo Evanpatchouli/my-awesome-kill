@@ -4,6 +4,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { installTriggerOrderScenario } from './reference-trigger-order-cancel.mjs';
 import { checkReferenceRecastCallbacks, installReferenceRecast } from './reference-recast.mjs';
 import { checkRecastBatch, installRecastBatch } from './reference-recast-batch.mjs';
+import { checkRecastBatchBoundaries, installRecastBatchBoundaries } from './reference-recast-batch-boundaries.mjs';
 import { checkReferenceLinkedDamage, installReferenceLinkedDamage } from './reference-linked-damage.mjs';
 import { checkReferenceCompare, installReferenceCompare } from './reference-compare.mjs';
 import { checkQiaoshuiTargets, installQiaoshuiTargets } from './reference-qiaoshui-targets.mjs';
@@ -47,6 +48,7 @@ const descriptions = new Map([
   ['tiesuo-recast', 'default and custom loss and gain when recasting a physical tiesuo'],
   ['recast-callbacks', 'executed loss and gain callbacks when recasting a physical tiesuo'],
   ['recast-batch', 'physical batch recast with equipment, intercepted and cancelled transfers, and clanmingdian selection'],
+  ['recast-batch-boundaries', 'cancelled batch loss wrapper and a batch fully transferred before payment'],
   ['linked-damage', 'tiesuo, faen, armor, and fire sha propagation across three turns'],
   ['compare', 'private pindian choices, public reveal, qiaoshui and jyzongshi across three turns'],
   ['qiaoshui-targets', 'paired, automatic and selectable target changes after winning qiaoshui'],
@@ -73,12 +75,13 @@ if (argv.length && (argv.length !== 2 || !['--check', '--write'].includes(argv[0
   throw new Error('Usage: node scripts/reference-trace.mjs [--scenario name] [--check|--write path]');
 }
 const isRecast = scenario === 'tiesuo-recast' || scenario === 'recast-callbacks';
+const isBatchRecast = scenario === 'recast-batch' || scenario === 'recast-batch-boundaries';
 if (['zhongyi-expansion', 'zhongyi-boundaries', 'zhongyi-transit-death', 'qiaoshui-targets', 'judgment-zones'].includes(scenario)) {
   sourceHashes['/character/standard/skill.js'] = 'ee769399395b93f3d8293cd5b880b8e708864329bd0d79a0b4f0d8bd6f855a9e';
 }
-if (isRecast || ['recast-batch', 'linked-damage', 'qiaoshui-targets'].includes(scenario)) sourceHashes['/card/extra.js'] = '8a73678a49b4fc413d6dc0d506733e594fae619d91dc8013cd441a6cd107c35d';
-if (['recast-callbacks', 'recast-batch', 'compare', 'compare-boundaries', 'compare-multiple', 'zhongyi-boundaries', 'zhongyi-transit-death'].includes(scenario)) sourceHashes['/noname/library/element/card.js'] = '5d3a07fadafa1c5661ec197edb8c71f613b3db1129933fdf7d8aa311f5811f8d';
-if (['zhongyi-boundaries', 'zhongyi-transit-death', 'phase-scheduling', 'phase-queue', 'compare-multiple', 'counter-payment', 'recast-batch'].includes(scenario)) {
+if (isRecast || isBatchRecast || ['linked-damage', 'qiaoshui-targets'].includes(scenario)) sourceHashes['/card/extra.js'] = '8a73678a49b4fc413d6dc0d506733e594fae619d91dc8013cd441a6cd107c35d';
+if (isBatchRecast || ['recast-callbacks', 'compare', 'compare-boundaries', 'compare-multiple', 'zhongyi-boundaries', 'zhongyi-transit-death'].includes(scenario)) sourceHashes['/noname/library/element/card.js'] = '5d3a07fadafa1c5661ec197edb8c71f613b3db1129933fdf7d8aa311f5811f8d';
+if (isBatchRecast || ['zhongyi-boundaries', 'zhongyi-transit-death', 'phase-scheduling', 'phase-queue', 'compare-multiple', 'counter-payment'].includes(scenario)) {
   sourceHashes['/noname/get/index.js'] = '8515ed7242d2638720180507a778cb273d8f33743eac12c5237d2f50e805823d';
 }
 if (['zhongyi-transit-death', 'phase-scheduling', 'phase-queue', 'compare-multiple'].includes(scenario)) {
@@ -131,6 +134,8 @@ try {
     await context.addInitScript(installReferenceRecast);
   } else if (scenario === 'recast-batch') {
     await context.addInitScript(installRecastBatch);
+  } else if (scenario === 'recast-batch-boundaries') {
+    await context.addInitScript(installRecastBatchBoundaries);
   } else if (scenario === 'linked-damage') {
     await context.addInitScript(installReferenceLinkedDamage);
   } else if (scenario === 'hp-cancel') {
@@ -232,6 +237,7 @@ try {
             'compare-boundaries': window.__runCompareBoundaries,
             'compare-multiple': window.__runCompareMultiple,
             'recast-batch': window.__runRecastBatch,
+            'recast-batch-boundaries': window.__runRecastBatchBoundaries,
             'judgment-zones': window.__runJudgmentZones,
             'counter-payment': window.__runCounterPayment,
           };
@@ -409,6 +415,7 @@ try {
   if (scenario === 'counter-payment') checkCounterPayment(captured.value);
   if (scenario === 'recast-callbacks') checkReferenceRecastCallbacks(captured.value);
   if (scenario === 'recast-batch') checkRecastBatch(captured.value);
+  if (scenario === 'recast-batch-boundaries') checkRecastBatchBoundaries(captured.value);
   if (scenario === 'sha-no-shan') assert.deepEqual(captured.value.final, {
     targetHp: 3, cardPosition: 'd', inActorHand: false, inDiscard: true, useCount: 1, targetAlive: true,
   });
