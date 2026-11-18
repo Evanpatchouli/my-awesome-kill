@@ -1,0 +1,310 @@
+{
+  "schema": "noname-reference-trace-v1",
+  "referenceCommit": "c73270948d72949aa80009536b9fd5400767d091",
+  "mode": "identity",
+  "scenario": "active zhongyi, expansion interruptions, holder death and stacked damage",
+  "playersAtStart": 8,
+  "playersAfterDeath": 7,
+  "trials": [
+    {
+      "name": "move-away",
+      "owner": "A",
+      "material": [
+        "qinggang",
+        "black",
+        6
+      ],
+      "before": {
+        "zone": "A:e",
+        "inSpecial": false,
+        "knownToSpectator": true,
+        "tagged": false,
+        "mark": false,
+        "buff": false,
+        "spent": false,
+        "disabled": false
+      },
+      "choices": [
+        {
+          "offered": true,
+          "accepted": true,
+          "skill": "zhongyi",
+          "selected": [
+            "material"
+          ]
+        },
+        {
+          "offered": false,
+          "accepted": false,
+          "skill": null,
+          "selected": []
+        }
+      ],
+      "activated": {
+        "zone": "A:x",
+        "inSpecial": false,
+        "knownToSpectator": true,
+        "tagged": true,
+        "mark": true,
+        "buff": true,
+        "spent": true,
+        "disabled": true
+      },
+      "markShowsMaterial": true,
+      "diverted": {
+        "zone": "B:h",
+        "inSpecial": false,
+        "knownToSpectator": true,
+        "tagged": false,
+        "mark": false,
+        "buff": true,
+        "spent": true,
+        "disabled": true
+      },
+      "attack": [
+        {
+          "source": "A",
+          "target": "B",
+          "amount": 2,
+          "parent": "sha",
+          "physicalCards": 0
+        },
+        {
+          "source": "A",
+          "target": "C",
+          "amount": 2,
+          "parent": "_lianhuan",
+          "physicalCards": 0
+        }
+      ]
+    },
+    {
+      "name": "cancel-expansion",
+      "owner": "C",
+      "material": [
+        "shan",
+        "black",
+        2
+      ],
+      "before": {
+        "zone": "C:h",
+        "inSpecial": false,
+        "knownToSpectator": false,
+        "tagged": false,
+        "mark": false,
+        "buff": false,
+        "spent": false,
+        "disabled": false
+      },
+      "activated": {
+        "zone": "C:h",
+        "inSpecial": false,
+        "knownToSpectator": false,
+        "tagged": false,
+        "mark": false,
+        "buff": true,
+        "spent": true,
+        "disabled": true
+      },
+      "markShowsMaterial": false,
+      "attack": [
+        {
+          "source": "C",
+          "target": "D",
+          "amount": 2,
+          "parent": "sha",
+          "physicalCards": 1
+        }
+      ]
+    },
+    {
+      "name": "cancel-lose",
+      "owner": "D",
+      "material": [
+        "shan",
+        "black",
+        2
+      ],
+      "before": {
+        "zone": "D:h",
+        "inSpecial": false,
+        "knownToSpectator": false,
+        "tagged": false,
+        "mark": false,
+        "buff": false,
+        "spent": false,
+        "disabled": false
+      },
+      "activated": {
+        "zone": "D:h",
+        "inSpecial": false,
+        "knownToSpectator": true,
+        "tagged": false,
+        "mark": false,
+        "buff": true,
+        "spent": true,
+        "disabled": true
+      },
+      "markShowsMaterial": false,
+      "attack": [
+        {
+          "source": "D",
+          "target": "C",
+          "amount": 2,
+          "parent": "sha",
+          "physicalCards": 1
+        }
+      ]
+    },
+    {
+      "name": "holder-death",
+      "owner": "E",
+      "material": [
+        "tao",
+        "red",
+        7
+      ],
+      "before": {
+        "zone": "E:h",
+        "inSpecial": false,
+        "knownToSpectator": false,
+        "tagged": false,
+        "mark": false,
+        "buff": false,
+        "spent": false,
+        "disabled": false
+      },
+      "activated": {
+        "zone": "E:x",
+        "inSpecial": false,
+        "knownToSpectator": false,
+        "tagged": true,
+        "mark": true,
+        "buff": true,
+        "spent": true,
+        "disabled": true
+      },
+      "markShowsMaterial": true,
+      "stacked": [
+        {
+          "source": "F",
+          "target": "E",
+          "amount": 3,
+          "parent": "sha",
+          "physicalCards": 1
+        }
+      ],
+      "currentTurn": "A",
+      "dead": true,
+      "afterDeath": {
+        "zone": "d",
+        "inSpecial": false,
+        "knownToSpectator": false,
+        "tagged": false,
+        "mark": false,
+        "buff": false,
+        "spent": true,
+        "disabled": true
+      },
+      "afterDeathAttack": [
+        {
+          "source": "F",
+          "target": "D",
+          "amount": 2,
+          "parent": "sha",
+          "physicalCards": 1
+        }
+      ]
+    }
+  ],
+  "expiry": {
+    "request": {
+      "zone": "B:h",
+      "inSpecial": false,
+      "knownToSpectator": true,
+      "tagged": false,
+      "mark": false,
+      "buff": true,
+      "spent": true,
+      "disabled": true
+    },
+    "callback": {
+      "zone": "B:h",
+      "inSpecial": false,
+      "knownToSpectator": true,
+      "tagged": false,
+      "mark": false,
+      "buff": false,
+      "spent": true,
+      "disabled": true
+    },
+    "attack": [
+      {
+        "source": "A",
+        "target": "B",
+        "amount": 1,
+        "parent": "sha",
+        "physicalCards": 1
+      }
+    ],
+    "final": {
+      "zone": "B:h",
+      "inSpecial": false,
+      "knownToSpectator": true,
+      "tagged": false,
+      "mark": false,
+      "buff": false,
+      "spent": true,
+      "disabled": true
+    }
+  },
+  "events": [
+    {"sample":"move-away","kind":"request","timing":"useSkillBegin","event":"useSkill","parent":"chooseToUse","player":"A","zone":"A:e","inSpecial":false,"knownToSpectator":true,"tagged":false,"mark":false,"buff":false,"spent":false,"disabled":false},
+    {"sample":"move-away","kind":"request","timing":"addToExpansionBefore","event":"addToExpansion","parent":"zhongyi","player":"A","zone":"A:e","inSpecial":false,"knownToSpectator":true,"tagged":false,"mark":false,"buff":true,"spent":true,"disabled":true},
+    {"sample":"move-away","kind":"callback","timing":"addToExpansionBefore","event":"addToExpansion","parent":"zhongyi","player":"A","zone":"A:e","inSpecial":false,"knownToSpectator":true,"tagged":false,"mark":false,"buff":true,"spent":true,"disabled":true},
+    {"sample":"move-away","kind":"request","timing":"loseBefore","event":"lose","parent":"addToExpansion","player":"A","zone":"A:e","inSpecial":false,"knownToSpectator":true,"tagged":false,"mark":false,"buff":true,"spent":true,"disabled":true},
+    {"sample":"move-away","kind":"callback","timing":"loseBefore","event":"lose","parent":"addToExpansion","player":"A","zone":"A:e","inSpecial":false,"knownToSpectator":true,"tagged":false,"mark":false,"buff":true,"spent":true,"disabled":true},
+    {"sample":"move-away","kind":"request","timing":"loseAfter","event":"lose","parent":"addToExpansion","player":"A","zone":"s","inSpecial":true,"knownToSpectator":true,"tagged":false,"mark":false,"buff":true,"spent":true,"disabled":true},
+    {"sample":"move-away","kind":"callback","timing":"loseAfter","event":"lose","parent":"addToExpansion","player":"A","zone":"s","inSpecial":true,"knownToSpectator":true,"tagged":false,"mark":false,"buff":true,"spent":true,"disabled":true},
+    {"sample":"move-away","kind":"request","timing":"addToExpansionAfter","event":"addToExpansion","parent":"zhongyi","player":"A","zone":"A:x","inSpecial":false,"knownToSpectator":true,"tagged":true,"mark":true,"buff":true,"spent":true,"disabled":true},
+    {"sample":"move-away","kind":"request","timing":"useSkillAfter","event":"useSkill","parent":"chooseToUse","player":"A","zone":"A:x","inSpecial":false,"knownToSpectator":true,"tagged":true,"mark":true,"buff":true,"spent":true,"disabled":true},
+    {"sample":"move-away","kind":"request","timing":"loseBefore","event":"lose","parent":"gain","player":"A","zone":"A:x","inSpecial":false,"knownToSpectator":true,"tagged":true,"mark":true,"buff":true,"spent":true,"disabled":true},
+    {"sample":"move-away","kind":"request","timing":"loseAfter","event":"lose","parent":"gain","player":"A","zone":"s","inSpecial":true,"knownToSpectator":true,"tagged":false,"mark":false,"buff":true,"spent":true,"disabled":true},
+    {"sample":"move-away","kind":"request","timing":"gainAfter","event":"gain","parent":"reference_fixture_use","player":"B","zone":"B:h","inSpecial":false,"knownToSpectator":true,"tagged":false,"mark":false,"buff":true,"spent":true,"disabled":true},
+    {"sample":"move-away","kind":"content","timing":"end","event":"zhongyi2","holder":"A","source":"A","target":"B","amount":2},
+    {"sample":"cancel-expansion","kind":"request","timing":"useSkillBegin","event":"useSkill","parent":"reference_fixture_use","player":"C","zone":"C:h","inSpecial":false,"knownToSpectator":false,"tagged":false,"mark":false,"buff":false,"spent":false,"disabled":false},
+    {"sample":"cancel-expansion","kind":"request","timing":"addToExpansionBefore","event":"addToExpansion","parent":"zhongyi","player":"C","zone":"C:h","inSpecial":false,"knownToSpectator":false,"tagged":false,"mark":false,"buff":true,"spent":true,"disabled":true},
+    {"sample":"cancel-expansion","kind":"callback","timing":"addToExpansionBefore","event":"addToExpansion","parent":"zhongyi","player":"C","zone":"C:h","inSpecial":false,"knownToSpectator":false,"tagged":false,"mark":false,"buff":true,"spent":true,"disabled":true},
+    {"sample":"cancel-expansion","kind":"request","timing":"useSkillAfter","event":"useSkill","parent":"reference_fixture_use","player":"C","zone":"C:h","inSpecial":false,"knownToSpectator":false,"tagged":false,"mark":false,"buff":true,"spent":true,"disabled":true},
+    {"sample":"cancel-expansion","kind":"content","timing":"end","event":"zhongyi2","holder":"C","source":"C","target":"D","amount":2},
+    {"sample":"cancel-lose","kind":"request","timing":"useSkillBegin","event":"useSkill","parent":"reference_fixture_use","player":"D","zone":"D:h","inSpecial":false,"knownToSpectator":false,"tagged":false,"mark":false,"buff":false,"spent":false,"disabled":false},
+    {"sample":"cancel-lose","kind":"request","timing":"addToExpansionBefore","event":"addToExpansion","parent":"zhongyi","player":"D","zone":"D:h","inSpecial":false,"knownToSpectator":false,"tagged":false,"mark":false,"buff":true,"spent":true,"disabled":true},
+    {"sample":"cancel-lose","kind":"callback","timing":"addToExpansionBefore","event":"addToExpansion","parent":"zhongyi","player":"D","zone":"D:h","inSpecial":false,"knownToSpectator":false,"tagged":false,"mark":false,"buff":true,"spent":true,"disabled":true},
+    {"sample":"cancel-lose","kind":"request","timing":"loseBefore","event":"lose","parent":"addToExpansion","player":"D","zone":"D:h","inSpecial":false,"knownToSpectator":true,"tagged":false,"mark":false,"buff":true,"spent":true,"disabled":true},
+    {"sample":"cancel-lose","kind":"callback","timing":"loseBefore","event":"lose","parent":"addToExpansion","player":"D","zone":"D:h","inSpecial":false,"knownToSpectator":true,"tagged":false,"mark":false,"buff":true,"spent":true,"disabled":true},
+    {"sample":"cancel-lose","kind":"request","timing":"useSkillAfter","event":"useSkill","parent":"reference_fixture_use","player":"D","zone":"D:h","inSpecial":false,"knownToSpectator":true,"tagged":false,"mark":false,"buff":true,"spent":true,"disabled":true},
+    {"sample":"cancel-lose","kind":"content","timing":"end","event":"zhongyi2","holder":"D","source":"D","target":"C","amount":2},
+    {"sample":"holder-death","kind":"request","timing":"useSkillBegin","event":"useSkill","parent":"reference_fixture_use","player":"E","zone":"E:h","inSpecial":false,"knownToSpectator":false,"tagged":false,"mark":false,"buff":false,"spent":false,"disabled":false},
+    {"sample":"holder-death","kind":"request","timing":"addToExpansionBefore","event":"addToExpansion","parent":"zhongyi","player":"E","zone":"E:h","inSpecial":false,"knownToSpectator":false,"tagged":false,"mark":false,"buff":true,"spent":true,"disabled":true},
+    {"sample":"holder-death","kind":"callback","timing":"addToExpansionBefore","event":"addToExpansion","parent":"zhongyi","player":"E","zone":"E:h","inSpecial":false,"knownToSpectator":false,"tagged":false,"mark":false,"buff":true,"spent":true,"disabled":true},
+    {"sample":"holder-death","kind":"request","timing":"loseBefore","event":"lose","parent":"addToExpansion","player":"E","zone":"E:h","inSpecial":false,"knownToSpectator":true,"tagged":false,"mark":false,"buff":true,"spent":true,"disabled":true},
+    {"sample":"holder-death","kind":"callback","timing":"loseBefore","event":"lose","parent":"addToExpansion","player":"E","zone":"E:h","inSpecial":false,"knownToSpectator":true,"tagged":false,"mark":false,"buff":true,"spent":true,"disabled":true},
+    {"sample":"holder-death","kind":"request","timing":"loseAfter","event":"lose","parent":"addToExpansion","player":"E","zone":"s","inSpecial":true,"knownToSpectator":false,"tagged":false,"mark":false,"buff":true,"spent":true,"disabled":true},
+    {"sample":"holder-death","kind":"callback","timing":"loseAfter","event":"lose","parent":"addToExpansion","player":"E","zone":"s","inSpecial":true,"knownToSpectator":false,"tagged":false,"mark":false,"buff":true,"spent":true,"disabled":true},
+    {"sample":"holder-death","kind":"request","timing":"addToExpansionAfter","event":"addToExpansion","parent":"zhongyi","player":"E","zone":"E:x","inSpecial":false,"knownToSpectator":false,"tagged":true,"mark":true,"buff":true,"spent":true,"disabled":true},
+    {"sample":"holder-death","kind":"request","timing":"useSkillAfter","event":"useSkill","parent":"reference_fixture_use","player":"E","zone":"E:x","inSpecial":false,"knownToSpectator":false,"tagged":true,"mark":true,"buff":true,"spent":true,"disabled":true},
+    {"sample":"holder-death","kind":"content","timing":"end","event":"zhongyi2","holder":"D","source":"F","target":"E","amount":2},
+    {"sample":"holder-death","kind":"content","timing":"end","event":"zhongyi2","holder":"E","source":"F","target":"E","amount":3},
+    {"sample":"holder-death","kind":"request","timing":"die","event":"die","parent":"reference_fixture_use","player":"E","zone":"E:x","inSpecial":false,"knownToSpectator":false,"tagged":true,"mark":true,"buff":true,"spent":true,"disabled":true},
+    {"sample":"holder-death","kind":"callback","timing":"die","event":"die","parent":"reference_fixture_use","player":"E","zone":"E:x","inSpecial":false,"knownToSpectator":false,"tagged":true,"mark":true,"buff":true,"spent":true,"disabled":true},
+    {"sample":"holder-death","kind":"request","timing":"loseToDiscardpileBefore","event":"loseToDiscardpile","parent":"die","player":"E","zone":"E:x","inSpecial":false,"knownToSpectator":false,"tagged":true,"mark":false,"buff":false,"spent":true,"disabled":true},
+    {"sample":"holder-death","kind":"request","timing":"loseToDiscardpileAfter","event":"loseToDiscardpile","parent":"die","player":"E","zone":"E:x","inSpecial":false,"knownToSpectator":false,"tagged":true,"mark":false,"buff":false,"spent":true,"disabled":true},
+    {"sample":"holder-death","kind":"request","timing":"loseBefore","event":"lose","parent":"discard","player":"E","zone":"E:x","inSpecial":false,"knownToSpectator":false,"tagged":true,"mark":false,"buff":false,"spent":true,"disabled":true},
+    {"sample":"holder-death","kind":"request","timing":"loseAfter","event":"lose","parent":"discard","player":"E","zone":"d","inSpecial":false,"knownToSpectator":false,"tagged":false,"mark":false,"buff":false,"spent":true,"disabled":true},
+    {"sample":"holder-death","kind":"request","timing":"dieAfter","event":"die","parent":"reference_fixture_use","player":"E","zone":"d","inSpecial":false,"knownToSpectator":false,"tagged":false,"mark":false,"buff":false,"spent":true,"disabled":true},
+    {"sample":"holder-death","kind":"callback","timing":"dieAfter","event":"die","parent":"reference_fixture_use","player":"E","zone":"d","inSpecial":false,"knownToSpectator":false,"tagged":false,"mark":false,"buff":false,"spent":true,"disabled":true},
+    {"sample":"holder-death","kind":"content","timing":"end","event":"zhongyi2","holder":"D","source":"F","target":"D","amount":2},
+    {"sample":"move-away","kind":"request","timing":"roundStart","event":"phase","parent":"phaseLoop","player":"H","zone":"B:h","inSpecial":false,"knownToSpectator":true,"tagged":false,"mark":false,"buff":true,"spent":true,"disabled":true},
+    {"sample":"move-away","kind":"callback","timing":"roundStart","event":"phase","parent":"phaseLoop","player":"H","zone":"B:h","inSpecial":false,"knownToSpectator":true,"tagged":false,"mark":false,"buff":false,"spent":true,"disabled":true}
+  ]
+}

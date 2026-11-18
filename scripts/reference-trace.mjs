@@ -9,6 +9,7 @@ import { checkQiaoshuiTargets, installQiaoshuiTargets } from './reference-qiaosh
 import { checkCompareBoundaries, installCompareBoundaries } from './reference-compare-boundaries.mjs';
 import { checkReferenceHp, installReferenceHp } from './reference-hp.mjs';
 import { checkReferenceExpansion, installReferenceExpansion } from './reference-expansion.mjs';
+import { checkZhongyiBoundaries, installZhongyiBoundaries } from './reference-zhongyi-boundaries.mjs';
 
 // This is an optional oracle runner. It needs a running, separate upstream dev
 // server and Playwright; neither is a runtime dependency of the game.
@@ -43,6 +44,7 @@ const descriptions = new Map([
   ['qiaoshui-targets', 'paired, automatic and selectable target changes after winning qiaoshui'],
   ['compare-boundaries', 'hidden hand knowledge and cancellation of paid pindian cards'],
   ['zhongyi-expansion', 'zhongyi expansion, limited use and cleanup at the next round'],
+  ['zhongyi-boundaries', 'active zhongyi, expansion interruptions, holder death and stacked damage'],
   ['damage-callback-cancel', 'damage callback cancellation after HP change for physical sha'],
   ['hp-cancel', 'cancelling changeHpBefore and changeHpEnd during a linked armored fire sha'],
 ]);
@@ -57,11 +59,19 @@ if (argv.length && (argv.length !== 2 || !['--check', '--write'].includes(argv[0
   throw new Error('Usage: node scripts/reference-trace.mjs [--scenario name] [--check|--write path]');
 }
 const isRecast = scenario === 'tiesuo-recast' || scenario === 'recast-callbacks';
-if (['zhongyi-expansion', 'qiaoshui-targets'].includes(scenario)) {
+if (['zhongyi-expansion', 'zhongyi-boundaries', 'qiaoshui-targets'].includes(scenario)) {
   sourceHashes['/character/standard/skill.js'] = 'ee769399395b93f3d8293cd5b880b8e708864329bd0d79a0b4f0d8bd6f855a9e';
 }
 if (isRecast || ['linked-damage', 'qiaoshui-targets'].includes(scenario)) sourceHashes['/card/extra.js'] = '8a73678a49b4fc413d6dc0d506733e594fae619d91dc8013cd441a6cd107c35d';
-if (['recast-callbacks', 'compare', 'compare-boundaries'].includes(scenario)) sourceHashes['/noname/library/element/card.js'] = '5d3a07fadafa1c5661ec197edb8c71f613b3db1129933fdf7d8aa311f5811f8d';
+if (['recast-callbacks', 'compare', 'compare-boundaries', 'zhongyi-boundaries'].includes(scenario)) sourceHashes['/noname/library/element/card.js'] = '5d3a07fadafa1c5661ec197edb8c71f613b3db1129933fdf7d8aa311f5811f8d';
+if (scenario === 'zhongyi-boundaries') {
+  sourceHashes['/noname/get/index.js'] = '8515ed7242d2638720180507a778cb273d8f33743eac12c5237d2f50e805823d';
+  sourceHashes['/noname/ai/basic.js'] = 'c32e43e690563d685929838635a40878baeb3333f52a2f585638fbe37655d83d';
+  sourceHashes['/noname/game/check.js'] = '802b65210f6dc7eb76e22af82e8f95706b445f9c3b15c297750f6202ec287c9d';
+  sourceHashes['/noname/ui/click/index.js'] = '6c85a0c7a1ecf7bc23534349fb82de18a1c2f436b882189dae5341fa5e6d69e1';
+  sourceHashes['/noname/ui/create/index.js'] = '460073e1c3a230a0c78daa4ada32c468b0c616fa3d13c633cc8519a41d582b44';
+  sourceHashes['/noname/library/element/dialog.js'] = '24893150df03829703e56c3156f63c784d536f42d1168d77674a167124521b03';
+}
 if (['linked-damage', 'compare', 'qiaoshui-targets'].includes(scenario)) sourceHashes['/character/yijiang/skill.js'] = '5b0eb965a8428535bf3cd7d369c261b8ad95cccbeac8d8c817cad3490643a54f';
 
 const browser = await chromium.launch({ headless: true, executablePath });
@@ -95,6 +105,8 @@ try {
     await context.addInitScript(installReferenceHp);
   } else if (scenario === 'zhongyi-expansion') {
     await context.addInitScript(installReferenceExpansion);
+  } else if (scenario === 'zhongyi-boundaries') {
+    await context.addInitScript(installZhongyiBoundaries);
   } else if (scenario === 'compare-boundaries') {
     await context.addInitScript(installCompareBoundaries);
   } else if (scenario === 'compare') {
@@ -171,6 +183,7 @@ try {
           const multiTurn = {
             'linked-damage': window.__runReferenceLinkedDamage,
             'zhongyi-expansion': window.__runReferenceExpansion,
+            'zhongyi-boundaries': window.__runZhongyiBoundaries,
             'compare-boundaries': window.__runCompareBoundaries,
           };
           const run = multiTurn[scenario];
@@ -336,6 +349,7 @@ try {
   if (scenario === 'qiaoshui-targets') checkQiaoshuiTargets(captured.value);
   if (scenario === 'compare-boundaries') checkCompareBoundaries(captured.value);
   if (scenario === 'zhongyi-expansion') checkReferenceExpansion(captured.value);
+  if (scenario === 'zhongyi-boundaries') checkZhongyiBoundaries(captured.value);
   if (scenario === 'recast-callbacks') checkReferenceRecastCallbacks(captured.value);
   if (scenario === 'sha-no-shan') assert.deepEqual(captured.value.final, {
     targetHp: 3, cardPosition: 'd', inActorHand: false, inDiscard: true, useCount: 1, targetAlive: true,

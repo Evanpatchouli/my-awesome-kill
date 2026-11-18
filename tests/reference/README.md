@@ -39,6 +39,12 @@
 
 `zhongyi-expansion.json` 记录忠义跨两个自然轮次的 42 条时机观测。夹具在身份牌桌设置两支布尔队伍，直接调用原版登记的忠义、`useSkill` 和 `isFriendOf`。一张实体桃从手牌移入扩展区并获得 `zhongyi2` 标签，限定技成为已使用。友方的杀从一伤变二伤，敌方的杀和友方的其他伤害都是一伤。下一轮请求 `roundStart` 时牌仍在扩展区；处理该时机的技能执行时，临时效果已移除，材料已弃置一次，限定技的使用记录保留。
 
+`zhongyi-boundaries.json` 记录同一身份局的四组忠义边界。夹具设置布尔队伍，主动选择使用带 AI 偏好的原版 `chooseToUse` 出牌选择，其余样本用 `useSkill` 直接提交材料。`inSpecial` 指材料位于 `ui.special` 中转区，`knownToSpectator` 读取实体牌的 `isKnownBy`，`markShowsMaterial` 检查原版标记弹层中是否有该实体的正面按钮。
+
+- **装备与转移。** A 主动选中黑桃 6 的已装备青釭剑。即使仍有手牌，下一次出牌选择也没有忠义选项。材料经 `A:e` → `s` → `A:x` 移动，旁观者的知情记录全程保留，标记弹层显示实体牌。转给 B 后材料保留在 `B:h`，A 的标签和标记移除，增伤仍在。没有实体材料的虚拟火杀直接打 2 点，连环伤害沿用 2 点。自然 `roundStart` 请求时增伤仍在，首个观察回调时已到期，材料仍在 B 手牌，随后杀只打 1 点。
+- **转移取消。** 取消 `addToExpansionBefore` 或内层 `loseBefore` 都让材料留手，且没有扩展标签或标记。两次都保留限定消耗、技能禁用和增伤，实际杀均造成 2 点。外层取消保持原暗手牌的知情记录。内层取消发生在公开给牌已登记知情之后，旁观者此时认识留在手中的材料。
+- **死亡与叠加。** A 的回合中 E 的暗手桃经 `s` 进入扩展区。原版在 `s` 和 `x` 读取的 `isKnownBy` 为假，忠义标记弹层仍显示实体牌面。两名持有者令 F 的杀叠到 3 点。E 的 `die` 回调仍可见材料、标记与增伤，`dieAfter` 时材料已实际进入弃牌堆一次，标记和增伤均已清除，限定消耗保留。另一持有者仍使 F 后续的杀打 2 点。
+
 `compare-boundaries.json` 用四局两席拼点观测已知手牌和取消边界。第三席原先认识 A 的一张桃；A 暗付这张桃或另一张牌时，其余手牌的旧知情记录都在 A 的 `loseAfter` 清除。双方已支付后在 `compareCardShowBefore` 取消，根事件没有比较结果，两张实体在收尾各弃置一次。仅取消 B 的 `loseBefore` 时，外层仍按原先锁定的两张牌结算 10 比 5，A 的材料弃置，B 的仍在手中。
 
 ## 复现
@@ -62,6 +68,7 @@
    node scripts/reference-trace.mjs --scenario qiaoshui-targets --check tests/reference/qiaoshui-targets.json
    node scripts/reference-trace.mjs --scenario compare-boundaries --check tests/reference/compare-boundaries.json
    node scripts/reference-trace.mjs --scenario zhongyi-expansion --check tests/reference/zhongyi-expansion.json
+   node scripts/reference-trace.mjs --scenario zhongyi-boundaries --check tests/reference/zhongyi-boundaries.json
    ```
 
-运行器在隔离浏览器内核对八个共同上游源文件的 LF 归一化 SHA-256。重铸、连环伤害和巧说目标场景还校验 `card/extra.js`，重铸知情状态与拼点另核对 `element/card.js`，连环伤害、拼点和巧说目标另校验 `character/yijiang/skill.js`，忠义和巧说目标另校验 `character/standard/skill.js`。随后执行场景并逐项比较事件和结果。整个检出的版本由第 1 步确认。`--write <path>` 用于重新采集，默认将结果写至标准输出。
+运行器在隔离浏览器内核对八个共同上游源文件的 LF 归一化 SHA-256。重铸、连环伤害和巧说目标场景还校验 `card/extra.js`，重铸知情状态、拼点和忠义边界另核对 `element/card.js`，连环伤害、拼点和巧说目标另校验 `character/yijiang/skill.js`，忠义和巧说目标另校验 `character/standard/skill.js`。忠义边界也核对牌区和知情查询、出牌选择及标记弹层涉及的源文件。随后执行场景并逐项比较事件和结果。整个检出的版本由第 1 步确认。`--write <path>` 用于重新采集，默认将结果写至标准输出。
