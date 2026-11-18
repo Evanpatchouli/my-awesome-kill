@@ -15,6 +15,7 @@ import {
   roles,
   seatName,
   sides,
+  skillName,
 } from './classicProtocol'
 import type { Action, Branch, Entity, SeatView, TableView } from './classicProtocol'
 import type { FeedbackEvent } from './battleMotion'
@@ -322,9 +323,9 @@ function canPickCard(id: number) {
   >
     <BattleEffects :view="feedback" />
     <div class="classic-topline">
-      <span>第 {{ view.turn?.round ?? 1 }} 轮 · 第 {{ view.turn?.number ?? 1 }} 回合</span>
+      <span>第 {{ view.turn?.round ?? 1 }} 轮 · 第 {{ view.turn?.number ?? 1 }} 回合<span v-if="view.turnReason" data-turn-reason> · {{ skillName(view.turnReason) }}额外回合</span></span>
       <span
-        >{{ phases[view.turn?.phase ?? ''] ?? view.turn?.phase }} ·
+        >{{ phases[view.turn?.phase ?? ''] ?? view.turn?.phase }}<span v-if="view.phaseReason" data-phase-reason> · {{ skillName(view.phaseReason) }}额外阶段</span> ·
         {{ seatName(view, view.activeSeat) }}</span
       >
       <span>牌堆 {{ view.deckCount }} · 弃牌 {{ view.discard.length }}</span>
@@ -378,6 +379,7 @@ function canPickCard(id: number) {
         <ClassicSeatZones
           :label="seatName(view, seat.id)"
           :seat="seat"
+          :seat-names="view.seats.map((item) => seatName(view, item.id))"
           :equipment="seatCards(seat, 'equipment')"
           :judges="seatCards(seat, 'judges')"
           :known-hand="seat.knownHand?.map((card) => faceOf(view, card))"
@@ -431,6 +433,7 @@ function canPickCard(id: number) {
         <ClassicSeatZones
           :label="seatName(view, me.id)"
           :seat="me"
+          :seat-names="view.seats.map((item) => seatName(view, item.id))"
           :equipment="seatCards(me, 'equipment')"
           :judges="seatCards(me, 'judges')"
           :expansions="me.expansions?.map((item) => ({ ...item, card: faceOf(view, item.card) }))"

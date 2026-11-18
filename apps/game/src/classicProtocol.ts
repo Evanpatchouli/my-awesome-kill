@@ -9,7 +9,7 @@ export const generalById = new Map(roster.map((g) => [g.id, g]))
 const skillTitles = new Map(
   roster.flatMap((hero) => hero.skills.map((skill) => [skill.id, skill.name] as const)),
 )
-const extraSkillTitles: Record<string, string> = { zhongyi: '忠义', zhongyi2: '忠义' }
+const extraSkillTitles: Record<string, string> = { zhongyi: '忠义', zhongyi2: '忠义', dangxian: '当先', fangquan: '放权', fangquan2: '放权' }
 export const skillName = (id: string) => extraSkillTitles[id] ?? skillTitles.get(id) ?? id
 export const factions: Record<string, string> = { wei: '魏', shu: '蜀', wu: '吴', qun: '群' }
 export const roles = { lord: '主公', loyalist: '忠臣', rebel: '反贼', renegade: '内奸' }
@@ -83,6 +83,7 @@ export interface SeatView {
   knownHand?: Entity[]
   expansions?: { card: Entity; tags: string[] }[]
   limitedSpent?: string[]
+  marks?: { skill: string; count: number; source: number | null }[]
   equipment: Entity[]
   judges: Entity[]
   judgeAssignments: Entity[]
@@ -125,6 +126,8 @@ export interface TableView {
   version: number
   activeSeat: number
   humanSeat: number
+  turnReason?: string
+  phaseReason?: string
   waitingFor: number | null
   seats: SeatView[]
   turn: { round: number; number: number; phase: string; seat: number } | null

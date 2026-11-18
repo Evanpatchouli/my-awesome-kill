@@ -637,3 +637,4 @@
 .classic-expansion-list > div { min-width: 68px; font-size: 10px; }
 .classic-expansion-list .playing-card { width: 68px; height: 96px; padding: 4px; }
 .classic-expansion-list .playing-card strong { font-size: 16px; }
+.classic-seat-mark { color: #742e1b; font-weight: 700; }

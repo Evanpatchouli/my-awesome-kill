@@ -13,6 +13,7 @@ qa-elemental = []
 qa-recast = []
 qa-qiaoshui = ["duel-core/content-qiaoshui"]
 qa-zhongyi = ["duel-core/content-zhongyi"]
+qa-phase-skills = ["duel-core/content-phase-skills"]
 
 [dependencies]
 duel-core = { path = "../duel-core" }
