@@ -15,6 +15,7 @@ qa-qiaoshui = ["duel-core/content-qiaoshui"]
 qa-zhongyi = ["duel-core/content-zhongyi"]
 qa-phase-skills = ["duel-core/content-phase-skills"]
 qa-multi-compare = ["duel-core/content-multi-compare"]
+qa-mingdian = ["duel-core/content-mingdian"]
 
 [dependencies]
 duel-core = { path = "../duel-core" }

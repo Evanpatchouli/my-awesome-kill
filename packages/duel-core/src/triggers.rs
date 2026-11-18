@@ -1,7 +1,7 @@
 use crate::scheduler::Outcome;
 use crate::{
-    Card, CardId, ChoiceBranch, ChoiceRequest, EventId, Game, Program, Resolution, RuleError,
-    SeatId, Zone,
+    Card, CardId, CardZone, ChoiceBranch, ChoiceRequest, EventId, Game, Program, Resolution,
+    RuleError, SeatId, Zone,
 };
 use std::collections::{HashSet, VecDeque};
 use std::sync::Arc;
@@ -102,6 +102,8 @@ pub enum TriggerStep {
     Done,
     CancelSubject,
     Continue(u16),
+    /// Resume with a new callback carrying data from this invocation.
+    ContinueWith(TriggerEffect),
     Choose {
         branches: Vec<ChoiceBranch>,
         then: u16,
@@ -472,6 +474,30 @@ impl TriggerContext<'_> {
         Ok(())
     }
 
+    /// Select a physical card by scanning from a seeded random starting position.
+    pub fn random_pile_card(
+        &mut self,
+        filter: impl FnMut(Card) -> bool,
+    ) -> Option<(CardZone, Card)> {
+        self.game.random_pile_card(filter)
+    }
+
+    /// Gain a specific card from the draw or discard pile face up.
+    pub fn gain_public_pile_card(
+        &mut self,
+        seat: SeatId,
+        pile: CardZone,
+        card: CardId,
+    ) -> Result<(), RuleError> {
+        if self.claimed_cards().contains(&card) {
+            return Err(RuleError::InvalidSelection);
+        }
+        self.game.gain_public_pile_program(seat, pile, card)?;
+        self.operations
+            .push_back(TriggerOperation::GainPublicPile { seat, pile, card });
+        Ok(())
+    }
+
     /// Transfer one or more hand or equipment cards as a single gain.
     pub fn give_cards(
         &mut self,
@@ -519,6 +545,7 @@ impl TriggerContext<'_> {
                 }
                 TriggerOperation::Recast { card, .. }
                 | TriggerOperation::GiveHand { card, .. }
+                | TriggerOperation::GainPublicPile { card, .. }
                 | TriggerOperation::GainCompare { card, .. } => {
                     claimed.insert(*card);
                 }
@@ -619,6 +646,11 @@ enum TriggerOperation {
         seat: SeatId,
         cards: Vec<CardId>,
         rule: crate::RecastBatchRule,
+    },
+    GainPublicPile {
+        seat: SeatId,
+        pile: CardZone,
+        card: CardId,
     },
     GiveCards {
         from: SeatId,
@@ -965,6 +997,7 @@ impl Game {
                     | TriggerOperation::Compare { .. }
                     | TriggerOperation::CompareMany { .. }
                     | TriggerOperation::GainCompare { .. }
+                    | TriggerOperation::GainPublicPile { .. }
             );
             let program = match operation {
                 TriggerOperation::Death { target, source } => {
@@ -1079,6 +1112,13 @@ impl Game {
                     };
                     program
                 }
+                TriggerOperation::GainPublicPile { seat, pile, card } => {
+                    let Ok(program) = self.gain_public_pile_program(seat, pile, card) else {
+                        self.finish();
+                        return;
+                    };
+                    program
+                }
                 TriggerOperation::GiveHand { from, to, card } => {
                     let Ok(program) = self.give_hand_program(from, to, card) else {
                         self.finish();
@@ -1102,6 +1142,11 @@ impl Game {
             TriggerStep::CancelSubject => self.scheduler.end(Outcome::Cancelled),
             TriggerStep::Continue(next) => {
                 flow.state = RegisteredState::Call(next);
+                self.scheduler.replace_current(Program::Registered(flow));
+            }
+            TriggerStep::ContinueWith(effect) => {
+                flow.effect = effect;
+                flow.state = RegisteredState::Call(0);
                 self.scheduler.replace_current(Program::Registered(flow));
             }
             TriggerStep::Choose { branches, then } => {

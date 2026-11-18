@@ -8,6 +8,7 @@ content-qiaoshui = []
 content-zhongyi = []
 content-phase-skills = []
 content-multi-compare = []
+content-mingdian = []
 
 [dependencies]
 serde = { version = "1", features = ["derive"] }

@@ -2,8 +2,8 @@ use crate::scheduler::{EventRef, Outcome};
 #[cfg(test)]
 use crate::TriggerEvent;
 use crate::{
-    Card, CardFace, CardId, CardKind, DrawReason, EventId, EventKind, Game, Program, Resolution,
-    RuleError, SeatId, TurnView, Zone,
+    Card, CardFace, CardId, CardKind, CardZone, DrawReason, EventId, EventKind, Game, Program,
+    Resolution, RuleError, SeatId, TurnView, Zone,
 };
 use std::sync::Arc;
 
@@ -287,8 +287,9 @@ impl Recasting {
             (RecastTerms::Batch(cards, rule), RecastPayment::Batch(loss)) => {
                 let movement = match (rule.gain)(state, seat, cards, loss) {
                     RecastBatchGain::Draw => BatchMovement::draw(seat, cards.len() as u16),
-                    RecastBatchGain::FromDeck { cards } => BatchMovement::gain_from_deck(
+                    RecastBatchGain::FromDeck { cards } => BatchMovement::gain_from_pile(
                         seat,
+                        CardZone::DrawPile,
                         select_cards(&cards, |id| {
                             state.draw_pile().iter().copied().find(|card| card.id == id)
                         })
@@ -799,6 +800,29 @@ impl Game {
             return Err(RuleError::InvalidTarget);
         }
         Ok(RecastChild::Batch(BatchMovement::give(from, to, cards, visible)).program())
+    }
+
+    pub(crate) fn gain_public_pile_program(
+        &self,
+        seat: SeatId,
+        pile: CardZone,
+        id: CardId,
+    ) -> Result<Program, RuleError> {
+        self.check_movement_seat(seat)?;
+        let cards = match pile {
+            CardZone::DrawPile => RecastState(self).draw_pile(),
+            CardZone::DiscardPile => &self.discard,
+            _ => return Err(RuleError::InvalidSelection),
+        };
+        let card = cards
+            .iter()
+            .copied()
+            .find(|card| card.id == id)
+            .ok_or(RuleError::InvalidCard)?;
+        Ok(
+            RecastChild::Batch(BatchMovement::gain_from_pile(seat, pile, Arc::from([card])))
+                .program(),
+        )
     }
 
     pub(crate) fn give_hand_program(

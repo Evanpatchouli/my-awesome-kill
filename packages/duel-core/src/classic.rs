@@ -22,8 +22,8 @@ pub(crate) mod turns;
 
 use crate::classic_data::{self, Role, Side};
 use crate::{
-    Action, Card, CardFace, CardId, CardKind, ChoiceKind, Command, CounterContext, Decision,
-    EventKind, Game, Program, RuleError, Seat, SeatId, TurnView,
+    Action, Card, CardFace, CardId, CardKind, CardZone, ChoiceKind, Command, CounterContext,
+    Decision, EventKind, Game, Program, RuleError, Seat, SeatId, TurnView,
 };
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -225,6 +225,42 @@ impl Game {
             );
         }
         Some(cards)
+    }
+
+    pub(crate) fn random_pile_card(
+        &mut self,
+        mut filter: impl FnMut(Card) -> bool,
+    ) -> Option<(CardZone, Card)> {
+        let state = self.classic.as_mut()?;
+        if !state.deck.is_empty() {
+            let len = state.deck.len();
+            let start = (state.random.next() % len as u64) as usize;
+            if let Some(card) = state
+                .deck
+                .iter()
+                .rev()
+                .cycle()
+                .skip(start)
+                .take(len)
+                .copied()
+                .find(|&card| filter(card))
+            {
+                return Some((CardZone::DrawPile, card));
+            }
+        }
+        let len = self.discard.len();
+        if len == 0 {
+            return None;
+        }
+        let start = (state.random.next() % len as u64) as usize;
+        self.discard
+            .iter()
+            .cycle()
+            .skip(start)
+            .take(len)
+            .copied()
+            .find(|&card| filter(card))
+            .map(|card| (CardZone::DiscardPile, card))
     }
 
     pub(super) fn reveal_cards(&mut self, amount: usize) -> Option<Vec<Card>> {

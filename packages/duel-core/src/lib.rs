@@ -13,6 +13,8 @@ mod marks;
 pub use marks::SkillMark;
 mod classic;
 pub mod classic_data;
+#[cfg(any(test, feature = "content-mingdian"))]
+pub mod mingdian;
 #[cfg(any(test, feature = "content-phase-skills"))]
 pub mod phase_content;
 mod protocol;

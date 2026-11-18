@@ -9,7 +9,7 @@ export const generalById = new Map(roster.map((g) => [g.id, g]))
 const skillTitles = new Map(
   roster.flatMap((hero) => hero.skills.map((skill) => [skill.id, skill.name] as const)),
 )
-const extraSkillTitles: Record<string, string> = { zhongyi: '忠义', zhongyi2: '忠义', dangxian: '当先', fangquan: '放权', fangquan2: '放权', gushe: '鼓舌', twdanlie: '胆烈' }
+const extraSkillTitles: Record<string, string> = { zhongyi: '忠义', zhongyi2: '忠义', dangxian: '当先', fangquan: '放权', fangquan2: '放权', gushe: '鼓舌', twdanlie: '胆烈', clanmingdian: '明典' }
 export const skillName = (id: string) => extraSkillTitles[id] ?? skillTitles.get(id) ?? id
 export const factions: Record<string, string> = { wei: '魏', shu: '蜀', wu: '吴', qun: '群' }
 export const roles = { lord: '主公', loyalist: '忠臣', rebel: '反贼', renegade: '内奸' }
@@ -322,7 +322,16 @@ export function describeEvent(view: TableView, e: EventRecord): string | undefin
     return `${who}${verb}【${faceOf(view, e.card).name}】${target}`
   }
   if (e.type === 'useVirtual' && e.kind) return `${who}使用转化牌【${cardName(e.kind)}】`
-  if (e.type === 'recastReveal' && e.card) return `${who}重铸【${faceOf(view, e.card).name}】`
+  if (e.type === 'recastReveal' && e.card) {
+    const reveals = e.parent == null ? [e] : view.events.filter(
+      (event) => event.type === 'recastReveal' && event.parent === e.parent
+        && event.card && isPresentationEvent(event),
+    )
+    if (reveals[0]?.id === e.id) {
+      return `${who}重铸${reveals.map(({ card }) => card ? `【${faceOf(view, card).name}】` : '').join('、')}`
+    }
+    return
+  }
   if (e.type === 'reveal' && e.card) return `${who}判定亮出【${faceOf(view, e.card).name}】`
   if (e.type === 'link') return `${who}${e.linked ? '横置' : '解除横置'}`
   if (e.type === 'turnOver') return `${who}的武将牌翻至${e.turnedOver ? '背面' : '正面'}`

@@ -25,7 +25,7 @@ enum BatchKind {
     Discard,
     Lose { destination: BatchDestination },
     Draw { amount: u16 },
-    GainDeck,
+    GainPile(CardZone),
     GainDrawn,
     GainGive { from: SeatId, visible: bool },
 }
@@ -54,8 +54,8 @@ impl BatchMovement {
     pub(super) fn draw(seat: SeatId, amount: u16) -> Self {
         Self::new(seat, BatchKind::Draw { amount }, Arc::from([]))
     }
-    pub(super) fn gain_from_deck(seat: SeatId, cards: Arc<[Card]>) -> Self {
-        Self::new(seat, BatchKind::GainDeck, cards)
+    pub(super) fn gain_from_pile(seat: SeatId, pile: CardZone, cards: Arc<[Card]>) -> Self {
+        Self::new(seat, BatchKind::GainPile(pile), cards)
     }
     pub(super) fn give(from: SeatId, to: SeatId, cards: Arc<[Card]>, visible: bool) -> Self {
         Self::new(to, BatchKind::GainGive { from, visible }, cards)
@@ -102,11 +102,10 @@ impl BatchMovement {
                     amount
                 },
                 card: match (kind, self.committed.as_slice()) {
-                    (BatchKind::GainDeck | BatchKind::GainGive { visible: true, .. }, [card])
-                        if finished =>
-                    {
-                        Some(*card)
-                    }
+                    (
+                        BatchKind::GainPile(_) | BatchKind::GainGive { visible: true, .. },
+                        [card],
+                    ) if finished => Some(*card),
                     _ => None,
                 },
             },
@@ -207,7 +206,7 @@ impl Game {
                         && matches!(
                             movement.kind,
                             BatchKind::Lose { .. }
-                                | BatchKind::GainDeck
+                                | BatchKind::GainPile(_)
                                 | BatchKind::GainDrawn
                                 | BatchKind::GainGive { .. }
                         );
@@ -325,20 +324,19 @@ impl Game {
                             movement.stage = End;
                             None
                         }
-                        BatchKind::GainDeck => {
-                            let deck = &self.classic.as_ref().unwrap().deck;
-                            let valid =
-                                movement.cards.iter().enumerate().all(|(i, c)| {
-                                    deck.contains(c) && !movement.cards[..i].contains(c)
-                                });
+                        BatchKind::GainPile(source) => {
+                            let pile = match source {
+                                CardZone::DrawPile => &mut self.classic.as_mut().unwrap().deck,
+                                CardZone::DiscardPile => &mut self.discard,
+                                _ => unreachable!("a public gain has a pile source"),
+                            };
+                            let valid = movement.cards.iter().all(|card| pile.contains(card));
                             if !valid {
                                 movement.stage = Cancel(MoveCancellation::InvalidMovement);
                                 continue;
                             }
                             for &card in movement.cards.iter() {
-                                let deck = &mut self.classic.as_mut().unwrap().deck;
-                                let index = deck.iter().position(|c| *c == card).unwrap();
-                                let taken = deck.remove(index);
+                                let taken = Self::remove_card(pile, card.id);
                                 self.known_to_all.insert(taken.id);
                                 movement.committed.push(taken);
                             }
