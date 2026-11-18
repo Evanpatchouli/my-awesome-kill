@@ -8,6 +8,9 @@ use crate::{
 use serde_json::{json, Value};
 use std::sync::Mutex;
 
+#[path = "tests/hidden_give.rs"]
+mod hidden_give;
+
 const TIMINGS: &[&str] = &[
     "recastBefore",
     "recastBegin",

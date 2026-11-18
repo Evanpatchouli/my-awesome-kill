@@ -224,7 +224,7 @@ enum MoveKind {
 enum LossDestination {
     Discard,
     Ordering(EventId),
-    Transfer(SeatId),
+    Transfer { to: SeatId, visible: bool },
     Compare(EventId),
 }
 
@@ -414,8 +414,21 @@ impl Game {
             },
         )))
     }
-    pub(crate) fn use_loss_to_ordering(&self, seat: SeatId, zone: Zone, card: Card, owner: EventId) -> Program {
-        let mut movement = Movement::new(seat, MoveKind::Lose { card, zone, destination: LossDestination::Ordering(owner) });
+    pub(crate) fn use_loss_to_ordering(
+        &self,
+        seat: SeatId,
+        zone: Zone,
+        card: Card,
+        owner: EventId,
+    ) -> Program {
+        let mut movement = Movement::new(
+            seat,
+            MoveKind::Lose {
+                card,
+                zone,
+                destination: LossDestination::Ordering(owner),
+            },
+        );
         movement.allow_intercepted = true;
         Program::Recast(Flow::Movement(movement))
     }
@@ -434,7 +447,10 @@ impl Game {
                 destination: if discard {
                     LossDestination::Discard
                 } else {
-                    LossDestination::Transfer(seat)
+                    LossDestination::Transfer {
+                        to: seat,
+                        visible: true,
+                    }
                 },
             },
         )))
@@ -913,13 +929,16 @@ impl Game {
                             }),
                         Gain {
                             card,
-                            origin: GainOrigin::Hand { seat: from, .. },
+                            origin: GainOrigin::Hand { seat: from, public },
                         } if self.recast_held(from, card) => Some(Movement::new(
                             from,
                             Lose {
                                 card,
                                 zone: Zone::Hand,
-                                destination: LossDestination::Transfer(seat),
+                                destination: LossDestination::Transfer {
+                                    to: seat,
+                                    visible: public,
+                                },
                             },
                         )),
                         Gain {
@@ -931,7 +950,10 @@ impl Game {
                                 Lose {
                                     card,
                                     zone: Zone::Expansion,
-                                    destination: LossDestination::Transfer(seat),
+                                    destination: LossDestination::Transfer {
+                                        to: seat,
+                                        visible: true,
+                                    },
                                 },
                             ))
                         }
@@ -944,16 +966,24 @@ impl Game {
                             Zone::Equipment => s.equipment.contains(&card),
                             Zone::Judgment => s.judges.contains(&card),
                             Zone::Expansion => s.expansions.contains(&card),
-                        }) && !matches!(destination, LossDestination::Transfer(to) if !self.recast_alive(to)) =>
+                        }) && !matches!(destination, LossDestination::Transfer { to, .. } if !self.recast_alive(to)) =>
                         {
                             let taken = self.take_card(seat, zone, card.id);
+                            if matches!(zone, Zone::Hand)
+                                && matches!(
+                                    destination,
+                                    LossDestination::Transfer { visible: false, .. }
+                                )
+                            {
+                                self.obscure_remaining_hand(seat);
+                            }
                             match destination {
                                 LossDestination::Discard => self.discard.push(taken),
                                 LossDestination::Ordering(owner) => {
                                     self.resolving.push(taken);
                                     self.ordering_owners.insert(taken.id, owner);
                                 }
-                                LossDestination::Transfer(_) => self.transferring.push(taken),
+                                LossDestination::Transfer { .. } => self.transferring.push(taken),
                                 LossDestination::Compare(comparison) => {
                                     self.place_compare_bid(comparison, seat, taken);
                                 }
@@ -1017,13 +1047,14 @@ impl Game {
                     } else {
                         // The original default lose still finishes with an empty card
                         // list if a loseBefore skill moved the material to another zone.
-                        let intercepted = movement.allow_intercepted || matches!(
-                            movement.kind,
-                            Lose {
-                                destination: LossDestination::Discard,
-                                ..
-                            }
-                        );
+                        let intercepted = movement.allow_intercepted
+                            || matches!(
+                                movement.kind,
+                                Lose {
+                                    destination: LossDestination::Discard,
+                                    ..
+                                }
+                            );
                         movement.stage = if movement.committed.is_some() || intercepted {
                             End
                         } else {

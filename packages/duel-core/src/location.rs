@@ -20,6 +20,20 @@ pub struct CardLocation {
 }
 
 impl Game {
+    /// A hidden hand loss obscures old public knowledge of the remaining cards.
+    pub(crate) fn obscure_remaining_hand(&mut self, owner: SeatId) {
+        if !self.known_to_all.is_empty() {
+            let player = self
+                .seats
+                .iter()
+                .find(|p| p.id == owner)
+                .expect("validated payer");
+            for held in &player.hand {
+                self.known_to_all.remove(&held.id);
+            }
+        }
+    }
+
     /// Locate an actual physical card for trusted rules. Seat views handle disclosure separately.
     pub fn card_location(&self, id: CardId) -> Option<CardLocation> {
         for seat in &self.seats {

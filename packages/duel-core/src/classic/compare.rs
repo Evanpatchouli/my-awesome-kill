@@ -279,18 +279,7 @@ impl Game {
                 revealed: false,
             },
         );
-        // Losing an unknown hand card obscures this payer's entire remaining
-        // hand: keeping one old mark would identify which card was *not* paid.
-        if !self.known_to_all.is_empty() {
-            let player = self
-                .seats
-                .iter()
-                .find(|p| p.id == owner)
-                .expect("validated payer");
-            for held in &player.hand {
-                self.known_to_all.remove(&held.id);
-            }
-        }
+        self.obscure_remaining_hand(owner);
     }
 
     fn queue_compare_hook(&mut self, timing: &'static str, seats: CompareParticipants) {
