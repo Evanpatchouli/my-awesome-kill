@@ -199,6 +199,7 @@ enum MoveKind {
     DiscardToPile(Card),
     Lose {
         card: Card,
+        zone: Zone,
         destination: LossDestination,
     },
     Draw,
@@ -222,6 +223,9 @@ enum GainOrigin {
     Hand {
         seat: SeatId,
         public: bool,
+    },
+    Expansion {
+        seat: SeatId,
     },
     DrawPile,
     /// Draw has already taken this card out of the pile, privately.
@@ -265,6 +269,10 @@ impl Movement {
                 origin: GainOrigin::Hand { seat, .. },
                 ..
             } => Some(seat),
+            MoveKind::Gain {
+                origin: GainOrigin::Expansion { seat },
+                ..
+            } => Some(seat),
             _ => None,
         }
     }
@@ -303,6 +311,7 @@ impl Movement {
                         GainOrigin::DrawPile
                             | GainOrigin::Compare(_)
                             | GainOrigin::Hand { public: true, .. }
+                            | GainOrigin::Expansion { .. }
                     )
                 }),
             },
@@ -352,6 +361,37 @@ impl Movement {
 }
 
 impl Game {
+    pub(crate) fn expansion_lose_program(
+        &self,
+        seat: SeatId,
+        card: Card,
+        zone: Zone,
+        discard: bool,
+    ) -> Program {
+        Program::Recast(Flow::Movement(Movement::new(
+            seat,
+            MoveKind::Lose {
+                card,
+                zone,
+                destination: if discard {
+                    LossDestination::Discard
+                } else {
+                    LossDestination::Transfer(seat)
+                },
+            },
+        )))
+    }
+
+    pub(crate) fn expansion_gain_program(&self, from: SeatId, to: SeatId, card: Card) -> Program {
+        Program::Recast(Flow::Movement(Movement::new(
+            to,
+            MoveKind::Gain {
+                card,
+                origin: GainOrigin::Expansion { seat: from },
+            },
+        )))
+    }
+
     pub(crate) fn lose_compare_program(
         &self,
         comparison: EventId,
@@ -362,6 +402,7 @@ impl Game {
             seat,
             MoveKind::Lose {
                 card,
+                zone: Zone::Hand,
                 destination: LossDestination::Compare(comparison),
             },
         )))
@@ -495,7 +536,7 @@ impl Game {
                 card,
                 origin: GainOrigin::Hand {
                     seat: from,
-                    public: self.public_hand_cards.contains(&id),
+                    public: self.known_to_all.contains(&id),
                 },
             },
         ))))
@@ -562,7 +603,7 @@ impl Game {
                 }
                 Announce => {
                     if self.recast_held(seat, card) {
-                        self.public_hand_cards.insert(card.id);
+                        self.known_to_all.insert(card.id);
                     }
                     recast.stage = LossFactory;
                     self.next(EventKind::RecastReveal { seat, card });
@@ -755,8 +796,14 @@ impl Game {
                     } else {
                         movement.card()
                     };
-                    if let (After, Lose { .. }, Some(card)) = (stage, movement.kind, cards) {
-                        self.queue_hero_losses(seat, vec![(Zone::Hand, card)])
+                    if let (After, Lose { zone, .. }, Some(card)) = (stage, movement.kind, cards) {
+                        if matches!(zone, Zone::Hand | Zone::Equipment)
+                            && self.queue_hero_losses(seat, vec![(zone, card)])
+                        {
+                            true
+                        } else {
+                            self.queue_timing("loseAfter", Some(seat), None, None, 1, &[card])
+                        }
                     } else {
                         let amount = if settled {
                             cards.as_slice().len() as u16
@@ -774,7 +821,15 @@ impl Game {
                     }
                 }
                 Move => {
-                    if !self.recast_alive(seat) {
+                    if !self.recast_alive(seat)
+                        && !matches!(
+                            movement.kind,
+                            Lose {
+                                zone: Zone::Expansion,
+                                ..
+                            }
+                        )
+                    {
                         movement.stage = Cancel(MoveCancellation::InvalidMovement);
                         continue;
                     }
@@ -783,6 +838,7 @@ impl Game {
                             seat,
                             Lose {
                                 card,
+                                zone: Zone::Hand,
                                 destination: LossDestination::Discard,
                             },
                         )),
@@ -805,14 +861,35 @@ impl Game {
                             from,
                             Lose {
                                 card,
+                                zone: Zone::Hand,
                                 destination: LossDestination::Transfer(seat),
                             },
                         )),
-                        Lose { card, destination }
-                            if self.recast_held(seat, card)
-                                && !matches!(destination, LossDestination::Transfer(to) if !self.recast_alive(to)) =>
+                        Gain {
+                            card,
+                            origin: GainOrigin::Expansion { seat: from },
+                        } if self.seat(from).is_ok_and(|s| s.expansions.contains(&card)) => {
+                            Some(Movement::new(
+                                from,
+                                Lose {
+                                    card,
+                                    zone: Zone::Expansion,
+                                    destination: LossDestination::Transfer(seat),
+                                },
+                            ))
+                        }
+                        Lose {
+                            card,
+                            zone,
+                            destination,
+                        } if self.seat(seat).is_ok_and(|s| match zone {
+                            Zone::Hand => s.hand.contains(&card),
+                            Zone::Equipment => s.equipment.contains(&card),
+                            Zone::Judgment => s.judges.contains(&card),
+                            Zone::Expansion => s.expansions.contains(&card),
+                        }) && !matches!(destination, LossDestination::Transfer(to) if !self.recast_alive(to)) =>
                         {
-                            let taken = self.take_card(seat, Zone::Hand, card.id);
+                            let taken = self.take_card(seat, zone, card.id);
                             match destination {
                                 LossDestination::Discard => self.discard.push(taken),
                                 LossDestination::Transfer(_) => self.transferring.push(taken),
@@ -829,7 +906,7 @@ impl Game {
                         } => {
                             if let Some(taken) = self.take_compare_bid(comparison, card.id) {
                                 self.put_in_hand(seat, taken);
-                                self.public_hand_cards.insert(taken.id);
+                                self.known_to_all.insert(taken.id);
                                 movement.committed = Some(taken);
                             }
                             None
@@ -850,7 +927,7 @@ impl Game {
                             if let Some(index) = deck.iter().position(|c| *c == card) {
                                 let taken = deck.remove(index);
                                 self.seat_mut(seat).hand.push(taken);
-                                self.public_hand_cards.insert(taken.id);
+                                self.known_to_all.insert(taken.id);
                                 movement.committed = Some(taken);
                             }
                             None
@@ -886,10 +963,21 @@ impl Game {
                         continue;
                     };
                     if let Gain {
-                        origin: GainOrigin::Hand { seat: from, public },
+                        origin: GainOrigin::Hand { .. } | GainOrigin::Expansion { .. },
                         ..
                     } = movement.kind
                     {
+                        let (from, public, from_expansion) = match movement.kind {
+                            Gain {
+                                origin: GainOrigin::Hand { seat, public },
+                                ..
+                            } => (seat, public, false),
+                            Gain {
+                                origin: GainOrigin::Expansion { seat },
+                                ..
+                            } => (seat, true, true),
+                            _ => unreachable!(),
+                        };
                         let Some(card) = card else {
                             // The nested lose may have been cancelled. The gain
                             // has no physical card to receive and its own hooks finish.
@@ -898,10 +986,10 @@ impl Game {
                         };
                         let card = Self::remove_card(&mut self.transferring, card.id);
                         if !self.recast_alive(seat) {
-                            if self.recast_alive(from) {
+                            if self.recast_alive(from) && !from_expansion {
                                 self.seat_mut(from).hand.push(card);
                                 if public {
-                                    self.public_hand_cards.insert(card.id);
+                                    self.known_to_all.insert(card.id);
                                 }
                             } else {
                                 self.discard.push(card);
@@ -911,7 +999,7 @@ impl Game {
                         }
                         self.seat_mut(seat).hand.push(card);
                         if public {
-                            self.public_hand_cards.insert(card.id);
+                            self.known_to_all.insert(card.id);
                         }
                     }
                     movement.committed = card;

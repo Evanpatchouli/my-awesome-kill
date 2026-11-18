@@ -202,11 +202,6 @@ impl Game {
             EventKind::ChooseSave { seat, target } => {
                 self.resolve_save(event, seat, target, child, answer)
             }
-            EventKind::Death {
-                source,
-                target,
-                role,
-            } => self.resolve_death(source, target, role),
             EventKind::Penalty { lord } => {
                 self.queue_zone_discards(lord, &[Zone::Hand, Zone::Equipment]);
                 self.finish();
@@ -417,6 +412,7 @@ impl Game {
                     Zone::Hand => &player.hand,
                     Zone::Equipment => &player.equipment,
                     Zone::Judgment => &player.judges,
+                    Zone::Expansion => &player.expansions,
                 };
                 cards.iter().copied().map(move |card| (zone, card))
             })
@@ -550,23 +546,62 @@ impl Game {
         }
     }
 
-    fn resolve_death(&mut self, source: Option<SeatId>, target: SeatId, role: Role) {
-        let player = self.seat_mut(target);
-        player.alive = false;
-        player.hp = 0;
-        let alive: Vec<_> = self
-            .seats
-            .iter()
-            .filter(|seat| seat.alive)
-            .filter_map(|seat| seat.role)
-            .collect();
-        let winner = classic_data::winning_side(&alive);
-        self.queue_zone_discards(target, &[Zone::Hand, Zone::Equipment, Zone::Judgment]);
+    pub(crate) fn resolve_death(
+        &mut self,
+        source: Option<SeatId>,
+        target: SeatId,
+        role: Role,
+        stage: crate::DeathStage,
+    ) {
+        use crate::DeathStage;
+        let next = |stage| Program::Death {
+            source,
+            target,
+            role,
+            stage,
+        };
+        match stage {
+            DeathStage::Begin => {
+                let player = self.seat_mut(target);
+                player.alive = false;
+                player.hp = 0;
+                let alive: Vec<_> = self
+                    .seats
+                    .iter()
+                    .filter(|seat| seat.alive)
+                    .filter_map(|seat| seat.role)
+                    .collect();
+                if let Some(winner) = classic_data::winning_side(&alive) {
+                    self.classic.as_mut().expect("the table is classic").result =
+                        Some(MatchResult::Winner(winner));
+                }
+                self.scheduler.replace_current(next(DeathStage::Cleanup));
+                self.queue_timing("die", Some(target), source, None, 0, &[]);
+                return;
+            }
+            DeathStage::Cleanup => {
+                self.remove_temporary_for_seat(target);
+                self.queue_zone_discards(target, &[Zone::Hand, Zone::Equipment, Zone::Judgment]);
+                if let Some(discard) = self.discard_all_expansions_program(target) {
+                    self.scheduler.next(discard);
+                }
+                if self.match_result().is_none() {
+                    self.queue_death_reward(source, role);
+                }
+                self.scheduler.replace_current(next(DeathStage::After));
+                return;
+            }
+            DeathStage::After => {
+                self.scheduler.replace_current(next(DeathStage::Finish));
+                self.queue_timing("dieAfter", Some(target), source, None, 0, &[]);
+                return;
+            }
+            DeathStage::Finish => self.finish(),
+        }
+    }
 
-        if let Some(winner) = winner {
-            self.classic.as_mut().expect("the table is classic").result =
-                Some(MatchResult::Winner(winner));
-        } else if let Some(killer) = source
+    fn queue_death_reward(&mut self, source: Option<SeatId>, role: Role) {
+        if let Some(killer) = source
             .and_then(|id| self.seat(id).ok())
             .filter(|seat| seat.alive)
         {
@@ -582,7 +617,6 @@ impl Game {
                 _ => {}
             }
         }
-        self.finish();
     }
 }
 

@@ -162,8 +162,7 @@ impl Game {
         }
         let mut event = self.subject_timing("useCard2", Some(seat), None, None, 0, cards);
         event.card_kind = Some(kind);
-        self.begin_timing_request(&event);
-        if !self.has_registered_candidates(&event) {
+        if !self.begin_timing_request(&event) {
             return false;
         }
         self.scheduler

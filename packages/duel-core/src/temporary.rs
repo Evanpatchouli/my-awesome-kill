@@ -8,6 +8,23 @@ mod tests;
 
 /// A veto for an effective card kind being used by the holder, including virtual cards.
 pub type CardEnabled = Arc<dyn Fn(&Game, SeatId, CardKind) -> bool + Send + Sync>;
+pub type SkillRemovalEffect = Arc<dyn Fn(&mut SkillRemoval<'_>) + Send + Sync>;
+
+/// Checked cleanup operations executed when a grant expires or is revoked.
+pub struct SkillRemoval<'a> {
+    game: &'a mut Game,
+    owner: SeatId,
+    queued: bool,
+}
+
+impl SkillRemoval<'_> {
+    pub fn discard_expansions(&mut self, tag: &str) {
+        if let Some(program) = self.game.discard_expansions_program(self.owner, tag) {
+            self.game.scheduler.next_cleanup(program);
+            self.queued = true;
+        }
+    }
+}
 
 #[derive(Clone)]
 pub struct SkillExpiry {
@@ -34,6 +51,7 @@ pub struct TemporarySkill {
     pub expires: Vec<SkillExpiry>,
     pub triggers: Vec<TriggerRegistration>,
     pub card_enabled: Option<CardEnabled>,
+    pub on_remove: Option<SkillRemovalEffect>,
 }
 
 impl TemporarySkill {
@@ -43,6 +61,7 @@ impl TemporarySkill {
             expires,
             triggers: Vec::new(),
             card_enabled: None,
+            on_remove: None,
         }
     }
 
@@ -64,6 +83,7 @@ pub(crate) struct Grant {
     expires: Vec<SkillExpiry>,
     triggers: Vec<TriggerId>,
     card_enabled: Option<CardEnabled>,
+    on_remove: Option<SkillRemovalEffect>,
 }
 
 impl Game {
@@ -71,13 +91,14 @@ impl Game {
     pub fn has_skill(&self, seat: SeatId, id: &str) -> bool {
         self.seat(seat).is_ok_and(|player| {
             player.alive
-                && (player
-                    .hero
-                    .is_some_and(|hero| hero.skills.iter().any(|skill| skill.id == id))
-                    || self
-                        .temporary_skills
-                        .iter()
-                        .any(|grant| grant.owner == seat && grant.name == id))
+                && (self.has_active_skill(seat, id)
+                    || player
+                        .hero
+                        .is_some_and(|hero| hero.skills.iter().any(|skill| skill.id == id)))
+                || self
+                    .temporary_skills
+                    .iter()
+                    .any(|grant| grant.owner == seat && grant.name == id)
         })
     }
 
@@ -133,6 +154,7 @@ impl Game {
             expires: skill.expires,
             triggers,
             card_enabled: skill.card_enabled,
+            on_remove: skill.on_remove,
         });
         Ok(())
     }
@@ -149,10 +171,30 @@ impl Game {
         true
     }
 
-    fn remove_grant(&mut self, index: usize) {
+    fn remove_grant(&mut self, index: usize) -> bool {
         let grant = self.temporary_skills.remove(index);
         for id in grant.triggers {
             self.unregister_trigger(id);
+        }
+        if let Some(effect) = grant.on_remove {
+            let mut removal = SkillRemoval {
+                game: self,
+                owner: grant.owner,
+                queued: false,
+            };
+            effect(&mut removal);
+            return removal.queued;
+        }
+        false
+    }
+
+    pub(crate) fn remove_temporary_for_seat(&mut self, owner: SeatId) {
+        while let Some(index) = self
+            .temporary_skills
+            .iter()
+            .position(|grant| grant.owner == owner)
+        {
+            self.remove_grant(index);
         }
     }
 
@@ -171,8 +213,9 @@ impl Game {
         })
     }
 
-    pub(crate) fn begin_timing_request(&mut self, event: &TriggerEvent) {
+    pub(crate) fn begin_timing_request(&mut self, event: &TriggerEvent) -> bool {
         self.observe_timing_request(event);
+        let mut cleanup = false;
         let mut index = 0;
         while index < self.temporary_skills.len() {
             let grant = &self.temporary_skills[index];
@@ -181,10 +224,11 @@ impl Game {
                 .iter()
                 .any(|term| term.matches(grant.owner, event))
             {
-                self.remove_grant(index);
+                cleanup |= self.remove_grant(index);
             } else {
                 index += 1;
             }
         }
+        cleanup || self.has_registered_candidates(event)
     }
 }

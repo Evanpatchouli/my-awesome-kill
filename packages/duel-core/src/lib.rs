@@ -1,3 +1,5 @@
+mod active_skill;
+pub use active_skill::{ActiveSkillId, ActiveSkillRegistration};
 mod card_use;
 mod classic;
 pub mod classic_data;
@@ -7,7 +9,9 @@ pub mod qiaoshui;
 mod scheduler;
 mod temporary;
 mod triggers;
-pub use temporary::{CardEnabled, SkillExpiry, TemporarySkill};
+#[cfg(any(test, feature = "content-zhongyi"))]
+pub mod zhongyi;
+pub use temporary::{CardEnabled, SkillExpiry, SkillRemoval, SkillRemovalEffect, TemporarySkill};
 pub use triggers::{
     TriggerContext, TriggerEffect, TriggerEvent, TriggerFilter, TriggerId, TriggerOrder,
     TriggerRegistration, TriggerRole, TriggerSelection, TriggerStep,
@@ -34,6 +38,7 @@ use scheduler::{EventRef, Outcome, Scheduler, Work};
 
 #[derive(Clone)]
 enum Resolution {
+    ExpansionDiscarded(Vec<Card>),
     CompareBid(Card),
     CompareBids([Card; 2]),
     Compared(CompareResult),
@@ -99,6 +104,15 @@ enum Zone {
     Hand,
     Equipment,
     Judgment,
+    Expansion,
+}
+
+#[derive(Clone, Copy)]
+enum DeathStage {
+    Begin,
+    Cleanup,
+    After,
+    Finish,
 }
 
 #[derive(Clone)]
@@ -123,6 +137,14 @@ enum TurnStage {
 
 #[derive(Clone)]
 enum Program {
+    Death {
+        source: Option<SeatId>,
+        target: SeatId,
+        role: Role,
+        stage: DeathStage,
+    },
+    ActiveSkill(active_skill::Flow),
+    Expansion(classic::expansion::Flow),
     BasicUse(classic::basic_use::Flow),
     Compare(classic::compare::Flow),
     Turn(TurnFlow),
@@ -167,6 +189,16 @@ enum Program {
 impl Program {
     fn event(kind: EventKind) -> Self {
         match kind {
+            EventKind::Death {
+                source,
+                target,
+                role,
+            } => Self::Death {
+                source,
+                target,
+                role,
+                stage: DeathStage::Begin,
+            },
             EventKind::UseTao { seat, target, card } => {
                 Self::BasicUse(classic::basic_use::Flow::tao(seat, target, card, false))
             }
@@ -190,6 +222,18 @@ impl Program {
 
     fn kind(&self) -> EventKind {
         match self {
+            Self::Death {
+                source,
+                target,
+                role,
+                ..
+            } => EventKind::Death {
+                source: *source,
+                target: *target,
+                role: *role,
+            },
+            Self::ActiveSkill(flow) => flow.kind(),
+            Self::Expansion(flow) => flow.kind(),
             Self::BasicUse(flow) => flow.kind(),
             Self::Event(kind) => *kind,
             Self::Compare(flow) => flow.kind(),
@@ -218,10 +262,7 @@ impl Program {
             Self::TargetTiming(flow) => flow.kind(),
             Self::Hero(flow) => flow.kind(),
             Self::Dispatch(flow) => flow.kind(),
-            Self::Registered(flow) => EventKind::RegisteredTrigger {
-                seat: flow.owner,
-                registration: flow.id,
-            },
+            Self::Registered(flow) => flow.kind(),
             Self::Judgment(judgment) => EventKind::Judge {
                 seat: judgment.seat,
             },
@@ -256,6 +297,7 @@ struct Seat {
     hand: Vec<Card>,
     equipment: Vec<Card>,
     judges: Vec<Card>,
+    expansions: Vec<Card>,
 }
 
 impl Seat {
@@ -264,6 +306,7 @@ impl Seat {
             Zone::Hand => &mut self.hand,
             Zone::Equipment => &mut self.equipment,
             Zone::Judgment => &mut self.judges,
+            Zone::Expansion => &mut self.expansions,
         }
     }
 }
@@ -283,11 +326,15 @@ impl From<SeatSetup> for Seat {
             hand: setup.hand,
             equipment: Vec::new(),
             judges: Vec::new(),
+            expansions: Vec::new(),
         }
     }
 }
 
 pub struct Game {
+    active_skills: active_skill::State,
+    expansion_tags: HashMap<CardId, Vec<String>>,
+    teams: HashMap<SeatId, u32>,
     temporary_skills: Vec<temporary::Grant>,
     compares: classic::compare::State,
     #[cfg(test)]
@@ -295,7 +342,7 @@ pub struct Game {
     elemental: elemental::State,
     recast_rules: Vec<(RecastKey, RecastRule)>,
     transferring: Vec<Card>,
-    public_hand_cards: HashSet<CardId>,
+    known_to_all: HashSet<CardId>,
     seats: Vec<Seat>,
     active_seat: SeatId,
     version: u32,
@@ -345,6 +392,9 @@ impl Game {
 
     fn with_seats(seats: Vec<Seat>, active_seat: SeatId) -> Self {
         Self {
+            active_skills: active_skill::State::default(),
+            expansion_tags: HashMap::new(),
+            teams: HashMap::new(),
             temporary_skills: Vec::new(),
             #[cfg(test)]
             timing_observer: None,
@@ -352,7 +402,7 @@ impl Game {
             compares: classic::compare::State::default(),
             recast_rules: Vec::new(),
             transferring: Vec::new(),
-            public_hand_cards: HashSet::new(),
+            known_to_all: HashSet::new(),
             seats,
             active_seat,
             version: 0,
@@ -368,8 +418,55 @@ impl Game {
         }
     }
 
+    /// Assign a mode-defined team. Classic identity games have no explicit teams.
+    pub fn set_team(&mut self, seat: SeatId, team: u32) -> Result<(), RuleError> {
+        self.seat(seat)?;
+        self.teams.insert(seat, team);
+        Ok(())
+    }
+
+    pub fn is_friend_of(&self, seat: SeatId, other: SeatId) -> bool {
+        self.seat(seat).is_ok()
+            && (seat == other
+                || self
+                    .teams
+                    .get(&seat)
+                    .is_some_and(|team| self.teams.get(&other) == Some(team)))
+    }
+
+    /// Held physical cards of a seat for trusted skill costs.
+    pub fn hand_and_equipment(
+        &self,
+        seat: SeatId,
+    ) -> Result<impl Iterator<Item = &Card>, RuleError> {
+        let player = self.seat(seat)?;
+        Ok(player.hand.iter().chain(&player.equipment))
+    }
+
     pub fn is_alive(&self, seat: SeatId) -> bool {
         self.seat(seat).is_ok_and(|player| player.alive)
+    }
+
+    /// The unowned special zone, including material that an interrupted recipient could not take.
+    pub fn special_cards(&self) -> &[Card] {
+        &self.transferring
+    }
+
+    /// Knowledge of a physical identity. An expansion's public mark may separately show its face.
+    pub fn is_known_by(&self, card: CardId, viewer: Option<SeatId>) -> bool {
+        self.known_to_all.contains(&card)
+            || self.seats.iter().any(|seat| {
+                seat.equipment
+                    .iter()
+                    .chain(&seat.judges)
+                    .any(|held| held.id == card)
+                    || viewer == Some(seat.id)
+                        && seat
+                            .hand
+                            .iter()
+                            .chain(&seat.expansions)
+                            .any(|held| held.id == card)
+            })
     }
 
     /// Walk the table once, starting at `start` and following the setup order.
@@ -443,6 +540,15 @@ impl Game {
                 let role_visible =
                     own || !seat.alive || seat.role == Some(Role::Lord) || result.is_some();
                 SeatView {
+                    expansions: seat
+                        .expansions
+                        .iter()
+                        .map(|&card| ExpansionCard {
+                            card,
+                            tags: self.expansion_tags(card.id).to_vec(),
+                        })
+                        .collect(),
+                    limited_spent: self.limited_spent(seat.id),
                     id: seat.id,
                     hp: seat.hp,
                     max_hp: seat.max_hp,
@@ -457,7 +563,7 @@ impl Game {
                     known_hand: seat
                         .hand
                         .iter()
-                        .filter(|c| self.public_hand_cards.contains(&c.id))
+                        .filter(|c| self.known_to_all.contains(&c.id))
                         .copied()
                         .collect(),
                     equipment: seat.equipment.clone(),
@@ -491,7 +597,14 @@ impl Game {
             .filter(|c| !self.compares.hidden(c.id))
             .copied()
             .collect();
-        let visible = self.visible_card_ids(&seats, &private_choice_cards, &resolving);
+        let known_special: Vec<_> = self
+            .transferring
+            .iter()
+            .copied()
+            .filter(|card| self.is_known_by(card.id, viewer))
+            .collect();
+        let mut visible = self.visible_card_ids(&seats, &private_choice_cards, &resolving);
+        visible.extend(known_special.iter().map(|card| card.id));
         let card_faces = state
             .iter()
             .flat_map(|state| &state.faces)
@@ -515,6 +628,7 @@ impl Game {
             seats,
             deck_count: state.map_or(0, |state| state.deck.len()),
             resolving,
+            known_special,
             discard: self.discard.clone(),
             waiting_for: self.decision.as_ref().map(Decision::seat),
             counter_window: matches!(&self.decision, Some(Decision::Cards(choice)) if choice.counter.is_some()),
@@ -527,6 +641,10 @@ impl Game {
             skill_plays: match self.decision.as_ref() {
                 Some(Decision::Play(seat)) if viewer == Some(*seat) => self.hero_skill_plays(*seat),
                 _ => vec![],
+            },
+            active_plays: match self.decision.as_ref() {
+                Some(Decision::Play(seat)) if viewer == Some(*seat) => self.active_plays(*seat),
+                _ => Vec::new(),
             },
             private_choice_cards,
             card_faces,
@@ -555,6 +673,7 @@ impl Game {
                 .chain(&seat.known_hand)
                 .chain(&seat.equipment)
                 .chain(&seat.judges)
+                .chain(seat.expansions.iter().map(|item| &item.card))
         });
         let revealed_events = self.events.iter().filter_map(|event| match event.kind {
             UseSha { card, .. }
@@ -610,6 +729,16 @@ impl Game {
             .checked_add(1)
             .ok_or(RuleError::VersionExhausted)?;
         let answer = match command.action {
+            Action::ActivateSkill {
+                registration,
+                cards,
+                targets,
+            } => Some(Answer::Play(self.plan_active_skill(
+                command.seat,
+                registration,
+                cards,
+                targets,
+            )?)),
             Action::Recast { card } => Some(Answer::Play(self.plan_recast(command.seat, card)?)),
             Action::PlaySha { card, target } if self.classic.is_none() => {
                 let use_sha = self.plan_sha(command.seat, card, target)?;
@@ -849,6 +978,14 @@ impl Game {
 
         let kind = program.kind();
         let program = match program {
+            Program::Death {
+                source,
+                target,
+                role,
+                stage,
+            } => return self.resolve_death(source, target, role, stage),
+            Program::ActiveSkill(flow) => return self.resolve_active_skill(flow, child),
+            Program::Expansion(flow) => return self.resolve_expansion(event, flow, child),
             Program::Compare(flow) => return self.resolve_compare(event, flow, child, answer),
             Program::Turn(flow) => return self.resolve_turn_flow(flow, child),
             Program::PlayAfterBegin(seat) => {
@@ -1097,10 +1234,13 @@ impl Game {
     fn take_card(&mut self, seat: SeatId, zone: Zone, id: CardId) -> Card {
         let card = Self::remove_card(self.seat_mut(seat).zone_mut(zone), id);
         if matches!(zone, Zone::Hand) {
-            self.public_hand_cards.remove(&id);
+            self.known_to_all.remove(&id);
         }
         if matches!(zone, Zone::Judgment) {
             self.judgment_overrides.remove(&id);
+        }
+        if matches!(zone, Zone::Expansion) {
+            self.expansion_tags.remove(&id);
         }
         card
     }

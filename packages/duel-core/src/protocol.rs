@@ -98,6 +98,11 @@ pub struct Command {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum Action {
+    ActivateSkill {
+        registration: u64,
+        cards: Vec<CardId>,
+        targets: Vec<SeatId>,
+    },
     Recast {
         card: CardId,
     },
@@ -148,6 +153,9 @@ pub struct GameView {
     pub seats: Vec<SeatView>,
     pub deck_count: usize,
     pub resolving: Vec<Card>,
+    /// Identifiable physical cards in the unowned special zone, including transfers in flight.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub known_special: Vec<Card>,
     pub discard: Vec<Card>,
     pub waiting_for: Option<SeatId>,
     pub counter_window: bool,
@@ -155,6 +163,8 @@ pub struct GameView {
     pub actions: Vec<Action>,
     pub virtual_plays: Vec<VirtualPlay>,
     pub skill_plays: Vec<SkillPlay>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub active_plays: Vec<ActivePlay>,
     pub private_choice_cards: Vec<Card>,
     pub card_faces: Vec<CardFace>,
     /// Elemental natures of physical Sha currently visible to this viewer.
@@ -167,6 +177,10 @@ pub struct GameView {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SeatView {
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub expansions: Vec<ExpansionCard>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub limited_spent: Vec<String>,
     pub id: SeatId,
     pub hp: i32,
     pub max_hp: u16,
@@ -309,6 +323,20 @@ pub struct SkillPlay {
     pub branch: ChoiceBranch,
 }
 
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ActivePlay {
+    pub registration: u64,
+    pub skill: String,
+    pub branch: ChoiceBranch,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct ExpansionCard {
+    pub card: Card,
+    pub tags: Vec<String>,
+}
+
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GameEvent {
@@ -341,6 +369,18 @@ pub enum CardTargetTiming {
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum EventKind {
+    ActivateSkill {
+        seat: SeatId,
+        registration: u64,
+    },
+    ActiveSkillEffect {
+        seat: SeatId,
+        registration: u64,
+    },
+    AddToExpansion {
+        seat: SeatId,
+        amount: usize,
+    },
     #[serde(rename_all = "camelCase")]
     CardTargetTiming {
         timing: CardTargetTiming,

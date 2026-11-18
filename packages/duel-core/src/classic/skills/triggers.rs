@@ -195,8 +195,7 @@ impl Game {
             amount,
             cards,
         );
-        self.begin_timing_request(&event);
-        if !self.has_registered_candidates(&event) {
+        if !self.begin_timing_request(&event) {
             if let Some(program) = native {
                 self.scheduler.next(program);
                 return true;

@@ -92,8 +92,7 @@ impl Game {
             &flow.cards,
         );
         event.card_kind = Some(flow.card_kind);
-        self.begin_timing_request(&event);
-        if self.has_registered_candidates(&event) {
+        if self.begin_timing_request(&event) {
             flow.started = true;
             self.scheduler.replace_current(Program::TargetTiming(flow));
             self.scheduler

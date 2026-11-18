@@ -799,8 +799,7 @@ impl Game {
         event: TriggerEvent,
         rule: Option<Rule>,
     ) -> Option<Program> {
-        self.begin_timing_request(&event);
-        if rule.is_none() && !self.has_registered_candidates(&event) {
+        if !self.begin_timing_request(&event) && rule.is_none() {
             return None;
         }
         Some(Program::Dispatch(

@@ -306,14 +306,14 @@ impl Game {
         );
         // Losing an unknown hand card obscures this payer's entire remaining
         // hand: keeping one old mark would identify which card was *not* paid.
-        if !self.public_hand_cards.is_empty() {
+        if !self.known_to_all.is_empty() {
             let player = self
                 .seats
                 .iter()
                 .find(|p| p.id == owner)
                 .expect("validated payer");
             for held in &player.hand {
-                self.public_hand_cards.remove(&held.id);
+                self.known_to_all.remove(&held.id);
             }
         }
     }

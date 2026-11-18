@@ -380,7 +380,13 @@ fn benchmark_seeded_eight_player_games() {
         let zones = game
             .seats
             .iter()
-            .flat_map(|seat| seat.hand.iter().chain(&seat.equipment).chain(&seat.judges))
+            .flat_map(|seat| {
+                seat.hand
+                    .iter()
+                    .chain(&seat.equipment)
+                    .chain(&seat.judges)
+                    .chain(&seat.expansions)
+            })
             .chain(&game.discard)
             .chain(&game.classic.as_ref().unwrap().deck);
         let mut physical_ids = HashSet::new();

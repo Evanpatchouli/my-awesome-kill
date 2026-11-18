@@ -1,7 +1,9 @@
 use super::{skill::Skill, Flow};
 use crate::classic::skills::{HeroAdjustment, HeroMoment};
 use crate::scheduler::Outcome;
-use crate::{Card, CardKind, EventKind, Game, Program, Resolution, SeatId};
+use crate::{
+    Card, CardKind, DamageNature, EventKind, Game, Program, Resolution, RuleError, SeatId,
+};
 
 #[derive(Clone, Copy)]
 enum AttackStep {
@@ -28,6 +30,8 @@ pub(crate) struct Attack {
     direct_hits: Vec<SeatId>,
     step: AttackStep,
     ignore_armor: bool,
+    nature: Option<DamageNature>,
+    content_use: bool,
 }
 
 impl Attack {
@@ -77,6 +81,7 @@ pub(crate) struct Target {
     direct_hit: bool,
     shan_required: u8,
     cards: Vec<Card>,
+    nature: Option<DamageNature>,
 }
 
 impl Game {
@@ -109,7 +114,29 @@ impl Game {
             direct_hits: vec![],
             step: AttackStep::Pay,
             ignore_armor,
+            nature: None,
+            content_use: false,
         }))
+    }
+
+    /// Build a directly authorized virtual Sha without inventing a physical card.
+    pub(crate) fn content_sha_program(
+        &self,
+        source: SeatId,
+        target: SeatId,
+        nature: Option<DamageNature>,
+    ) -> Result<Program, RuleError> {
+        if !self.accepts_sha_target(source, target) || !self.card_enabled(source, CardKind::Sha) {
+            return Err(RuleError::InvalidTarget);
+        }
+        let Program::Equipment(Flow::Attack(mut attack)) =
+            self.attack_program(source, vec![], vec![target])
+        else {
+            unreachable!("attack_program creates an attack")
+        };
+        attack.nature = nature;
+        attack.content_use = true;
+        Ok(Program::Equipment(Flow::Attack(attack)))
     }
 
     pub(super) fn resolve_attack(
@@ -124,6 +151,25 @@ impl Game {
         let seat = attack.seat;
         match attack.step {
             AttackStep::Pay => {
+                if attack.content_use
+                    && (!self.card_enabled(seat, CardKind::Sha)
+                        || !attack
+                            .targets
+                            .iter()
+                            .all(|&target| self.accepts_sha_target(seat, target)))
+                {
+                    self.scheduler.end(Outcome::Cancelled);
+                    return;
+                }
+                if attack.content_use {
+                    if let Some(state) = self.classic.as_mut().filter(|state| {
+                        state.turn.is_some_and(|turn| {
+                            turn.seat == seat && turn.phase == crate::Phase::Play
+                        })
+                    }) {
+                        state.sha_played = true;
+                    }
+                }
                 self.note_hero_sha_play(seat);
                 if attack.payer != seat
                     && self
@@ -283,6 +329,7 @@ impl Game {
                     direct_hit: attack.direct_hits.contains(&target),
                     shan_required: self.hero_response_count(seat, CardKind::Shan),
                     cards: attack.cards.clone(),
+                    nature: attack.nature,
                 };
                 attack.step = AttackStep::Resolve(index + offset + 1);
                 self.scheduler
@@ -308,12 +355,13 @@ impl Game {
             }
             (TargetStep::Defend, None | Some(Outcome::Finished(Resolution::Passed)))
             | (TargetStep::Miss, Some(Outcome::Finished(Resolution::ForcedHit))) => {
-                let damage = self.damage_program(
+                let damage = self.damage_program_with_nature(
                     Some(seat),
                     target,
                     1,
                     Some(CardKind::Sha),
                     attack.cards.clone(),
+                    attack.nature,
                 );
                 attack.step = TargetStep::Damage;
                 self.continue_equipment(Flow::Target(attack));
@@ -386,3 +434,6 @@ impl Game {
         .then(|| Program::Equipment(Flow::Skill(Skill::new(seat, target, CardKind::Qilin))))
     }
 }
+
+#[cfg(test)]
+mod tests;

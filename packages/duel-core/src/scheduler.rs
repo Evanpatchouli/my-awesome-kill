@@ -31,9 +31,10 @@ enum State<R> {
 struct Frame<P, R> {
     event: EventRef,
     program: P,
+    return_result: bool,
     state: State<R>,
     child_result: Option<Outcome<R>>,
-    next: VecDeque<P>,
+    next: VecDeque<(P, bool)>,
     after: VecDeque<P>,
 }
 
@@ -52,7 +53,7 @@ impl<P: Clone, R: Clone> Scheduler<P, R> {
 
     pub fn start(&mut self, program: P) {
         assert!(self.stack.is_empty());
-        self.push(program, None);
+        self.push(program, None, false);
     }
 
     pub fn current_id(&self) -> EventId {
@@ -78,7 +79,14 @@ impl<P: Clone, R: Clone> Scheduler<P, R> {
     pub fn next(&mut self, program: P) {
         let frame = self.current();
         assert!(matches!(frame.state, State::Running));
-        frame.next.push_back(program);
+        frame.next.push_back((program, true));
+    }
+
+    // Run at this point in the parent's queue without replacing a sibling's awaited result.
+    pub fn next_cleanup(&mut self, program: P) {
+        let frame = self.current();
+        assert!(matches!(frame.state, State::Running));
+        frame.next.push_back((program, false));
     }
 
     pub fn after(&mut self, program: P) {
@@ -108,8 +116,8 @@ impl<P: Clone, R: Clone> Scheduler<P, R> {
                 return Some(Work::Started(event, frame.program.clone()));
             }
             // Queued children still run when the parent requests its own end.
-            if let Some(next) = frame.next.pop_front() {
-                self.push(next, Some(event.id));
+            if let Some((next, return_result)) = frame.next.pop_front() {
+                self.push(next, Some(event.id), return_result);
                 continue;
             }
             let outcome = match &frame.state {
@@ -129,13 +137,14 @@ impl<P: Clone, R: Clone> Scheduler<P, R> {
                 State::After(outcome) => outcome.clone(),
             };
             if let Some(after) = frame.after.pop_front() {
-                self.push(after, Some(event.id));
+                self.push(after, Some(event.id), false);
                 continue;
             }
+            let return_result = frame.return_result;
             self.stack.pop();
             if let Some(parent) = self.stack.last_mut() {
                 // Cleanup never replaces the result the parent already announced.
-                if matches!(parent.state, State::Running) {
+                if return_result && matches!(parent.state, State::Running) {
                     parent.child_result = Some(outcome);
                 }
             }
@@ -146,7 +155,7 @@ impl<P: Clone, R: Clone> Scheduler<P, R> {
         self.stack.last_mut().expect("an event is running")
     }
 
-    fn push(&mut self, program: P, parent: Option<EventId>) {
+    fn push(&mut self, program: P, parent: Option<EventId>, return_result: bool) {
         self.last_id += 1;
         self.stack.push(Frame {
             event: EventRef {
@@ -154,6 +163,7 @@ impl<P: Clone, R: Clone> Scheduler<P, R> {
                 parent,
             },
             program,
+            return_result,
             state: State::Ready,
             child_result: None,
             next: VecDeque::new(),

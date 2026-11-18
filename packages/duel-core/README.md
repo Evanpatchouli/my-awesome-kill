@@ -30,6 +30,14 @@
 
 `TriggerContext::add_damage` 可在同一伤害帧的 `damageBegin1` 到 `damageBegin4` 增加结算值。每个实际回调读取之前技能已经修改的数值。体力、护甲、历史以及连环传导在该帧提交后使用同一数值。`Game::event_kind` 可按活跃父事件 ID 区分杀的直接伤害和带有同一实体牌的传导伤害。
 
+### 主动技能、限定次数与扩展区
+
+内容通过 `Game::register_active_skill` 登记出牌阶段技能。持有席从 `activePlays` 获取费用与目标候选，提交 `activateSkill`。引擎在提交时重验座位、登记和选择。限定技能在 `useSkillBegin` 完成、正文开始前按座位和技能名消耗一次；开始时被取消或发动者已死亡会保留次数。实体移动由技能正文执行。`limitedSpent` 记录已发动的限定技能，跨轮及撤销登记后仍可查询。离线 AI 对每项登记在一个出牌阶段尝试一次。
+
+`TriggerContext::add_to_expansion` 将手牌或装备通过失牌和特殊区移动到扩展区，`gain_expansion` 可将实体交给另一席。`Game::expansions` 按持有席和标签取牌，`SkillRemoval::discard_expansions` 在临时技能移除时清理仍匹配的实体。各席的 `expansions` 投影包含公开标记中的实体和标签。`Game::is_known_by` 查询牌的知情记录；从暗手移入扩展区的牌即使没有旁观知情记录，其正面也可通过公开标记查看。`knownSpecial` 只显示观察者认识的无主特殊区实体。若装备已离手而持有者死于失牌回调，原版实际保留装备在特殊区，并完成扩展与用技的后续时机。[中转时死亡](../../tests/reference/zhongyi-transit-death.json)
+
+`content-zhongyi` 提供团队模式的忠义。正式身份桌按其模式处理关系，可信内容可以通过 `set_team` 指定队伍。在受控双队桌，直接由友方杀造成的伤害每名有效持有者加一，连环传导沿用已确定的数值。材料提前转出后增伤持续至下一轮。`TriggerContext::use_virtual_sha` 可按实体材料为空的真实虚拟杀结算火、雷或普通伤害。[跨轮实测](../../tests/reference/zhongyi-expansion.json) · [转移、取消与死亡边界](../../tests/reference/zhongyi-boundaries.json)
+
 ### 单张重铸
 
 可信内容可用 `Game::register_recast` 按牌种或实体 ID 登记重铸，实体登记优先。出牌阶段仅向有权的持有者列出可用的 `Action::Recast`。技能在其他时机也可通过 `TriggerContext::recast` 发起同一结算。谓词与移动工厂读取 `RecastState` 中的牌、位置、座位和回合信息。默认规则弃掉材料再摸牌；内容可替换为交给另一席或明获指定实体。经典牌堆仍为 104 张。

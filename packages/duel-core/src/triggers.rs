@@ -69,6 +69,20 @@ pub struct TriggerEvent {
     /// Signed change on changeHp and changeHujia subjects.
     pub delta: Option<i32>,
 }
+
+impl TriggerEvent {
+    /// The subject's numeric argument when its rules define one. `amount` separately
+    /// counts physical cards on movement callbacks, e.g. a loss of three cards has num 0.
+    pub fn subject_number(&self, game: &Game) -> Option<i32> {
+        use crate::EventKind::*;
+        match game.event_kind(self.subject)? {
+            Damage { .. } | LoseHp { .. } | Draw { .. } => Some(i32::from(self.amount)),
+            Lose { .. } | LoseToDiscardpile { .. } | ActivateSkill { .. } => Some(0),
+            Turn { .. } if self.timing == "roundStart" => Some(0),
+            _ => self.delta,
+        }
+    }
+}
 #[derive(Clone, Debug)]
 /// The validated response to a content choice.
 pub struct TriggerSelection {
@@ -141,6 +155,69 @@ impl TriggerContext<'_> {
     }
     pub fn owner(&self) -> SeatId {
         self.owner
+    }
+
+    /// Use a virtual Sha with an explicitly specified nature and no physical material.
+    pub fn use_virtual_sha(
+        &mut self,
+        source: SeatId,
+        target: SeatId,
+        nature: Option<crate::DamageNature>,
+    ) -> Result<(), RuleError> {
+        self.game.content_sha_program(source, target, nature)?;
+        self.operations.push_back(TriggerOperation::VirtualSha {
+            source,
+            target,
+            nature,
+        });
+        Ok(())
+    }
+
+    /// Move one held hand or equipment card through the public expansion gain lifecycle.
+    pub fn add_to_expansion(
+        &mut self,
+        owner: SeatId,
+        id: CardId,
+        tag: impl Into<String>,
+    ) -> Result<(), RuleError> {
+        let tag = tag.into();
+        if self.claimed_cards().contains(&id) {
+            return Err(RuleError::InvalidSelection);
+        }
+        let card = self
+            .game
+            .hand_and_equipment(owner)?
+            .find(|card| card.id == id)
+            .copied()
+            .ok_or(RuleError::InvalidCard)?;
+        self.game.expansion_program(owner, card, tag.clone())?;
+        self.operations
+            .push_back(TriggerOperation::Expand { owner, card, tag });
+        Ok(())
+    }
+
+    /// Gain one physical expansion card from its present owner.
+    pub fn gain_expansion(
+        &mut self,
+        from: SeatId,
+        to: SeatId,
+        id: CardId,
+    ) -> Result<(), RuleError> {
+        if self.claimed_cards().contains(&id) {
+            return Err(RuleError::InvalidSelection);
+        }
+        let card = self
+            .game
+            .seat(from)?
+            .expansions
+            .iter()
+            .find(|card| card.id == id)
+            .copied()
+            .ok_or(RuleError::InvalidCard)?;
+        self.game.gain_expansion_program(from, to, card)?;
+        self.operations
+            .push_back(TriggerOperation::GainExpansion { from, to, card });
+        Ok(())
     }
 
     /// Schedule two independent private hand choices, a common reveal, and resolution.
@@ -261,7 +338,12 @@ impl TriggerContext<'_> {
                 | TriggerOperation::GainCompare { card, .. } => {
                     claimed.insert(*card);
                 }
-                TriggerOperation::Emit(_)
+                TriggerOperation::Expand { card, .. }
+                | TriggerOperation::GainExpansion { card, .. } => {
+                    claimed.insert(card.id);
+                }
+                TriggerOperation::VirtualSha { .. }
+                | TriggerOperation::Emit(_)
                 | TriggerOperation::Elemental(_)
                 | TriggerOperation::Compare { .. } => {}
             }
@@ -304,6 +386,21 @@ impl TriggerContext<'_> {
 
 #[derive(Clone)]
 enum TriggerOperation {
+    VirtualSha {
+        source: SeatId,
+        target: SeatId,
+        nature: Option<crate::DamageNature>,
+    },
+    Expand {
+        owner: SeatId,
+        card: Card,
+        tag: String,
+    },
+    GainExpansion {
+        from: SeatId,
+        to: SeatId,
+        card: Card,
+    },
     Compare {
         initiator: SeatId,
         target: SeatId,
@@ -332,6 +429,7 @@ enum TriggerOperation {
 
 #[derive(Clone)]
 enum RegisteredState {
+    Activate(TriggerSelection),
     Call(u16),
     Choice(u16),
     Operations {
@@ -343,6 +441,7 @@ enum RegisteredState {
 
 #[derive(Clone)]
 pub(crate) struct Registered {
+    active_skill: bool,
     last_compare: Option<crate::CompareResult>,
     pub id: TriggerId,
     pub owner: SeatId,
@@ -352,6 +451,34 @@ pub(crate) struct Registered {
 }
 
 impl Registered {
+    pub(crate) fn active(
+        id: u64,
+        owner: SeatId,
+        event: TriggerEvent,
+        effect: TriggerEffect,
+        selection: TriggerSelection,
+    ) -> Self {
+        Self {
+            active_skill: true,
+            state: RegisteredState::Activate(selection),
+            ..Self::new(id, owner, event, effect)
+        }
+    }
+
+    pub(crate) fn kind(&self) -> crate::EventKind {
+        if self.active_skill {
+            crate::EventKind::ActiveSkillEffect {
+                seat: self.owner,
+                registration: self.id,
+            }
+        } else {
+            crate::EventKind::RegisteredTrigger {
+                seat: self.owner,
+                registration: self.id,
+            }
+        }
+    }
+
     pub(crate) fn new(
         id: TriggerId,
         owner: SeatId,
@@ -359,6 +486,7 @@ impl Registered {
         effect: TriggerEffect,
     ) -> Self {
         Self {
+            active_skill: false,
             id,
             owner,
             event,
@@ -424,8 +552,7 @@ impl Game {
             return None;
         }
         let event = self.subject_timing(timing, player, source, target, amount, cards);
-        self.begin_timing_request(&event);
-        self.has_registered_candidates(&event).then_some(event)
+        self.begin_timing_request(&event).then_some(event)
     }
 
     pub(crate) fn wants_timing(&self, timing: &str) -> bool {
@@ -522,6 +649,7 @@ impl Game {
             flow.last_compare = Some(*result);
         }
         let (stage, selected) = match std::mem::replace(&mut flow.state, RegisteredState::Call(0)) {
+            RegisteredState::Activate(selection) => (0, Some(selection)),
             RegisteredState::Operations {
                 require_success: true,
                 ..
@@ -581,11 +709,38 @@ impl Game {
             let require_success = matches!(
                 operation,
                 TriggerOperation::Recast { .. }
+                    | TriggerOperation::Expand { .. }
+                    | TriggerOperation::GainExpansion { .. }
                     | TriggerOperation::GiveHand { .. }
                     | TriggerOperation::Compare { .. }
                     | TriggerOperation::GainCompare { .. }
             );
             let program = match operation {
+                TriggerOperation::VirtualSha {
+                    source,
+                    target,
+                    nature,
+                } => {
+                    let Ok(program) = self.content_sha_program(source, target, nature) else {
+                        self.finish();
+                        return;
+                    };
+                    program
+                }
+                TriggerOperation::Expand { owner, card, tag } => {
+                    let Ok(program) = self.expansion_program(owner, card, tag) else {
+                        self.finish();
+                        return;
+                    };
+                    program
+                }
+                TriggerOperation::GainExpansion { from, to, card } => {
+                    let Ok(program) = self.gain_expansion_program(from, to, card) else {
+                        self.finish();
+                        return;
+                    };
+                    program
+                }
                 TriggerOperation::Compare { initiator, target } => {
                     let Ok(program) = self.compare_program(initiator, target) else {
                         self.finish();

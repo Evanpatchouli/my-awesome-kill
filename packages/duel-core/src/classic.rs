@@ -4,6 +4,7 @@ pub(crate) mod elemental;
 pub(crate) mod equipment;
 #[cfg(test)]
 mod equipment_tests;
+pub(crate) mod expansion;
 pub(crate) mod hero_integration;
 mod lifecycle;
 pub(crate) mod recast;
@@ -138,6 +139,7 @@ impl Game {
                     hand: Vec::new(),
                     equipment: Vec::new(),
                     judges: Vec::new(),
+                    expansions: Vec::new(),
                 }
             })
             .collect();
@@ -207,6 +209,9 @@ impl Game {
         let mut cards = Vec::with_capacity(amount);
         for _ in 0..amount {
             if state.deck.is_empty() {
+                for card in &self.discard {
+                    self.known_to_all.remove(&card.id);
+                }
                 state.deck.append(&mut self.discard);
                 state.random.shuffle(&mut state.deck);
             }
@@ -329,7 +334,9 @@ impl Game {
             Decision::Play(_) => {
                 let action = self.bot_play(player);
                 if action == Action::EndPlay {
-                    self.bot_hero_play(seat).unwrap_or(action)
+                    self.bot_hero_play(seat)
+                        .or_else(|| self.bot_active_skill(seat))
+                        .unwrap_or(action)
                 } else {
                     action
                 }

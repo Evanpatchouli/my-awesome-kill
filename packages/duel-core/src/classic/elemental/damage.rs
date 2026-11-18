@@ -2,7 +2,8 @@ use super::{DamageCard, Rule};
 use crate::classic::skills::HeroMoment;
 use crate::scheduler::{EventRef, Outcome};
 use crate::{
-    Card, CardKind, EventId, EventKind, Game, Program, Resolution, RuleError, SeatId, TriggerEvent,
+    Card, CardKind, DamageNature, EventId, EventKind, Game, Program, Resolution, RuleError, SeatId,
+    TriggerEvent,
 };
 
 #[cfg(test)]
@@ -81,7 +82,8 @@ impl Game {
         else {
             return Err(RuleError::WrongEvent);
         };
-        if damage.lose_hp || !matches!(damage.stage, Stage::Before(stage) if stage == expected_stage)
+        if damage.lose_hp
+            || !matches!(damage.stage, Stage::Before(stage) if stage == expected_stage)
         {
             return Err(RuleError::WrongEvent);
         }
@@ -104,15 +106,25 @@ impl Game {
         kind: Option<CardKind>,
         cards: Vec<Card>,
     ) -> Program {
+        self.damage_program_with_nature(source, target, amount, kind, cards, None)
+    }
+
+    pub(crate) fn damage_program_with_nature(
+        &self,
+        source: Option<SeatId>,
+        target: SeatId,
+        amount: u16,
+        kind: Option<CardKind>,
+        cards: Vec<Card>,
+        nature: Option<DamageNature>,
+    ) -> Program {
         let source = self.live_damage_source(source);
         let amount = amount.saturating_add(self.hero_damage_bonus(source, kind));
-        self.elemental_damage_program(
-            source,
-            target,
-            amount,
-            self.physical_damage_card(kind, cards),
-            false,
-        )
+        let mut card = self.physical_damage_card(kind, cards);
+        if nature.is_some() {
+            card.nature = nature;
+        }
+        self.elemental_damage_program(source, target, amount, card, false)
     }
 
     pub(crate) fn elemental_damage_program(
