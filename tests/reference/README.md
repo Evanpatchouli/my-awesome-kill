@@ -49,6 +49,12 @@
 
 `compare-boundaries.json` 用四局两席拼点观测已知手牌和取消边界。第三席原先认识 A 的一张桃；A 暗付这张桃或另一张牌时，其余手牌的旧知情记录都在 A 的 `loseAfter` 清除。双方已支付后在 `compareCardShowBefore` 取消，根事件没有比较结果，两张实体在收尾各弃置一次。仅取消 B 的 `loseBefore` 时，外层仍按原先锁定的两张牌结算 10 比 5，A 的材料弃置，B 的仍在手中。
 
+`compare-multiple.json` 在八席离线身份局中用原版鼓舌和胆烈完成五次多人拼点。浏览器席 C 旁观。夹具为 AI 提供实体手牌、选牌偏好和三名合法目标，按 E、B、D 直接调用 `useSkill`。原版重新按座次排序，`chooseCardOL` 依次让 A、B、D、E 暗选。每次选择开始和结束时，四张拼点材料仍各在手中，选择席只认识自己的两张牌，C 的手牌知情和公开牌面均为空。原版收齐选择后只发起一次 `loseAsync`，四个 `lose` 均以它为父。
+
+- 鼓舌逐对展示 A–B、A–D、A–E，C 的桌面实际翻明三对牌，A 三次复用同一实体。B 局的 `compareFixing` 把 A 从 7 改到 10，原版回调以 10:8 判 A 胜。10 继续用于 D 的 10:10 与 E 的 10:12，逐对回调的赢家依次为 A、空、E。根结果保存双方的点数数组和实体，没有全局赢家字段。
+- 胆烈一次共同展示并实际翻明四张。发起者的 `compare` 增加 A 的点数至 11，随后 B、D、E 的各次 `compare` 仅设目标席。最后统一进行修正，首次 `compareFixing` 恢复发起者字段，同时仍引用上一比较的 E 和其牌。探针把 A 的临时点数改成 1、D 的改成 13，但存档仍为 11、11、11 对 9、10、8，赢家仍为 A，实际伤害 B、D、E 各一点。最高点并列时根结果的 `winner` 为空，胆烈令 A 失去一点体力。
+- 取消 D 的内层 `loseBefore` 时，已锁定的实体仍留在 D 手牌，实际翻明并参与结算。C 的手牌知情查询仍不认识这张牌，收尾只弃置其他三张。支付后在 `compareCardShowBefore` 取消共同拼点时，根仍保留初始化的实体引用、空点数数组和空赢家。它请求 `chooseToCompareCancelled`，四张已支付的实体均弃置，胆烈仍令 A 失去一点体力。
+
 `phase-scheduling.json` 在八席身份局运行原版当先和放权。A 至 H 从自然循环起始席编号，`A1`、`A2`、`A3` 依次表示 A 开始处理的三次回合事件。夹具移除随机武将技能，设置体力、牌区、牌堆顶和 AI 偏好。浏览器席也开启托管，选牌、支付、判定、技能效果及调度均由原版执行。
 
 - A 的自然回合与额外回合均在 `phaseBegin` 实际执行当先，把带来源的 `phaseUse` 插到准备阶段之前。两个回合的阶段索引 0 和 4 各使用一次实体杀。每段首次原版选牌允许杀，第二次仍持有其他杀，但原版过滤拒绝。普通段在 `phaseUseBefore` 请求前已将杀的使用统计重置为零，同回合历史仍计入前一段。四张杀均由 A 手牌经处理区进入弃牌堆，H 从 9 体力降到 5。
@@ -58,7 +64,7 @@
 
 时机请求、首个观察技能回调与实际技能或乐不思蜀内容分别记为 `request`、`callback`、`content`。`stage` 和 `state` 使用各自的列名表，`state.flags` 使用 `flagColumns`。当前席为空表示原版尚未赋值或已经清除该状态。牌区前缀为持有席，`c`、`o`、`d`、`s` 分别为牌堆、处理区、弃牌堆、暂存区。
 
-`judgment-zones.json` 在八席身份局独立复跑六种延时判定，区分放入判定区的实体牌和从牌堆翻开的判定牌。乐不思蜀失败时只登记跳过出牌，天妒可获得成功的判定牌；闪电命中造成无来源三点雷伤，未命中或被无懈抵消则转入下家判定区。无懈抵消乐时不开始判定，预置判定牌留在牌堆。两张牌各自只移动一次：延时牌先经以 `phaseJudge` 为父的失牌进入处理区，判定事件的父也是 `phaseJudge`；通常判定牌在效果前弃置，延时牌在阶段 `After` 后弃置或在效果中迁走。`judge` 请求瞬间上游 `get.position` 尚无结果，但 `get.owner` 已指向判定者；到 `judgeFixing` 才观察到判定牌位于处理区。`revealedOwner` 和 `revealed` 分别保留这两项观测。
+`judgment-zones.json` 在八席身份局独立复跑六种延时判定，区分放入判定区的实体牌和从牌堆翻开的判定牌。乐不思蜀失败时只登记跳过出牌，天妒可获得成功的判定牌；闪电命中造成无来源三点雷伤，未命中或被无懈抵消则转入下家判定区。无懈抵消乐时不开始判定，预置判定牌留在牌堆。两张牌独立移动：延时牌先经以 `phaseJudge` 为父的失牌进入处理区，判定事件的父也是 `phaseJudge`；通常判定牌在效果前弃置，延时牌在阶段 `After` 后弃置或在效果中迁走。`judge` 请求瞬间上游 `get.position` 尚无结果，但 `get.owner` 已指向判定者；到 `judgeFixing` 才观察到判定牌位于处理区。`revealedOwner` 和 `revealed` 分别保留这两项观测。
 
 `phase-queue.json` 在另一局八席身份牌桌用观察技能直接调用上游 `Player.insertPhase`，并用原版 `die` 让排队的非主公 E 死亡。`operation` 给出每次调用使用的前插参数与队列前后状态。第一轮的 A 自然回合结束时追加 C、D、E，再把 B 前插到尚未出队的 A 之前。
 
@@ -86,6 +92,7 @@
    node scripts/reference-trace.mjs --scenario compare --check tests/reference/compare.json
    node scripts/reference-trace.mjs --scenario qiaoshui-targets --check tests/reference/qiaoshui-targets.json
    node scripts/reference-trace.mjs --scenario compare-boundaries --check tests/reference/compare-boundaries.json
+   node scripts/reference-trace.mjs --scenario compare-multiple --check tests/reference/compare-multiple.json
    node scripts/reference-trace.mjs --scenario phase-scheduling --check tests/reference/phase-scheduling.json
    node scripts/reference-trace.mjs --scenario phase-queue --check tests/reference/phase-queue.json
    node scripts/reference-trace.mjs --scenario judgment-zones --check tests/reference/judgment-zones.json
@@ -94,4 +101,4 @@
    node scripts/reference-trace.mjs --scenario zhongyi-transit-death --check tests/reference/zhongyi-transit-death.json
    ```
 
-运行器在隔离浏览器内核对八个共同上游源文件的 LF 归一化 SHA-256。重铸、连环伤害和巧说目标场景还校验 `card/extra.js`，重铸知情状态、拼点和额外忠义场景另核对 `element/card.js`，连环伤害、拼点和巧说目标另校验 `character/yijiang/skill.js`，忠义和巧说目标另校验 `character/standard/skill.js`。忠义边界同时核对牌区和知情查询、出牌选择及标记弹层涉及的源文件。忠义中转死亡核对牌区查询和负责中断事件步骤的编译器源文件。阶段调度另外校验当先和放权所在的两个技能包、牌区查询和事件步骤编译器。随后执行场景并逐项比较事件和结果。整个检出的版本由第 1 步确认。`--write <path>` 用于重新采集，默认将结果写至标准输出。
+运行器在隔离浏览器内核对八个共同上游源文件的 LF 归一化 SHA-256。重铸、连环伤害和巧说目标场景还校验 `card/extra.js`，重铸知情状态、拼点和额外忠义场景另核对 `element/card.js`，连环伤害、巧说拼点和巧说目标另校验 `character/yijiang/skill.js`，忠义和巧说目标另校验 `character/standard/skill.js`。多人拼点另外校验鼓舌和胆烈所在的两个技能包、牌区查询和事件步骤编译器。忠义边界同时核对牌区和知情查询、出牌选择及标记弹层涉及的源文件。忠义中转死亡核对牌区查询和负责中断事件步骤的编译器源文件。阶段调度另外校验当先和放权所在的两个技能包、牌区查询和事件步骤编译器。随后执行场景并逐项比较事件和结果。整个检出的版本由第 1 步确认。`--write <path>` 用于重新采集，默认将结果写至标准输出。

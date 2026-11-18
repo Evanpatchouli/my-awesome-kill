@@ -1,0 +1,903 @@
+{
+  "schema": "noname-reference-trace-v1",
+  "referenceCommit": "c73270948d72949aa80009536b9fd5400767d091",
+  "mode": "identity",
+  "scenario": "gushe and twdanlie with private multiplayer pindian, fixing and cancellations",
+  "players": 8,
+  "online": false,
+  "seatOrder": [
+    "A",
+    "B",
+    "D",
+    "E"
+  ],
+  "spectator": "C",
+  "trials": [
+    {
+      "sample": "pairs-fixing",
+      "skill": "gushe",
+      "input": {
+        "requested": [
+          "E",
+          "B",
+          "D"
+        ],
+        "printedPoints": [
+          7,
+          8,
+          10,
+          12
+        ],
+        "hp": [
+          4,
+          4,
+          4,
+          4
+        ]
+      },
+      "result": {
+        "player": "A-bid",
+        "targets": [
+          "B-bid",
+          "D-bid",
+          "E-bid"
+        ],
+        "num1": [
+          10,
+          10,
+          10
+        ],
+        "num2": [
+          8,
+          10,
+          12
+        ]
+      },
+      "cancelled": false,
+      "zones": [
+        "d",
+        "d",
+        "d",
+        "d"
+      ],
+      "hp": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "gusheMarks": 2,
+      "spectatorKnowledge": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "reveals": [
+        {
+          "type": "compare",
+          "targets": [
+            "B"
+          ],
+          "cards": [
+            "A-bid",
+            "B-bid"
+          ],
+          "faces": [
+            [
+              "tao",
+              "heart",
+              7
+            ],
+            [
+              "tao",
+              "diamond",
+              8
+            ]
+          ],
+          "spectatorSawFlip": [
+            "A-bid",
+            "B-bid"
+          ]
+        },
+        {
+          "type": "compare",
+          "targets": [
+            "D"
+          ],
+          "cards": [
+            "A-bid",
+            "D-bid"
+          ],
+          "faces": [
+            [
+              "tao",
+              "heart",
+              7
+            ],
+            [
+              "tao",
+              "club",
+              10
+            ]
+          ],
+          "spectatorSawFlip": [
+            "A-bid",
+            "D-bid"
+          ]
+        },
+        {
+          "type": "compare",
+          "targets": [
+            "E"
+          ],
+          "cards": [
+            "A-bid",
+            "E-bid"
+          ],
+          "faces": [
+            [
+              "tao",
+              "heart",
+              7
+            ],
+            [
+              "tao",
+              "spade",
+              12
+            ]
+          ],
+          "spectatorSawFlip": [
+            "A-bid",
+            "E-bid"
+          ]
+        }
+      ]
+    },
+    {
+      "sample": "meanwhile-fixing",
+      "skill": "twdanlie",
+      "input": {
+        "requested": [
+          "E",
+          "B",
+          "D"
+        ],
+        "printedPoints": [
+          10,
+          9,
+          10,
+          8
+        ],
+        "hp": [
+          3,
+          4,
+          4,
+          4
+        ]
+      },
+      "result": {
+        "player": "A-bid",
+        "targets": [
+          "B-bid",
+          "D-bid",
+          "E-bid"
+        ],
+        "num1": [
+          11,
+          11,
+          11
+        ],
+        "num2": [
+          9,
+          10,
+          8
+        ],
+        "winner": "A"
+      },
+      "cancelled": false,
+      "zones": [
+        "d",
+        "d",
+        "d",
+        "d"
+      ],
+      "hp": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "gusheMarks": 0,
+      "spectatorKnowledge": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "reveals": [
+        {
+          "type": "compareMultiple",
+          "targets": [
+            "B",
+            "D",
+            "E"
+          ],
+          "cards": [
+            "A-bid",
+            "B-bid",
+            "D-bid",
+            "E-bid"
+          ],
+          "faces": [
+            [
+              "tao",
+              "heart",
+              10
+            ],
+            [
+              "tao",
+              "diamond",
+              9
+            ],
+            [
+              "tao",
+              "club",
+              10
+            ],
+            [
+              "tao",
+              "spade",
+              8
+            ]
+          ],
+          "spectatorSawFlip": [
+            "A-bid",
+            "B-bid",
+            "D-bid",
+            "E-bid"
+          ]
+        }
+      ]
+    },
+    {
+      "sample": "meanwhile-tie",
+      "skill": "twdanlie",
+      "input": {
+        "requested": [
+          "E",
+          "B",
+          "D"
+        ],
+        "printedPoints": [
+          10,
+          11,
+          11,
+          8
+        ],
+        "hp": [
+          3,
+          4,
+          4,
+          4
+        ]
+      },
+      "result": {
+        "player": "A-bid",
+        "targets": [
+          "B-bid",
+          "D-bid",
+          "E-bid"
+        ],
+        "num1": [
+          11,
+          11,
+          11
+        ],
+        "num2": [
+          11,
+          11,
+          8
+        ],
+        "winner": null
+      },
+      "cancelled": false,
+      "zones": [
+        "d",
+        "d",
+        "d",
+        "d"
+      ],
+      "hp": [
+        2,
+        4,
+        4,
+        4
+      ],
+      "gusheMarks": 0,
+      "spectatorKnowledge": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "reveals": [
+        {
+          "type": "compareMultiple",
+          "targets": [
+            "B",
+            "D",
+            "E"
+          ],
+          "cards": [
+            "A-bid",
+            "B-bid",
+            "D-bid",
+            "E-bid"
+          ],
+          "faces": [
+            [
+              "tao",
+              "heart",
+              10
+            ],
+            [
+              "tao",
+              "diamond",
+              11
+            ],
+            [
+              "tao",
+              "club",
+              11
+            ],
+            [
+              "tao",
+              "spade",
+              8
+            ]
+          ],
+          "spectatorSawFlip": [
+            "A-bid",
+            "B-bid",
+            "D-bid",
+            "E-bid"
+          ]
+        }
+      ]
+    },
+    {
+      "sample": "cancel-one-loss",
+      "skill": "gushe",
+      "input": {
+        "requested": [
+          "E",
+          "B",
+          "D"
+        ],
+        "printedPoints": [
+          9,
+          8,
+          10,
+          12
+        ],
+        "hp": [
+          4,
+          4,
+          4,
+          4
+        ]
+      },
+      "result": {
+        "player": "A-bid",
+        "targets": [
+          "B-bid",
+          "D-bid",
+          "E-bid"
+        ],
+        "num1": [
+          9,
+          9,
+          9
+        ],
+        "num2": [
+          8,
+          10,
+          12
+        ]
+      },
+      "cancelled": false,
+      "zones": [
+        "d",
+        "d",
+        "D:h",
+        "d"
+      ],
+      "hp": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "gusheMarks": 2,
+      "spectatorKnowledge": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "reveals": [
+        {
+          "type": "compare",
+          "targets": [
+            "B"
+          ],
+          "cards": [
+            "A-bid",
+            "B-bid"
+          ],
+          "faces": [
+            [
+              "tao",
+              "heart",
+              9
+            ],
+            [
+              "tao",
+              "diamond",
+              8
+            ]
+          ],
+          "spectatorSawFlip": [
+            "A-bid",
+            "B-bid"
+          ]
+        },
+        {
+          "type": "compare",
+          "targets": [
+            "D"
+          ],
+          "cards": [
+            "A-bid",
+            "D-bid"
+          ],
+          "faces": [
+            [
+              "tao",
+              "heart",
+              9
+            ],
+            [
+              "tao",
+              "club",
+              10
+            ]
+          ],
+          "spectatorSawFlip": [
+            "A-bid",
+            "D-bid"
+          ]
+        },
+        {
+          "type": "compare",
+          "targets": [
+            "E"
+          ],
+          "cards": [
+            "A-bid",
+            "E-bid"
+          ],
+          "faces": [
+            [
+              "tao",
+              "heart",
+              9
+            ],
+            [
+              "tao",
+              "spade",
+              12
+            ]
+          ],
+          "spectatorSawFlip": [
+            "A-bid",
+            "E-bid"
+          ]
+        }
+      ]
+    },
+    {
+      "sample": "cancel-root",
+      "skill": "twdanlie",
+      "input": {
+        "requested": [
+          "E",
+          "B",
+          "D"
+        ],
+        "printedPoints": [
+          10,
+          9,
+          10,
+          8
+        ],
+        "hp": [
+          3,
+          4,
+          4,
+          4
+        ]
+      },
+      "result": {
+        "player": "A-bid",
+        "targets": [
+          "B-bid",
+          "D-bid",
+          "E-bid"
+        ],
+        "num1": [],
+        "num2": [],
+        "winner": null
+      },
+      "cancelled": true,
+      "zones": [
+        "d",
+        "d",
+        "d",
+        "d"
+      ],
+      "hp": [
+        2,
+        4,
+        4,
+        4
+      ],
+      "gusheMarks": 0,
+      "spectatorKnowledge": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "reveals": []
+    }
+  ],
+  "eventColumns": [
+    "sample",
+    "kind",
+    "timing",
+    "event",
+    "parent",
+    "player",
+    "target",
+    "zones",
+    "points",
+    "detail"
+  ],
+  "events": [
+    ["pairs-fixing","request","chooseToCompareBefore","chooseToCompare","gushe","A",null,["A:h","B:h","D:h","E:h"],null,{"result":null,"targets":["E","B","D"],"selectedCards":[null,null],"compareMeanwhile":false,"cancelled":false,"finished":false,"fixedResultSupplied":false}],
+    ["pairs-fixing","request","chooseToCompareBegin","chooseToCompare","gushe","A",null,["A:h","B:h","D:h","E:h"],null,{"result":null,"targets":["E","B","D"],"selectedCards":[null,null],"compareMeanwhile":false,"cancelled":false,"finished":false}],
+    ["pairs-fixing","request","chooseCardOLBegin","chooseCardOL","chooseToCompare","A",null,["A:h","B:h","D:h","E:h"],null,{"participants":["A","B","D","E"],"selected":[]}],
+    ["pairs-fixing","request","chooseCardBegin","chooseCard","chooseCardOL","A",null,["A:h","B:h","D:h","E:h"],null,{"offered":["A-bid","A-other"],"selected":[],"chooserKnowledge":[["A-bid","A-other"],[],[],[]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":false}],
+    ["pairs-fixing","request","chooseCardAfter","chooseCard","chooseCardOL","A",null,["A:h","B:h","D:h","E:h"],null,{"offered":["A-bid","A-other"],"selected":["A-bid"],"chooserKnowledge":[["A-bid","A-other"],[],[],[]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":true}],
+    ["pairs-fixing","request","chooseCardBegin","chooseCard","chooseCardOL","B",null,["A:h","B:h","D:h","E:h"],null,{"offered":["B-bid","B-other"],"selected":[],"chooserKnowledge":[[],["B-bid","B-other"],[],[]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":false}],
+    ["pairs-fixing","request","chooseCardAfter","chooseCard","chooseCardOL","B",null,["A:h","B:h","D:h","E:h"],null,{"offered":["B-bid","B-other"],"selected":["B-bid"],"chooserKnowledge":[[],["B-bid","B-other"],[],[]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":true}],
+    ["pairs-fixing","request","chooseCardBegin","chooseCard","chooseCardOL","D",null,["A:h","B:h","D:h","E:h"],null,{"offered":["D-bid","D-other"],"selected":[],"chooserKnowledge":[[],[],["D-bid","D-other"],[]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":false}],
+    ["pairs-fixing","request","chooseCardAfter","chooseCard","chooseCardOL","D",null,["A:h","B:h","D:h","E:h"],null,{"offered":["D-bid","D-other"],"selected":["D-bid"],"chooserKnowledge":[[],[],["D-bid","D-other"],[]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":true}],
+    ["pairs-fixing","request","chooseCardBegin","chooseCard","chooseCardOL","E",null,["A:h","B:h","D:h","E:h"],null,{"offered":["E-bid","E-other"],"selected":[],"chooserKnowledge":[[],[],[],["E-bid","E-other"]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":false}],
+    ["pairs-fixing","request","chooseCardAfter","chooseCard","chooseCardOL","E",null,["A:h","B:h","D:h","E:h"],null,{"offered":["E-bid","E-other"],"selected":["E-bid"],"chooserKnowledge":[[],[],[],["E-bid","E-other"]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":true}],
+    ["pairs-fixing","request","chooseCardOLAfter","chooseCardOL","chooseToCompare","A",null,["A:h","B:h","D:h","E:h"],null,{"participants":["A","B","D","E"],"selected":[["A-bid"],["B-bid"],["D-bid"],["E-bid"]]}],
+    ["pairs-fixing","callback","chooseCardOLAfter","chooseCardOL","chooseToCompare","A",null,["A:h","B:h","D:h","E:h"],null,{"callbackParent":"trigger","participants":["A","B","D","E"],"selected":[["A-bid"],["B-bid"],["D-bid"],["E-bid"]]}],
+    ["pairs-fixing","request","loseAsyncBegin","loseAsync","chooseToCompare",null,null,["A:h","B:h","D:h","E:h"],null,{"batch":[["A",["A-bid"]],["B",["B-bid"]],["D",["D-bid"]],["E",["E-bid"]]]}],
+    ["pairs-fixing","callback","loseAsyncBegin","loseAsync","chooseToCompare",null,null,["A:h","B:h","D:h","E:h"],null,{"callbackParent":"trigger","batch":[["A",["A-bid"]],["B",["B-bid"]],["D",["D-bid"]],["E",["E-bid"]]]}],
+    ["pairs-fixing","request","loseBefore","lose","loseAsync","A",null,["A:h","B:h","D:h","E:h"],null,{"cards":["A-bid"],"relatedCompare":true}],
+    ["pairs-fixing","callback","loseBefore","lose","loseAsync","A",null,["A:h","B:h","D:h","E:h"],null,{"callbackParent":"trigger","cards":["A-bid"],"relatedCompare":true}],
+    ["pairs-fixing","request","loseAfter","lose","loseAsync","A",null,["o","B:h","D:h","E:h"],null,{"cards":["A-bid"],"relatedCompare":true}],
+    ["pairs-fixing","callback","loseAfter","lose","loseAsync","A",null,["o","B:h","D:h","E:h"],null,{"callbackParent":"trigger","cards":["A-bid"],"relatedCompare":true}],
+    ["pairs-fixing","request","loseBefore","lose","loseAsync","B",null,["o","B:h","D:h","E:h"],null,{"cards":["B-bid"],"relatedCompare":true}],
+    ["pairs-fixing","callback","loseBefore","lose","loseAsync","B",null,["o","B:h","D:h","E:h"],null,{"callbackParent":"trigger","cards":["B-bid"],"relatedCompare":true}],
+    ["pairs-fixing","request","loseAfter","lose","loseAsync","B",null,["o","o","D:h","E:h"],null,{"cards":["B-bid"],"relatedCompare":true}],
+    ["pairs-fixing","callback","loseAfter","lose","loseAsync","B",null,["o","o","D:h","E:h"],null,{"callbackParent":"trigger","cards":["B-bid"],"relatedCompare":true}],
+    ["pairs-fixing","request","loseBefore","lose","loseAsync","D",null,["o","o","D:h","E:h"],null,{"cards":["D-bid"],"relatedCompare":true}],
+    ["pairs-fixing","callback","loseBefore","lose","loseAsync","D",null,["o","o","D:h","E:h"],null,{"callbackParent":"trigger","cards":["D-bid"],"relatedCompare":true}],
+    ["pairs-fixing","request","loseAfter","lose","loseAsync","D",null,["o","o","o","E:h"],null,{"cards":["D-bid"],"relatedCompare":true}],
+    ["pairs-fixing","callback","loseAfter","lose","loseAsync","D",null,["o","o","o","E:h"],null,{"callbackParent":"trigger","cards":["D-bid"],"relatedCompare":true}],
+    ["pairs-fixing","request","loseBefore","lose","loseAsync","E",null,["o","o","o","E:h"],null,{"cards":["E-bid"],"relatedCompare":true}],
+    ["pairs-fixing","callback","loseBefore","lose","loseAsync","E",null,["o","o","o","E:h"],null,{"callbackParent":"trigger","cards":["E-bid"],"relatedCompare":true}],
+    ["pairs-fixing","request","loseAfter","lose","loseAsync","E",null,["o","o","o","o"],null,{"cards":["E-bid"],"relatedCompare":true}],
+    ["pairs-fixing","callback","loseAfter","lose","loseAsync","E",null,["o","o","o","o"],null,{"callbackParent":"trigger","cards":["E-bid"],"relatedCompare":true}],
+    ["pairs-fixing","request","loseAsyncAfter","loseAsync","chooseToCompare",null,null,["o","o","o","o"],null,{"batch":[["A",["A-bid"]],["B",["B-bid"]],["D",["D-bid"]],["E",["E-bid"]]]}],
+    ["pairs-fixing","callback","loseAsyncAfter","loseAsync","chooseToCompare",null,null,["o","o","o","o"],null,{"callbackParent":"trigger","batch":[["A",["A-bid"]],["B",["B-bid"]],["D",["D-bid"]],["E",["E-bid"]]]}],
+    ["pairs-fixing","request","compareCardShowBefore","chooseToCompare","gushe","A",null,["o","o","o","o"],[7,null],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[],"num2":[]},"targets":["B","D","E"],"selectedCards":["A-bid",null],"compareMeanwhile":false,"cancelled":false,"finished":false}],
+    ["pairs-fixing","callback","compareCardShowBefore","chooseToCompare","gushe","A",null,["o","o","o","o"],[7,null],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[],"num2":[]},"targets":["B","D","E"],"selectedCards":["A-bid",null],"compareMeanwhile":false,"cancelled":false,"finished":false}],
+    ["pairs-fixing","request","showCardsAfter","showCards","chooseToCompare","A",null,["o","o","o","o"],null,{"cards":["A-bid"],"onlyTiming":true,"spectatorKnowledge":[[],[],[],[]]}],
+    ["pairs-fixing","callback","showCardsAfter","showCards","chooseToCompare","A",null,["o","o","o","o"],null,{"callbackParent":"trigger","cards":["A-bid"],"onlyTiming":true,"spectatorKnowledge":[[],[],[],[]]}],
+    ["pairs-fixing","display","compare","chooseToCompare","gushe","A","B",["o","o","o","o"],[7,8],{"cards":["A-bid","B-bid"],"targets":["B"]}],
+    ["pairs-fixing","request","showCardsAfter","showCards","chooseToCompare","B",null,["o","o","o","o"],null,{"cards":["B-bid"],"onlyTiming":true,"spectatorKnowledge":[[],[],[],[]]}],
+    ["pairs-fixing","callback","showCardsAfter","showCards","chooseToCompare","B",null,["o","o","o","o"],null,{"callbackParent":"trigger","cards":["B-bid"],"onlyTiming":true,"spectatorKnowledge":[[],[],[],[]]}],
+    ["pairs-fixing","request","compare","chooseToCompare","gushe","A","B",["o","o","o","o"],[7,8],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[],"num2":[]},"targets":["B","D","E"],"selectedCards":["A-bid","B-bid"],"compareMeanwhile":false,"cancelled":false,"finished":false,"index":0,"internalWinner":null}],
+    ["pairs-fixing","callback","compare","chooseToCompare","gushe","A","B",["o","o","o","o"],[7,8],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[],"num2":[]},"targets":["B","D","E"],"selectedCards":["A-bid","B-bid"],"compareMeanwhile":false,"cancelled":false,"finished":false,"index":0,"internalWinner":null}],
+    ["pairs-fixing","request","compareFixing","chooseToCompare","gushe","A","B",["o","o","o","o"],[7,8],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[],"num2":[]},"targets":["B","D","E"],"selectedCards":["A-bid","B-bid"],"compareMeanwhile":false,"cancelled":false,"finished":false,"index":0,"internalWinner":null}],
+    ["pairs-fixing","callback","compareFixing","chooseToCompare","gushe","A","B",["o","o","o","o"],[7,8],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[],"num2":[]},"targets":["B","D","E"],"selectedCards":["A-bid","B-bid"],"compareMeanwhile":false,"cancelled":false,"finished":false,"index":0,"internalWinner":null}],
+    ["pairs-fixing","probe","modified-fixing","chooseToCompare","gushe","A","B",["o","o","o","o"],[10,8],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[],"num2":[]},"targets":["B","D","E"],"selectedCards":["A-bid","B-bid"],"compareMeanwhile":false,"cancelled":false,"finished":false,"index":0,"internalWinner":null}],
+    ["pairs-fixing","content","begin","compareMultiple","chooseToCompare","A","B",["o","o","o","o"],[10,8],{"pairPlayer":"A","pairTarget":"B","cards":["A-bid","B-bid"],"points":[10,8],"winner":"A","gusheMarks":0,"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[10],"num2":[8]}}],
+    ["pairs-fixing","content","end","compareMultiple","chooseToCompare","A","B",["o","o","o","o"],[10,8],{"pairPlayer":"A","pairTarget":"B","cards":["A-bid","B-bid"],"points":[10,8],"winner":"A","gusheMarks":0,"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[10],"num2":[8]}}],
+    ["pairs-fixing","display","compare","chooseToCompare","gushe","A","D",["o","o","o","o"],[10,10],{"cards":["A-bid","D-bid"],"targets":["D"]}],
+    ["pairs-fixing","request","showCardsAfter","showCards","chooseToCompare","D",null,["o","o","o","o"],null,{"cards":["D-bid"],"onlyTiming":true,"spectatorKnowledge":[[],[],[],[]]}],
+    ["pairs-fixing","callback","showCardsAfter","showCards","chooseToCompare","D",null,["o","o","o","o"],null,{"callbackParent":"trigger","cards":["D-bid"],"onlyTiming":true,"spectatorKnowledge":[[],[],[],[]]}],
+    ["pairs-fixing","request","compare","chooseToCompare","gushe","A","D",["o","o","o","o"],[10,10],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[10],"num2":[8]},"targets":["B","D","E"],"selectedCards":["A-bid","D-bid"],"compareMeanwhile":false,"cancelled":false,"finished":false,"index":1,"internalWinner":null}],
+    ["pairs-fixing","callback","compare","chooseToCompare","gushe","A","D",["o","o","o","o"],[10,10],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[10],"num2":[8]},"targets":["B","D","E"],"selectedCards":["A-bid","D-bid"],"compareMeanwhile":false,"cancelled":false,"finished":false,"index":1,"internalWinner":null}],
+    ["pairs-fixing","request","compareFixing","chooseToCompare","gushe","A","D",["o","o","o","o"],[10,10],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[10],"num2":[8]},"targets":["B","D","E"],"selectedCards":["A-bid","D-bid"],"compareMeanwhile":false,"cancelled":false,"finished":false,"index":1,"internalWinner":null}],
+    ["pairs-fixing","callback","compareFixing","chooseToCompare","gushe","A","D",["o","o","o","o"],[10,10],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[10],"num2":[8]},"targets":["B","D","E"],"selectedCards":["A-bid","D-bid"],"compareMeanwhile":false,"cancelled":false,"finished":false,"index":1,"internalWinner":null}],
+    ["pairs-fixing","content","begin","compareMultiple","chooseToCompare","A","D",["o","o","o","o"],[10,10],{"pairPlayer":"A","pairTarget":"D","cards":["A-bid","D-bid"],"points":[10,10],"winner":null,"gusheMarks":0,"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[10,10],"num2":[8,10]}}],
+    ["pairs-fixing","content","end","compareMultiple","chooseToCompare","A","D",["o","o","o","o"],[10,10],{"pairPlayer":"A","pairTarget":"D","cards":["A-bid","D-bid"],"points":[10,10],"winner":null,"gusheMarks":1,"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[10,10],"num2":[8,10]}}],
+    ["pairs-fixing","display","compare","chooseToCompare","gushe","A","E",["o","o","o","o"],[10,12],{"cards":["A-bid","E-bid"],"targets":["E"]}],
+    ["pairs-fixing","request","showCardsAfter","showCards","chooseToCompare","E",null,["o","o","o","o"],null,{"cards":["E-bid"],"onlyTiming":true,"spectatorKnowledge":[[],[],[],[]]}],
+    ["pairs-fixing","callback","showCardsAfter","showCards","chooseToCompare","E",null,["o","o","o","o"],null,{"callbackParent":"trigger","cards":["E-bid"],"onlyTiming":true,"spectatorKnowledge":[[],[],[],[]]}],
+    ["pairs-fixing","request","compare","chooseToCompare","gushe","A","E",["o","o","o","o"],[10,12],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[10,10],"num2":[8,10]},"targets":["B","D","E"],"selectedCards":["A-bid","E-bid"],"compareMeanwhile":false,"cancelled":false,"finished":false,"index":2,"internalWinner":null}],
+    ["pairs-fixing","callback","compare","chooseToCompare","gushe","A","E",["o","o","o","o"],[10,12],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[10,10],"num2":[8,10]},"targets":["B","D","E"],"selectedCards":["A-bid","E-bid"],"compareMeanwhile":false,"cancelled":false,"finished":false,"index":2,"internalWinner":null}],
+    ["pairs-fixing","request","compareFixing","chooseToCompare","gushe","A","E",["o","o","o","o"],[10,12],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[10,10],"num2":[8,10]},"targets":["B","D","E"],"selectedCards":["A-bid","E-bid"],"compareMeanwhile":false,"cancelled":false,"finished":false,"index":2,"internalWinner":null}],
+    ["pairs-fixing","callback","compareFixing","chooseToCompare","gushe","A","E",["o","o","o","o"],[10,12],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[10,10],"num2":[8,10]},"targets":["B","D","E"],"selectedCards":["A-bid","E-bid"],"compareMeanwhile":false,"cancelled":false,"finished":false,"index":2,"internalWinner":null}],
+    ["pairs-fixing","content","begin","compareMultiple","chooseToCompare","A","E",["o","o","o","o"],[10,12],{"pairPlayer":"A","pairTarget":"E","cards":["A-bid","E-bid"],"points":[10,12],"winner":"E","gusheMarks":1,"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[10,10,10],"num2":[8,10,12]}}],
+    ["pairs-fixing","content","end","compareMultiple","chooseToCompare","A","E",["o","o","o","o"],[10,12],{"pairPlayer":"A","pairTarget":"E","cards":["A-bid","E-bid"],"points":[10,12],"winner":"E","gusheMarks":2,"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[10,10,10],"num2":[8,10,12]}}],
+    ["pairs-fixing","request","chooseToCompareEnd","chooseToCompare","gushe","A","E",["o","o","o","o"],[10,12],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[10,10,10],"num2":[8,10,12]},"targets":["B","D","E"],"selectedCards":["A-bid","E-bid"],"compareMeanwhile":false,"cancelled":false,"finished":true}],
+    ["pairs-fixing","callback","chooseToCompareEnd","chooseToCompare","gushe","A","E",["o","o","o","o"],[10,12],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[10,10,10],"num2":[8,10,12]},"targets":["B","D","E"],"selectedCards":["A-bid","E-bid"],"compareMeanwhile":false,"cancelled":false,"finished":true}],
+    ["pairs-fixing","request","chooseToCompareAfter","chooseToCompare","gushe","A","E",["o","o","o","o"],[10,12],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[10,10,10],"num2":[8,10,12]},"targets":["B","D","E"],"selectedCards":["A-bid","E-bid"],"compareMeanwhile":false,"cancelled":false,"finished":true}],
+    ["pairs-fixing","callback","chooseToCompareAfter","chooseToCompare","gushe","A","E",["o","o","o","o"],[10,12],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[10,10,10],"num2":[8,10,12]},"targets":["B","D","E"],"selectedCards":["A-bid","E-bid"],"compareMeanwhile":false,"cancelled":false,"finished":true}],
+    ["pairs-fixing","request","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,null,["d","d","d","d"],null,{"cards":["A-bid","B-bid","D-bid","E-bid"]}],
+    ["pairs-fixing","callback","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,null,["d","d","d","d"],null,{"callbackParent":"trigger","cards":["A-bid","B-bid","D-bid","E-bid"]}],
+    ["meanwhile-fixing","request","chooseToCompareBefore","chooseToCompare","twdanlie","A",null,["A:h","B:h","D:h","E:h"],null,{"result":null,"targets":["E","B","D"],"selectedCards":[null,null],"compareMeanwhile":false,"cancelled":false,"finished":false,"fixedResultSupplied":false}],
+    ["meanwhile-fixing","request","chooseToCompareBegin","chooseToCompare","twdanlie","A",null,["A:h","B:h","D:h","E:h"],null,{"result":null,"targets":["E","B","D"],"selectedCards":[null,null],"compareMeanwhile":false,"cancelled":false,"finished":false}],
+    ["meanwhile-fixing","request","chooseCardOLBegin","chooseCardOL","chooseToCompare","A",null,["A:h","B:h","D:h","E:h"],null,{"participants":["A","B","D","E"],"selected":[]}],
+    ["meanwhile-fixing","request","chooseCardBegin","chooseCard","chooseCardOL","A",null,["A:h","B:h","D:h","E:h"],null,{"offered":["A-bid","A-other"],"selected":[],"chooserKnowledge":[["A-bid","A-other"],[],[],[]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":false}],
+    ["meanwhile-fixing","request","chooseCardAfter","chooseCard","chooseCardOL","A",null,["A:h","B:h","D:h","E:h"],null,{"offered":["A-bid","A-other"],"selected":["A-bid"],"chooserKnowledge":[["A-bid","A-other"],[],[],[]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":true}],
+    ["meanwhile-fixing","request","chooseCardBegin","chooseCard","chooseCardOL","B",null,["A:h","B:h","D:h","E:h"],null,{"offered":["B-bid","B-other"],"selected":[],"chooserKnowledge":[[],["B-bid","B-other"],[],[]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":false}],
+    ["meanwhile-fixing","request","chooseCardAfter","chooseCard","chooseCardOL","B",null,["A:h","B:h","D:h","E:h"],null,{"offered":["B-bid","B-other"],"selected":["B-bid"],"chooserKnowledge":[[],["B-bid","B-other"],[],[]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":true}],
+    ["meanwhile-fixing","request","chooseCardBegin","chooseCard","chooseCardOL","D",null,["A:h","B:h","D:h","E:h"],null,{"offered":["D-bid","D-other"],"selected":[],"chooserKnowledge":[[],[],["D-bid","D-other"],[]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":false}],
+    ["meanwhile-fixing","request","chooseCardAfter","chooseCard","chooseCardOL","D",null,["A:h","B:h","D:h","E:h"],null,{"offered":["D-bid","D-other"],"selected":["D-bid"],"chooserKnowledge":[[],[],["D-bid","D-other"],[]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":true}],
+    ["meanwhile-fixing","request","chooseCardBegin","chooseCard","chooseCardOL","E",null,["A:h","B:h","D:h","E:h"],null,{"offered":["E-bid","E-other"],"selected":[],"chooserKnowledge":[[],[],[],["E-bid","E-other"]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":false}],
+    ["meanwhile-fixing","request","chooseCardAfter","chooseCard","chooseCardOL","E",null,["A:h","B:h","D:h","E:h"],null,{"offered":["E-bid","E-other"],"selected":["E-bid"],"chooserKnowledge":[[],[],[],["E-bid","E-other"]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":true}],
+    ["meanwhile-fixing","request","chooseCardOLAfter","chooseCardOL","chooseToCompare","A",null,["A:h","B:h","D:h","E:h"],null,{"participants":["A","B","D","E"],"selected":[["A-bid"],["B-bid"],["D-bid"],["E-bid"]]}],
+    ["meanwhile-fixing","callback","chooseCardOLAfter","chooseCardOL","chooseToCompare","A",null,["A:h","B:h","D:h","E:h"],null,{"callbackParent":"trigger","participants":["A","B","D","E"],"selected":[["A-bid"],["B-bid"],["D-bid"],["E-bid"]]}],
+    ["meanwhile-fixing","request","loseAsyncBegin","loseAsync","chooseToCompare",null,null,["A:h","B:h","D:h","E:h"],null,{"batch":[["A",["A-bid"]],["B",["B-bid"]],["D",["D-bid"]],["E",["E-bid"]]]}],
+    ["meanwhile-fixing","callback","loseAsyncBegin","loseAsync","chooseToCompare",null,null,["A:h","B:h","D:h","E:h"],null,{"callbackParent":"trigger","batch":[["A",["A-bid"]],["B",["B-bid"]],["D",["D-bid"]],["E",["E-bid"]]]}],
+    ["meanwhile-fixing","request","loseBefore","lose","loseAsync","A",null,["A:h","B:h","D:h","E:h"],null,{"cards":["A-bid"],"relatedCompare":true}],
+    ["meanwhile-fixing","callback","loseBefore","lose","loseAsync","A",null,["A:h","B:h","D:h","E:h"],null,{"callbackParent":"trigger","cards":["A-bid"],"relatedCompare":true}],
+    ["meanwhile-fixing","request","loseAfter","lose","loseAsync","A",null,["o","B:h","D:h","E:h"],null,{"cards":["A-bid"],"relatedCompare":true}],
+    ["meanwhile-fixing","callback","loseAfter","lose","loseAsync","A",null,["o","B:h","D:h","E:h"],null,{"callbackParent":"trigger","cards":["A-bid"],"relatedCompare":true}],
+    ["meanwhile-fixing","request","loseBefore","lose","loseAsync","B",null,["o","B:h","D:h","E:h"],null,{"cards":["B-bid"],"relatedCompare":true}],
+    ["meanwhile-fixing","callback","loseBefore","lose","loseAsync","B",null,["o","B:h","D:h","E:h"],null,{"callbackParent":"trigger","cards":["B-bid"],"relatedCompare":true}],
+    ["meanwhile-fixing","request","loseAfter","lose","loseAsync","B",null,["o","o","D:h","E:h"],null,{"cards":["B-bid"],"relatedCompare":true}],
+    ["meanwhile-fixing","callback","loseAfter","lose","loseAsync","B",null,["o","o","D:h","E:h"],null,{"callbackParent":"trigger","cards":["B-bid"],"relatedCompare":true}],
+    ["meanwhile-fixing","request","loseBefore","lose","loseAsync","D",null,["o","o","D:h","E:h"],null,{"cards":["D-bid"],"relatedCompare":true}],
+    ["meanwhile-fixing","callback","loseBefore","lose","loseAsync","D",null,["o","o","D:h","E:h"],null,{"callbackParent":"trigger","cards":["D-bid"],"relatedCompare":true}],
+    ["meanwhile-fixing","request","loseAfter","lose","loseAsync","D",null,["o","o","o","E:h"],null,{"cards":["D-bid"],"relatedCompare":true}],
+    ["meanwhile-fixing","callback","loseAfter","lose","loseAsync","D",null,["o","o","o","E:h"],null,{"callbackParent":"trigger","cards":["D-bid"],"relatedCompare":true}],
+    ["meanwhile-fixing","request","loseBefore","lose","loseAsync","E",null,["o","o","o","E:h"],null,{"cards":["E-bid"],"relatedCompare":true}],
+    ["meanwhile-fixing","callback","loseBefore","lose","loseAsync","E",null,["o","o","o","E:h"],null,{"callbackParent":"trigger","cards":["E-bid"],"relatedCompare":true}],
+    ["meanwhile-fixing","request","loseAfter","lose","loseAsync","E",null,["o","o","o","o"],null,{"cards":["E-bid"],"relatedCompare":true}],
+    ["meanwhile-fixing","callback","loseAfter","lose","loseAsync","E",null,["o","o","o","o"],null,{"callbackParent":"trigger","cards":["E-bid"],"relatedCompare":true}],
+    ["meanwhile-fixing","request","loseAsyncAfter","loseAsync","chooseToCompare",null,null,["o","o","o","o"],null,{"batch":[["A",["A-bid"]],["B",["B-bid"]],["D",["D-bid"]],["E",["E-bid"]]]}],
+    ["meanwhile-fixing","callback","loseAsyncAfter","loseAsync","chooseToCompare",null,null,["o","o","o","o"],null,{"callbackParent":"trigger","batch":[["A",["A-bid"]],["B",["B-bid"]],["D",["D-bid"]],["E",["E-bid"]]]}],
+    ["meanwhile-fixing","request","compareCardShowBefore","chooseToCompare","twdanlie","A",null,["o","o","o","o"],[10,null],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[],"num2":[],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid",null],"compareMeanwhile":true,"cancelled":false,"finished":false}],
+    ["meanwhile-fixing","callback","compareCardShowBefore","chooseToCompare","twdanlie","A",null,["o","o","o","o"],[10,null],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[],"num2":[],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid",null],"compareMeanwhile":true,"cancelled":false,"finished":false}],
+    ["meanwhile-fixing","display","compareMultiple","chooseToCompare","twdanlie","A",null,["o","o","o","o"],[10,null],{"cards":["A-bid","B-bid","D-bid","E-bid"],"targets":["B","D","E"]}],
+    ["meanwhile-fixing","request","showCardsAfter","showCards","chooseToCompare","A",null,["o","o","o","o"],null,{"cards":["A-bid"],"onlyTiming":true,"spectatorKnowledge":[[],[],[],[]]}],
+    ["meanwhile-fixing","callback","showCardsAfter","showCards","chooseToCompare","A",null,["o","o","o","o"],null,{"callbackParent":"trigger","cards":["A-bid"],"onlyTiming":true,"spectatorKnowledge":[[],[],[],[]]}],
+    ["meanwhile-fixing","request","showCardsAfter","showCards","chooseToCompare","B",null,["o","o","o","o"],null,{"cards":["B-bid"],"onlyTiming":true,"spectatorKnowledge":[[],[],[],[]]}],
+    ["meanwhile-fixing","callback","showCardsAfter","showCards","chooseToCompare","B",null,["o","o","o","o"],null,{"callbackParent":"trigger","cards":["B-bid"],"onlyTiming":true,"spectatorKnowledge":[[],[],[],[]]}],
+    ["meanwhile-fixing","request","showCardsAfter","showCards","chooseToCompare","D",null,["o","o","o","o"],null,{"cards":["D-bid"],"onlyTiming":true,"spectatorKnowledge":[[],[],[],[]]}],
+    ["meanwhile-fixing","callback","showCardsAfter","showCards","chooseToCompare","D",null,["o","o","o","o"],null,{"callbackParent":"trigger","cards":["D-bid"],"onlyTiming":true,"spectatorKnowledge":[[],[],[],[]]}],
+    ["meanwhile-fixing","request","showCardsAfter","showCards","chooseToCompare","E",null,["o","o","o","o"],null,{"cards":["E-bid"],"onlyTiming":true,"spectatorKnowledge":[[],[],[],[]]}],
+    ["meanwhile-fixing","callback","showCardsAfter","showCards","chooseToCompare","E",null,["o","o","o","o"],null,{"callbackParent":"trigger","cards":["E-bid"],"onlyTiming":true,"spectatorKnowledge":[[],[],[],[]]}],
+    ["meanwhile-fixing","request","compare","chooseToCompare","twdanlie","A",null,["o","o","o","o"],[10,null],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[],"num2":[],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid",null],"compareMeanwhile":true,"cancelled":false,"finished":false,"index":0,"internalWinner":null}],
+    ["meanwhile-fixing","callback","compare","chooseToCompare","twdanlie","A",null,["o","o","o","o"],[10,null],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[],"num2":[],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid",null],"compareMeanwhile":true,"cancelled":false,"finished":false,"index":0,"internalWinner":null}],
+    ["meanwhile-fixing","content","begin","twdanlie_add","trigger","A",null,["o","o","o","o"],null,{"pairPlayer":"A","pairTarget":null,"cards":["A-bid",null],"points":[10,null],"winner":null,"gusheMarks":0,"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[],"num2":[],"winner":null}}],
+    ["meanwhile-fixing","content","end","twdanlie_add","trigger","A",null,["o","o","o","o"],null,{"pairPlayer":"A","pairTarget":null,"cards":["A-bid",null],"points":[11,null],"winner":null,"gusheMarks":0,"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[],"num2":[],"winner":null}}],
+    ["meanwhile-fixing","request","compare","chooseToCompare","twdanlie",null,"B",["o","o","o","o"],[11,9],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[],"num2":[],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid","B-bid"],"compareMeanwhile":true,"cancelled":false,"finished":false,"index":0,"internalWinner":null}],
+    ["meanwhile-fixing","callback","compare","chooseToCompare","twdanlie",null,"B",["o","o","o","o"],[11,9],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[],"num2":[],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid","B-bid"],"compareMeanwhile":true,"cancelled":false,"finished":false,"index":0,"internalWinner":null}],
+    ["meanwhile-fixing","request","compare","chooseToCompare","twdanlie",null,"D",["o","o","o","o"],[11,10],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[11],"num2":[9],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid","D-bid"],"compareMeanwhile":true,"cancelled":false,"finished":false,"index":1,"internalWinner":"A"}],
+    ["meanwhile-fixing","callback","compare","chooseToCompare","twdanlie",null,"D",["o","o","o","o"],[11,10],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[11],"num2":[9],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid","D-bid"],"compareMeanwhile":true,"cancelled":false,"finished":false,"index":1,"internalWinner":"A"}],
+    ["meanwhile-fixing","request","compare","chooseToCompare","twdanlie",null,"E",["o","o","o","o"],[11,8],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[11,11],"num2":[9,10],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid","E-bid"],"compareMeanwhile":true,"cancelled":false,"finished":false,"index":2,"internalWinner":"A"}],
+    ["meanwhile-fixing","callback","compare","chooseToCompare","twdanlie",null,"E",["o","o","o","o"],[11,8],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[11,11],"num2":[9,10],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid","E-bid"],"compareMeanwhile":true,"cancelled":false,"finished":false,"index":2,"internalWinner":"A"}],
+    ["meanwhile-fixing","request","compareFixing","chooseToCompare","twdanlie","A","E",["o","o","o","o"],[11,8],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[11,11,11],"num2":[9,10,8],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid","E-bid"],"compareMeanwhile":true,"cancelled":false,"finished":false,"index":0,"internalWinner":"A"}],
+    ["meanwhile-fixing","callback","compareFixing","chooseToCompare","twdanlie","A","E",["o","o","o","o"],[11,8],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[11,11,11],"num2":[9,10,8],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid","E-bid"],"compareMeanwhile":true,"cancelled":false,"finished":false,"index":0,"internalWinner":"A"}],
+    ["meanwhile-fixing","probe","modified-fixing","chooseToCompare","twdanlie","A","E",["o","o","o","o"],[1,8],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[11,11,11],"num2":[9,10,8],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid","E-bid"],"compareMeanwhile":true,"cancelled":false,"finished":false,"index":0,"internalWinner":"A"}],
+    ["meanwhile-fixing","request","compareFixing","chooseToCompare","twdanlie",null,"B",["o","o","o","o"],[1,9],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[11,11,11],"num2":[9,10,8],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid","B-bid"],"compareMeanwhile":true,"cancelled":false,"finished":false,"index":0,"internalWinner":"A"}],
+    ["meanwhile-fixing","callback","compareFixing","chooseToCompare","twdanlie",null,"B",["o","o","o","o"],[1,9],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[11,11,11],"num2":[9,10,8],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid","B-bid"],"compareMeanwhile":true,"cancelled":false,"finished":false,"index":0,"internalWinner":"A"}],
+    ["meanwhile-fixing","request","compareFixing","chooseToCompare","twdanlie",null,"D",["o","o","o","o"],[1,10],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[11,11,11],"num2":[9,10,8],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid","D-bid"],"compareMeanwhile":true,"cancelled":false,"finished":false,"index":1,"internalWinner":"A"}],
+    ["meanwhile-fixing","callback","compareFixing","chooseToCompare","twdanlie",null,"D",["o","o","o","o"],[1,10],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[11,11,11],"num2":[9,10,8],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid","D-bid"],"compareMeanwhile":true,"cancelled":false,"finished":false,"index":1,"internalWinner":"A"}],
+    ["meanwhile-fixing","probe","modified-fixing","chooseToCompare","twdanlie",null,"D",["o","o","o","o"],[1,13],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[11,11,11],"num2":[9,10,8],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid","D-bid"],"compareMeanwhile":true,"cancelled":false,"finished":false,"index":1,"internalWinner":"A"}],
+    ["meanwhile-fixing","request","compareFixing","chooseToCompare","twdanlie",null,"E",["o","o","o","o"],[1,8],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[11,11,11],"num2":[9,10,8],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid","E-bid"],"compareMeanwhile":true,"cancelled":false,"finished":false,"index":2,"internalWinner":"A"}],
+    ["meanwhile-fixing","callback","compareFixing","chooseToCompare","twdanlie",null,"E",["o","o","o","o"],[1,8],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[11,11,11],"num2":[9,10,8],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid","E-bid"],"compareMeanwhile":true,"cancelled":false,"finished":false,"index":2,"internalWinner":"A"}],
+    ["meanwhile-fixing","request","chooseToCompareEnd","chooseToCompare","twdanlie","A","E",["o","o","o","o"],[1,8],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[11,11,11],"num2":[9,10,8],"winner":"A"},"targets":["B","D","E"],"selectedCards":["A-bid","E-bid"],"compareMeanwhile":true,"cancelled":false,"finished":true}],
+    ["meanwhile-fixing","callback","chooseToCompareEnd","chooseToCompare","twdanlie","A","E",["o","o","o","o"],[1,8],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[11,11,11],"num2":[9,10,8],"winner":"A"},"targets":["B","D","E"],"selectedCards":["A-bid","E-bid"],"compareMeanwhile":true,"cancelled":false,"finished":true}],
+    ["meanwhile-fixing","request","chooseToCompareAfter","chooseToCompare","twdanlie","A","E",["o","o","o","o"],[1,8],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[11,11,11],"num2":[9,10,8],"winner":"A"},"targets":["B","D","E"],"selectedCards":["A-bid","E-bid"],"compareMeanwhile":true,"cancelled":false,"finished":true}],
+    ["meanwhile-fixing","callback","chooseToCompareAfter","chooseToCompare","twdanlie","A","E",["o","o","o","o"],[1,8],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[11,11,11],"num2":[9,10,8],"winner":"A"},"targets":["B","D","E"],"selectedCards":["A-bid","E-bid"],"compareMeanwhile":true,"cancelled":false,"finished":true}],
+    ["meanwhile-fixing","request","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,null,["d","d","d","d"],null,{"cards":["A-bid","B-bid","D-bid","E-bid"]}],
+    ["meanwhile-fixing","callback","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,null,["d","d","d","d"],null,{"callbackParent":"trigger","cards":["A-bid","B-bid","D-bid","E-bid"]}],
+    ["meanwhile-fixing","request","damageAfter","damage","twdanlie","B",null,["d","d","d","d"],null,{"hp":3,"source":"A"}],
+    ["meanwhile-fixing","request","damageAfter","damage","twdanlie","D",null,["d","d","d","d"],null,{"hp":3,"source":"A"}],
+    ["meanwhile-fixing","request","damageAfter","damage","twdanlie","E",null,["d","d","d","d"],null,{"hp":3,"source":"A"}],
+    ["meanwhile-tie","request","chooseToCompareBefore","chooseToCompare","twdanlie","A",null,["A:h","B:h","D:h","E:h"],null,{"result":null,"targets":["E","B","D"],"selectedCards":[null,null],"compareMeanwhile":false,"cancelled":false,"finished":false,"fixedResultSupplied":false}],
+    ["meanwhile-tie","request","chooseToCompareBegin","chooseToCompare","twdanlie","A",null,["A:h","B:h","D:h","E:h"],null,{"result":null,"targets":["E","B","D"],"selectedCards":[null,null],"compareMeanwhile":false,"cancelled":false,"finished":false}],
+    ["meanwhile-tie","request","chooseCardOLBegin","chooseCardOL","chooseToCompare","A",null,["A:h","B:h","D:h","E:h"],null,{"participants":["A","B","D","E"],"selected":[]}],
+    ["meanwhile-tie","request","chooseCardBegin","chooseCard","chooseCardOL","A",null,["A:h","B:h","D:h","E:h"],null,{"offered":["A-bid","A-other"],"selected":[],"chooserKnowledge":[["A-bid","A-other"],[],[],[]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":false}],
+    ["meanwhile-tie","request","chooseCardAfter","chooseCard","chooseCardOL","A",null,["A:h","B:h","D:h","E:h"],null,{"offered":["A-bid","A-other"],"selected":["A-bid"],"chooserKnowledge":[["A-bid","A-other"],[],[],[]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":true}],
+    ["meanwhile-tie","request","chooseCardBegin","chooseCard","chooseCardOL","B",null,["A:h","B:h","D:h","E:h"],null,{"offered":["B-bid","B-other"],"selected":[],"chooserKnowledge":[[],["B-bid","B-other"],[],[]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":false}],
+    ["meanwhile-tie","request","chooseCardAfter","chooseCard","chooseCardOL","B",null,["A:h","B:h","D:h","E:h"],null,{"offered":["B-bid","B-other"],"selected":["B-bid"],"chooserKnowledge":[[],["B-bid","B-other"],[],[]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":true}],
+    ["meanwhile-tie","request","chooseCardBegin","chooseCard","chooseCardOL","D",null,["A:h","B:h","D:h","E:h"],null,{"offered":["D-bid","D-other"],"selected":[],"chooserKnowledge":[[],[],["D-bid","D-other"],[]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":false}],
+    ["meanwhile-tie","request","chooseCardAfter","chooseCard","chooseCardOL","D",null,["A:h","B:h","D:h","E:h"],null,{"offered":["D-bid","D-other"],"selected":["D-bid"],"chooserKnowledge":[[],[],["D-bid","D-other"],[]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":true}],
+    ["meanwhile-tie","request","chooseCardBegin","chooseCard","chooseCardOL","E",null,["A:h","B:h","D:h","E:h"],null,{"offered":["E-bid","E-other"],"selected":[],"chooserKnowledge":[[],[],[],["E-bid","E-other"]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":false}],
+    ["meanwhile-tie","request","chooseCardAfter","chooseCard","chooseCardOL","E",null,["A:h","B:h","D:h","E:h"],null,{"offered":["E-bid","E-other"],"selected":["E-bid"],"chooserKnowledge":[[],[],[],["E-bid","E-other"]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":true}],
+    ["meanwhile-tie","request","chooseCardOLAfter","chooseCardOL","chooseToCompare","A",null,["A:h","B:h","D:h","E:h"],null,{"participants":["A","B","D","E"],"selected":[["A-bid"],["B-bid"],["D-bid"],["E-bid"]]}],
+    ["meanwhile-tie","callback","chooseCardOLAfter","chooseCardOL","chooseToCompare","A",null,["A:h","B:h","D:h","E:h"],null,{"callbackParent":"trigger","participants":["A","B","D","E"],"selected":[["A-bid"],["B-bid"],["D-bid"],["E-bid"]]}],
+    ["meanwhile-tie","request","loseAsyncBegin","loseAsync","chooseToCompare",null,null,["A:h","B:h","D:h","E:h"],null,{"batch":[["A",["A-bid"]],["B",["B-bid"]],["D",["D-bid"]],["E",["E-bid"]]]}],
+    ["meanwhile-tie","callback","loseAsyncBegin","loseAsync","chooseToCompare",null,null,["A:h","B:h","D:h","E:h"],null,{"callbackParent":"trigger","batch":[["A",["A-bid"]],["B",["B-bid"]],["D",["D-bid"]],["E",["E-bid"]]]}],
+    ["meanwhile-tie","request","loseBefore","lose","loseAsync","A",null,["A:h","B:h","D:h","E:h"],null,{"cards":["A-bid"],"relatedCompare":true}],
+    ["meanwhile-tie","callback","loseBefore","lose","loseAsync","A",null,["A:h","B:h","D:h","E:h"],null,{"callbackParent":"trigger","cards":["A-bid"],"relatedCompare":true}],
+    ["meanwhile-tie","request","loseAfter","lose","loseAsync","A",null,["o","B:h","D:h","E:h"],null,{"cards":["A-bid"],"relatedCompare":true}],
+    ["meanwhile-tie","callback","loseAfter","lose","loseAsync","A",null,["o","B:h","D:h","E:h"],null,{"callbackParent":"trigger","cards":["A-bid"],"relatedCompare":true}],
+    ["meanwhile-tie","request","loseBefore","lose","loseAsync","B",null,["o","B:h","D:h","E:h"],null,{"cards":["B-bid"],"relatedCompare":true}],
+    ["meanwhile-tie","callback","loseBefore","lose","loseAsync","B",null,["o","B:h","D:h","E:h"],null,{"callbackParent":"trigger","cards":["B-bid"],"relatedCompare":true}],
+    ["meanwhile-tie","request","loseAfter","lose","loseAsync","B",null,["o","o","D:h","E:h"],null,{"cards":["B-bid"],"relatedCompare":true}],
+    ["meanwhile-tie","callback","loseAfter","lose","loseAsync","B",null,["o","o","D:h","E:h"],null,{"callbackParent":"trigger","cards":["B-bid"],"relatedCompare":true}],
+    ["meanwhile-tie","request","loseBefore","lose","loseAsync","D",null,["o","o","D:h","E:h"],null,{"cards":["D-bid"],"relatedCompare":true}],
+    ["meanwhile-tie","callback","loseBefore","lose","loseAsync","D",null,["o","o","D:h","E:h"],null,{"callbackParent":"trigger","cards":["D-bid"],"relatedCompare":true}],
+    ["meanwhile-tie","request","loseAfter","lose","loseAsync","D",null,["o","o","o","E:h"],null,{"cards":["D-bid"],"relatedCompare":true}],
+    ["meanwhile-tie","callback","loseAfter","lose","loseAsync","D",null,["o","o","o","E:h"],null,{"callbackParent":"trigger","cards":["D-bid"],"relatedCompare":true}],
+    ["meanwhile-tie","request","loseBefore","lose","loseAsync","E",null,["o","o","o","E:h"],null,{"cards":["E-bid"],"relatedCompare":true}],
+    ["meanwhile-tie","callback","loseBefore","lose","loseAsync","E",null,["o","o","o","E:h"],null,{"callbackParent":"trigger","cards":["E-bid"],"relatedCompare":true}],
+    ["meanwhile-tie","request","loseAfter","lose","loseAsync","E",null,["o","o","o","o"],null,{"cards":["E-bid"],"relatedCompare":true}],
+    ["meanwhile-tie","callback","loseAfter","lose","loseAsync","E",null,["o","o","o","o"],null,{"callbackParent":"trigger","cards":["E-bid"],"relatedCompare":true}],
+    ["meanwhile-tie","request","loseAsyncAfter","loseAsync","chooseToCompare",null,null,["o","o","o","o"],null,{"batch":[["A",["A-bid"]],["B",["B-bid"]],["D",["D-bid"]],["E",["E-bid"]]]}],
+    ["meanwhile-tie","callback","loseAsyncAfter","loseAsync","chooseToCompare",null,null,["o","o","o","o"],null,{"callbackParent":"trigger","batch":[["A",["A-bid"]],["B",["B-bid"]],["D",["D-bid"]],["E",["E-bid"]]]}],
+    ["meanwhile-tie","request","compareCardShowBefore","chooseToCompare","twdanlie","A",null,["o","o","o","o"],[10,null],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[],"num2":[],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid",null],"compareMeanwhile":true,"cancelled":false,"finished":false}],
+    ["meanwhile-tie","callback","compareCardShowBefore","chooseToCompare","twdanlie","A",null,["o","o","o","o"],[10,null],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[],"num2":[],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid",null],"compareMeanwhile":true,"cancelled":false,"finished":false}],
+    ["meanwhile-tie","display","compareMultiple","chooseToCompare","twdanlie","A",null,["o","o","o","o"],[10,null],{"cards":["A-bid","B-bid","D-bid","E-bid"],"targets":["B","D","E"]}],
+    ["meanwhile-tie","request","showCardsAfter","showCards","chooseToCompare","A",null,["o","o","o","o"],null,{"cards":["A-bid"],"onlyTiming":true,"spectatorKnowledge":[[],[],[],[]]}],
+    ["meanwhile-tie","callback","showCardsAfter","showCards","chooseToCompare","A",null,["o","o","o","o"],null,{"callbackParent":"trigger","cards":["A-bid"],"onlyTiming":true,"spectatorKnowledge":[[],[],[],[]]}],
+    ["meanwhile-tie","request","showCardsAfter","showCards","chooseToCompare","B",null,["o","o","o","o"],null,{"cards":["B-bid"],"onlyTiming":true,"spectatorKnowledge":[[],[],[],[]]}],
+    ["meanwhile-tie","callback","showCardsAfter","showCards","chooseToCompare","B",null,["o","o","o","o"],null,{"callbackParent":"trigger","cards":["B-bid"],"onlyTiming":true,"spectatorKnowledge":[[],[],[],[]]}],
+    ["meanwhile-tie","request","showCardsAfter","showCards","chooseToCompare","D",null,["o","o","o","o"],null,{"cards":["D-bid"],"onlyTiming":true,"spectatorKnowledge":[[],[],[],[]]}],
+    ["meanwhile-tie","callback","showCardsAfter","showCards","chooseToCompare","D",null,["o","o","o","o"],null,{"callbackParent":"trigger","cards":["D-bid"],"onlyTiming":true,"spectatorKnowledge":[[],[],[],[]]}],
+    ["meanwhile-tie","request","showCardsAfter","showCards","chooseToCompare","E",null,["o","o","o","o"],null,{"cards":["E-bid"],"onlyTiming":true,"spectatorKnowledge":[[],[],[],[]]}],
+    ["meanwhile-tie","callback","showCardsAfter","showCards","chooseToCompare","E",null,["o","o","o","o"],null,{"callbackParent":"trigger","cards":["E-bid"],"onlyTiming":true,"spectatorKnowledge":[[],[],[],[]]}],
+    ["meanwhile-tie","request","compare","chooseToCompare","twdanlie","A",null,["o","o","o","o"],[10,null],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[],"num2":[],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid",null],"compareMeanwhile":true,"cancelled":false,"finished":false,"index":0,"internalWinner":null}],
+    ["meanwhile-tie","callback","compare","chooseToCompare","twdanlie","A",null,["o","o","o","o"],[10,null],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[],"num2":[],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid",null],"compareMeanwhile":true,"cancelled":false,"finished":false,"index":0,"internalWinner":null}],
+    ["meanwhile-tie","content","begin","twdanlie_add","trigger","A",null,["o","o","o","o"],null,{"pairPlayer":"A","pairTarget":null,"cards":["A-bid",null],"points":[10,null],"winner":null,"gusheMarks":0,"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[],"num2":[],"winner":null}}],
+    ["meanwhile-tie","content","end","twdanlie_add","trigger","A",null,["o","o","o","o"],null,{"pairPlayer":"A","pairTarget":null,"cards":["A-bid",null],"points":[11,null],"winner":null,"gusheMarks":0,"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[],"num2":[],"winner":null}}],
+    ["meanwhile-tie","request","compare","chooseToCompare","twdanlie",null,"B",["o","o","o","o"],[11,11],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[],"num2":[],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid","B-bid"],"compareMeanwhile":true,"cancelled":false,"finished":false,"index":0,"internalWinner":null}],
+    ["meanwhile-tie","callback","compare","chooseToCompare","twdanlie",null,"B",["o","o","o","o"],[11,11],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[],"num2":[],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid","B-bid"],"compareMeanwhile":true,"cancelled":false,"finished":false,"index":0,"internalWinner":null}],
+    ["meanwhile-tie","request","compare","chooseToCompare","twdanlie",null,"D",["o","o","o","o"],[11,11],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[11],"num2":[11],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid","D-bid"],"compareMeanwhile":true,"cancelled":false,"finished":false,"index":1,"internalWinner":null}],
+    ["meanwhile-tie","callback","compare","chooseToCompare","twdanlie",null,"D",["o","o","o","o"],[11,11],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[11],"num2":[11],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid","D-bid"],"compareMeanwhile":true,"cancelled":false,"finished":false,"index":1,"internalWinner":null}],
+    ["meanwhile-tie","request","compare","chooseToCompare","twdanlie",null,"E",["o","o","o","o"],[11,8],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[11,11],"num2":[11,11],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid","E-bid"],"compareMeanwhile":true,"cancelled":false,"finished":false,"index":2,"internalWinner":null}],
+    ["meanwhile-tie","callback","compare","chooseToCompare","twdanlie",null,"E",["o","o","o","o"],[11,8],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[11,11],"num2":[11,11],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid","E-bid"],"compareMeanwhile":true,"cancelled":false,"finished":false,"index":2,"internalWinner":null}],
+    ["meanwhile-tie","request","compareFixing","chooseToCompare","twdanlie","A","E",["o","o","o","o"],[11,8],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[11,11,11],"num2":[11,11,8],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid","E-bid"],"compareMeanwhile":true,"cancelled":false,"finished":false,"index":0,"internalWinner":null}],
+    ["meanwhile-tie","callback","compareFixing","chooseToCompare","twdanlie","A","E",["o","o","o","o"],[11,8],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[11,11,11],"num2":[11,11,8],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid","E-bid"],"compareMeanwhile":true,"cancelled":false,"finished":false,"index":0,"internalWinner":null}],
+    ["meanwhile-tie","request","compareFixing","chooseToCompare","twdanlie",null,"B",["o","o","o","o"],[11,11],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[11,11,11],"num2":[11,11,8],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid","B-bid"],"compareMeanwhile":true,"cancelled":false,"finished":false,"index":0,"internalWinner":null}],
+    ["meanwhile-tie","callback","compareFixing","chooseToCompare","twdanlie",null,"B",["o","o","o","o"],[11,11],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[11,11,11],"num2":[11,11,8],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid","B-bid"],"compareMeanwhile":true,"cancelled":false,"finished":false,"index":0,"internalWinner":null}],
+    ["meanwhile-tie","request","compareFixing","chooseToCompare","twdanlie",null,"D",["o","o","o","o"],[11,11],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[11,11,11],"num2":[11,11,8],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid","D-bid"],"compareMeanwhile":true,"cancelled":false,"finished":false,"index":1,"internalWinner":null}],
+    ["meanwhile-tie","callback","compareFixing","chooseToCompare","twdanlie",null,"D",["o","o","o","o"],[11,11],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[11,11,11],"num2":[11,11,8],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid","D-bid"],"compareMeanwhile":true,"cancelled":false,"finished":false,"index":1,"internalWinner":null}],
+    ["meanwhile-tie","request","compareFixing","chooseToCompare","twdanlie",null,"E",["o","o","o","o"],[11,8],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[11,11,11],"num2":[11,11,8],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid","E-bid"],"compareMeanwhile":true,"cancelled":false,"finished":false,"index":2,"internalWinner":null}],
+    ["meanwhile-tie","callback","compareFixing","chooseToCompare","twdanlie",null,"E",["o","o","o","o"],[11,8],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[11,11,11],"num2":[11,11,8],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid","E-bid"],"compareMeanwhile":true,"cancelled":false,"finished":false,"index":2,"internalWinner":null}],
+    ["meanwhile-tie","request","chooseToCompareEnd","chooseToCompare","twdanlie","A","E",["o","o","o","o"],[11,8],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[11,11,11],"num2":[11,11,8],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid","E-bid"],"compareMeanwhile":true,"cancelled":false,"finished":true}],
+    ["meanwhile-tie","callback","chooseToCompareEnd","chooseToCompare","twdanlie","A","E",["o","o","o","o"],[11,8],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[11,11,11],"num2":[11,11,8],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid","E-bid"],"compareMeanwhile":true,"cancelled":false,"finished":true}],
+    ["meanwhile-tie","request","chooseToCompareAfter","chooseToCompare","twdanlie","A","E",["o","o","o","o"],[11,8],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[11,11,11],"num2":[11,11,8],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid","E-bid"],"compareMeanwhile":true,"cancelled":false,"finished":true}],
+    ["meanwhile-tie","callback","chooseToCompareAfter","chooseToCompare","twdanlie","A","E",["o","o","o","o"],[11,8],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[11,11,11],"num2":[11,11,8],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid","E-bid"],"compareMeanwhile":true,"cancelled":false,"finished":true}],
+    ["meanwhile-tie","request","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,null,["d","d","d","d"],null,{"cards":["A-bid","B-bid","D-bid","E-bid"]}],
+    ["meanwhile-tie","callback","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,null,["d","d","d","d"],null,{"callbackParent":"trigger","cards":["A-bid","B-bid","D-bid","E-bid"]}],
+    ["meanwhile-tie","request","loseHpAfter","loseHp","twdanlie","A",null,["d","d","d","d"],null,{"hp":2,"source":null}],
+    ["cancel-one-loss","request","chooseToCompareBefore","chooseToCompare","gushe","A",null,["A:h","B:h","D:h","E:h"],null,{"result":null,"targets":["E","B","D"],"selectedCards":[null,null],"compareMeanwhile":false,"cancelled":false,"finished":false,"fixedResultSupplied":false}],
+    ["cancel-one-loss","request","chooseToCompareBegin","chooseToCompare","gushe","A",null,["A:h","B:h","D:h","E:h"],null,{"result":null,"targets":["E","B","D"],"selectedCards":[null,null],"compareMeanwhile":false,"cancelled":false,"finished":false}],
+    ["cancel-one-loss","request","chooseCardOLBegin","chooseCardOL","chooseToCompare","A",null,["A:h","B:h","D:h","E:h"],null,{"participants":["A","B","D","E"],"selected":[]}],
+    ["cancel-one-loss","request","chooseCardBegin","chooseCard","chooseCardOL","A",null,["A:h","B:h","D:h","E:h"],null,{"offered":["A-bid","A-other"],"selected":[],"chooserKnowledge":[["A-bid","A-other"],[],[],[]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":false}],
+    ["cancel-one-loss","request","chooseCardAfter","chooseCard","chooseCardOL","A",null,["A:h","B:h","D:h","E:h"],null,{"offered":["A-bid","A-other"],"selected":["A-bid"],"chooserKnowledge":[["A-bid","A-other"],[],[],[]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":true}],
+    ["cancel-one-loss","request","chooseCardBegin","chooseCard","chooseCardOL","B",null,["A:h","B:h","D:h","E:h"],null,{"offered":["B-bid","B-other"],"selected":[],"chooserKnowledge":[[],["B-bid","B-other"],[],[]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":false}],
+    ["cancel-one-loss","request","chooseCardAfter","chooseCard","chooseCardOL","B",null,["A:h","B:h","D:h","E:h"],null,{"offered":["B-bid","B-other"],"selected":["B-bid"],"chooserKnowledge":[[],["B-bid","B-other"],[],[]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":true}],
+    ["cancel-one-loss","request","chooseCardBegin","chooseCard","chooseCardOL","D",null,["A:h","B:h","D:h","E:h"],null,{"offered":["D-bid","D-other"],"selected":[],"chooserKnowledge":[[],[],["D-bid","D-other"],[]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":false}],
+    ["cancel-one-loss","request","chooseCardAfter","chooseCard","chooseCardOL","D",null,["A:h","B:h","D:h","E:h"],null,{"offered":["D-bid","D-other"],"selected":["D-bid"],"chooserKnowledge":[[],[],["D-bid","D-other"],[]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":true}],
+    ["cancel-one-loss","request","chooseCardBegin","chooseCard","chooseCardOL","E",null,["A:h","B:h","D:h","E:h"],null,{"offered":["E-bid","E-other"],"selected":[],"chooserKnowledge":[[],[],[],["E-bid","E-other"]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":false}],
+    ["cancel-one-loss","request","chooseCardAfter","chooseCard","chooseCardOL","E",null,["A:h","B:h","D:h","E:h"],null,{"offered":["E-bid","E-other"],"selected":["E-bid"],"chooserKnowledge":[[],[],[],["E-bid","E-other"]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":true}],
+    ["cancel-one-loss","request","chooseCardOLAfter","chooseCardOL","chooseToCompare","A",null,["A:h","B:h","D:h","E:h"],null,{"participants":["A","B","D","E"],"selected":[["A-bid"],["B-bid"],["D-bid"],["E-bid"]]}],
+    ["cancel-one-loss","callback","chooseCardOLAfter","chooseCardOL","chooseToCompare","A",null,["A:h","B:h","D:h","E:h"],null,{"callbackParent":"trigger","participants":["A","B","D","E"],"selected":[["A-bid"],["B-bid"],["D-bid"],["E-bid"]]}],
+    ["cancel-one-loss","request","loseAsyncBegin","loseAsync","chooseToCompare",null,null,["A:h","B:h","D:h","E:h"],null,{"batch":[["A",["A-bid"]],["B",["B-bid"]],["D",["D-bid"]],["E",["E-bid"]]]}],
+    ["cancel-one-loss","callback","loseAsyncBegin","loseAsync","chooseToCompare",null,null,["A:h","B:h","D:h","E:h"],null,{"callbackParent":"trigger","batch":[["A",["A-bid"]],["B",["B-bid"]],["D",["D-bid"]],["E",["E-bid"]]]}],
+    ["cancel-one-loss","request","loseBefore","lose","loseAsync","A",null,["A:h","B:h","D:h","E:h"],null,{"cards":["A-bid"],"relatedCompare":true}],
+    ["cancel-one-loss","callback","loseBefore","lose","loseAsync","A",null,["A:h","B:h","D:h","E:h"],null,{"callbackParent":"trigger","cards":["A-bid"],"relatedCompare":true}],
+    ["cancel-one-loss","request","loseAfter","lose","loseAsync","A",null,["o","B:h","D:h","E:h"],null,{"cards":["A-bid"],"relatedCompare":true}],
+    ["cancel-one-loss","callback","loseAfter","lose","loseAsync","A",null,["o","B:h","D:h","E:h"],null,{"callbackParent":"trigger","cards":["A-bid"],"relatedCompare":true}],
+    ["cancel-one-loss","request","loseBefore","lose","loseAsync","B",null,["o","B:h","D:h","E:h"],null,{"cards":["B-bid"],"relatedCompare":true}],
+    ["cancel-one-loss","callback","loseBefore","lose","loseAsync","B",null,["o","B:h","D:h","E:h"],null,{"callbackParent":"trigger","cards":["B-bid"],"relatedCompare":true}],
+    ["cancel-one-loss","request","loseAfter","lose","loseAsync","B",null,["o","o","D:h","E:h"],null,{"cards":["B-bid"],"relatedCompare":true}],
+    ["cancel-one-loss","callback","loseAfter","lose","loseAsync","B",null,["o","o","D:h","E:h"],null,{"callbackParent":"trigger","cards":["B-bid"],"relatedCompare":true}],
+    ["cancel-one-loss","request","loseBefore","lose","loseAsync","D",null,["o","o","D:h","E:h"],null,{"cards":["D-bid"],"relatedCompare":true}],
+    ["cancel-one-loss","callback","loseBefore","lose","loseAsync","D",null,["o","o","D:h","E:h"],null,{"callbackParent":"trigger","cards":["D-bid"],"relatedCompare":true}],
+    ["cancel-one-loss","request","loseCancelled","lose","loseAsync","D",null,["o","o","D:h","E:h"],null,{"cards":["D-bid"],"relatedCompare":true}],
+    ["cancel-one-loss","callback","loseCancelled","lose","loseAsync","D",null,["o","o","D:h","E:h"],null,{"callbackParent":"trigger","cards":["D-bid"],"relatedCompare":true}],
+    ["cancel-one-loss","request","loseBefore","lose","loseAsync","E",null,["o","o","D:h","E:h"],null,{"cards":["E-bid"],"relatedCompare":true}],
+    ["cancel-one-loss","callback","loseBefore","lose","loseAsync","E",null,["o","o","D:h","E:h"],null,{"callbackParent":"trigger","cards":["E-bid"],"relatedCompare":true}],
+    ["cancel-one-loss","request","loseAfter","lose","loseAsync","E",null,["o","o","D:h","o"],null,{"cards":["E-bid"],"relatedCompare":true}],
+    ["cancel-one-loss","callback","loseAfter","lose","loseAsync","E",null,["o","o","D:h","o"],null,{"callbackParent":"trigger","cards":["E-bid"],"relatedCompare":true}],
+    ["cancel-one-loss","request","loseAsyncAfter","loseAsync","chooseToCompare",null,null,["o","o","D:h","o"],null,{"batch":[["A",["A-bid"]],["B",["B-bid"]],["D",["D-bid"]],["E",["E-bid"]]]}],
+    ["cancel-one-loss","callback","loseAsyncAfter","loseAsync","chooseToCompare",null,null,["o","o","D:h","o"],null,{"callbackParent":"trigger","batch":[["A",["A-bid"]],["B",["B-bid"]],["D",["D-bid"]],["E",["E-bid"]]]}],
+    ["cancel-one-loss","request","compareCardShowBefore","chooseToCompare","gushe","A",null,["o","o","D:h","o"],[9,null],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[],"num2":[]},"targets":["B","D","E"],"selectedCards":["A-bid",null],"compareMeanwhile":false,"cancelled":false,"finished":false}],
+    ["cancel-one-loss","callback","compareCardShowBefore","chooseToCompare","gushe","A",null,["o","o","D:h","o"],[9,null],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[],"num2":[]},"targets":["B","D","E"],"selectedCards":["A-bid",null],"compareMeanwhile":false,"cancelled":false,"finished":false}],
+    ["cancel-one-loss","request","showCardsAfter","showCards","chooseToCompare","A",null,["o","o","D:h","o"],null,{"cards":["A-bid"],"onlyTiming":true,"spectatorKnowledge":[[],[],[],[]]}],
+    ["cancel-one-loss","callback","showCardsAfter","showCards","chooseToCompare","A",null,["o","o","D:h","o"],null,{"callbackParent":"trigger","cards":["A-bid"],"onlyTiming":true,"spectatorKnowledge":[[],[],[],[]]}],
+    ["cancel-one-loss","display","compare","chooseToCompare","gushe","A","B",["o","o","D:h","o"],[9,8],{"cards":["A-bid","B-bid"],"targets":["B"]}],
+    ["cancel-one-loss","request","showCardsAfter","showCards","chooseToCompare","B",null,["o","o","D:h","o"],null,{"cards":["B-bid"],"onlyTiming":true,"spectatorKnowledge":[[],[],[],[]]}],
+    ["cancel-one-loss","callback","showCardsAfter","showCards","chooseToCompare","B",null,["o","o","D:h","o"],null,{"callbackParent":"trigger","cards":["B-bid"],"onlyTiming":true,"spectatorKnowledge":[[],[],[],[]]}],
+    ["cancel-one-loss","request","compare","chooseToCompare","gushe","A","B",["o","o","D:h","o"],[9,8],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[],"num2":[]},"targets":["B","D","E"],"selectedCards":["A-bid","B-bid"],"compareMeanwhile":false,"cancelled":false,"finished":false,"index":0,"internalWinner":null}],
+    ["cancel-one-loss","callback","compare","chooseToCompare","gushe","A","B",["o","o","D:h","o"],[9,8],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[],"num2":[]},"targets":["B","D","E"],"selectedCards":["A-bid","B-bid"],"compareMeanwhile":false,"cancelled":false,"finished":false,"index":0,"internalWinner":null}],
+    ["cancel-one-loss","request","compareFixing","chooseToCompare","gushe","A","B",["o","o","D:h","o"],[9,8],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[],"num2":[]},"targets":["B","D","E"],"selectedCards":["A-bid","B-bid"],"compareMeanwhile":false,"cancelled":false,"finished":false,"index":0,"internalWinner":null}],
+    ["cancel-one-loss","callback","compareFixing","chooseToCompare","gushe","A","B",["o","o","D:h","o"],[9,8],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[],"num2":[]},"targets":["B","D","E"],"selectedCards":["A-bid","B-bid"],"compareMeanwhile":false,"cancelled":false,"finished":false,"index":0,"internalWinner":null}],
+    ["cancel-one-loss","content","begin","compareMultiple","chooseToCompare","A","B",["o","o","D:h","o"],[9,8],{"pairPlayer":"A","pairTarget":"B","cards":["A-bid","B-bid"],"points":[9,8],"winner":"A","gusheMarks":0,"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[9],"num2":[8]}}],
+    ["cancel-one-loss","content","end","compareMultiple","chooseToCompare","A","B",["o","o","D:h","o"],[9,8],{"pairPlayer":"A","pairTarget":"B","cards":["A-bid","B-bid"],"points":[9,8],"winner":"A","gusheMarks":0,"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[9],"num2":[8]}}],
+    ["cancel-one-loss","display","compare","chooseToCompare","gushe","A","D",["o","o","D:h","o"],[9,10],{"cards":["A-bid","D-bid"],"targets":["D"]}],
+    ["cancel-one-loss","request","showCardsAfter","showCards","chooseToCompare","D",null,["o","o","D:h","o"],null,{"cards":["D-bid"],"onlyTiming":true,"spectatorKnowledge":[[],[],[],[]]}],
+    ["cancel-one-loss","callback","showCardsAfter","showCards","chooseToCompare","D",null,["o","o","D:h","o"],null,{"callbackParent":"trigger","cards":["D-bid"],"onlyTiming":true,"spectatorKnowledge":[[],[],[],[]]}],
+    ["cancel-one-loss","request","compare","chooseToCompare","gushe","A","D",["o","o","D:h","o"],[9,10],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[9],"num2":[8]},"targets":["B","D","E"],"selectedCards":["A-bid","D-bid"],"compareMeanwhile":false,"cancelled":false,"finished":false,"index":1,"internalWinner":null}],
+    ["cancel-one-loss","callback","compare","chooseToCompare","gushe","A","D",["o","o","D:h","o"],[9,10],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[9],"num2":[8]},"targets":["B","D","E"],"selectedCards":["A-bid","D-bid"],"compareMeanwhile":false,"cancelled":false,"finished":false,"index":1,"internalWinner":null}],
+    ["cancel-one-loss","request","compareFixing","chooseToCompare","gushe","A","D",["o","o","D:h","o"],[9,10],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[9],"num2":[8]},"targets":["B","D","E"],"selectedCards":["A-bid","D-bid"],"compareMeanwhile":false,"cancelled":false,"finished":false,"index":1,"internalWinner":null}],
+    ["cancel-one-loss","callback","compareFixing","chooseToCompare","gushe","A","D",["o","o","D:h","o"],[9,10],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[9],"num2":[8]},"targets":["B","D","E"],"selectedCards":["A-bid","D-bid"],"compareMeanwhile":false,"cancelled":false,"finished":false,"index":1,"internalWinner":null}],
+    ["cancel-one-loss","content","begin","compareMultiple","chooseToCompare","A","D",["o","o","D:h","o"],[9,10],{"pairPlayer":"A","pairTarget":"D","cards":["A-bid","D-bid"],"points":[9,10],"winner":"D","gusheMarks":0,"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[9,9],"num2":[8,10]}}],
+    ["cancel-one-loss","content","end","compareMultiple","chooseToCompare","A","D",["o","o","D:h","o"],[9,10],{"pairPlayer":"A","pairTarget":"D","cards":["A-bid","D-bid"],"points":[9,10],"winner":"D","gusheMarks":1,"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[9,9],"num2":[8,10]}}],
+    ["cancel-one-loss","display","compare","chooseToCompare","gushe","A","E",["o","o","D:h","o"],[9,12],{"cards":["A-bid","E-bid"],"targets":["E"]}],
+    ["cancel-one-loss","request","showCardsAfter","showCards","chooseToCompare","E",null,["o","o","D:h","o"],null,{"cards":["E-bid"],"onlyTiming":true,"spectatorKnowledge":[[],[],[],[]]}],
+    ["cancel-one-loss","callback","showCardsAfter","showCards","chooseToCompare","E",null,["o","o","D:h","o"],null,{"callbackParent":"trigger","cards":["E-bid"],"onlyTiming":true,"spectatorKnowledge":[[],[],[],[]]}],
+    ["cancel-one-loss","request","compare","chooseToCompare","gushe","A","E",["o","o","D:h","o"],[9,12],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[9,9],"num2":[8,10]},"targets":["B","D","E"],"selectedCards":["A-bid","E-bid"],"compareMeanwhile":false,"cancelled":false,"finished":false,"index":2,"internalWinner":null}],
+    ["cancel-one-loss","callback","compare","chooseToCompare","gushe","A","E",["o","o","D:h","o"],[9,12],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[9,9],"num2":[8,10]},"targets":["B","D","E"],"selectedCards":["A-bid","E-bid"],"compareMeanwhile":false,"cancelled":false,"finished":false,"index":2,"internalWinner":null}],
+    ["cancel-one-loss","request","compareFixing","chooseToCompare","gushe","A","E",["o","o","D:h","o"],[9,12],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[9,9],"num2":[8,10]},"targets":["B","D","E"],"selectedCards":["A-bid","E-bid"],"compareMeanwhile":false,"cancelled":false,"finished":false,"index":2,"internalWinner":null}],
+    ["cancel-one-loss","callback","compareFixing","chooseToCompare","gushe","A","E",["o","o","D:h","o"],[9,12],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[9,9],"num2":[8,10]},"targets":["B","D","E"],"selectedCards":["A-bid","E-bid"],"compareMeanwhile":false,"cancelled":false,"finished":false,"index":2,"internalWinner":null}],
+    ["cancel-one-loss","content","begin","compareMultiple","chooseToCompare","A","E",["o","o","D:h","o"],[9,12],{"pairPlayer":"A","pairTarget":"E","cards":["A-bid","E-bid"],"points":[9,12],"winner":"E","gusheMarks":1,"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[9,9,9],"num2":[8,10,12]}}],
+    ["cancel-one-loss","content","end","compareMultiple","chooseToCompare","A","E",["o","o","D:h","o"],[9,12],{"pairPlayer":"A","pairTarget":"E","cards":["A-bid","E-bid"],"points":[9,12],"winner":"E","gusheMarks":2,"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[9,9,9],"num2":[8,10,12]}}],
+    ["cancel-one-loss","request","chooseToCompareEnd","chooseToCompare","gushe","A","E",["o","o","D:h","o"],[9,12],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[9,9,9],"num2":[8,10,12]},"targets":["B","D","E"],"selectedCards":["A-bid","E-bid"],"compareMeanwhile":false,"cancelled":false,"finished":true}],
+    ["cancel-one-loss","callback","chooseToCompareEnd","chooseToCompare","gushe","A","E",["o","o","D:h","o"],[9,12],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[9,9,9],"num2":[8,10,12]},"targets":["B","D","E"],"selectedCards":["A-bid","E-bid"],"compareMeanwhile":false,"cancelled":false,"finished":true}],
+    ["cancel-one-loss","request","chooseToCompareAfter","chooseToCompare","gushe","A","E",["o","o","D:h","o"],[9,12],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[9,9,9],"num2":[8,10,12]},"targets":["B","D","E"],"selectedCards":["A-bid","E-bid"],"compareMeanwhile":false,"cancelled":false,"finished":true}],
+    ["cancel-one-loss","callback","chooseToCompareAfter","chooseToCompare","gushe","A","E",["o","o","D:h","o"],[9,12],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[9,9,9],"num2":[8,10,12]},"targets":["B","D","E"],"selectedCards":["A-bid","E-bid"],"compareMeanwhile":false,"cancelled":false,"finished":true}],
+    ["cancel-one-loss","request","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,null,["d","d","D:h","d"],null,{"cards":["A-bid","B-bid","E-bid"]}],
+    ["cancel-one-loss","callback","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,null,["d","d","D:h","d"],null,{"callbackParent":"trigger","cards":["A-bid","B-bid","E-bid"]}],
+    ["cancel-root","request","chooseToCompareBefore","chooseToCompare","twdanlie","A",null,["A:h","B:h","D:h","E:h"],null,{"result":null,"targets":["E","B","D"],"selectedCards":[null,null],"compareMeanwhile":false,"cancelled":false,"finished":false,"fixedResultSupplied":false}],
+    ["cancel-root","request","chooseToCompareBegin","chooseToCompare","twdanlie","A",null,["A:h","B:h","D:h","E:h"],null,{"result":null,"targets":["E","B","D"],"selectedCards":[null,null],"compareMeanwhile":false,"cancelled":false,"finished":false}],
+    ["cancel-root","request","chooseCardOLBegin","chooseCardOL","chooseToCompare","A",null,["A:h","B:h","D:h","E:h"],null,{"participants":["A","B","D","E"],"selected":[]}],
+    ["cancel-root","request","chooseCardBegin","chooseCard","chooseCardOL","A",null,["A:h","B:h","D:h","E:h"],null,{"offered":["A-bid","A-other"],"selected":[],"chooserKnowledge":[["A-bid","A-other"],[],[],[]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":false}],
+    ["cancel-root","request","chooseCardAfter","chooseCard","chooseCardOL","A",null,["A:h","B:h","D:h","E:h"],null,{"offered":["A-bid","A-other"],"selected":["A-bid"],"chooserKnowledge":[["A-bid","A-other"],[],[],[]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":true}],
+    ["cancel-root","request","chooseCardBegin","chooseCard","chooseCardOL","B",null,["A:h","B:h","D:h","E:h"],null,{"offered":["B-bid","B-other"],"selected":[],"chooserKnowledge":[[],["B-bid","B-other"],[],[]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":false}],
+    ["cancel-root","request","chooseCardAfter","chooseCard","chooseCardOL","B",null,["A:h","B:h","D:h","E:h"],null,{"offered":["B-bid","B-other"],"selected":["B-bid"],"chooserKnowledge":[[],["B-bid","B-other"],[],[]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":true}],
+    ["cancel-root","request","chooseCardBegin","chooseCard","chooseCardOL","D",null,["A:h","B:h","D:h","E:h"],null,{"offered":["D-bid","D-other"],"selected":[],"chooserKnowledge":[[],[],["D-bid","D-other"],[]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":false}],
+    ["cancel-root","request","chooseCardAfter","chooseCard","chooseCardOL","D",null,["A:h","B:h","D:h","E:h"],null,{"offered":["D-bid","D-other"],"selected":["D-bid"],"chooserKnowledge":[[],[],["D-bid","D-other"],[]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":true}],
+    ["cancel-root","request","chooseCardBegin","chooseCard","chooseCardOL","E",null,["A:h","B:h","D:h","E:h"],null,{"offered":["E-bid","E-other"],"selected":[],"chooserKnowledge":[[],[],[],["E-bid","E-other"]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":false}],
+    ["cancel-root","request","chooseCardAfter","chooseCard","chooseCardOL","E",null,["A:h","B:h","D:h","E:h"],null,{"offered":["E-bid","E-other"],"selected":["E-bid"],"chooserKnowledge":[[],[],[],["E-bid","E-other"]],"spectatorKnowledge":[[],[],[],[]],"spectatorFaces":[],"finished":true}],
+    ["cancel-root","request","chooseCardOLAfter","chooseCardOL","chooseToCompare","A",null,["A:h","B:h","D:h","E:h"],null,{"participants":["A","B","D","E"],"selected":[["A-bid"],["B-bid"],["D-bid"],["E-bid"]]}],
+    ["cancel-root","callback","chooseCardOLAfter","chooseCardOL","chooseToCompare","A",null,["A:h","B:h","D:h","E:h"],null,{"callbackParent":"trigger","participants":["A","B","D","E"],"selected":[["A-bid"],["B-bid"],["D-bid"],["E-bid"]]}],
+    ["cancel-root","request","loseAsyncBegin","loseAsync","chooseToCompare",null,null,["A:h","B:h","D:h","E:h"],null,{"batch":[["A",["A-bid"]],["B",["B-bid"]],["D",["D-bid"]],["E",["E-bid"]]]}],
+    ["cancel-root","callback","loseAsyncBegin","loseAsync","chooseToCompare",null,null,["A:h","B:h","D:h","E:h"],null,{"callbackParent":"trigger","batch":[["A",["A-bid"]],["B",["B-bid"]],["D",["D-bid"]],["E",["E-bid"]]]}],
+    ["cancel-root","request","loseBefore","lose","loseAsync","A",null,["A:h","B:h","D:h","E:h"],null,{"cards":["A-bid"],"relatedCompare":true}],
+    ["cancel-root","callback","loseBefore","lose","loseAsync","A",null,["A:h","B:h","D:h","E:h"],null,{"callbackParent":"trigger","cards":["A-bid"],"relatedCompare":true}],
+    ["cancel-root","request","loseAfter","lose","loseAsync","A",null,["o","B:h","D:h","E:h"],null,{"cards":["A-bid"],"relatedCompare":true}],
+    ["cancel-root","callback","loseAfter","lose","loseAsync","A",null,["o","B:h","D:h","E:h"],null,{"callbackParent":"trigger","cards":["A-bid"],"relatedCompare":true}],
+    ["cancel-root","request","loseBefore","lose","loseAsync","B",null,["o","B:h","D:h","E:h"],null,{"cards":["B-bid"],"relatedCompare":true}],
+    ["cancel-root","callback","loseBefore","lose","loseAsync","B",null,["o","B:h","D:h","E:h"],null,{"callbackParent":"trigger","cards":["B-bid"],"relatedCompare":true}],
+    ["cancel-root","request","loseAfter","lose","loseAsync","B",null,["o","o","D:h","E:h"],null,{"cards":["B-bid"],"relatedCompare":true}],
+    ["cancel-root","callback","loseAfter","lose","loseAsync","B",null,["o","o","D:h","E:h"],null,{"callbackParent":"trigger","cards":["B-bid"],"relatedCompare":true}],
+    ["cancel-root","request","loseBefore","lose","loseAsync","D",null,["o","o","D:h","E:h"],null,{"cards":["D-bid"],"relatedCompare":true}],
+    ["cancel-root","callback","loseBefore","lose","loseAsync","D",null,["o","o","D:h","E:h"],null,{"callbackParent":"trigger","cards":["D-bid"],"relatedCompare":true}],
+    ["cancel-root","request","loseAfter","lose","loseAsync","D",null,["o","o","o","E:h"],null,{"cards":["D-bid"],"relatedCompare":true}],
+    ["cancel-root","callback","loseAfter","lose","loseAsync","D",null,["o","o","o","E:h"],null,{"callbackParent":"trigger","cards":["D-bid"],"relatedCompare":true}],
+    ["cancel-root","request","loseBefore","lose","loseAsync","E",null,["o","o","o","E:h"],null,{"cards":["E-bid"],"relatedCompare":true}],
+    ["cancel-root","callback","loseBefore","lose","loseAsync","E",null,["o","o","o","E:h"],null,{"callbackParent":"trigger","cards":["E-bid"],"relatedCompare":true}],
+    ["cancel-root","request","loseAfter","lose","loseAsync","E",null,["o","o","o","o"],null,{"cards":["E-bid"],"relatedCompare":true}],
+    ["cancel-root","callback","loseAfter","lose","loseAsync","E",null,["o","o","o","o"],null,{"callbackParent":"trigger","cards":["E-bid"],"relatedCompare":true}],
+    ["cancel-root","request","loseAsyncAfter","loseAsync","chooseToCompare",null,null,["o","o","o","o"],null,{"batch":[["A",["A-bid"]],["B",["B-bid"]],["D",["D-bid"]],["E",["E-bid"]]]}],
+    ["cancel-root","callback","loseAsyncAfter","loseAsync","chooseToCompare",null,null,["o","o","o","o"],null,{"callbackParent":"trigger","batch":[["A",["A-bid"]],["B",["B-bid"]],["D",["D-bid"]],["E",["E-bid"]]]}],
+    ["cancel-root","request","compareCardShowBefore","chooseToCompare","twdanlie","A",null,["o","o","o","o"],[10,null],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[],"num2":[],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid",null],"compareMeanwhile":true,"cancelled":false,"finished":false}],
+    ["cancel-root","callback","compareCardShowBefore","chooseToCompare","twdanlie","A",null,["o","o","o","o"],[10,null],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[],"num2":[],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid",null],"compareMeanwhile":true,"cancelled":false,"finished":false}],
+    ["cancel-root","request","chooseToCompareCancelled","chooseToCompare","twdanlie","A",null,["o","o","o","o"],[10,null],{"result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[],"num2":[],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid",null],"compareMeanwhile":true,"cancelled":true,"finished":false}],
+    ["cancel-root","callback","chooseToCompareCancelled","chooseToCompare","twdanlie","A",null,["o","o","o","o"],[10,null],{"callbackParent":"trigger","result":{"player":"A-bid","targets":["B-bid","D-bid","E-bid"],"num1":[],"num2":[],"winner":null},"targets":["B","D","E"],"selectedCards":["A-bid",null],"compareMeanwhile":true,"cancelled":true,"finished":true}],
+    ["cancel-root","request","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,null,["d","d","d","d"],null,{"cards":["A-bid","B-bid","D-bid","E-bid"]}],
+    ["cancel-root","callback","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,null,["d","d","d","d"],null,{"callbackParent":"trigger","cards":["A-bid","B-bid","D-bid","E-bid"]}],
+    ["cancel-root","request","loseHpAfter","loseHp","twdanlie","A",null,["d","d","d","d"],null,{"hp":2,"source":null}]
+  ]
+}
