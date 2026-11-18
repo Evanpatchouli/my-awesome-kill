@@ -49,6 +49,21 @@
 
 `compare-boundaries.json` 用四局两席拼点观测已知手牌和取消边界。第三席原先认识 A 的一张桃；A 暗付这张桃或另一张牌时，其余手牌的旧知情记录都在 A 的 `loseAfter` 清除。双方已支付后在 `compareCardShowBefore` 取消，根事件没有比较结果，两张实体在收尾各弃置一次。仅取消 B 的 `loseBefore` 时，外层仍按原先锁定的两张牌结算 10 比 5，A 的材料弃置，B 的仍在手中。
 
+`phase-scheduling.json` 在八席身份局运行原版当先和放权。A 至 H 从自然循环起始席编号，`A1`、`A2`、`A3` 依次表示 A 开始处理的三次回合事件。夹具移除随机武将技能，设置体力、牌区、牌堆顶和 AI 偏好。浏览器席也开启托管，选牌、支付、判定、技能效果及调度均由原版执行。
+
+- A 的自然回合与额外回合均在 `phaseBegin` 实际执行当先，把带来源的 `phaseUse` 插到准备阶段之前。两个回合的阶段索引 0 和 4 各使用一次实体杀。每段首次原版选牌允许杀，第二次仍持有其他杀，但原版过滤拒绝。普通段在 `phaseUseBefore` 请求前已将杀的使用统计重置为零，同回合历史仍计入前一段。四张杀均由 A 手牌经处理区进入弃牌堆，H 从 9 体力降到 5。
+- B 和 E 接受放权后，原版只请求其出牌阶段的 `phaseUseBefore`、`phaseUseCancelled`。取消请求时阶段尚未结束，放权标记尚未添加。首个取消回调时两项状态均已更新。结束时各自通过真实选择先弃一张指定手牌，再强制选择其他席。C 拒绝首次选择，继续出牌阶段。D 接受跳过但拒绝付牌，手牌保留且没有选人，待授予标记在 `phaseAfter` 请求后、首个回调前移除。
+- 放权创建的回合以 `phaseLoop` 为父，与自然回合同层，来源为 `fangquan2`。授予者完成 `phaseAfter` 后处理额外回合，随后 `phaseOver` 仍属于授予者所在的自然席，下一自然席分别为 C 和 F。A2 增加全局回合号，轮号仍为 1。G1 遇到翻面被取消，全局回合号增加，但没有设定当前席或增加 G 的个人回合号。请求 `phaseCancelled` 时 G 仍背面朝上，首个实际回调已正面朝上，随后解除放权授予标记。G2 正常进入自然回合。
+- C 的摸牌阶段由 `Player.skip` 跳过。H 的乐不思蜀以黑桃 8 判定失败，原版效果登记跳过出牌。两者都只有对应的 `Skipped` 阶段时机。A1 正常从牌堆摸两张指定实体牌，并在弃牌阶段经强制选牌弃去其中一张。H1 结束后请求第 1 轮的 `roundEnd`，A3 的 `roundStart` 进入第 2 轮，采集到该回合第一次 `phaseBegin` 回调为止。
+
+时机请求、首个观察技能回调与实际技能或乐不思蜀内容分别记为 `request`、`callback`、`content`。`stage` 和 `state` 使用各自的列名表，`state.flags` 使用 `flagColumns`。当前席为空表示原版尚未赋值或已经清除该状态。牌区前缀为持有席，`c`、`o`、`d`、`s` 分别为牌堆、处理区、弃牌堆、暂存区。
+
+`phase-queue.json` 在另一局八席身份牌桌用观察技能直接调用上游 `Player.insertPhase`，并用原版 `die` 让排队的非主公 E 死亡。`operation` 给出每次调用使用的前插参数与队列前后状态。第一轮的 A 自然回合结束时追加 C、D、E，再把 B 前插到尚未出队的 A 之前。
+
+- A 的 `phaseAfter` 请求仍显示 B 在队首。随后的第一个额外回合是 C，B 的额外事件已不在队列、未开始也未完成。B 随后正常进入自然回合。这个样本覆盖已有自然回合占队首时调用 `insertPhase(source, true)` 的行为。
+- C 在自己的额外回合中再追加 F，F 排在已经等待的 D、E 后。C、D、E、F 全部处理完后才请求 A 的 `phaseOver` 并推进自然席。
+- E 死亡后队列仍持有其额外回合。该事件带 `forceDie` 和 `includeOut`，更新全局、个人回合号和当前席，处理回合首尾时机。E 的六个阶段均未开始，也没有请求 `phaseCancelled`。自然循环随后走到死席 E 时只请求 `phaseOver`，继续到 F 自然回合。
+
 ## 复现
 
 `hp-cancel.json` 在八席身份局用红桃 4 火杀对两名横置角色验证体力子事件。B 有 1 点护甲，伤害为 2。取消 `changeHpBefore` 保留 B 的 4 点体力、护甲和横置状态，伤害历史仍记录 A 对 B 的 2 点伤害。取消 `changeHpEnd` 时 B 已降到 3 点体力、消耗护甲并解除横置，之后 C 受到 2 点传导伤害。两次取消都触发 `changeHpCancelled`，父伤害的 `damage`、`damageSource`、`damageEnd`、`damageAfter` 继续执行。76 条记录同时包含时机请求、实际回调、实体伤害历史是否已存在及当时的护甲吸收值。
@@ -69,9 +84,11 @@
    node scripts/reference-trace.mjs --scenario compare --check tests/reference/compare.json
    node scripts/reference-trace.mjs --scenario qiaoshui-targets --check tests/reference/qiaoshui-targets.json
    node scripts/reference-trace.mjs --scenario compare-boundaries --check tests/reference/compare-boundaries.json
+   node scripts/reference-trace.mjs --scenario phase-scheduling --check tests/reference/phase-scheduling.json
+   node scripts/reference-trace.mjs --scenario phase-queue --check tests/reference/phase-queue.json
    node scripts/reference-trace.mjs --scenario zhongyi-expansion --check tests/reference/zhongyi-expansion.json
    node scripts/reference-trace.mjs --scenario zhongyi-boundaries --check tests/reference/zhongyi-boundaries.json
    node scripts/reference-trace.mjs --scenario zhongyi-transit-death --check tests/reference/zhongyi-transit-death.json
    ```
 
-运行器在隔离浏览器内核对八个共同上游源文件的 LF 归一化 SHA-256。重铸、连环伤害和巧说目标场景还校验 `card/extra.js`，重铸知情状态、拼点和额外忠义场景另核对 `element/card.js`，连环伤害、拼点和巧说目标另校验 `character/yijiang/skill.js`，忠义和巧说目标另校验 `character/standard/skill.js`。忠义边界同时核对牌区和知情查询、出牌选择及标记弹层涉及的源文件。忠义中转死亡核对牌区查询和负责中断事件步骤的编译器源文件。随后执行场景并逐项比较事件和结果。整个检出的版本由第 1 步确认。`--write <path>` 用于重新采集，默认将结果写至标准输出。
+运行器在隔离浏览器内核对八个共同上游源文件的 LF 归一化 SHA-256。重铸、连环伤害和巧说目标场景还校验 `card/extra.js`，重铸知情状态、拼点和额外忠义场景另核对 `element/card.js`，连环伤害、拼点和巧说目标另校验 `character/yijiang/skill.js`，忠义和巧说目标另校验 `character/standard/skill.js`。忠义边界同时核对牌区和知情查询、出牌选择及标记弹层涉及的源文件。忠义中转死亡核对牌区查询和负责中断事件步骤的编译器源文件。阶段调度另外校验当先和放权所在的两个技能包、牌区查询和事件步骤编译器。随后执行场景并逐项比较事件和结果。整个检出的版本由第 1 步确认。`--write <path>` 用于重新采集，默认将结果写至标准输出。

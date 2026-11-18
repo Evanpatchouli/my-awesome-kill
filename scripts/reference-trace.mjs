@@ -11,6 +11,8 @@ import { checkReferenceHp, installReferenceHp } from './reference-hp.mjs';
 import { checkReferenceExpansion, installReferenceExpansion } from './reference-expansion.mjs';
 import { checkZhongyiBoundaries, installZhongyiBoundaries } from './reference-zhongyi-boundaries.mjs';
 import { checkZhongyiTransitDeath, installZhongyiTransitDeath } from './reference-zhongyi-transit-death.mjs';
+import { checkPhaseScheduling, installPhaseScheduling } from './reference-phase-scheduling.mjs';
+import { checkPhaseQueue, installPhaseQueue } from './reference-phase-queue.mjs';
 
 // This is an optional oracle runner. It needs a running, separate upstream dev
 // server and Playwright; neither is a runtime dependency of the game.
@@ -47,6 +49,8 @@ const descriptions = new Map([
   ['zhongyi-expansion', 'zhongyi expansion, limited use and cleanup at the next round'],
   ['zhongyi-boundaries', 'active zhongyi, expansion interruptions, holder death and stacked damage'],
   ['zhongyi-transit-death', 'holder death during zhongyi material transit through the public special pile'],
+  ['phase-scheduling', 'dangxian play segments and fangquan extra turns in one natural seat cycle'],
+  ['phase-queue', 'insertPhase queue ordering, a nested append, and a queued player who dies'],
   ['damage-callback-cancel', 'damage callback cancellation after HP change for physical sha'],
   ['hp-cancel', 'cancelling changeHpBefore and changeHpEnd during a linked armored fire sha'],
 ]);
@@ -66,10 +70,10 @@ if (['zhongyi-expansion', 'zhongyi-boundaries', 'zhongyi-transit-death', 'qiaosh
 }
 if (isRecast || ['linked-damage', 'qiaoshui-targets'].includes(scenario)) sourceHashes['/card/extra.js'] = '8a73678a49b4fc413d6dc0d506733e594fae619d91dc8013cd441a6cd107c35d';
 if (['recast-callbacks', 'compare', 'compare-boundaries', 'zhongyi-boundaries', 'zhongyi-transit-death'].includes(scenario)) sourceHashes['/noname/library/element/card.js'] = '5d3a07fadafa1c5661ec197edb8c71f613b3db1129933fdf7d8aa311f5811f8d';
-if (['zhongyi-boundaries', 'zhongyi-transit-death'].includes(scenario)) {
+if (['zhongyi-boundaries', 'zhongyi-transit-death', 'phase-scheduling', 'phase-queue'].includes(scenario)) {
   sourceHashes['/noname/get/index.js'] = '8515ed7242d2638720180507a778cb273d8f33743eac12c5237d2f50e805823d';
 }
-if (scenario === 'zhongyi-transit-death') {
+if (['zhongyi-transit-death', 'phase-scheduling', 'phase-queue'].includes(scenario)) {
   sourceHashes['/noname/library/element/GameEvent/compilers/ContentCompilerBase.ts'] = 'ea0174cdbc2ce664532335df11e120efa45b5c35253ecba5f28a73e0271c6cee';
   sourceHashes['/noname/library/element/GameEvent/compilers/ArrayCompiler.ts'] = '78d495e8871751bc38749775c1b402f810e234547ab4e6a12565160d4950853e';
 }
@@ -80,7 +84,10 @@ if (scenario === 'zhongyi-boundaries') {
   sourceHashes['/noname/ui/create/index.js'] = '460073e1c3a230a0c78daa4ada32c468b0c616fa3d13c633cc8519a41d582b44';
   sourceHashes['/noname/library/element/dialog.js'] = '24893150df03829703e56c3156f63c784d536f42d1168d77674a167124521b03';
 }
-if (['linked-damage', 'compare', 'qiaoshui-targets'].includes(scenario)) sourceHashes['/character/yijiang/skill.js'] = '5b0eb965a8428535bf3cd7d369c261b8ad95cccbeac8d8c817cad3490643a54f';
+if (['linked-damage', 'compare', 'qiaoshui-targets', 'phase-scheduling'].includes(scenario)) sourceHashes['/character/yijiang/skill.js'] = '5b0eb965a8428535bf3cd7d369c261b8ad95cccbeac8d8c817cad3490643a54f';
+if (scenario === 'phase-scheduling') {
+  sourceHashes['/character/shenhua/skill.js'] = '7e87ec26c3f183b83878f886e3872bd78a0f69a5e51e7f46a64bfcc79362cd62';
+}
 
 const browser = await chromium.launch({ headless: true, executablePath });
 const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
@@ -117,6 +124,10 @@ try {
     await context.addInitScript(installZhongyiBoundaries);
   } else if (scenario === 'zhongyi-transit-death') {
     await context.addInitScript(installZhongyiTransitDeath);
+  } else if (scenario === 'phase-scheduling') {
+    await context.addInitScript(installPhaseScheduling);
+  } else if (scenario === 'phase-queue') {
+    await context.addInitScript(installPhaseQueue);
   } else if (scenario === 'compare-boundaries') {
     await context.addInitScript(installCompareBoundaries);
   } else if (scenario === 'compare') {
@@ -327,6 +338,8 @@ try {
     const fixtures = ['reference_fixture_setup'];
     if (scenario === 'compare') await window.__installReferenceCompare({ lib, game, ui, get, _status });
     else if (scenario === 'qiaoshui-targets') await window.__installQiaoshuiTargets({ lib, game, ui, get, _status });
+    else if (scenario === 'phase-scheduling') await window.__installPhaseScheduling({ lib, game, ui, get, _status });
+    else if (scenario === 'phase-queue') window.__installPhaseQueue({ lib, game, ui, _status });
     else fixtures.push('reference_fixture_use');
     for (const skill of fixtures) {
       game.finishSkill(skill);
@@ -362,6 +375,8 @@ try {
   if (scenario === 'zhongyi-expansion') checkReferenceExpansion(captured.value);
   if (scenario === 'zhongyi-boundaries') checkZhongyiBoundaries(captured.value);
   if (scenario === 'zhongyi-transit-death') checkZhongyiTransitDeath(captured.value);
+  if (scenario === 'phase-scheduling') checkPhaseScheduling(captured.value);
+  if (scenario === 'phase-queue') checkPhaseQueue(captured.value);
   if (scenario === 'recast-callbacks') checkReferenceRecastCallbacks(captured.value);
   if (scenario === 'sha-no-shan') assert.deepEqual(captured.value.final, {
     targetHp: 3, cardPosition: 'd', inActorHand: false, inDiscard: true, useCount: 1, targetAlive: true,
