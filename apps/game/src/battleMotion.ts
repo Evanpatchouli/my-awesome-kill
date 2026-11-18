@@ -1,7 +1,11 @@
 import type { Card } from '@mak/rules'
 
 export type FeedbackEvent =
-  | { type: 'play' | 'respond' | 'equip' | 'judge' | 'discard'; seat: number; cards: Card[] }
+  | {
+    type: 'play' | 'respond' | 'equip' | 'judge' | 'discard'
+    seat: number
+    cards: Pick<Card, 'id' | 'kind' | 'name'>[]
+  }
   | { type: 'draw' | 'damage' | 'heal'; seat: number; amount: number }
 
 export function motionStep(events: readonly FeedbackEvent[]) {

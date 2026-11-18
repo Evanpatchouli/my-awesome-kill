@@ -14,6 +14,8 @@ pnpm workspace 组织 Tauri 2、Vite 8、Vue 3、vue-router、Pinia 应用。Rus
 
 `apps/game/src/ClassicSelection.vue` 使用标准武将数据和本地原图；`ClassicBattle.vue` 展示各席的公开资料，维护局部选择草稿。选择分支由服务端投影给出，客户端按版本提交。Pinia 的 `game.ts` 管理 WASM 实例的生命周期、动作锁、电脑决策节奏和战绩重试。换局或离开会释放实例并取消旧回调。
 
-原始武将、卡牌和当前使用的主题资源在 `apps/game/src/assets/standard`。Tailwind/CSS 管布局和基础交互，GSAP 根据结算事件列表播放牌的移动与体力反馈，@vueuse/motion 负责装饰性入场。开启减动效时显示结果和操作提示。
+原始标准武将、卡牌和主题资源在 `apps/game/src/assets/standard`。扩展牌铁索连环的原图在 `apps/game/src/assets/extra/card/tiesuo.png`，来源为 noname 提交 `c73270948d72949aa80009536b9fd5400767d091` 的 `apps/core/image/card/tiesuo.png`。火杀和雷杀沿用同一提交的 `sha.png`，牌名和属性伤害取自当前观察席可见的 Rust 投影。
+
+Tailwind/CSS 管布局和基础交互，GSAP 根据结算事件列表播放牌的移动与体力反馈，@vueuse/motion 负责装饰性入场。开启减动效时显示结果和操作提示。
 
 `persistence.ts` 将原生战绩交给 `apps/game/src-tauri/src/lib.rs`；SQLite 按对局 ID 去重。浏览器以本站 localStorage 保存战绩。中途离开会放弃本局；写入失败的完局记录在重试队列中保留。

@@ -37,6 +37,8 @@
   margin: 0;
   padding: 9px 10px 9px 30px;
   background: #f3e9da;
+  color: #37291e;
+  text-shadow: none;
   border: 1px solid #ae9a80;
 }
 .classic-opponents {
@@ -123,8 +125,9 @@
 }
 .target-number {
   position: absolute;
-  right: 0;
-  top: 0;
+  right: 3px;
+  bottom: 3px;
+  z-index: 2;
   border-radius: 50%;
   background: #983e2c;
   color: white;
@@ -494,6 +497,17 @@
 }
 .classic-zones span {
   color: #826448;
+}
+.classic-seat-state {
+  color: #742e1b;
+  font-size: 1.1em;
+  font-weight: 700;
+}
+.playing-card[data-nature='fire'] strong {
+  color: #9d321f;
+}
+.playing-card[data-nature='thunder'] strong {
+  color: #4a3569;
 }
 .classic-controls .classic-control-row button {
   border: 0;

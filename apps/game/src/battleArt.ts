@@ -1,3 +1,5 @@
+import tiesuo from './assets/extra/card/tiesuo.png'
+
 const portraits = import.meta.glob<string>('./assets/standard/character/*.jpg', { eager: true, query: '?url', import: 'default' })
 const cards = import.meta.glob<string>('./assets/standard/card/*.png', { eager: true, query: '?url', import: 'default' })
 
@@ -6,5 +8,6 @@ export function heroPortrait(heroId: string): string {
 }
 
 export function cardImage(cardKind: string): string {
+  if (cardKind === 'tiesuo') return tiesuo
   return cards[`./assets/standard/card/${cardKind}.png`] ?? ''
 }

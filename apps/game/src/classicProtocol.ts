@@ -25,6 +25,13 @@ export interface Entity {
   id: number
   kind: string
 }
+export type DamageNature = 'fire' | 'thunder'
+export type TableCard = Omit<Card, 'suit' | 'rank'> & { suit?: Card['suit']; rank?: number }
+const damageNames: Record<DamageNature, string> = { fire: '火焰', thunder: '雷电' }
+const tiesuo = {
+  name: '铁索连环',
+  description: '出牌阶段，对一至两名角色使用，分别横置或重置其武将牌。此牌可重铸。',
+}
 export interface Branch {
   id: number
   label: string
@@ -49,6 +56,9 @@ export interface SeatView {
   hero: string
   role: keyof typeof roles | null
   alive: boolean
+  linked?: boolean
+  turnedOver?: boolean
+  armor?: number
   hp: number
   maxHp: number
   handCount: number
@@ -84,6 +94,10 @@ interface EventRecord {
   kind?: string
   skill?: string
   role?: keyof typeof roles
+  nature?: DamageNature
+  linked?: boolean
+  turnedOver?: boolean
+  delta?: number
 }
 export interface TableView {
   version: number
@@ -104,21 +118,27 @@ export interface TableView {
   virtualPlays: { kind: string; branch: Branch }[]
   skillPlays: { skill: string; branch: Branch }[]
   privateChoiceCards: Entity[]
+  cardFaces?: { id: number; suit: Card['suit']; rank: number }[]
+  cardNatures?: Record<number, DamageNature>
 }
-export const cardName = (kind: string) => definitions[kind]?.name ?? kind
-export function faceOf(card: Entity): Card {
-  const d = deck[card.id]
-  const def = definitions[card.kind]
+const definition = (kind: string) => (kind === 'tiesuo' ? tiesuo : definitions[kind])
+export function cardName(kind: string, nature?: DamageNature) {
+  if (kind === 'sha' && nature) return nature === 'fire' ? '火杀' : '雷杀'
+  return definition(kind)?.name ?? kind
+}
+export function faceOf(view: TableView, card: Entity): TableCard {
+  const printed = view.cardFaces?.find((face) => face.id === card.id) ?? deck[card.id]
+  const nature = card.kind === 'sha' ? view.cardNatures?.[card.id] : undefined
   return {
-    id: card.id,
-    kind: card.kind,
-    name: cardName(card.kind),
-    suit: d.suit as Card['suit'],
-    rank: d.rank,
-    description: def?.description ?? '',
+    ...card,
+    name: cardName(card.kind, nature),
+    suit: printed?.suit as Card['suit'] | undefined,
+    rank: printed?.rank,
+    description: nature
+      ? `对攻击范围内的一名对手使用。若其未打出闪，造成1点${damageNames[nature]}伤害。`
+      : definition(card.kind)?.description ?? '',
   }
 }
-export const cardById = (id: number) => faceOf(deck[id])
 export function seatName(view: TableView, id: number | undefined) {
   const seat = view.seats.find((s) => s.id === id)
   return seat ? (generalById.get(seat.hero)?.name ?? seat.hero) : '牌堆'
@@ -136,6 +156,7 @@ const cardEffects: Partial<Record<string, 'play' | 'respond' | 'equip' | 'judge'
 
 function isPresentationEvent(e: EventRecord) {
   if (e.type === 'draw') return e.status === 'finished' && (e.amount ?? 0) > 0
+  if (['link', 'turnOver', 'changeArmor', 'damage'].includes(e.type)) return e.status === 'finished'
   return e.status === 'started'
 }
 
@@ -156,7 +177,7 @@ export function visualEvents(view: TableView): FeedbackEvent[] {
       const type = e.type === 'useCost' && !announced.has(e.card.id) ? 'play' : cardEffects[e.type]
       if (type) {
         announced.add(e.card.id)
-        cues.push({ type, seat: e.seat, cards: [faceOf(e.card)] })
+        cues.push({ type, seat: e.seat, cards: [faceOf(view, e.card)] })
       }
     }
   }
@@ -177,12 +198,19 @@ export function describeEvent(view: TableView, e: EventRecord): string | undefin
   const who = seatName(view, e.seat)
   if (e.card && cardEffects[e.type] && e.type !== 'reveal') {
     const verb = e.type === 'equip' ? '装备' : cardEffects[e.type] === 'respond' ? '打出' : '使用'
-    return `${who}${verb}【${cardName(e.card.kind)}】${e.target == null ? '' : ' → ' + seatName(view, e.target)}`
+    const target = e.target == null ? '' : ' → ' + seatName(view, e.target)
+    return `${who}${verb}【${faceOf(view, e.card).name}】${target}`
   }
   if (e.type === 'useVirtual' && e.kind) return `${who}使用转化牌【${cardName(e.kind)}】`
-  if (e.type === 'recastReveal' && e.card) return `${who}重铸【${cardName(e.card.kind)}】`
-  if (e.type === 'reveal' && e.card) return `${who}判定亮出【${cardName(e.card.kind)}】`
-  if (e.type === 'changeHp') return `${who}体力 ${e.before} → ${e.after}`
+  if (e.type === 'recastReveal' && e.card) return `${who}重铸【${faceOf(view, e.card).name}】`
+  if (e.type === 'reveal' && e.card) return `${who}判定亮出【${faceOf(view, e.card).name}】`
+  if (e.type === 'link') return `${who}${e.linked ? '横置' : '解除横置'}`
+  if (e.type === 'turnOver') return `${who}的武将牌翻至${e.turnedOver ? '背面' : '正面'}`
+  if (e.type === 'changeArmor' && e.delta)
+    return `${who}的护甲${e.delta > 0 ? '增加' : '减少'}${Math.abs(e.delta)}点`
+  if (e.type === 'damage' && e.nature && e.target != null)
+    return `${seatName(view, e.target)}受到${e.amount}点${damageNames[e.nature]}伤害`
+  if (e.type === 'changeHp' && e.before !== e.after) return `${who}体力 ${e.before} → ${e.after}`
   if (e.type === 'death') return `${seatName(view, e.target)}阵亡 · ${e.role ? roles[e.role] : ''}`
   if (e.type === 'draw') return `${who}摸了${e.amount}张牌`
   if (e.type === 'skill' && e.skill) return `${who}发动【${skillName(e.skill)}】`

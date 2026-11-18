@@ -46,3 +46,8 @@ for (const kind of kinds) {
   assert.equal(await digest(assets, file), await digest(reference, 'image/' + file), file)
 }
 console.log(`Verified ${generals.length} generals, ${deck.length} physical cards and ${kinds.size + generals.length} original images.`)
+
+const extraAssets = new URL('apps/game/src/assets/extra/', project)
+const tiesuo = 'card/tiesuo.png'
+assert.equal(await digest(extraAssets, tiesuo), await digest(reference, 'image/' + tiesuo), tiesuo)
+console.log('Verified the extra-pack Tiesuo illustration against the reference.')

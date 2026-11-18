@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import type { Card } from '@mak/rules'
 import BattleEffects from './BattleEffects.vue'
 import CardFace from './CardFace.vue'
 import HealthMeter from './HealthMeter.vue'
@@ -8,8 +7,6 @@ import ClassicSeatZones from './ClassicSeatZones.vue'
 import { heroPortrait } from './battleArt'
 import {
   counterPrompt,
-  cardById,
-  cardName,
   faceOf,
   factions,
   generalById,
@@ -50,7 +47,8 @@ const active = computed(
     !props.view.drawn &&
     props.view.waitingFor === props.view.humanSeat,
 )
-const hand = computed(() => me.value?.hand ?? [])
+const hand = computed(() => (me.value?.hand ?? []).map((card) => faceOf(props.view, card)))
+const resolving = computed(() => props.view.resolving.map((card) => faceOf(props.view, card)))
 const selectedHand = computed(() => hand.value.find((card) => card.id === selectedCard.value))
 const choice = computed(() =>
   props.view.choice?.seat === props.view.humanSeat ? props.view.choice : null,
@@ -85,23 +83,30 @@ const selectedRecast = computed(() =>
     ? recastActions.value.find((action) => action.card === selectedCard.value)
     : undefined,
 )
+const unorderedTargets = computed(
+  () => selectedMode.value === 'card' && selectedHand.value?.kind === 'tiesuo',
+)
+const matchingActions = computed(() =>
+  currentActions.value.filter((action) =>
+    selectedTargets.value.every((id, index) =>
+      unorderedTargets.value ? action.targets.includes(id) : action.targets[index] === id,
+    ),
+  ),
+)
 const possibleTargets = computed(() => {
   if (branch.value) return new Set(branch.value.targets)
   return new Set(
-    currentActions.value
-      .filter((action) => selectedTargets.value.every((id, i) => action.targets[i] === id))
-      .flatMap((action) =>
-        action.targets.slice(selectedTargets.value.length, selectedTargets.value.length + 1),
-      ),
+    matchingActions.value.flatMap((action) =>
+      unorderedTargets.value
+        ? action.targets.filter((id) => !selectedTargets.value.includes(id))
+        : action.targets.slice(selectedTargets.value.length, selectedTargets.value.length + 1),
+    ),
   )
 })
 const exactAction = computed(() =>
-  currentActions.value.find(
-    (action) =>
-      action.targets.length === selectedTargets.value.length &&
-      action.targets.every((id, i) => id === selectedTargets.value[i]),
-  ),
+  matchingActions.value.find((action) => action.targets.length === selectedTargets.value.length),
 )
+const targetOrder = computed(() => exactAction.value?.targets ?? selectedTargets.value)
 const canConfirm = computed(() => {
   if (!active.value) return false
   if (choice.value?.kind === 'discard')
@@ -121,18 +126,21 @@ const canConfirm = computed(() => {
   return !!exactAction.value
 })
 const pool = computed(() => {
-  if (!branch.value) return [] as Card[]
+  if (!branch.value) return []
   const own = new Set(hand.value.map((card) => card.id))
   const visible: Entity[] = [
     ...props.view.resolving,
-    ...props.view.seats.flatMap((seat) => [...seat.equipment, ...seat.judges]),
+    ...props.view.discard,
+    ...props.view.seats.flatMap((seat) => [
+      ...seat.equipment, ...seat.judges, ...(seat.knownHand ?? []),
+    ]),
     ...(props.view.privateChoiceCards ?? []),
   ]
   return branch.value.cards
     .filter((id) => !own.has(id))
     .map((id) => {
       const entity = visible.find((card) => card.id === id)
-      return entity ? faceOf(entity) : cardById(id)
+      return entity ? faceOf(props.view, entity) : { id, name: '未知牌', rank: undefined }
     })
 })
 const prompt = computed(() => {
@@ -152,6 +160,7 @@ const prompt = computed(() => {
   if (branch.value) return branch.value.label
   if (selectedRecast.value) {
     if (!currentActions.value.length) return '可重铸此牌'
+    if (exactAction.value && possibleTargets.value.size) return '可继续选择目标，也可确认使用或重铸'
     return exactAction.value ? '确认使用此牌，或选择重铸' : '选择目标使用此牌，或直接重铸'
   }
   if (selectedMode.value === 'card' && selectedCard.value !== null) return '请选择目标，再确认使用'
@@ -203,7 +212,7 @@ function chooseSeat(id: number) {
   if (!active.value) return
   const index = selectedTargets.value.indexOf(id)
   if (index >= 0) {
-    selectedTargets.value = branch.value
+    selectedTargets.value = branch.value || unorderedTargets.value
       ? selectedTargets.value.filter((target) => target !== id)
       : selectedTargets.value.slice(0, index)
     return
@@ -263,6 +272,7 @@ function pass() {
 function seatCards(seat: SeatView, zone: 'equipment' | 'judges') {
   return seat[zone].map((card) =>
     faceOf(
+      props.view,
       zone === 'judges'
         ? {
             ...card,
@@ -344,14 +354,15 @@ function canPickCard(id: number) {
           >
           <HealthMeter :hp="seat.hp" :max-hp="seat.maxHp" />
           <span v-if="selectedTargets.includes(seat.id)" class="target-number">{{
-            selectedTargets.indexOf(seat.id) + 1
+            targetOrder.indexOf(seat.id) + 1
           }}</span>
         </button>
         <ClassicSeatZones
           :label="seatName(view, seat.id)"
+          :seat="seat"
           :equipment="seatCards(seat, 'equipment')"
           :judges="seatCards(seat, 'judges')"
-          :known-hand="seat.knownHand?.map((card) => faceOf(card))"
+          :known-hand="seat.knownHand?.map((card) => faceOf(view, card))"
         />
       </div>
     </div>
@@ -365,10 +376,10 @@ function canPickCard(id: number) {
         · {{ phases[view.turn?.phase ?? ''] ?? view.turn?.phase }}
       </p>
       <h1>{{ prompt }}</h1>
-      <div v-if="view.resolving.length" class="classic-revealed" aria-label="公开结算牌">
+      <div v-if="resolving.length" class="classic-revealed" aria-label="公开结算牌">
         <span>结算区</span
-        ><span v-for="card in view.resolving" :key="card.id"
-          >{{ cardName(card.kind) }} {{ faceOf(card).rank }}</span
+        ><span v-for="card in resolving" :key="card.id"
+          >{{ card.name }} {{ card.rank }}</span
         >
       </div>
       <div v-if="saveError" class="classic-save-error">
@@ -394,9 +405,13 @@ function canPickCard(id: number) {
           <img :src="heroPortrait(me.hero)" :alt="`${seatName(view, me.id)}立绘`" />
           <span>{{ seatName(view, me.id) }} · {{ me.role ? roles[me.role] : '身份未知' }}</span>
           <HealthMeter :hp="me.hp" :max-hp="me.maxHp" />
+          <span v-if="selectedTargets.includes(me.id)" class="target-number">{{
+            targetOrder.indexOf(me.id) + 1
+          }}</span>
         </button>
         <ClassicSeatZones
           :label="seatName(view, me.id)"
+          :seat="me"
           :equipment="seatCards(me, 'equipment')"
           :judges="seatCards(me, 'judges')"
         />
@@ -419,7 +434,7 @@ function canPickCard(id: number) {
             selectedCards.length
               ? `已选 ${selectedCards.length} 张`
               : selectedHand
-                ? faceOf(selectedHand).description
+                ? selectedHand.description
                 : '选择可用手牌'
           }}</span>
         </div>
@@ -428,19 +443,20 @@ function canPickCard(id: number) {
             v-for="card in hand"
             :key="card.id"
             :data-card-id="card.id"
+            :data-nature="view.cardNatures?.[card.id]"
             class="playing-card"
             :class="{
-              red: ['heart', 'diamond'].includes(faceOf(card).suit),
-              'long-name': faceOf(card).name.length > 2,
+              red: card.suit === 'heart' || card.suit === 'diamond',
+              'long-name': card.name.length > 2,
               selected: isCardSelected(card.id),
               playable: canPickCard(card.id),
             }"
             :disabled="!canPickCard(card.id)"
             :aria-pressed="isCardSelected(card.id)"
-            :aria-label="`${cardName(card.kind)} ${faceOf(card).rank} ${faceOf(card).description}`"
+            :aria-label="[card.name, card.rank, card.description].filter(Boolean).join(' ')"
             @click="chooseHand(card.id)"
           >
-            <CardFace :card="faceOf(card)" />
+            <CardFace :card="card" />
           </button>
         </div>
       </div>
