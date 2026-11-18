@@ -24,6 +24,12 @@
 
 前置技能取消和底层移牌取消的观测也在这份轨迹中。取消 `recastingGain` 时已经排队的摸牌先完成；只取消 `drawBefore` 时上层仍完成重铸。只取消 `loseBefore` 时材料留在 A 手中，外层也继续摸到一张。这些场景共记录 184 次时机请求、177 次技能执行和 16 次工厂调用。
 
+`recast-batch.json` 在八席身份局用原版 `Player.recast` 观测批量材料。默认输入为按序排列的明手铁索、暗手铁索及装备区青釭剑。两次工厂各收到一次同一份有序数组，`recastingLosingEvents` 记一件 `loseToDiscardpile`，`recastingGainingEvents` 默认记一件摸三张的 `draw`。同一个公开的 `lose` 把两张手牌和一张装备按输入顺序移入弃牌堆，随后通过一个 `draw` 和一个 `gain` 暗摸三张。公告在共享日志显示三张材料的牌面，此时旁观席读到的手牌知情记录仍保持原状。默认摸牌后旁观席只认识原来的控制牌。改用一个自定义 `gain2` 工厂时，三张替代牌通过一件公开获得事件进入手牌，旁观席可以识别三张。
+
+- 内层 `loseBefore` 暗给 B 一张材料时，它先经过暂存区再进入 B 手牌。底层 `loseAfter.cards` 只含已弃的另外两张，`stockcards`、外层重铸和两次工厂仍引用原三张，因此 A 仍摸三张。B 认识新得牌，C 的手牌知情查询仍不认识它。暗给同时清除了 C 对 A 剩余手牌的旧知情记录。
+- 只取消内层的整批 `lose` 时，三张材料留在手牌和装备区，A 仍摸三张。只取消 `drawBefore` 时，三张材料已弃，三张替代牌仍按原顺序留在牌堆顶。两次重铸都进入 `recastingGained`、`recastAfter`，被取消的事件仍可从其父或工厂事件列表找到。
+- 名典由真实 `damageEnd` 发起 `chooseCard`，选牌范围为手牌及装备区，至少一张，夹具只设置 AI 偏好。两个基本牌获选，非基本控制牌保留。选完时材料尚在手中，C 的知情记录未变。两个基本牌均通过宽松重铸检查，经名典进入同一重铸事件，一次弃两张、摸两张。
+
 `compare.json` 记录八人离线身份局中的巧说和纵适。实际浏览器席 C 旁观三个 AI 出牌回合。每次 A、B 各暗摸两张实体牌。夹具给真实 `chooseTarget`、`chooseCard` 的 AI 指定偏好，巧说的目标过滤、选牌、移牌、比点和技能内容均由原版执行。巧说的 `qiaoshui_cost` 选中 B 时双方拼点牌仍在手中。三例的 `fixedResultSupplied` 均为 `false`。
 
 原版 `chooseToCompare` 通过 `chooseCardOL` 依次让 A、B 执行 `chooseCard`。`privateSelections` 在每次选择开始与结束时读取当前选择结果、A/B/C 的已知手牌及 C 牌桌上的公开拼点牌面。四个时刻双方均只知自己的两张手牌，C 的两组已知牌和公开牌面均为空。双方结果汇总后，两张牌依次由手牌移到处理区。原版以一次 `$compare` 将两张牌交给展示层，再分别为 A、B 调用 `showCards`。`reveals` 记录那一次双牌展示的输入，`spectatorSawFlip` 记录 C 的牌桌上实际翻为正面的两张牌。
@@ -94,6 +100,7 @@
    node scripts/reference-trace.mjs --scenario hp-cancel --check tests/reference/hp-cancel.json
    node scripts/reference-trace.mjs --scenario tiesuo-recast --check tests/reference/tiesuo-recast.json
    node scripts/reference-trace.mjs --scenario recast-callbacks --check tests/reference/recast-callbacks.json
+   node scripts/reference-trace.mjs --scenario recast-batch --check tests/reference/recast-batch.json
    node scripts/reference-trace.mjs --scenario linked-damage --check tests/reference/linked-damage.json
    node scripts/reference-trace.mjs --scenario compare --check tests/reference/compare.json
    node scripts/reference-trace.mjs --scenario qiaoshui-targets --check tests/reference/qiaoshui-targets.json

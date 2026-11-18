@@ -1,0 +1,1312 @@
+{
+  "schema": "noname-reference-trace-v1",
+  "referenceCommit": "c73270948d72949aa80009536b9fd5400767d091",
+  "mode": "identity",
+  "scenario": "physical batch recast with equipment, intercepted and cancelled transfers, and clanmingdian selection",
+  "players": 8,
+  "spectator": "C",
+  "labels": [
+    "shown",
+    "hidden",
+    "equipped",
+    "control",
+    "draw-1",
+    "draw-2",
+    "draw-3"
+  ],
+  "eventColumns": [
+    "sample",
+    "kind",
+    "timing",
+    "event",
+    "parent",
+    "player",
+    "source",
+    "target",
+    "zones",
+    "detail"
+  ],
+  "trials": [
+    {
+      "sample": "default",
+      "faces": {
+        "shown": [
+          "tiesuo",
+          "club",
+          10
+        ],
+        "hidden": [
+          "tiesuo",
+          "club",
+          11
+        ],
+        "equipped": [
+          "qinggang",
+          "spade",
+          6
+        ],
+        "control": [
+          "sha",
+          "spade",
+          7
+        ],
+        "draw-1": [
+          "tao",
+          "heart",
+          2
+        ],
+        "draw-2": [
+          "shan",
+          "diamond",
+          3
+        ],
+        "draw-3": [
+          "sha",
+          "spade",
+          4
+        ]
+      },
+      "eligibility": [
+        [
+          true,
+          true
+        ],
+        [
+          true,
+          true
+        ],
+        [
+          false,
+          true
+        ]
+      ],
+      "before": {
+        "zones": [
+          "A:h",
+          "A:h",
+          "A:e",
+          "A:h",
+          "c",
+          "c",
+          "c"
+        ],
+        "hands": [
+          [
+            "shown",
+            "control",
+            "hidden"
+          ],
+          []
+        ],
+        "spectatorKnownHands": [
+          [
+            "shown",
+            "control"
+          ],
+          []
+        ],
+        "pileOrder": [
+          "draw-1",
+          "draw-2",
+          "draw-3"
+        ],
+        "useCounts": {}
+      },
+      "after": {
+        "zones": [
+          "d",
+          "d",
+          "d",
+          "A:h",
+          "A:h",
+          "A:h",
+          "A:h"
+        ],
+        "hands": [
+          [
+            "draw-1",
+            "draw-2",
+            "draw-3",
+            "control"
+          ],
+          []
+        ],
+        "spectatorKnownHands": [
+          [
+            "control"
+          ],
+          []
+        ],
+        "recipientKnownHands": [
+          [
+            "control"
+          ],
+          []
+        ],
+        "pileOrder": [],
+        "discardOrder": [
+          "shown",
+          "hidden",
+          "equipped"
+        ],
+        "useCounts": {},
+        "occurrences": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "root": {
+          "event": "recast",
+          "parent": "reference_fixture_use",
+          "cards": [
+            "shown",
+            "hidden",
+            "equipped"
+          ],
+          "num": null,
+          "cancelled": false,
+          "finished": true
+        },
+        "losingEvents": [
+          {
+            "event": "loseToDiscardpile",
+            "parent": "recast",
+            "cards": [
+              "shown",
+              "hidden",
+              "equipped"
+            ],
+            "num": null,
+            "cancelled": false,
+            "finished": true
+          }
+        ],
+        "gainingEvents": [
+          {
+            "event": "draw",
+            "parent": "recast",
+            "cards": [],
+            "num": 3,
+            "cancelled": false,
+            "finished": true
+          }
+        ],
+        "innerLoss": {
+          "event": "lose",
+          "parent": "loseToDiscardpile",
+          "cards": [
+            "shown",
+            "hidden",
+            "equipped"
+          ],
+          "num": null,
+          "cancelled": false,
+          "finished": true
+        }
+      }
+    },
+    {
+      "sample": "intercept-one",
+      "faces": {
+        "shown": [
+          "tiesuo",
+          "club",
+          10
+        ],
+        "hidden": [
+          "tiesuo",
+          "club",
+          11
+        ],
+        "equipped": [
+          "qinggang",
+          "spade",
+          6
+        ],
+        "control": [
+          "sha",
+          "spade",
+          7
+        ],
+        "draw-1": [
+          "tao",
+          "heart",
+          2
+        ],
+        "draw-2": [
+          "shan",
+          "diamond",
+          3
+        ],
+        "draw-3": [
+          "sha",
+          "spade",
+          4
+        ]
+      },
+      "eligibility": [
+        [
+          true,
+          true
+        ],
+        [
+          true,
+          true
+        ],
+        [
+          false,
+          true
+        ]
+      ],
+      "before": {
+        "zones": [
+          "A:h",
+          "A:h",
+          "A:e",
+          "A:h",
+          "c",
+          "c",
+          "c"
+        ],
+        "hands": [
+          [
+            "shown",
+            "control",
+            "hidden"
+          ],
+          []
+        ],
+        "spectatorKnownHands": [
+          [
+            "shown",
+            "control"
+          ],
+          []
+        ],
+        "pileOrder": [
+          "draw-1",
+          "draw-2",
+          "draw-3"
+        ],
+        "useCounts": {}
+      },
+      "after": {
+        "zones": [
+          "d",
+          "B:h",
+          "d",
+          "A:h",
+          "A:h",
+          "A:h",
+          "A:h"
+        ],
+        "hands": [
+          [
+            "draw-1",
+            "draw-2",
+            "draw-3",
+            "control"
+          ],
+          [
+            "hidden"
+          ]
+        ],
+        "spectatorKnownHands": [
+          [],
+          []
+        ],
+        "recipientKnownHands": [
+          [],
+          [
+            "hidden"
+          ]
+        ],
+        "pileOrder": [],
+        "discardOrder": [
+          "shown",
+          "equipped"
+        ],
+        "useCounts": {},
+        "occurrences": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "root": {
+          "event": "recast",
+          "parent": "reference_fixture_use",
+          "cards": [
+            "shown",
+            "hidden",
+            "equipped"
+          ],
+          "num": null,
+          "cancelled": false,
+          "finished": true
+        },
+        "losingEvents": [
+          {
+            "event": "loseToDiscardpile",
+            "parent": "recast",
+            "cards": [
+              "shown",
+              "hidden",
+              "equipped"
+            ],
+            "num": null,
+            "cancelled": false,
+            "finished": true
+          }
+        ],
+        "gainingEvents": [
+          {
+            "event": "draw",
+            "parent": "recast",
+            "cards": [],
+            "num": 3,
+            "cancelled": false,
+            "finished": true
+          }
+        ],
+        "innerLoss": {
+          "event": "lose",
+          "parent": "loseToDiscardpile",
+          "cards": [
+            "shown",
+            "equipped"
+          ],
+          "num": null,
+          "cancelled": false,
+          "finished": true
+        }
+      }
+    },
+    {
+      "sample": "cancel-loss",
+      "faces": {
+        "shown": [
+          "tiesuo",
+          "club",
+          10
+        ],
+        "hidden": [
+          "tiesuo",
+          "club",
+          11
+        ],
+        "equipped": [
+          "qinggang",
+          "spade",
+          6
+        ],
+        "control": [
+          "sha",
+          "spade",
+          7
+        ],
+        "draw-1": [
+          "tao",
+          "heart",
+          2
+        ],
+        "draw-2": [
+          "shan",
+          "diamond",
+          3
+        ],
+        "draw-3": [
+          "sha",
+          "spade",
+          4
+        ]
+      },
+      "eligibility": [
+        [
+          true,
+          true
+        ],
+        [
+          true,
+          true
+        ],
+        [
+          false,
+          true
+        ]
+      ],
+      "before": {
+        "zones": [
+          "A:h",
+          "A:h",
+          "A:e",
+          "A:h",
+          "c",
+          "c",
+          "c"
+        ],
+        "hands": [
+          [
+            "shown",
+            "control",
+            "hidden"
+          ],
+          []
+        ],
+        "spectatorKnownHands": [
+          [
+            "shown",
+            "control"
+          ],
+          []
+        ],
+        "pileOrder": [
+          "draw-1",
+          "draw-2",
+          "draw-3"
+        ],
+        "useCounts": {}
+      },
+      "after": {
+        "zones": [
+          "A:h",
+          "A:h",
+          "A:e",
+          "A:h",
+          "A:h",
+          "A:h",
+          "A:h"
+        ],
+        "hands": [
+          [
+            "draw-1",
+            "draw-2",
+            "draw-3",
+            "shown",
+            "control",
+            "hidden"
+          ],
+          []
+        ],
+        "spectatorKnownHands": [
+          [
+            "shown",
+            "control"
+          ],
+          []
+        ],
+        "recipientKnownHands": [
+          [
+            "shown",
+            "control"
+          ],
+          []
+        ],
+        "pileOrder": [],
+        "discardOrder": [],
+        "useCounts": {},
+        "occurrences": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "root": {
+          "event": "recast",
+          "parent": "reference_fixture_use",
+          "cards": [
+            "shown",
+            "hidden",
+            "equipped"
+          ],
+          "num": null,
+          "cancelled": false,
+          "finished": true
+        },
+        "losingEvents": [
+          {
+            "event": "loseToDiscardpile",
+            "parent": "recast",
+            "cards": [
+              "shown",
+              "hidden",
+              "equipped"
+            ],
+            "num": null,
+            "cancelled": false,
+            "finished": true
+          }
+        ],
+        "gainingEvents": [
+          {
+            "event": "draw",
+            "parent": "recast",
+            "cards": [],
+            "num": 3,
+            "cancelled": false,
+            "finished": true
+          }
+        ],
+        "innerLoss": {
+          "event": "lose",
+          "parent": "loseToDiscardpile",
+          "cards": [
+            "shown",
+            "hidden",
+            "equipped"
+          ],
+          "num": null,
+          "cancelled": true,
+          "finished": true
+        }
+      }
+    },
+    {
+      "sample": "cancel-draw",
+      "faces": {
+        "shown": [
+          "tiesuo",
+          "club",
+          10
+        ],
+        "hidden": [
+          "tiesuo",
+          "club",
+          11
+        ],
+        "equipped": [
+          "qinggang",
+          "spade",
+          6
+        ],
+        "control": [
+          "sha",
+          "spade",
+          7
+        ],
+        "draw-1": [
+          "tao",
+          "heart",
+          2
+        ],
+        "draw-2": [
+          "shan",
+          "diamond",
+          3
+        ],
+        "draw-3": [
+          "sha",
+          "spade",
+          4
+        ]
+      },
+      "eligibility": [
+        [
+          true,
+          true
+        ],
+        [
+          true,
+          true
+        ],
+        [
+          false,
+          true
+        ]
+      ],
+      "before": {
+        "zones": [
+          "A:h",
+          "A:h",
+          "A:e",
+          "A:h",
+          "c",
+          "c",
+          "c"
+        ],
+        "hands": [
+          [
+            "shown",
+            "control",
+            "hidden"
+          ],
+          []
+        ],
+        "spectatorKnownHands": [
+          [
+            "shown",
+            "control"
+          ],
+          []
+        ],
+        "pileOrder": [
+          "draw-1",
+          "draw-2",
+          "draw-3"
+        ],
+        "useCounts": {}
+      },
+      "after": {
+        "zones": [
+          "d",
+          "d",
+          "d",
+          "A:h",
+          "c",
+          "c",
+          "c"
+        ],
+        "hands": [
+          [
+            "control"
+          ],
+          []
+        ],
+        "spectatorKnownHands": [
+          [
+            "control"
+          ],
+          []
+        ],
+        "recipientKnownHands": [
+          [
+            "control"
+          ],
+          []
+        ],
+        "pileOrder": [
+          "draw-1",
+          "draw-2",
+          "draw-3"
+        ],
+        "discardOrder": [
+          "shown",
+          "hidden",
+          "equipped"
+        ],
+        "useCounts": {},
+        "occurrences": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "root": {
+          "event": "recast",
+          "parent": "reference_fixture_use",
+          "cards": [
+            "shown",
+            "hidden",
+            "equipped"
+          ],
+          "num": null,
+          "cancelled": false,
+          "finished": true
+        },
+        "losingEvents": [
+          {
+            "event": "loseToDiscardpile",
+            "parent": "recast",
+            "cards": [
+              "shown",
+              "hidden",
+              "equipped"
+            ],
+            "num": null,
+            "cancelled": false,
+            "finished": true
+          }
+        ],
+        "gainingEvents": [
+          {
+            "event": "draw",
+            "parent": "recast",
+            "cards": [],
+            "num": 3,
+            "cancelled": true,
+            "finished": true
+          }
+        ],
+        "innerLoss": {
+          "event": "lose",
+          "parent": "loseToDiscardpile",
+          "cards": [
+            "shown",
+            "hidden",
+            "equipped"
+          ],
+          "num": null,
+          "cancelled": false,
+          "finished": true
+        }
+      }
+    },
+    {
+      "sample": "public-gain",
+      "faces": {
+        "shown": [
+          "tiesuo",
+          "club",
+          10
+        ],
+        "hidden": [
+          "tiesuo",
+          "club",
+          11
+        ],
+        "equipped": [
+          "qinggang",
+          "spade",
+          6
+        ],
+        "control": [
+          "sha",
+          "spade",
+          7
+        ],
+        "draw-1": [
+          "tao",
+          "heart",
+          2
+        ],
+        "draw-2": [
+          "shan",
+          "diamond",
+          3
+        ],
+        "draw-3": [
+          "sha",
+          "spade",
+          4
+        ]
+      },
+      "eligibility": [
+        [
+          true,
+          true
+        ],
+        [
+          true,
+          true
+        ],
+        [
+          false,
+          true
+        ]
+      ],
+      "before": {
+        "zones": [
+          "A:h",
+          "A:h",
+          "A:e",
+          "A:h",
+          "c",
+          "c",
+          "c"
+        ],
+        "hands": [
+          [
+            "shown",
+            "control",
+            "hidden"
+          ],
+          []
+        ],
+        "spectatorKnownHands": [
+          [
+            "shown",
+            "control"
+          ],
+          []
+        ],
+        "pileOrder": [
+          "draw-1",
+          "draw-2",
+          "draw-3"
+        ],
+        "useCounts": {}
+      },
+      "after": {
+        "zones": [
+          "d",
+          "d",
+          "d",
+          "A:h",
+          "A:h",
+          "A:h",
+          "A:h"
+        ],
+        "hands": [
+          [
+            "draw-1",
+            "draw-2",
+            "draw-3",
+            "control"
+          ],
+          []
+        ],
+        "spectatorKnownHands": [
+          [
+            "draw-1",
+            "draw-2",
+            "draw-3",
+            "control"
+          ],
+          []
+        ],
+        "recipientKnownHands": [
+          [
+            "draw-1",
+            "draw-2",
+            "draw-3",
+            "control"
+          ],
+          []
+        ],
+        "pileOrder": [],
+        "discardOrder": [
+          "shown",
+          "hidden",
+          "equipped"
+        ],
+        "useCounts": {},
+        "occurrences": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "root": {
+          "event": "recast",
+          "parent": "reference_fixture_use",
+          "cards": [
+            "shown",
+            "hidden",
+            "equipped"
+          ],
+          "num": null,
+          "cancelled": false,
+          "finished": true
+        },
+        "losingEvents": [
+          {
+            "event": "loseToDiscardpile",
+            "parent": "recast",
+            "cards": [
+              "shown",
+              "hidden",
+              "equipped"
+            ],
+            "num": null,
+            "cancelled": false,
+            "finished": true
+          }
+        ],
+        "gainingEvents": [
+          {
+            "event": "gain",
+            "parent": "recast",
+            "cards": [
+              "draw-1",
+              "draw-2",
+              "draw-3"
+            ],
+            "num": null,
+            "cancelled": false,
+            "finished": true
+          }
+        ],
+        "innerLoss": {
+          "event": "lose",
+          "parent": "loseToDiscardpile",
+          "cards": [
+            "shown",
+            "hidden",
+            "equipped"
+          ],
+          "num": null,
+          "cancelled": false,
+          "finished": true
+        }
+      }
+    },
+    {
+      "sample": "clan-choice",
+      "faces": {
+        "shown": [
+          "shan",
+          "club",
+          10
+        ],
+        "hidden": [
+          "sha",
+          "club",
+          11
+        ],
+        "control": [
+          "tiesuo",
+          "spade",
+          7
+        ],
+        "draw-1": [
+          "tao",
+          "heart",
+          2
+        ],
+        "draw-2": [
+          "shan",
+          "diamond",
+          3
+        ],
+        "draw-3": [
+          "sha",
+          "spade",
+          4
+        ]
+      },
+      "eligibility": [
+        [
+          false,
+          true
+        ],
+        [
+          false,
+          true
+        ]
+      ],
+      "before": {
+        "zones": [
+          "A:h",
+          "A:h",
+          null,
+          "A:h",
+          "c",
+          "c",
+          "c"
+        ],
+        "hands": [
+          [
+            "shown",
+            "control",
+            "hidden"
+          ],
+          []
+        ],
+        "spectatorKnownHands": [
+          [
+            "shown",
+            "control"
+          ],
+          []
+        ],
+        "pileOrder": [
+          "draw-1",
+          "draw-2",
+          "draw-3"
+        ],
+        "useCounts": {}
+      },
+      "after": {
+        "zones": [
+          "d",
+          "d",
+          null,
+          "A:h",
+          "A:h",
+          "A:h",
+          "c"
+        ],
+        "hands": [
+          [
+            "draw-1",
+            "draw-2",
+            "control"
+          ],
+          []
+        ],
+        "spectatorKnownHands": [
+          [
+            "control"
+          ],
+          []
+        ],
+        "recipientKnownHands": [
+          [
+            "control"
+          ],
+          []
+        ],
+        "pileOrder": [
+          "draw-3"
+        ],
+        "discardOrder": [
+          "shown",
+          "hidden"
+        ],
+        "useCounts": {},
+        "occurrences": [
+          1,
+          1,
+          null,
+          1,
+          1,
+          1,
+          1
+        ],
+        "root": {
+          "event": "recast",
+          "parent": "clanmingdian",
+          "cards": [
+            "shown",
+            "hidden"
+          ],
+          "num": null,
+          "cancelled": false,
+          "finished": true
+        },
+        "losingEvents": [
+          {
+            "event": "loseToDiscardpile",
+            "parent": "recast",
+            "cards": [
+              "shown",
+              "hidden"
+            ],
+            "num": null,
+            "cancelled": false,
+            "finished": true
+          }
+        ],
+        "gainingEvents": [
+          {
+            "event": "draw",
+            "parent": "recast",
+            "cards": [],
+            "num": 2,
+            "cancelled": false,
+            "finished": true
+          }
+        ],
+        "innerLoss": {
+          "event": "lose",
+          "parent": "loseToDiscardpile",
+          "cards": [
+            "shown",
+            "hidden"
+          ],
+          "num": null,
+          "cancelled": false,
+          "finished": true
+        }
+      }
+    }
+  ],
+  "events": [
+    ["default","request","recastBefore","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[],"gainingEvents":[]}],
+    ["default","request","recastBegin","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[],"gainingEvents":[]}],
+    ["default","display","recast-log","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"inSharedLog":true,"spectatorKnownHands":[["shown","control"],[]]}],
+    ["default","request","recastingLose","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[],"gainingEvents":[]}],
+    ["default","factory","recastingLose","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"player":"A","cards":["shown","hidden","equipped"],"sameArray":true,"child":{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":false}}],
+    ["default","request","recastingLost","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[],"gainingEvents":[],"hands":[["shown","control","hidden"],[]],"spectatorKnownHands":[["shown","control"],[]],"discardOrder":[]}],
+    ["default","callback","recastingLose","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":false}],"gainingEvents":[]}],
+    ["default","request","loseToDiscardpileBefore","loseToDiscardpile","recast","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"]}],
+    ["default","request","loseBefore","lose","loseToDiscardpile","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"visible":true}],
+    ["default","callback","loseBefore","lose","loseToDiscardpile","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"visible":true}],
+    ["default","request","loseAfter","lose","loseToDiscardpile","A",null,null,["d","d","d","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"visible":true,"stockCards":["shown","hidden","equipped"],"lostFrom":{"h":["shown","hidden"],"e":["equipped"]},"hands":[["control"],[]],"spectatorKnownHands":[["control"],[]],"discardOrder":["shown","hidden","equipped"]}],
+    ["default","callback","loseAfter","lose","loseToDiscardpile","A",null,null,["d","d","d","A:h","c","c","c"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"visible":true,"stockCards":["shown","hidden","equipped"],"lostFrom":{"h":["shown","hidden"],"e":["equipped"]},"hands":[["control"],[]],"spectatorKnownHands":[["control"],[]],"discardOrder":["shown","hidden","equipped"]}],
+    ["default","request","loseToDiscardpileAfter","loseToDiscardpile","recast","A",null,null,["d","d","d","A:h","c","c","c"],{"cards":["shown","hidden","equipped"]}],
+    ["default","callback","recastingLost","recast","reference_fixture_use","A",null,null,["d","d","d","A:h","c","c","c"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[],"hands":[["control"],[]],"spectatorKnownHands":[["control"],[]],"discardOrder":["shown","hidden","equipped"]}],
+    ["default","request","recast","recast","reference_fixture_use","A",null,null,["d","d","d","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[]}],
+    ["default","callback","recast","recast","reference_fixture_use","A",null,null,["d","d","d","A:h","c","c","c"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[]}],
+    ["default","request","recastingGain","recast","reference_fixture_use","A",null,null,["d","d","d","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[]}],
+    ["default","factory","recastingGain","recast","reference_fixture_use","A",null,null,["d","d","d","A:h","c","c","c"],{"player":"A","cards":["shown","hidden","equipped"],"sameArray":true,"child":{"event":"draw","parent":"recast","cards":[],"num":3,"cancelled":false,"finished":false}}],
+    ["default","request","recastingGained","recast","reference_fixture_use","A",null,null,["d","d","d","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[],"hands":[["control"],[]],"spectatorKnownHands":[["control"],[]],"discardOrder":["shown","hidden","equipped"]}],
+    ["default","callback","recastingGain","recast","reference_fixture_use","A",null,null,["d","d","d","A:h","c","c","c"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[{"event":"draw","parent":"recast","cards":[],"num":3,"cancelled":false,"finished":false}]}],
+    ["default","request","drawBefore","draw","recast","A","A",null,["d","d","d","A:h","c","c","c"],{"num":3,"drawn":[]}],
+    ["default","callback","drawBefore","draw","recast","A","A",null,["d","d","d","A:h","c","c","c"],{"callbackParent":"trigger","num":3,"drawn":[]}],
+    ["default","request","gainBefore","gain","draw","A",null,null,["d","d","d","A:h",null,null,null],{"cards":["draw-1","draw-2","draw-3"]}],
+    ["default","request","gainAfter","gain","draw","A",null,null,["d","d","d","A:h","A:h","A:h","A:h"],{"cards":["draw-1","draw-2","draw-3"],"hands":[["draw-1","draw-2","draw-3","control"],[]],"spectatorKnownHands":[["control"],[]],"discardOrder":["shown","hidden","equipped"]}],
+    ["default","callback","gainAfter","gain","draw","A",null,null,["d","d","d","A:h","A:h","A:h","A:h"],{"callbackParent":"trigger","cards":["draw-1","draw-2","draw-3"],"hands":[["draw-1","draw-2","draw-3","control"],[]],"spectatorKnownHands":[["control"],[]],"discardOrder":["shown","hidden","equipped"]}],
+    ["default","request","drawAfter","draw","recast","A","A",null,["d","d","d","A:h","A:h","A:h","A:h"],{"num":3,"drawn":["draw-1","draw-2","draw-3"]}],
+    ["default","callback","drawAfter","draw","recast","A","A",null,["d","d","d","A:h","A:h","A:h","A:h"],{"callbackParent":"trigger","num":3,"drawn":["draw-1","draw-2","draw-3"]}],
+    ["default","callback","recastingGained","recast","reference_fixture_use","A",null,null,["d","d","d","A:h","A:h","A:h","A:h"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[{"event":"draw","parent":"recast","cards":[],"num":3,"cancelled":false,"finished":true}],"hands":[["draw-1","draw-2","draw-3","control"],[]],"spectatorKnownHands":[["control"],[]],"discardOrder":["shown","hidden","equipped"]}],
+    ["default","request","recastEnd","recast","reference_fixture_use","A",null,null,["d","d","d","A:h","A:h","A:h","A:h"],{"cards":["shown","hidden","equipped"],"finished":true,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[{"event":"draw","parent":"recast","cards":[],"num":3,"cancelled":false,"finished":true}]}],
+    ["default","request","recastAfter","recast","reference_fixture_use","A",null,null,["d","d","d","A:h","A:h","A:h","A:h"],{"cards":["shown","hidden","equipped"],"finished":true,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[{"event":"draw","parent":"recast","cards":[],"num":3,"cancelled":false,"finished":true}]}],
+    ["default","callback","recastAfter","recast","reference_fixture_use","A",null,null,["d","d","d","A:h","A:h","A:h","A:h"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"finished":true,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[{"event":"draw","parent":"recast","cards":[],"num":3,"cancelled":false,"finished":true}]}],
+    ["intercept-one","request","recastBefore","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[],"gainingEvents":[]}],
+    ["intercept-one","request","recastBegin","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[],"gainingEvents":[]}],
+    ["intercept-one","display","recast-log","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"inSharedLog":true,"spectatorKnownHands":[["shown","control"],[]]}],
+    ["intercept-one","request","recastingLose","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[],"gainingEvents":[]}],
+    ["intercept-one","factory","recastingLose","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"player":"A","cards":["shown","hidden","equipped"],"sameArray":true,"child":{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":false}}],
+    ["intercept-one","request","recastingLost","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[],"gainingEvents":[],"hands":[["shown","control","hidden"],[]],"spectatorKnownHands":[["shown","control"],[]],"discardOrder":[]}],
+    ["intercept-one","callback","recastingLose","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":false}],"gainingEvents":[]}],
+    ["intercept-one","request","loseToDiscardpileBefore","loseToDiscardpile","recast","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"]}],
+    ["intercept-one","request","loseBefore","lose","loseToDiscardpile","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"visible":true}],
+    ["intercept-one","callback","loseBefore","lose","loseToDiscardpile","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"visible":true}],
+    ["intercept-one","request","gainBefore","gain","reference_recast_batch_observer","B","A",null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["hidden"]}],
+    ["intercept-one","request","loseBefore","lose","gain","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["hidden"]}],
+    ["intercept-one","callback","loseBefore","lose","gain","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"callbackParent":"trigger","cards":["hidden"]}],
+    ["intercept-one","request","loseAfter","lose","gain","A",null,null,["A:h","s","A:e","A:h","c","c","c"],{"cards":["hidden"],"stockCards":["hidden"],"lostFrom":{"h":["hidden"],"e":[]},"hands":[["shown","control"],[]],"spectatorKnownHands":[[],[]],"discardOrder":[]}],
+    ["intercept-one","callback","loseAfter","lose","gain","A",null,null,["A:h","s","A:e","A:h","c","c","c"],{"callbackParent":"trigger","cards":["hidden"],"stockCards":["hidden"],"lostFrom":{"h":["hidden"],"e":[]},"hands":[["shown","control"],[]],"spectatorKnownHands":[[],[]],"discardOrder":[]}],
+    ["intercept-one","request","gainAfter","gain","reference_recast_batch_observer","B","A",null,["A:h","B:h","A:e","A:h","c","c","c"],{"cards":["hidden"],"hands":[["shown","control"],["hidden"]],"spectatorKnownHands":[[],[]],"discardOrder":[]}],
+    ["intercept-one","callback","gainAfter","gain","reference_recast_batch_observer","B","A",null,["A:h","B:h","A:e","A:h","c","c","c"],{"callbackParent":"trigger","cards":["hidden"],"hands":[["shown","control"],["hidden"]],"spectatorKnownHands":[[],[]],"discardOrder":[]}],
+    ["intercept-one","probe","intercept-returned","lose","loseToDiscardpile","A",null,null,["A:h","B:h","A:e","A:h","c","c","c"],{"hands":[["shown","control"],["hidden"]],"spectatorKnownHands":[[],[]]}],
+    ["intercept-one","request","loseAfter","lose","loseToDiscardpile","A",null,null,["d","B:h","d","A:h","c","c","c"],{"cards":["shown","equipped"],"visible":true,"stockCards":["shown","hidden","equipped"],"lostFrom":{"h":["shown"],"e":["equipped"]},"hands":[["control"],["hidden"]],"spectatorKnownHands":[[],[]],"discardOrder":["shown","equipped"]}],
+    ["intercept-one","callback","loseAfter","lose","loseToDiscardpile","A",null,null,["d","B:h","d","A:h","c","c","c"],{"callbackParent":"trigger","cards":["shown","equipped"],"visible":true,"stockCards":["shown","hidden","equipped"],"lostFrom":{"h":["shown"],"e":["equipped"]},"hands":[["control"],["hidden"]],"spectatorKnownHands":[[],[]],"discardOrder":["shown","equipped"]}],
+    ["intercept-one","request","loseToDiscardpileAfter","loseToDiscardpile","recast","A",null,null,["d","B:h","d","A:h","c","c","c"],{"cards":["shown","hidden","equipped"]}],
+    ["intercept-one","callback","recastingLost","recast","reference_fixture_use","A",null,null,["d","B:h","d","A:h","c","c","c"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[],"hands":[["control"],["hidden"]],"spectatorKnownHands":[[],[]],"discardOrder":["shown","equipped"]}],
+    ["intercept-one","request","recast","recast","reference_fixture_use","A",null,null,["d","B:h","d","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[]}],
+    ["intercept-one","callback","recast","recast","reference_fixture_use","A",null,null,["d","B:h","d","A:h","c","c","c"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[]}],
+    ["intercept-one","request","recastingGain","recast","reference_fixture_use","A",null,null,["d","B:h","d","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[]}],
+    ["intercept-one","factory","recastingGain","recast","reference_fixture_use","A",null,null,["d","B:h","d","A:h","c","c","c"],{"player":"A","cards":["shown","hidden","equipped"],"sameArray":true,"child":{"event":"draw","parent":"recast","cards":[],"num":3,"cancelled":false,"finished":false}}],
+    ["intercept-one","request","recastingGained","recast","reference_fixture_use","A",null,null,["d","B:h","d","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[],"hands":[["control"],["hidden"]],"spectatorKnownHands":[[],[]],"discardOrder":["shown","equipped"]}],
+    ["intercept-one","callback","recastingGain","recast","reference_fixture_use","A",null,null,["d","B:h","d","A:h","c","c","c"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[{"event":"draw","parent":"recast","cards":[],"num":3,"cancelled":false,"finished":false}]}],
+    ["intercept-one","request","drawBefore","draw","recast","A","A",null,["d","B:h","d","A:h","c","c","c"],{"num":3,"drawn":[]}],
+    ["intercept-one","callback","drawBefore","draw","recast","A","A",null,["d","B:h","d","A:h","c","c","c"],{"callbackParent":"trigger","num":3,"drawn":[]}],
+    ["intercept-one","request","gainBefore","gain","draw","A",null,null,["d","B:h","d","A:h",null,null,null],{"cards":["draw-1","draw-2","draw-3"]}],
+    ["intercept-one","request","gainAfter","gain","draw","A",null,null,["d","B:h","d","A:h","A:h","A:h","A:h"],{"cards":["draw-1","draw-2","draw-3"],"hands":[["draw-1","draw-2","draw-3","control"],["hidden"]],"spectatorKnownHands":[[],[]],"discardOrder":["shown","equipped"]}],
+    ["intercept-one","callback","gainAfter","gain","draw","A",null,null,["d","B:h","d","A:h","A:h","A:h","A:h"],{"callbackParent":"trigger","cards":["draw-1","draw-2","draw-3"],"hands":[["draw-1","draw-2","draw-3","control"],["hidden"]],"spectatorKnownHands":[[],[]],"discardOrder":["shown","equipped"]}],
+    ["intercept-one","request","drawAfter","draw","recast","A","A",null,["d","B:h","d","A:h","A:h","A:h","A:h"],{"num":3,"drawn":["draw-1","draw-2","draw-3"]}],
+    ["intercept-one","callback","drawAfter","draw","recast","A","A",null,["d","B:h","d","A:h","A:h","A:h","A:h"],{"callbackParent":"trigger","num":3,"drawn":["draw-1","draw-2","draw-3"]}],
+    ["intercept-one","callback","recastingGained","recast","reference_fixture_use","A",null,null,["d","B:h","d","A:h","A:h","A:h","A:h"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[{"event":"draw","parent":"recast","cards":[],"num":3,"cancelled":false,"finished":true}],"hands":[["draw-1","draw-2","draw-3","control"],["hidden"]],"spectatorKnownHands":[[],[]],"discardOrder":["shown","equipped"]}],
+    ["intercept-one","request","recastEnd","recast","reference_fixture_use","A",null,null,["d","B:h","d","A:h","A:h","A:h","A:h"],{"cards":["shown","hidden","equipped"],"finished":true,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[{"event":"draw","parent":"recast","cards":[],"num":3,"cancelled":false,"finished":true}]}],
+    ["intercept-one","request","recastAfter","recast","reference_fixture_use","A",null,null,["d","B:h","d","A:h","A:h","A:h","A:h"],{"cards":["shown","hidden","equipped"],"finished":true,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[{"event":"draw","parent":"recast","cards":[],"num":3,"cancelled":false,"finished":true}]}],
+    ["intercept-one","callback","recastAfter","recast","reference_fixture_use","A",null,null,["d","B:h","d","A:h","A:h","A:h","A:h"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"finished":true,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[{"event":"draw","parent":"recast","cards":[],"num":3,"cancelled":false,"finished":true}]}],
+    ["cancel-loss","request","recastBefore","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[],"gainingEvents":[]}],
+    ["cancel-loss","request","recastBegin","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[],"gainingEvents":[]}],
+    ["cancel-loss","display","recast-log","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"inSharedLog":true,"spectatorKnownHands":[["shown","control"],[]]}],
+    ["cancel-loss","request","recastingLose","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[],"gainingEvents":[]}],
+    ["cancel-loss","factory","recastingLose","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"player":"A","cards":["shown","hidden","equipped"],"sameArray":true,"child":{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":false}}],
+    ["cancel-loss","request","recastingLost","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[],"gainingEvents":[],"hands":[["shown","control","hidden"],[]],"spectatorKnownHands":[["shown","control"],[]],"discardOrder":[]}],
+    ["cancel-loss","callback","recastingLose","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":false}],"gainingEvents":[]}],
+    ["cancel-loss","request","loseToDiscardpileBefore","loseToDiscardpile","recast","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"]}],
+    ["cancel-loss","request","loseBefore","lose","loseToDiscardpile","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"visible":true}],
+    ["cancel-loss","callback","loseBefore","lose","loseToDiscardpile","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"visible":true}],
+    ["cancel-loss","request","loseCancelled","lose","loseToDiscardpile","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"visible":true}],
+    ["cancel-loss","callback","loseCancelled","lose","loseToDiscardpile","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"visible":true}],
+    ["cancel-loss","request","loseToDiscardpileAfter","loseToDiscardpile","recast","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"]}],
+    ["cancel-loss","callback","recastingLost","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[],"hands":[["shown","control","hidden"],[]],"spectatorKnownHands":[["shown","control"],[]],"discardOrder":[]}],
+    ["cancel-loss","request","recast","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[]}],
+    ["cancel-loss","callback","recast","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[]}],
+    ["cancel-loss","request","recastingGain","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[]}],
+    ["cancel-loss","factory","recastingGain","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"player":"A","cards":["shown","hidden","equipped"],"sameArray":true,"child":{"event":"draw","parent":"recast","cards":[],"num":3,"cancelled":false,"finished":false}}],
+    ["cancel-loss","request","recastingGained","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[],"hands":[["shown","control","hidden"],[]],"spectatorKnownHands":[["shown","control"],[]],"discardOrder":[]}],
+    ["cancel-loss","callback","recastingGain","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[{"event":"draw","parent":"recast","cards":[],"num":3,"cancelled":false,"finished":false}]}],
+    ["cancel-loss","request","drawBefore","draw","recast","A","A",null,["A:h","A:h","A:e","A:h","c","c","c"],{"num":3,"drawn":[]}],
+    ["cancel-loss","callback","drawBefore","draw","recast","A","A",null,["A:h","A:h","A:e","A:h","c","c","c"],{"callbackParent":"trigger","num":3,"drawn":[]}],
+    ["cancel-loss","request","gainBefore","gain","draw","A",null,null,["A:h","A:h","A:e","A:h",null,null,null],{"cards":["draw-1","draw-2","draw-3"]}],
+    ["cancel-loss","request","gainAfter","gain","draw","A",null,null,["A:h","A:h","A:e","A:h","A:h","A:h","A:h"],{"cards":["draw-1","draw-2","draw-3"],"hands":[["draw-1","draw-2","draw-3","shown","control","hidden"],[]],"spectatorKnownHands":[["shown","control"],[]],"discardOrder":[]}],
+    ["cancel-loss","callback","gainAfter","gain","draw","A",null,null,["A:h","A:h","A:e","A:h","A:h","A:h","A:h"],{"callbackParent":"trigger","cards":["draw-1","draw-2","draw-3"],"hands":[["draw-1","draw-2","draw-3","shown","control","hidden"],[]],"spectatorKnownHands":[["shown","control"],[]],"discardOrder":[]}],
+    ["cancel-loss","request","drawAfter","draw","recast","A","A",null,["A:h","A:h","A:e","A:h","A:h","A:h","A:h"],{"num":3,"drawn":["draw-1","draw-2","draw-3"]}],
+    ["cancel-loss","callback","drawAfter","draw","recast","A","A",null,["A:h","A:h","A:e","A:h","A:h","A:h","A:h"],{"callbackParent":"trigger","num":3,"drawn":["draw-1","draw-2","draw-3"]}],
+    ["cancel-loss","callback","recastingGained","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","A:h","A:h","A:h"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[{"event":"draw","parent":"recast","cards":[],"num":3,"cancelled":false,"finished":true}],"hands":[["draw-1","draw-2","draw-3","shown","control","hidden"],[]],"spectatorKnownHands":[["shown","control"],[]],"discardOrder":[]}],
+    ["cancel-loss","request","recastEnd","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","A:h","A:h","A:h"],{"cards":["shown","hidden","equipped"],"finished":true,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[{"event":"draw","parent":"recast","cards":[],"num":3,"cancelled":false,"finished":true}]}],
+    ["cancel-loss","request","recastAfter","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","A:h","A:h","A:h"],{"cards":["shown","hidden","equipped"],"finished":true,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[{"event":"draw","parent":"recast","cards":[],"num":3,"cancelled":false,"finished":true}]}],
+    ["cancel-loss","callback","recastAfter","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","A:h","A:h","A:h"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"finished":true,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[{"event":"draw","parent":"recast","cards":[],"num":3,"cancelled":false,"finished":true}]}],
+    ["cancel-draw","request","recastBefore","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[],"gainingEvents":[]}],
+    ["cancel-draw","request","recastBegin","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[],"gainingEvents":[]}],
+    ["cancel-draw","display","recast-log","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"inSharedLog":true,"spectatorKnownHands":[["shown","control"],[]]}],
+    ["cancel-draw","request","recastingLose","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[],"gainingEvents":[]}],
+    ["cancel-draw","factory","recastingLose","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"player":"A","cards":["shown","hidden","equipped"],"sameArray":true,"child":{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":false}}],
+    ["cancel-draw","request","recastingLost","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[],"gainingEvents":[],"hands":[["shown","control","hidden"],[]],"spectatorKnownHands":[["shown","control"],[]],"discardOrder":[]}],
+    ["cancel-draw","callback","recastingLose","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":false}],"gainingEvents":[]}],
+    ["cancel-draw","request","loseToDiscardpileBefore","loseToDiscardpile","recast","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"]}],
+    ["cancel-draw","request","loseBefore","lose","loseToDiscardpile","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"visible":true}],
+    ["cancel-draw","callback","loseBefore","lose","loseToDiscardpile","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"visible":true}],
+    ["cancel-draw","request","loseAfter","lose","loseToDiscardpile","A",null,null,["d","d","d","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"visible":true,"stockCards":["shown","hidden","equipped"],"lostFrom":{"h":["shown","hidden"],"e":["equipped"]},"hands":[["control"],[]],"spectatorKnownHands":[["control"],[]],"discardOrder":["shown","hidden","equipped"]}],
+    ["cancel-draw","callback","loseAfter","lose","loseToDiscardpile","A",null,null,["d","d","d","A:h","c","c","c"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"visible":true,"stockCards":["shown","hidden","equipped"],"lostFrom":{"h":["shown","hidden"],"e":["equipped"]},"hands":[["control"],[]],"spectatorKnownHands":[["control"],[]],"discardOrder":["shown","hidden","equipped"]}],
+    ["cancel-draw","request","loseToDiscardpileAfter","loseToDiscardpile","recast","A",null,null,["d","d","d","A:h","c","c","c"],{"cards":["shown","hidden","equipped"]}],
+    ["cancel-draw","callback","recastingLost","recast","reference_fixture_use","A",null,null,["d","d","d","A:h","c","c","c"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[],"hands":[["control"],[]],"spectatorKnownHands":[["control"],[]],"discardOrder":["shown","hidden","equipped"]}],
+    ["cancel-draw","request","recast","recast","reference_fixture_use","A",null,null,["d","d","d","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[]}],
+    ["cancel-draw","callback","recast","recast","reference_fixture_use","A",null,null,["d","d","d","A:h","c","c","c"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[]}],
+    ["cancel-draw","request","recastingGain","recast","reference_fixture_use","A",null,null,["d","d","d","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[]}],
+    ["cancel-draw","factory","recastingGain","recast","reference_fixture_use","A",null,null,["d","d","d","A:h","c","c","c"],{"player":"A","cards":["shown","hidden","equipped"],"sameArray":true,"child":{"event":"draw","parent":"recast","cards":[],"num":3,"cancelled":false,"finished":false}}],
+    ["cancel-draw","request","recastingGained","recast","reference_fixture_use","A",null,null,["d","d","d","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[],"hands":[["control"],[]],"spectatorKnownHands":[["control"],[]],"discardOrder":["shown","hidden","equipped"]}],
+    ["cancel-draw","callback","recastingGain","recast","reference_fixture_use","A",null,null,["d","d","d","A:h","c","c","c"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[{"event":"draw","parent":"recast","cards":[],"num":3,"cancelled":false,"finished":false}]}],
+    ["cancel-draw","request","drawBefore","draw","recast","A","A",null,["d","d","d","A:h","c","c","c"],{"num":3,"drawn":[]}],
+    ["cancel-draw","callback","drawBefore","draw","recast","A","A",null,["d","d","d","A:h","c","c","c"],{"callbackParent":"trigger","num":3,"drawn":[]}],
+    ["cancel-draw","request","drawCancelled","draw","recast","A","A",null,["d","d","d","A:h","c","c","c"],{"num":3,"drawn":[]}],
+    ["cancel-draw","callback","drawCancelled","draw","recast","A","A",null,["d","d","d","A:h","c","c","c"],{"callbackParent":"trigger","num":3,"drawn":[]}],
+    ["cancel-draw","callback","recastingGained","recast","reference_fixture_use","A",null,null,["d","d","d","A:h","c","c","c"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[{"event":"draw","parent":"recast","cards":[],"num":3,"cancelled":true,"finished":true}],"hands":[["control"],[]],"spectatorKnownHands":[["control"],[]],"discardOrder":["shown","hidden","equipped"]}],
+    ["cancel-draw","request","recastEnd","recast","reference_fixture_use","A",null,null,["d","d","d","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"finished":true,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[{"event":"draw","parent":"recast","cards":[],"num":3,"cancelled":true,"finished":true}]}],
+    ["cancel-draw","request","recastAfter","recast","reference_fixture_use","A",null,null,["d","d","d","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"finished":true,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[{"event":"draw","parent":"recast","cards":[],"num":3,"cancelled":true,"finished":true}]}],
+    ["cancel-draw","callback","recastAfter","recast","reference_fixture_use","A",null,null,["d","d","d","A:h","c","c","c"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"finished":true,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[{"event":"draw","parent":"recast","cards":[],"num":3,"cancelled":true,"finished":true}]}],
+    ["public-gain","request","recastBefore","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[],"gainingEvents":[]}],
+    ["public-gain","request","recastBegin","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[],"gainingEvents":[]}],
+    ["public-gain","display","recast-log","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"inSharedLog":true,"spectatorKnownHands":[["shown","control"],[]]}],
+    ["public-gain","request","recastingLose","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[],"gainingEvents":[]}],
+    ["public-gain","factory","recastingLose","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"player":"A","cards":["shown","hidden","equipped"],"sameArray":true,"child":{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":false}}],
+    ["public-gain","request","recastingLost","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[],"gainingEvents":[],"hands":[["shown","control","hidden"],[]],"spectatorKnownHands":[["shown","control"],[]],"discardOrder":[]}],
+    ["public-gain","callback","recastingLose","recast","reference_fixture_use","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":false}],"gainingEvents":[]}],
+    ["public-gain","request","loseToDiscardpileBefore","loseToDiscardpile","recast","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"]}],
+    ["public-gain","request","loseBefore","lose","loseToDiscardpile","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"visible":true}],
+    ["public-gain","callback","loseBefore","lose","loseToDiscardpile","A",null,null,["A:h","A:h","A:e","A:h","c","c","c"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"visible":true}],
+    ["public-gain","request","loseAfter","lose","loseToDiscardpile","A",null,null,["d","d","d","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"visible":true,"stockCards":["shown","hidden","equipped"],"lostFrom":{"h":["shown","hidden"],"e":["equipped"]},"hands":[["control"],[]],"spectatorKnownHands":[["control"],[]],"discardOrder":["shown","hidden","equipped"]}],
+    ["public-gain","callback","loseAfter","lose","loseToDiscardpile","A",null,null,["d","d","d","A:h","c","c","c"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"visible":true,"stockCards":["shown","hidden","equipped"],"lostFrom":{"h":["shown","hidden"],"e":["equipped"]},"hands":[["control"],[]],"spectatorKnownHands":[["control"],[]],"discardOrder":["shown","hidden","equipped"]}],
+    ["public-gain","request","loseToDiscardpileAfter","loseToDiscardpile","recast","A",null,null,["d","d","d","A:h","c","c","c"],{"cards":["shown","hidden","equipped"]}],
+    ["public-gain","callback","recastingLost","recast","reference_fixture_use","A",null,null,["d","d","d","A:h","c","c","c"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[],"hands":[["control"],[]],"spectatorKnownHands":[["control"],[]],"discardOrder":["shown","hidden","equipped"]}],
+    ["public-gain","request","recast","recast","reference_fixture_use","A",null,null,["d","d","d","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[]}],
+    ["public-gain","callback","recast","recast","reference_fixture_use","A",null,null,["d","d","d","A:h","c","c","c"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[]}],
+    ["public-gain","request","recastingGain","recast","reference_fixture_use","A",null,null,["d","d","d","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[]}],
+    ["public-gain","factory","recastingGain","recast","reference_fixture_use","A",null,null,["d","d","d","A:h","c","c","c"],{"player":"A","cards":["shown","hidden","equipped"],"sameArray":true,"child":{"event":"gain","parent":"recast","cards":["draw-1","draw-2","draw-3"],"num":null,"cancelled":false,"finished":false}}],
+    ["public-gain","request","recastingGained","recast","reference_fixture_use","A",null,null,["d","d","d","A:h","c","c","c"],{"cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[],"hands":[["control"],[]],"spectatorKnownHands":[["control"],[]],"discardOrder":["shown","hidden","equipped"]}],
+    ["public-gain","callback","recastingGain","recast","reference_fixture_use","A",null,null,["d","d","d","A:h","c","c","c"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[{"event":"gain","parent":"recast","cards":["draw-1","draw-2","draw-3"],"num":null,"cancelled":false,"finished":false}]}],
+    ["public-gain","request","gainBefore","gain","recast","A",null,null,["d","d","d","A:h","c","c","c"],{"cards":["draw-1","draw-2","draw-3"]}],
+    ["public-gain","request","gainAfter","gain","recast","A",null,null,["d","d","d","A:h","A:h","A:h","A:h"],{"cards":["draw-1","draw-2","draw-3"],"visible":true,"hands":[["draw-1","draw-2","draw-3","control"],[]],"spectatorKnownHands":[["draw-1","draw-2","draw-3","control"],[]],"discardOrder":["shown","hidden","equipped"]}],
+    ["public-gain","callback","gainAfter","gain","recast","A",null,null,["d","d","d","A:h","A:h","A:h","A:h"],{"callbackParent":"trigger","cards":["draw-1","draw-2","draw-3"],"visible":true,"hands":[["draw-1","draw-2","draw-3","control"],[]],"spectatorKnownHands":[["draw-1","draw-2","draw-3","control"],[]],"discardOrder":["shown","hidden","equipped"]}],
+    ["public-gain","callback","recastingGained","recast","reference_fixture_use","A",null,null,["d","d","d","A:h","A:h","A:h","A:h"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[{"event":"gain","parent":"recast","cards":["draw-1","draw-2","draw-3"],"num":null,"cancelled":false,"finished":true}],"hands":[["draw-1","draw-2","draw-3","control"],[]],"spectatorKnownHands":[["draw-1","draw-2","draw-3","control"],[]],"discardOrder":["shown","hidden","equipped"]}],
+    ["public-gain","request","recastEnd","recast","reference_fixture_use","A",null,null,["d","d","d","A:h","A:h","A:h","A:h"],{"cards":["shown","hidden","equipped"],"finished":true,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[{"event":"gain","parent":"recast","cards":["draw-1","draw-2","draw-3"],"num":null,"cancelled":false,"finished":true}]}],
+    ["public-gain","request","recastAfter","recast","reference_fixture_use","A",null,null,["d","d","d","A:h","A:h","A:h","A:h"],{"cards":["shown","hidden","equipped"],"finished":true,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[{"event":"gain","parent":"recast","cards":["draw-1","draw-2","draw-3"],"num":null,"cancelled":false,"finished":true}]}],
+    ["public-gain","callback","recastAfter","recast","reference_fixture_use","A",null,null,["d","d","d","A:h","A:h","A:h","A:h"],{"callbackParent":"trigger","cards":["shown","hidden","equipped"],"finished":true,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden","equipped"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[{"event":"gain","parent":"recast","cards":["draw-1","draw-2","draw-3"],"num":null,"cancelled":false,"finished":true}]}],
+    ["clan-choice","request","chooseCardBegin","chooseCard","clanmingdian_cost","A",null,null,["A:h","A:h",null,"A:h","c","c","c"],{"position":"he","range":[1,"unbounded"],"offered":["shown","control","hidden"],"eligible":["shown","hidden"],"selected":[],"accepted":null,"spectatorKnownHands":[["shown","control"],[]],"discardOrder":[]}],
+    ["clan-choice","request","chooseCardAfter","chooseCard","clanmingdian_cost","A",null,null,["A:h","A:h",null,"A:h","c","c","c"],{"position":"he","range":[1,"unbounded"],"offered":["shown","control","hidden"],"eligible":["shown","hidden"],"selected":["shown","hidden"],"accepted":true,"spectatorKnownHands":[["shown","control"],[]],"discardOrder":[]}],
+    ["clan-choice","callback","chooseCardAfter","chooseCard","clanmingdian_cost","A",null,null,["A:h","A:h",null,"A:h","c","c","c"],{"callbackParent":"trigger","position":"he","range":[1,"unbounded"],"offered":["shown","control","hidden"],"eligible":["shown","hidden"],"selected":["shown","hidden"],"accepted":true,"spectatorKnownHands":[["shown","control"],[]],"discardOrder":[]}],
+    ["clan-choice","request","recastBefore","recast","clanmingdian","A",null,null,["A:h","A:h",null,"A:h","c","c","c"],{"cards":["shown","hidden"],"finished":false,"cancelled":false,"losingEvents":[],"gainingEvents":[]}],
+    ["clan-choice","request","recastBegin","recast","clanmingdian","A",null,null,["A:h","A:h",null,"A:h","c","c","c"],{"cards":["shown","hidden"],"finished":false,"cancelled":false,"losingEvents":[],"gainingEvents":[]}],
+    ["clan-choice","display","recast-log","recast","clanmingdian","A",null,null,["A:h","A:h",null,"A:h","c","c","c"],{"cards":["shown","hidden"],"inSharedLog":true,"spectatorKnownHands":[["shown","control"],[]]}],
+    ["clan-choice","request","recastingLose","recast","clanmingdian","A",null,null,["A:h","A:h",null,"A:h","c","c","c"],{"cards":["shown","hidden"],"finished":false,"cancelled":false,"losingEvents":[],"gainingEvents":[]}],
+    ["clan-choice","factory","recastingLose","recast","clanmingdian","A",null,null,["A:h","A:h",null,"A:h","c","c","c"],{"player":"A","cards":["shown","hidden"],"sameArray":true,"child":{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden"],"num":null,"cancelled":false,"finished":false}}],
+    ["clan-choice","request","recastingLost","recast","clanmingdian","A",null,null,["A:h","A:h",null,"A:h","c","c","c"],{"cards":["shown","hidden"],"finished":false,"cancelled":false,"losingEvents":[],"gainingEvents":[],"hands":[["shown","control","hidden"],[]],"spectatorKnownHands":[["shown","control"],[]],"discardOrder":[]}],
+    ["clan-choice","callback","recastingLose","recast","clanmingdian","A",null,null,["A:h","A:h",null,"A:h","c","c","c"],{"callbackParent":"trigger","cards":["shown","hidden"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden"],"num":null,"cancelled":false,"finished":false}],"gainingEvents":[]}],
+    ["clan-choice","request","loseToDiscardpileBefore","loseToDiscardpile","recast","A",null,null,["A:h","A:h",null,"A:h","c","c","c"],{"cards":["shown","hidden"]}],
+    ["clan-choice","request","loseBefore","lose","loseToDiscardpile","A",null,null,["A:h","A:h",null,"A:h","c","c","c"],{"cards":["shown","hidden"],"visible":true}],
+    ["clan-choice","callback","loseBefore","lose","loseToDiscardpile","A",null,null,["A:h","A:h",null,"A:h","c","c","c"],{"callbackParent":"trigger","cards":["shown","hidden"],"visible":true}],
+    ["clan-choice","request","loseAfter","lose","loseToDiscardpile","A",null,null,["d","d",null,"A:h","c","c","c"],{"cards":["shown","hidden"],"visible":true,"stockCards":["shown","hidden"],"lostFrom":{"h":["shown","hidden"],"e":[]},"hands":[["control"],[]],"spectatorKnownHands":[["control"],[]],"discardOrder":["shown","hidden"]}],
+    ["clan-choice","callback","loseAfter","lose","loseToDiscardpile","A",null,null,["d","d",null,"A:h","c","c","c"],{"callbackParent":"trigger","cards":["shown","hidden"],"visible":true,"stockCards":["shown","hidden"],"lostFrom":{"h":["shown","hidden"],"e":[]},"hands":[["control"],[]],"spectatorKnownHands":[["control"],[]],"discardOrder":["shown","hidden"]}],
+    ["clan-choice","request","loseToDiscardpileAfter","loseToDiscardpile","recast","A",null,null,["d","d",null,"A:h","c","c","c"],{"cards":["shown","hidden"]}],
+    ["clan-choice","callback","recastingLost","recast","clanmingdian","A",null,null,["d","d",null,"A:h","c","c","c"],{"callbackParent":"trigger","cards":["shown","hidden"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[],"hands":[["control"],[]],"spectatorKnownHands":[["control"],[]],"discardOrder":["shown","hidden"]}],
+    ["clan-choice","request","recast","recast","clanmingdian","A",null,null,["d","d",null,"A:h","c","c","c"],{"cards":["shown","hidden"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[]}],
+    ["clan-choice","callback","recast","recast","clanmingdian","A",null,null,["d","d",null,"A:h","c","c","c"],{"callbackParent":"trigger","cards":["shown","hidden"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[]}],
+    ["clan-choice","request","recastingGain","recast","clanmingdian","A",null,null,["d","d",null,"A:h","c","c","c"],{"cards":["shown","hidden"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[]}],
+    ["clan-choice","factory","recastingGain","recast","clanmingdian","A",null,null,["d","d",null,"A:h","c","c","c"],{"player":"A","cards":["shown","hidden"],"sameArray":true,"child":{"event":"draw","parent":"recast","cards":[],"num":2,"cancelled":false,"finished":false}}],
+    ["clan-choice","request","recastingGained","recast","clanmingdian","A",null,null,["d","d",null,"A:h","c","c","c"],{"cards":["shown","hidden"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[],"hands":[["control"],[]],"spectatorKnownHands":[["control"],[]],"discardOrder":["shown","hidden"]}],
+    ["clan-choice","callback","recastingGain","recast","clanmingdian","A",null,null,["d","d",null,"A:h","c","c","c"],{"callbackParent":"trigger","cards":["shown","hidden"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[{"event":"draw","parent":"recast","cards":[],"num":2,"cancelled":false,"finished":false}]}],
+    ["clan-choice","request","drawBefore","draw","recast","A","A",null,["d","d",null,"A:h","c","c","c"],{"num":2,"drawn":[]}],
+    ["clan-choice","callback","drawBefore","draw","recast","A","A",null,["d","d",null,"A:h","c","c","c"],{"callbackParent":"trigger","num":2,"drawn":[]}],
+    ["clan-choice","request","gainBefore","gain","draw","A",null,null,["d","d",null,"A:h",null,null,"c"],{"cards":["draw-1","draw-2"]}],
+    ["clan-choice","request","gainAfter","gain","draw","A",null,null,["d","d",null,"A:h","A:h","A:h","c"],{"cards":["draw-1","draw-2"],"hands":[["draw-1","draw-2","control"],[]],"spectatorKnownHands":[["control"],[]],"discardOrder":["shown","hidden"]}],
+    ["clan-choice","callback","gainAfter","gain","draw","A",null,null,["d","d",null,"A:h","A:h","A:h","c"],{"callbackParent":"trigger","cards":["draw-1","draw-2"],"hands":[["draw-1","draw-2","control"],[]],"spectatorKnownHands":[["control"],[]],"discardOrder":["shown","hidden"]}],
+    ["clan-choice","request","drawAfter","draw","recast","A","A",null,["d","d",null,"A:h","A:h","A:h","c"],{"num":2,"drawn":["draw-1","draw-2"]}],
+    ["clan-choice","callback","drawAfter","draw","recast","A","A",null,["d","d",null,"A:h","A:h","A:h","c"],{"callbackParent":"trigger","num":2,"drawn":["draw-1","draw-2"]}],
+    ["clan-choice","callback","recastingGained","recast","clanmingdian","A",null,null,["d","d",null,"A:h","A:h","A:h","c"],{"callbackParent":"trigger","cards":["shown","hidden"],"finished":false,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[{"event":"draw","parent":"recast","cards":[],"num":2,"cancelled":false,"finished":true}],"hands":[["draw-1","draw-2","control"],[]],"spectatorKnownHands":[["control"],[]],"discardOrder":["shown","hidden"]}],
+    ["clan-choice","request","recastEnd","recast","clanmingdian","A",null,null,["d","d",null,"A:h","A:h","A:h","c"],{"cards":["shown","hidden"],"finished":true,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[{"event":"draw","parent":"recast","cards":[],"num":2,"cancelled":false,"finished":true}]}],
+    ["clan-choice","request","recastAfter","recast","clanmingdian","A",null,null,["d","d",null,"A:h","A:h","A:h","c"],{"cards":["shown","hidden"],"finished":true,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[{"event":"draw","parent":"recast","cards":[],"num":2,"cancelled":false,"finished":true}]}],
+    ["clan-choice","callback","recastAfter","recast","clanmingdian","A",null,null,["d","d",null,"A:h","A:h","A:h","c"],{"callbackParent":"trigger","cards":["shown","hidden"],"finished":true,"cancelled":false,"losingEvents":[{"event":"loseToDiscardpile","parent":"recast","cards":["shown","hidden"],"num":null,"cancelled":false,"finished":true}],"gainingEvents":[{"event":"draw","parent":"recast","cards":[],"num":2,"cancelled":false,"finished":true}]}]
+  ]
+}

@@ -3,6 +3,7 @@ import { createRequire } from 'node:module';
 import { readFile, writeFile } from 'node:fs/promises';
 import { installTriggerOrderScenario } from './reference-trigger-order-cancel.mjs';
 import { checkReferenceRecastCallbacks, installReferenceRecast } from './reference-recast.mjs';
+import { checkRecastBatch, installRecastBatch } from './reference-recast-batch.mjs';
 import { checkReferenceLinkedDamage, installReferenceLinkedDamage } from './reference-linked-damage.mjs';
 import { checkReferenceCompare, installReferenceCompare } from './reference-compare.mjs';
 import { checkQiaoshuiTargets, installQiaoshuiTargets } from './reference-qiaoshui-targets.mjs';
@@ -45,6 +46,7 @@ const descriptions = new Map([
   ['trigger-order-cancel', 'damage trigger ordering, cost, and cancellation for physical sha'],
   ['tiesuo-recast', 'default and custom loss and gain when recasting a physical tiesuo'],
   ['recast-callbacks', 'executed loss and gain callbacks when recasting a physical tiesuo'],
+  ['recast-batch', 'physical batch recast with equipment, intercepted and cancelled transfers, and clanmingdian selection'],
   ['linked-damage', 'tiesuo, faen, armor, and fire sha propagation across three turns'],
   ['compare', 'private pindian choices, public reveal, qiaoshui and jyzongshi across three turns'],
   ['qiaoshui-targets', 'paired, automatic and selectable target changes after winning qiaoshui'],
@@ -74,9 +76,9 @@ const isRecast = scenario === 'tiesuo-recast' || scenario === 'recast-callbacks'
 if (['zhongyi-expansion', 'zhongyi-boundaries', 'zhongyi-transit-death', 'qiaoshui-targets', 'judgment-zones'].includes(scenario)) {
   sourceHashes['/character/standard/skill.js'] = 'ee769399395b93f3d8293cd5b880b8e708864329bd0d79a0b4f0d8bd6f855a9e';
 }
-if (isRecast || ['linked-damage', 'qiaoshui-targets'].includes(scenario)) sourceHashes['/card/extra.js'] = '8a73678a49b4fc413d6dc0d506733e594fae619d91dc8013cd441a6cd107c35d';
-if (['recast-callbacks', 'compare', 'compare-boundaries', 'compare-multiple', 'zhongyi-boundaries', 'zhongyi-transit-death'].includes(scenario)) sourceHashes['/noname/library/element/card.js'] = '5d3a07fadafa1c5661ec197edb8c71f613b3db1129933fdf7d8aa311f5811f8d';
-if (['zhongyi-boundaries', 'zhongyi-transit-death', 'phase-scheduling', 'phase-queue', 'compare-multiple', 'counter-payment'].includes(scenario)) {
+if (isRecast || ['recast-batch', 'linked-damage', 'qiaoshui-targets'].includes(scenario)) sourceHashes['/card/extra.js'] = '8a73678a49b4fc413d6dc0d506733e594fae619d91dc8013cd441a6cd107c35d';
+if (['recast-callbacks', 'recast-batch', 'compare', 'compare-boundaries', 'compare-multiple', 'zhongyi-boundaries', 'zhongyi-transit-death'].includes(scenario)) sourceHashes['/noname/library/element/card.js'] = '5d3a07fadafa1c5661ec197edb8c71f613b3db1129933fdf7d8aa311f5811f8d';
+if (['zhongyi-boundaries', 'zhongyi-transit-death', 'phase-scheduling', 'phase-queue', 'compare-multiple', 'counter-payment', 'recast-batch'].includes(scenario)) {
   sourceHashes['/noname/get/index.js'] = '8515ed7242d2638720180507a778cb273d8f33743eac12c5237d2f50e805823d';
 }
 if (['zhongyi-transit-death', 'phase-scheduling', 'phase-queue', 'compare-multiple'].includes(scenario)) {
@@ -97,6 +99,9 @@ if (scenario === 'phase-scheduling') {
 if (scenario === 'compare-multiple') {
   sourceHashes['/character/sp/skill.js'] = 'a63785adcf4c9518b58ca05f6ea85559f8eb6ea3d89ebcd782498f445cde85f9';
   sourceHashes['/character/tw/skill.js'] = '0a3c6e0d103575cb61229fc484a930a0e61e635d928637b84bbe8b3bbc70d8b3';
+}
+if (scenario === 'recast-batch') {
+  sourceHashes['/character/clan/skill.js'] = 'a3185d7b948af3a19ebe3681d9d1be28db077e5fb38bd3b1af32a3e2f1ffbc9e';
 }
 
 const browser = await chromium.launch({ headless: true, executablePath });
@@ -124,6 +129,8 @@ try {
     await context.addInitScript({ content: `window.__installTriggerOrderScenario = ${installTriggerOrderScenario.toString()};` });
   } else if (isRecast) {
     await context.addInitScript(installReferenceRecast);
+  } else if (scenario === 'recast-batch') {
+    await context.addInitScript(installRecastBatch);
   } else if (scenario === 'linked-damage') {
     await context.addInitScript(installReferenceLinkedDamage);
   } else if (scenario === 'hp-cancel') {
@@ -224,6 +231,7 @@ try {
             'zhongyi-transit-death': window.__runZhongyiTransitDeath,
             'compare-boundaries': window.__runCompareBoundaries,
             'compare-multiple': window.__runCompareMultiple,
+            'recast-batch': window.__runRecastBatch,
             'judgment-zones': window.__runJudgmentZones,
             'counter-payment': window.__runCounterPayment,
           };
@@ -400,6 +408,7 @@ try {
   if (scenario === 'judgment-zones') checkJudgmentZones(captured.value);
   if (scenario === 'counter-payment') checkCounterPayment(captured.value);
   if (scenario === 'recast-callbacks') checkReferenceRecastCallbacks(captured.value);
+  if (scenario === 'recast-batch') checkRecastBatch(captured.value);
   if (scenario === 'sha-no-shan') assert.deepEqual(captured.value.final, {
     targetHp: 3, cardPosition: 'd', inActorHand: false, inDiscard: true, useCount: 1, targetAlive: true,
   });
