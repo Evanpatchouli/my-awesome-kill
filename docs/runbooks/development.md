@@ -64,3 +64,5 @@ Android 的 ARM64 调试包位于 `apps/game/src-tauri/gen/android/app/build/out
 新包也在独立 API 36 模拟器上实际安装过。设备内 `base.apk` 和 WebView 实际加载的 WASM 都与以上 SHA-256 一致。飞行模式下从首页滚动选将页，选曹操并进入八人局。在万箭齐发响应中点击闪并确认，手牌 4→3，弃牌堆 7→8。640×320 屏幕下 WebView 占据 `[0,24]–[640,296]`，手牌和按钮在 640×272 可用范围内；七个对手席位以横向列表呈现，右缘可见部分末席。
 
 在文件支持的 Windows 开发盘上运行构建和模拟器时，应同时查看承载 VHDX 的宿主卷。模拟器冷启动、Windows 页面文件和编译目录都可能占用同一个物理盘。复用 Cargo target，并在一次隔离 AVD 验证后关闭该实例及其专属 ADB 服务器，可减少重复写入和并发磁盘占用。
+
+2026-11-19 另从提交 `042c6df` 的默认发行资源重建并实测两端。Windows 程序 SHA-256 为 `3470DC8E3AE33B4DB2A2ABC9348D2188CBA05A03F1B4424EAC249A5FDF9EFF1A`。Android ARM64 调试包 SHA-256 为 `A6AF768146548523FE7ABBD9212D2AE3AE5CEA0ECA383F2E0626FF385E2EE2E0`，大小 135,172,351 字节，v2 验签、16 KiB 对齐和设备内 APK 哈希均已核对。两端离线选张飞进入八人局并提交过河拆桥，Windows 版本由 0 变为 1，Android 由 0 变为 5。运行中 WebView 读到的 WASM 均为 `E04FF567BABC6D2CAC7E015FDF2451B3285EDD185436AF2EDC3F00C41A8223B3`。Android 的 `frontendDist` 覆盖应使用相对配置文件的路径；本次直接填入 Windows 盘符绝对路径时被 Tauri 解析为 URL。核对实际页面中的 WASM 和可交互状态能发现这种打包错误。
