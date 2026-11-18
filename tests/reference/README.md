@@ -24,6 +24,13 @@
 
 前置技能取消和底层移牌取消的观测也在这份轨迹中。取消 `recastingGain` 时已经排队的摸牌先完成；只取消 `drawBefore` 时上层仍完成重铸。只取消 `loseBefore` 时材料留在 A 手中，外层也继续摸到一张。这些场景共记录 184 次时机请求、177 次技能执行和 16 次工厂调用。
 
+`compare.json` 记录八人离线身份局中的巧说和纵适。实际浏览器席 C 旁观三个 AI 出牌回合。每次 A、B 各暗摸两张实体牌。夹具给真实 `chooseTarget`、`chooseCard` 的 AI 指定偏好，巧说的目标过滤、选牌、移牌、比点和技能内容均由原版执行。巧说的 `qiaoshui_cost` 选中 B 时双方拼点牌仍在手中。三例的 `fixedResultSupplied` 均为 `false`。
+
+原版 `chooseToCompare` 通过 `chooseCardOL` 依次让 A、B 执行 `chooseCard`。`privateSelections` 在每次选择开始与结束时读取当前选择结果、A/B/C 的已知手牌及 C 牌桌上的公开拼点牌面。四个时刻双方均只知自己的两张手牌，C 的两组已知牌和公开牌面均为空。双方结果汇总后，两张牌依次由手牌移到处理区。原版以一次 `$compare` 将两张牌交给展示层，再分别为 A、B 调用 `showCards`。`reveals` 记录那一次双牌展示的输入，`spectatorSawFlip` 记录 C 的牌桌上实际翻为正面的两张牌。
+
+- **改点后获胜。** A 出红桃 7 桃，B 出方片 9 闪。测试席额外持有「天辩」的原版点数子技能 `tianbian_number`，其 `compare` 回调将 7 改为 13，`compareFixing` 时点数为 13 对 9。A 发动纵适，从处理区获得 B 的闪，自己的桃随后弃置。A 先以 B 为下一张杀的唯一目标，D 在普通攻击范围外。巧说在 `useCard2` 消耗临时技能，再让 A 选择并加入 D。B、D 各失去 1 点体力，A 接着使用的决斗只有 B 一个目标。
+- **平点与失利。** 7 对 7 的结果为 `bool: false`、`tie: true`，无赢家。4 对 10 的赢家为 B。两次 A 都通过纵适取回自己的桃，B 的闪进入弃牌堆。A 在该回合仍能对 B 使用杀，手中的决斗受巧说限制。`phaseEnd` 及 `phaseAfter` 请求时 A 仍有 `qiaoshui2`，实际执行 `phaseAfter` 观察技能时该技能已经移除，决斗重新可用。
+
 ## 复现
 
 1. 在独立临时目录检出上述上游提交，保留 `apps/core`、`packages/fs`、`packages/jit` 和根目录的 `scripts`；可从本机 `.reference/noname` 用 `git clone --shared --sparse` 复用已有对象。通过 `git rev-parse HEAD` 确认提交。不要在项目运行时依赖该参考检出。
@@ -38,6 +45,7 @@
    node scripts/reference-trace.mjs --scenario tiesuo-recast --check tests/reference/tiesuo-recast.json
    node scripts/reference-trace.mjs --scenario recast-callbacks --check tests/reference/recast-callbacks.json
    node scripts/reference-trace.mjs --scenario linked-damage --check tests/reference/linked-damage.json
+   node scripts/reference-trace.mjs --scenario compare --check tests/reference/compare.json
    ```
 
-运行器在隔离浏览器内核对八个共同上游源文件的 LF 归一化 SHA-256。重铸和连环伤害场景还校验 `card/extra.js`，重铸知情状态另核对 `element/card.js`，连环伤害另校验 `character/yijiang/skill.js`。随后执行场景并逐项比较事件和结果。整个检出的版本由第 1 步确认。`--write <path>` 用于重新采集，默认将结果写至标准输出。
+运行器在隔离浏览器内核对八个共同上游源文件的 LF 归一化 SHA-256。重铸和连环伤害场景还校验 `card/extra.js`，重铸知情状态与拼点另核对 `element/card.js`，连环伤害与拼点另校验 `character/yijiang/skill.js`。随后执行场景并逐项比较事件和结果。整个检出的版本由第 1 步确认。`--write <path>` 用于重新采集，默认将结果写至标准输出。

@@ -1,0 +1,949 @@
+{
+  "schema": "noname-reference-trace-v1",
+  "referenceCommit": "c73270948d72949aa80009536b9fd5400767d091",
+  "mode": "identity",
+  "scenario": "private pindian choices, public reveal, qiaoshui and jyzongshi across three turns",
+  "players": 8,
+  "online": false,
+  "trials": [
+    {
+      "sample": "modified-win",
+      "turn": 2,
+      "skills": [
+        "qiaoshui",
+        "jyzongshi",
+        "tianbian_number"
+      ],
+      "hands": [
+        [
+          [
+            "tao",
+            "heart",
+            7
+          ],
+          [
+            "shan",
+            "diamond",
+            2
+          ]
+        ],
+        [
+          [
+            "shan",
+            "diamond",
+            9
+          ],
+          [
+            "tao",
+            "heart",
+            6
+          ]
+        ]
+      ],
+      "privateSelections": [
+        {
+          "timing": "chooseCardBegin",
+          "chooser": "A",
+          "offered": [
+            "aBid",
+            "aOther"
+          ],
+          "selected": [],
+          "autochoose": false,
+          "handsKnownToA": [
+            [
+              "aBid",
+              "aOther"
+            ],
+            []
+          ],
+          "handsKnownToB": [
+            [],
+            [
+              "bBid",
+              "bOther"
+            ]
+          ],
+          "handsKnownToC": [
+            [],
+            []
+          ],
+          "publicCompareCount": 0,
+          "visibleCompareFaces": []
+        },
+        {
+          "timing": "chooseCardAfter",
+          "chooser": "A",
+          "offered": [
+            "aBid",
+            "aOther"
+          ],
+          "selected": [
+            "aBid"
+          ],
+          "autochoose": false,
+          "handsKnownToA": [
+            [
+              "aBid",
+              "aOther"
+            ],
+            []
+          ],
+          "handsKnownToB": [
+            [],
+            [
+              "bBid",
+              "bOther"
+            ]
+          ],
+          "handsKnownToC": [
+            [],
+            []
+          ],
+          "publicCompareCount": 0,
+          "visibleCompareFaces": []
+        },
+        {
+          "timing": "chooseCardBegin",
+          "chooser": "B",
+          "offered": [
+            "bBid",
+            "bOther"
+          ],
+          "selected": [],
+          "autochoose": false,
+          "handsKnownToA": [
+            [
+              "aBid",
+              "aOther"
+            ],
+            []
+          ],
+          "handsKnownToB": [
+            [],
+            [
+              "bBid",
+              "bOther"
+            ]
+          ],
+          "handsKnownToC": [
+            [],
+            []
+          ],
+          "publicCompareCount": 0,
+          "visibleCompareFaces": []
+        },
+        {
+          "timing": "chooseCardAfter",
+          "chooser": "B",
+          "offered": [
+            "bBid",
+            "bOther"
+          ],
+          "selected": [
+            "bBid"
+          ],
+          "autochoose": false,
+          "handsKnownToA": [
+            [
+              "aBid",
+              "aOther"
+            ],
+            []
+          ],
+          "handsKnownToB": [
+            [],
+            [
+              "bBid",
+              "bOther"
+            ]
+          ],
+          "handsKnownToC": [
+            [],
+            []
+          ],
+          "publicCompareCount": 0,
+          "visibleCompareFaces": []
+        }
+      ],
+      "targetChoices": [
+        {
+          "skill": "qiaoshui_cost",
+          "accepted": true,
+          "targets": [
+            "B"
+          ]
+        },
+        {
+          "skill": "qiaoshui3",
+          "accepted": true,
+          "targets": [
+            "D"
+          ]
+        }
+      ],
+      "reveals": [
+        [
+          [
+            "tao",
+            "heart",
+            7
+          ],
+          [
+            "shan",
+            "diamond",
+            9
+          ]
+        ]
+      ],
+      "cardTargets": [
+        {
+          "timing": "useCard2",
+          "card": "sha",
+          "targets": [
+            "B"
+          ],
+          "skills": [
+            "qiaoshui3"
+          ]
+        },
+        {
+          "timing": "useCardAfter",
+          "card": "sha",
+          "targets": [
+            "B",
+            "D"
+          ],
+          "skills": []
+        },
+        {
+          "timing": "useCard2",
+          "card": "trick",
+          "targets": [
+            "B"
+          ],
+          "skills": []
+        },
+        {
+          "timing": "useCardAfter",
+          "card": "trick",
+          "targets": [
+            "B"
+          ],
+          "skills": []
+        }
+      ],
+      "fixedResultSupplied": false,
+      "collected": [
+        [
+          "aBid"
+        ],
+        [
+          "bBid"
+        ]
+      ],
+      "result": {
+        "bool": true,
+        "tie": false,
+        "winner": "A",
+        "cards": [
+          "aBid",
+          "bBid"
+        ],
+        "numbers": [
+          13,
+          9
+        ]
+      },
+      "zongshiAccepted": true,
+      "zongshiGain": [
+        "bBid"
+      ],
+      "nextCard": {
+        "skillsBefore": [
+          "qiaoshui3"
+        ],
+        "canUseTrick": true,
+        "canUseShaOnB": true,
+        "canUseShaOnD": false,
+        "targetEnabled2ForD": true,
+        "shaTargets": [
+          "B",
+          "D"
+        ],
+        "skillsAfterSha": [],
+        "hpAfterSha": [
+          3,
+          3
+        ],
+        "secondCardTargets": [
+          "B"
+        ]
+      },
+      "final": {
+        "skills": [],
+        "canUseTrick": true,
+        "zones": [
+          "d",
+          "A:h"
+        ],
+        "spectatorSawFlip": [
+          "aBid",
+          "bBid"
+        ],
+        "gainedCardsKnownToC": [
+          "bBid"
+        ]
+      }
+    },
+    {
+      "sample": "tie",
+      "turn": 3,
+      "skills": [
+        "qiaoshui",
+        "jyzongshi"
+      ],
+      "hands": [
+        [
+          [
+            "tao",
+            "heart",
+            7
+          ],
+          [
+            "shan",
+            "diamond",
+            2
+          ]
+        ],
+        [
+          [
+            "shan",
+            "diamond",
+            7
+          ],
+          [
+            "tao",
+            "heart",
+            6
+          ]
+        ]
+      ],
+      "privateSelections": [
+        {
+          "timing": "chooseCardBegin",
+          "chooser": "A",
+          "offered": [
+            "aBid",
+            "aOther"
+          ],
+          "selected": [],
+          "autochoose": false,
+          "handsKnownToA": [
+            [
+              "aBid",
+              "aOther"
+            ],
+            []
+          ],
+          "handsKnownToB": [
+            [],
+            [
+              "bBid",
+              "bOther"
+            ]
+          ],
+          "handsKnownToC": [
+            [],
+            []
+          ],
+          "publicCompareCount": 0,
+          "visibleCompareFaces": []
+        },
+        {
+          "timing": "chooseCardAfter",
+          "chooser": "A",
+          "offered": [
+            "aBid",
+            "aOther"
+          ],
+          "selected": [
+            "aBid"
+          ],
+          "autochoose": false,
+          "handsKnownToA": [
+            [
+              "aBid",
+              "aOther"
+            ],
+            []
+          ],
+          "handsKnownToB": [
+            [],
+            [
+              "bBid",
+              "bOther"
+            ]
+          ],
+          "handsKnownToC": [
+            [],
+            []
+          ],
+          "publicCompareCount": 0,
+          "visibleCompareFaces": []
+        },
+        {
+          "timing": "chooseCardBegin",
+          "chooser": "B",
+          "offered": [
+            "bBid",
+            "bOther"
+          ],
+          "selected": [],
+          "autochoose": false,
+          "handsKnownToA": [
+            [
+              "aBid",
+              "aOther"
+            ],
+            []
+          ],
+          "handsKnownToB": [
+            [],
+            [
+              "bBid",
+              "bOther"
+            ]
+          ],
+          "handsKnownToC": [
+            [],
+            []
+          ],
+          "publicCompareCount": 0,
+          "visibleCompareFaces": []
+        },
+        {
+          "timing": "chooseCardAfter",
+          "chooser": "B",
+          "offered": [
+            "bBid",
+            "bOther"
+          ],
+          "selected": [
+            "bBid"
+          ],
+          "autochoose": false,
+          "handsKnownToA": [
+            [
+              "aBid",
+              "aOther"
+            ],
+            []
+          ],
+          "handsKnownToB": [
+            [],
+            [
+              "bBid",
+              "bOther"
+            ]
+          ],
+          "handsKnownToC": [
+            [],
+            []
+          ],
+          "publicCompareCount": 0,
+          "visibleCompareFaces": []
+        }
+      ],
+      "targetChoices": [
+        {
+          "skill": "qiaoshui_cost",
+          "accepted": true,
+          "targets": [
+            "B"
+          ]
+        }
+      ],
+      "reveals": [
+        [
+          [
+            "tao",
+            "heart",
+            7
+          ],
+          [
+            "shan",
+            "diamond",
+            7
+          ]
+        ]
+      ],
+      "cardTargets": [
+        {
+          "timing": "useCard2",
+          "card": "sha",
+          "targets": [
+            "B"
+          ],
+          "skills": [
+            "qiaoshui2"
+          ]
+        },
+        {
+          "timing": "useCardAfter",
+          "card": "sha",
+          "targets": [
+            "B"
+          ],
+          "skills": [
+            "qiaoshui2"
+          ]
+        }
+      ],
+      "fixedResultSupplied": false,
+      "collected": [
+        [
+          "aBid"
+        ],
+        [
+          "bBid"
+        ]
+      ],
+      "result": {
+        "bool": false,
+        "tie": true,
+        "winner": null,
+        "cards": [
+          "aBid",
+          "bBid"
+        ],
+        "numbers": [
+          7,
+          7
+        ]
+      },
+      "zongshiAccepted": true,
+      "zongshiGain": [
+        "aBid"
+      ],
+      "nextCard": {
+        "skillsBefore": [
+          "qiaoshui2"
+        ],
+        "canUseTrick": false,
+        "canUseShaOnB": true,
+        "canUseShaOnD": false,
+        "targetEnabled2ForD": true,
+        "shaTargets": [
+          "B"
+        ],
+        "skillsAfterSha": [
+          "qiaoshui2"
+        ],
+        "hpAfterSha": [
+          3,
+          4
+        ]
+      },
+      "final": {
+        "skills": [],
+        "canUseTrick": true,
+        "zones": [
+          "A:h",
+          "d"
+        ],
+        "spectatorSawFlip": [
+          "aBid",
+          "bBid"
+        ],
+        "gainedCardsKnownToC": [
+          "aBid"
+        ]
+      }
+    },
+    {
+      "sample": "loss",
+      "turn": 4,
+      "skills": [
+        "qiaoshui",
+        "jyzongshi"
+      ],
+      "hands": [
+        [
+          [
+            "tao",
+            "heart",
+            4
+          ],
+          [
+            "shan",
+            "diamond",
+            2
+          ]
+        ],
+        [
+          [
+            "shan",
+            "diamond",
+            10
+          ],
+          [
+            "tao",
+            "heart",
+            6
+          ]
+        ]
+      ],
+      "privateSelections": [
+        {
+          "timing": "chooseCardBegin",
+          "chooser": "A",
+          "offered": [
+            "aBid",
+            "aOther"
+          ],
+          "selected": [],
+          "autochoose": false,
+          "handsKnownToA": [
+            [
+              "aBid",
+              "aOther"
+            ],
+            []
+          ],
+          "handsKnownToB": [
+            [],
+            [
+              "bBid",
+              "bOther"
+            ]
+          ],
+          "handsKnownToC": [
+            [],
+            []
+          ],
+          "publicCompareCount": 0,
+          "visibleCompareFaces": []
+        },
+        {
+          "timing": "chooseCardAfter",
+          "chooser": "A",
+          "offered": [
+            "aBid",
+            "aOther"
+          ],
+          "selected": [
+            "aBid"
+          ],
+          "autochoose": false,
+          "handsKnownToA": [
+            [
+              "aBid",
+              "aOther"
+            ],
+            []
+          ],
+          "handsKnownToB": [
+            [],
+            [
+              "bBid",
+              "bOther"
+            ]
+          ],
+          "handsKnownToC": [
+            [],
+            []
+          ],
+          "publicCompareCount": 0,
+          "visibleCompareFaces": []
+        },
+        {
+          "timing": "chooseCardBegin",
+          "chooser": "B",
+          "offered": [
+            "bBid",
+            "bOther"
+          ],
+          "selected": [],
+          "autochoose": false,
+          "handsKnownToA": [
+            [
+              "aBid",
+              "aOther"
+            ],
+            []
+          ],
+          "handsKnownToB": [
+            [],
+            [
+              "bBid",
+              "bOther"
+            ]
+          ],
+          "handsKnownToC": [
+            [],
+            []
+          ],
+          "publicCompareCount": 0,
+          "visibleCompareFaces": []
+        },
+        {
+          "timing": "chooseCardAfter",
+          "chooser": "B",
+          "offered": [
+            "bBid",
+            "bOther"
+          ],
+          "selected": [
+            "bBid"
+          ],
+          "autochoose": false,
+          "handsKnownToA": [
+            [
+              "aBid",
+              "aOther"
+            ],
+            []
+          ],
+          "handsKnownToB": [
+            [],
+            [
+              "bBid",
+              "bOther"
+            ]
+          ],
+          "handsKnownToC": [
+            [],
+            []
+          ],
+          "publicCompareCount": 0,
+          "visibleCompareFaces": []
+        }
+      ],
+      "targetChoices": [
+        {
+          "skill": "qiaoshui_cost",
+          "accepted": true,
+          "targets": [
+            "B"
+          ]
+        }
+      ],
+      "reveals": [
+        [
+          [
+            "tao",
+            "heart",
+            4
+          ],
+          [
+            "shan",
+            "diamond",
+            10
+          ]
+        ]
+      ],
+      "cardTargets": [
+        {
+          "timing": "useCard2",
+          "card": "sha",
+          "targets": [
+            "B"
+          ],
+          "skills": [
+            "qiaoshui2"
+          ]
+        },
+        {
+          "timing": "useCardAfter",
+          "card": "sha",
+          "targets": [
+            "B"
+          ],
+          "skills": [
+            "qiaoshui2"
+          ]
+        }
+      ],
+      "fixedResultSupplied": false,
+      "collected": [
+        [
+          "aBid"
+        ],
+        [
+          "bBid"
+        ]
+      ],
+      "result": {
+        "bool": false,
+        "tie": false,
+        "winner": "B",
+        "cards": [
+          "aBid",
+          "bBid"
+        ],
+        "numbers": [
+          4,
+          10
+        ]
+      },
+      "zongshiAccepted": true,
+      "zongshiGain": [
+        "aBid"
+      ],
+      "nextCard": {
+        "skillsBefore": [
+          "qiaoshui2"
+        ],
+        "canUseTrick": false,
+        "canUseShaOnB": true,
+        "canUseShaOnD": false,
+        "targetEnabled2ForD": true,
+        "shaTargets": [
+          "B"
+        ],
+        "skillsAfterSha": [
+          "qiaoshui2"
+        ],
+        "hpAfterSha": [
+          3,
+          4
+        ]
+      },
+      "final": {
+        "skills": [],
+        "canUseTrick": true,
+        "zones": [
+          "A:h",
+          "d"
+        ],
+        "spectatorSawFlip": [
+          "aBid",
+          "bBid"
+        ],
+        "gainedCardsKnownToC": [
+          "aBid"
+        ]
+      }
+    }
+  ],
+  "eventColumns": [
+    "sample",
+    "kind",
+    "timing",
+    "event",
+    "parent",
+    "player",
+    "aBid",
+    "bBid",
+    "num1",
+    "num2",
+    "tempSkills"
+  ],
+  "events": [
+    ["modified-win","content","begin","qiaoshui_cost","trigger","A","A:h","B:h",null,null,null],
+    ["modified-win","request","chooseTargetBegin","chooseTarget","qiaoshui_cost","A","A:h","B:h",null,null,null],
+    ["modified-win","request","chooseTargetAfter","chooseTarget","qiaoshui_cost","A","A:h","B:h",null,null,null],
+    ["modified-win","content","end","qiaoshui_cost","trigger","A","A:h","B:h",null,null,null],
+    ["modified-win","content","begin","qiaoshui","trigger","A","A:h","B:h",null,null,null],
+    ["modified-win","request","chooseToCompareBegin","chooseToCompare","qiaoshui","A","A:h","B:h",null,null,null],
+    ["modified-win","request","chooseCardOLBegin","chooseCardOL","chooseToCompare","A","A:h","B:h",null,null,null],
+    ["modified-win","request","chooseCardBegin","chooseCard","chooseCardOL","A","A:h","B:h",null,null,null],
+    ["modified-win","request","chooseCardAfter","chooseCard","chooseCardOL","A","A:h","B:h",null,null,null],
+    ["modified-win","request","chooseCardBegin","chooseCard","chooseCardOL","B","A:h","B:h",null,null,null],
+    ["modified-win","request","chooseCardAfter","chooseCard","chooseCardOL","B","A:h","B:h",null,null,null],
+    ["modified-win","request","chooseCardOLAfter","chooseCardOL","chooseToCompare","A","A:h","B:h",null,null,null],
+    ["modified-win","request","loseAfter","lose","loseAsync","A","o","B:h",null,null,null],
+    ["modified-win","request","loseAfter","lose","loseAsync","B","o","o",null,null,null],
+    ["modified-win","request","compareCardShowBefore","chooseToCompare","qiaoshui","A","o","o",null,null,null],
+    ["modified-win","display","$compare","chooseToCompare","qiaoshui","A","o","o",null,null,null],
+    ["modified-win","request","showCardsAfter","showCards","chooseToCompare","A","o","o",null,null,null],
+    ["modified-win","request","showCardsAfter","showCards","chooseToCompare","B","o","o",null,null,null],
+    ["modified-win","request","compare","chooseToCompare","qiaoshui","A","o","o",7,9,null],
+    ["modified-win","content","begin","tianbian_number","trigger","A","o","o",7,9,null],
+    ["modified-win","content","end","tianbian_number","trigger","A","o","o",13,9,null],
+    ["modified-win","request","compareFixing","chooseToCompare","qiaoshui","A","o","o",13,9,null],
+    ["modified-win","request","chooseToCompareAfter","chooseToCompare","qiaoshui","A","o","o",13,9,null],
+    ["modified-win","content","begin","jyzongshi","trigger","A","o","o",13,9,null],
+    ["modified-win","request","gainAfter","gain","jyzongshi","A","o","A:h",13,9,null],
+    ["modified-win","content","end","jyzongshi","trigger","A","o","A:h",13,9,null],
+    ["modified-win","request","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,"d","A:h",13,9,null],
+    ["modified-win","content","end","qiaoshui","trigger","A","d","A:h",13,9,"qiaoshui3"],
+    ["modified-win","request","useCard2","useCard","reference_compare_play","A","d","A:h",13,9,"qiaoshui3"],
+    ["modified-win","content","begin","qiaoshui3","trigger","A","d","A:h",13,9,"qiaoshui3"],
+    ["modified-win","request","chooseTargetBegin","chooseTarget","qiaoshui3","A","d","A:h",13,9,null],
+    ["modified-win","request","chooseTargetAfter","chooseTarget","qiaoshui3","A","d","A:h",13,9,null],
+    ["modified-win","content","end","qiaoshui3","trigger","A","d","A:h",13,9,null],
+    ["modified-win","request","useCardAfter","useCard","reference_compare_play","A","d","A:h",13,9,null],
+    ["modified-win","request","useCard2","useCard","reference_compare_play","A","d","A:h",13,9,null],
+    ["modified-win","request","useCardAfter","useCard","reference_compare_play","A","d","A:h",13,9,null],
+    ["modified-win","request","phaseUseEnd","phaseUse","phase","A","d","A:h",13,9,null],
+    ["modified-win","request","phaseEnd","phase","phaseLoop","A","d","A:h",13,9,null],
+    ["modified-win","request","phaseAfter","phase","phaseLoop","A","d","A:h",13,9,null],
+    ["modified-win","callback","phaseAfter","phase","phaseLoop","A","d","A:h",13,9,null],
+    ["tie","content","begin","qiaoshui_cost","trigger","A","A:h","B:h",null,null,null],
+    ["tie","request","chooseTargetBegin","chooseTarget","qiaoshui_cost","A","A:h","B:h",null,null,null],
+    ["tie","request","chooseTargetAfter","chooseTarget","qiaoshui_cost","A","A:h","B:h",null,null,null],
+    ["tie","content","end","qiaoshui_cost","trigger","A","A:h","B:h",null,null,null],
+    ["tie","content","begin","qiaoshui","trigger","A","A:h","B:h",null,null,null],
+    ["tie","request","chooseToCompareBegin","chooseToCompare","qiaoshui","A","A:h","B:h",null,null,null],
+    ["tie","request","chooseCardOLBegin","chooseCardOL","chooseToCompare","A","A:h","B:h",null,null,null],
+    ["tie","request","chooseCardBegin","chooseCard","chooseCardOL","A","A:h","B:h",null,null,null],
+    ["tie","request","chooseCardAfter","chooseCard","chooseCardOL","A","A:h","B:h",null,null,null],
+    ["tie","request","chooseCardBegin","chooseCard","chooseCardOL","B","A:h","B:h",null,null,null],
+    ["tie","request","chooseCardAfter","chooseCard","chooseCardOL","B","A:h","B:h",null,null,null],
+    ["tie","request","chooseCardOLAfter","chooseCardOL","chooseToCompare","A","A:h","B:h",null,null,null],
+    ["tie","request","loseAfter","lose","loseAsync","A","o","B:h",null,null,null],
+    ["tie","request","loseAfter","lose","loseAsync","B","o","o",null,null,null],
+    ["tie","request","compareCardShowBefore","chooseToCompare","qiaoshui","A","o","o",null,null,null],
+    ["tie","display","$compare","chooseToCompare","qiaoshui","A","o","o",null,null,null],
+    ["tie","request","showCardsAfter","showCards","chooseToCompare","A","o","o",null,null,null],
+    ["tie","request","showCardsAfter","showCards","chooseToCompare","B","o","o",null,null,null],
+    ["tie","request","compare","chooseToCompare","qiaoshui","A","o","o",7,7,null],
+    ["tie","request","compareFixing","chooseToCompare","qiaoshui","A","o","o",7,7,null],
+    ["tie","request","chooseToCompareAfter","chooseToCompare","qiaoshui","A","o","o",7,7,null],
+    ["tie","content","begin","jyzongshi","trigger","A","o","o",7,7,null],
+    ["tie","request","gainAfter","gain","jyzongshi","A","A:h","o",7,7,null],
+    ["tie","content","end","jyzongshi","trigger","A","A:h","o",7,7,null],
+    ["tie","request","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,"A:h","d",7,7,null],
+    ["tie","content","end","qiaoshui","trigger","A","A:h","d",7,7,"qiaoshui2"],
+    ["tie","request","useCard2","useCard","reference_compare_play","A","A:h","d",7,7,"qiaoshui2"],
+    ["tie","request","useCardAfter","useCard","reference_compare_play","A","A:h","d",7,7,"qiaoshui2"],
+    ["tie","request","phaseUseEnd","phaseUse","phase","A","A:h","d",7,7,"qiaoshui2"],
+    ["tie","request","phaseEnd","phase","phaseLoop","A","A:h","d",7,7,"qiaoshui2"],
+    ["tie","request","phaseAfter","phase","phaseLoop","A","A:h","d",7,7,"qiaoshui2"],
+    ["tie","callback","phaseAfter","phase","phaseLoop","A","A:h","d",7,7,null],
+    ["loss","content","begin","qiaoshui_cost","trigger","A","A:h","B:h",null,null,null],
+    ["loss","request","chooseTargetBegin","chooseTarget","qiaoshui_cost","A","A:h","B:h",null,null,null],
+    ["loss","request","chooseTargetAfter","chooseTarget","qiaoshui_cost","A","A:h","B:h",null,null,null],
+    ["loss","content","end","qiaoshui_cost","trigger","A","A:h","B:h",null,null,null],
+    ["loss","content","begin","qiaoshui","trigger","A","A:h","B:h",null,null,null],
+    ["loss","request","chooseToCompareBegin","chooseToCompare","qiaoshui","A","A:h","B:h",null,null,null],
+    ["loss","request","chooseCardOLBegin","chooseCardOL","chooseToCompare","A","A:h","B:h",null,null,null],
+    ["loss","request","chooseCardBegin","chooseCard","chooseCardOL","A","A:h","B:h",null,null,null],
+    ["loss","request","chooseCardAfter","chooseCard","chooseCardOL","A","A:h","B:h",null,null,null],
+    ["loss","request","chooseCardBegin","chooseCard","chooseCardOL","B","A:h","B:h",null,null,null],
+    ["loss","request","chooseCardAfter","chooseCard","chooseCardOL","B","A:h","B:h",null,null,null],
+    ["loss","request","chooseCardOLAfter","chooseCardOL","chooseToCompare","A","A:h","B:h",null,null,null],
+    ["loss","request","loseAfter","lose","loseAsync","A","o","B:h",null,null,null],
+    ["loss","request","loseAfter","lose","loseAsync","B","o","o",null,null,null],
+    ["loss","request","compareCardShowBefore","chooseToCompare","qiaoshui","A","o","o",null,null,null],
+    ["loss","display","$compare","chooseToCompare","qiaoshui","A","o","o",null,null,null],
+    ["loss","request","showCardsAfter","showCards","chooseToCompare","A","o","o",null,null,null],
+    ["loss","request","showCardsAfter","showCards","chooseToCompare","B","o","o",null,null,null],
+    ["loss","request","compare","chooseToCompare","qiaoshui","A","o","o",4,10,null],
+    ["loss","request","compareFixing","chooseToCompare","qiaoshui","A","o","o",4,10,null],
+    ["loss","request","chooseToCompareAfter","chooseToCompare","qiaoshui","A","o","o",4,10,null],
+    ["loss","content","begin","jyzongshi","trigger","A","o","o",4,10,null],
+    ["loss","request","gainAfter","gain","jyzongshi","A","A:h","o",4,10,null],
+    ["loss","content","end","jyzongshi","trigger","A","A:h","o",4,10,null],
+    ["loss","request","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,"A:h","d",4,10,null],
+    ["loss","content","end","qiaoshui","trigger","A","A:h","d",4,10,"qiaoshui2"],
+    ["loss","request","useCard2","useCard","reference_compare_play","A","A:h","d",4,10,"qiaoshui2"],
+    ["loss","request","useCardAfter","useCard","reference_compare_play","A","A:h","d",4,10,"qiaoshui2"],
+    ["loss","request","phaseUseEnd","phaseUse","phase","A","A:h","d",4,10,"qiaoshui2"],
+    ["loss","request","phaseEnd","phase","phaseLoop","A","A:h","d",4,10,"qiaoshui2"],
+    ["loss","request","phaseAfter","phase","phaseLoop","A","A:h","d",4,10,"qiaoshui2"],
+    ["loss","callback","phaseAfter","phase","phaseLoop","A","A:h","d",4,10,null]
+  ]
+}

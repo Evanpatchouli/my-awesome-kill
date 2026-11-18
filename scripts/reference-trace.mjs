@@ -4,6 +4,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { installTriggerOrderScenario } from './reference-trigger-order-cancel.mjs';
 import { checkReferenceRecastCallbacks, installReferenceRecast } from './reference-recast.mjs';
 import { checkReferenceLinkedDamage, installReferenceLinkedDamage } from './reference-linked-damage.mjs';
+import { checkReferenceCompare, installReferenceCompare } from './reference-compare.mjs';
 
 // This is an optional oracle runner. It needs a running, separate upstream dev
 // server and Playwright; neither is a runtime dependency of the game.
@@ -34,6 +35,7 @@ const descriptions = new Map([
   ['tiesuo-recast', 'default and custom loss and gain when recasting a physical tiesuo'],
   ['recast-callbacks', 'executed loss and gain callbacks when recasting a physical tiesuo'],
   ['linked-damage', 'tiesuo, faen, armor, and fire sha propagation across three turns'],
+  ['compare', 'private pindian choices, public reveal, qiaoshui and jyzongshi across three turns'],
   ['damage-callback-cancel', 'damage callback cancellation after HP change for physical sha'],
 ]);
 let scenario = 'sha-no-shan';
@@ -48,8 +50,8 @@ if (argv.length && (argv.length !== 2 || !['--check', '--write'].includes(argv[0
 }
 const isRecast = scenario === 'tiesuo-recast' || scenario === 'recast-callbacks';
 if (isRecast || scenario === 'linked-damage') sourceHashes['/card/extra.js'] = '8a73678a49b4fc413d6dc0d506733e594fae619d91dc8013cd441a6cd107c35d';
-if (scenario === 'recast-callbacks') sourceHashes['/noname/library/element/card.js'] = '5d3a07fadafa1c5661ec197edb8c71f613b3db1129933fdf7d8aa311f5811f8d';
-if (scenario === 'linked-damage') sourceHashes['/character/yijiang/skill.js'] = '5b0eb965a8428535bf3cd7d369c261b8ad95cccbeac8d8c817cad3490643a54f';
+if (scenario === 'recast-callbacks' || scenario === 'compare') sourceHashes['/noname/library/element/card.js'] = '5d3a07fadafa1c5661ec197edb8c71f613b3db1129933fdf7d8aa311f5811f8d';
+if (scenario === 'linked-damage' || scenario === 'compare') sourceHashes['/character/yijiang/skill.js'] = '5b0eb965a8428535bf3cd7d369c261b8ad95cccbeac8d8c817cad3490643a54f';
 
 const browser = await chromium.launch({ headless: true, executablePath });
 const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
@@ -78,6 +80,8 @@ try {
     await context.addInitScript(installReferenceRecast);
   } else if (scenario === 'linked-damage') {
     await context.addInitScript(installReferenceLinkedDamage);
+  } else if (scenario === 'compare') {
+    await context.addInitScript(installReferenceCompare);
   }
 
   const page = await context.newPage();
@@ -266,7 +270,10 @@ try {
         }
       },
     };
-    for (const skill of ['reference_fixture_setup', 'reference_fixture_use']) {
+    const fixtures = ['reference_fixture_setup'];
+    if (scenario === 'compare') await window.__installReferenceCompare({ lib, game, ui, get, _status });
+    else fixtures.push('reference_fixture_use');
+    for (const skill of fixtures) {
       game.finishSkill(skill);
       game.addGlobalSkill(skill);
     }
@@ -293,6 +300,7 @@ try {
   if (captured.error) throw new Error(captured.error);
   assert.deepEqual(errors, [], 'Upstream page errors occurred');
   if (scenario === 'linked-damage') checkReferenceLinkedDamage(captured.value);
+  if (scenario === 'compare') checkReferenceCompare(captured.value);
   if (scenario === 'recast-callbacks') checkReferenceRecastCallbacks(captured.value);
   if (scenario === 'sha-no-shan') assert.deepEqual(captured.value.final, {
     targetHp: 3, cardPosition: 'd', inActorHand: false, inDiscard: true, useCount: 1, targetAlive: true,
