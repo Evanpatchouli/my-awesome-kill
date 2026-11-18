@@ -35,6 +35,8 @@
 - 在 `loseToDiscardpileBegin` 取消失牌包装时，包装请求 `loseToDiscardpileCancelled`，其状态从请求时的未完成变为首个实际回调时的已完成。包装保留在 `recastingLosingEvents`，没有创建内层 `lose`，没有失牌记录。三张材料和旁观者手牌知情维持原状。外层仍执行 `recastingLost`、一次摸三张和 `recastAfter`。
 - 在内层 `loseBefore` 把三张材料暗给 B 时，实体先经暂存区，再一起进入 B 手牌。原内层正常完成，`loseEnd` 和 `loseAfter` 的请求、回调及失牌历史均含空 `cards` 与完整 `stockcards`。父包装照常执行其主时机和结束时机，两次工厂都使用原三张有序数组，A 仍暗摸三张。C 只认识 B 新得的原装备牌，B 认识三张，C 对 A 原公开控制牌的手牌知情被清除。
 
+`batch-give-death.json` 直接调用原版批量 `A.give`，将暗手铁索和已公开的装备青釭剑交给非主公 B。两张实体进入无主 `ui.special` 后，夹具在失牌 `loseAfter` 回调中让 B 死亡；独立旁观席 C 仍存活。B 死亡前后两牌都各只存在一处，原暗牌仍未知、原装备仍已知。外层 `gain` 未取消，保留原两张牌并继续执行 `gainEnd` 和 `gainAfter`；两牌最终仍在无主暂存区。
+
 `compare.json` 记录八人离线身份局中的巧说和纵适。实际浏览器席 C 旁观三个 AI 出牌回合。每次 A、B 各暗摸两张实体牌。夹具给真实 `chooseTarget`、`chooseCard` 的 AI 指定偏好，巧说的目标过滤、选牌、移牌、比点和技能内容均由原版执行。巧说的 `qiaoshui_cost` 选中 B 时双方拼点牌仍在手中。三例的 `fixedResultSupplied` 均为 `false`。
 
 原版 `chooseToCompare` 通过 `chooseCardOL` 依次让 A、B 执行 `chooseCard`。`privateSelections` 在每次选择开始与结束时读取当前选择结果、A/B/C 的已知手牌及 C 牌桌上的公开拼点牌面。四个时刻双方均只知自己的两张手牌，C 的两组已知牌和公开牌面均为空。双方结果汇总后，两张牌依次由手牌移到处理区。原版以一次 `$compare` 将两张牌交给展示层，再分别为 A、B 调用 `showCards`。`reveals` 记录那一次双牌展示的输入，`spectatorSawFlip` 记录 C 的牌桌上实际翻为正面的两张牌。
@@ -107,6 +109,7 @@
    node scripts/reference-trace.mjs --scenario recast-callbacks --check tests/reference/recast-callbacks.json
    node scripts/reference-trace.mjs --scenario recast-batch --check tests/reference/recast-batch.json
    node scripts/reference-trace.mjs --scenario recast-batch-boundaries --check tests/reference/recast-batch-boundaries.json
+   node scripts/reference-trace.mjs --scenario batch-give-death --check tests/reference/batch-give-death.json
    node scripts/reference-trace.mjs --scenario linked-damage --check tests/reference/linked-damage.json
    node scripts/reference-trace.mjs --scenario compare --check tests/reference/compare.json
    node scripts/reference-trace.mjs --scenario qiaoshui-targets --check tests/reference/qiaoshui-targets.json
@@ -121,4 +124,4 @@
    node scripts/reference-trace.mjs --scenario zhongyi-transit-death --check tests/reference/zhongyi-transit-death.json
    ```
 
-运行器在隔离浏览器内核对八个共同上游源文件的 LF 归一化 SHA-256。重铸、连环伤害和巧说目标场景还校验 `card/extra.js`，重铸知情状态、拼点和额外忠义场景另核对 `element/card.js`，连环伤害、巧说拼点和巧说目标另校验 `character/yijiang/skill.js`，忠义和巧说目标另校验 `character/standard/skill.js`。多人拼点另外校验鼓舌和胆烈所在的两个技能包、牌区查询和事件步骤编译器。忠义边界同时核对牌区和知情查询、出牌选择及标记弹层涉及的源文件。忠义中转死亡核对牌区查询和负责中断事件步骤的编译器源文件。阶段调度另外校验当先和放权所在的两个技能包、牌区查询和事件步骤编译器。随后执行场景并逐项比较事件和结果。整个检出的版本由第 1 步确认。`--write <path>` 用于重新采集，默认将结果写至标准输出。
+运行器在隔离浏览器内核对八个共同上游源文件的 LF 归一化 SHA-256。重铸、批量给牌死亡、连环伤害和巧说目标场景还校验 `card/extra.js`，重铸知情状态、批量给牌死亡、拼点和额外忠义场景另核对 `element/card.js`，连环伤害、巧说拼点和巧说目标另校验 `character/yijiang/skill.js`，忠义和巧说目标另校验 `character/standard/skill.js`。多人拼点另外校验鼓舌和胆烈所在的两个技能包、牌区查询和事件步骤编译器。忠义边界同时核对牌区和知情查询、出牌选择及标记弹层涉及的源文件。忠义中转死亡和批量给牌死亡核对牌区查询和负责中断事件步骤的编译器源文件。阶段调度另外校验当先和放权所在的两个技能包、牌区查询和事件步骤编译器。随后执行场景并逐项比较事件和结果。整个检出的版本由第 1 步确认。`--write <path>` 用于重新采集，默认将结果写至标准输出。

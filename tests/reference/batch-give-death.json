@@ -1,0 +1,108 @@
+{
+  "schema": "noname-reference-trace-v1",
+  "referenceCommit": "c73270948d72949aa80009536b9fd5400767d091",
+  "mode": "identity",
+  "scenario": "batch give when its recipient dies while the cards are in transit",
+  "setup": {
+    "distinct": true,
+    "actorIsCurrent": true,
+    "recipientIsLord": false,
+    "recipientIsHuman": false,
+    "alive": [
+      true,
+      true,
+      true
+    ]
+  },
+  "before": [
+    {
+      "zone": "h",
+      "owner": "A",
+      "special": false,
+      "known": [
+        true,
+        false,
+        false
+      ],
+      "occurrences": 1
+    },
+    {
+      "zone": "e",
+      "owner": "A",
+      "special": false,
+      "known": [
+        true,
+        true,
+        true
+      ],
+      "occurrences": 1
+    }
+  ],
+  "after": [
+    {
+      "zone": "s",
+      "owner": null,
+      "special": true,
+      "known": [
+        false,
+        false,
+        false
+      ],
+      "occurrences": 1
+    },
+    {
+      "zone": "s",
+      "owner": null,
+      "special": true,
+      "known": [
+        true,
+        true,
+        true
+      ],
+      "occurrences": 1
+    }
+  ],
+  "gain": {
+    "player": "B",
+    "finished": true,
+    "cancelled": false,
+    "forceDie": false,
+    "cards": [
+      "h",
+      "e"
+    ]
+  },
+  "alive": [
+    true,
+    false,
+    true
+  ],
+  "slots": 8,
+  "remaining": 7,
+  "gameOver": false,
+  "events": [
+    {"kind":"request","timing":"gainBefore","event":"gain","parent":"reference_fixture_use","player":"B","alive":true,"cards":["h","e"],"state":[{"zone":"h","owner":"A","special":false,"known":[true,false,false],"occurrences":1},{"zone":"e","owner":"A","special":false,"known":[true,true,true],"occurrences":1}],"cancelled":false,"finished":false},
+    {"kind":"callback","timing":"gainBefore","event":"gain","parent":"reference_fixture_use","player":"B","alive":true,"cards":["h","e"],"state":[{"zone":"h","owner":"A","special":false,"known":[true,false,false],"occurrences":1},{"zone":"e","owner":"A","special":false,"known":[true,true,true],"occurrences":1}],"cancelled":false,"finished":false},
+    {"kind":"request","timing":"gainBegin","event":"gain","parent":"reference_fixture_use","player":"B","alive":true,"cards":["h","e"],"state":[{"zone":"h","owner":"A","special":false,"known":[true,false,false],"occurrences":1},{"zone":"e","owner":"A","special":false,"known":[true,true,true],"occurrences":1}],"cancelled":false,"finished":false},
+    {"kind":"callback","timing":"gainBegin","event":"gain","parent":"reference_fixture_use","player":"B","alive":true,"cards":["h","e"],"state":[{"zone":"h","owner":"A","special":false,"known":[true,false,false],"occurrences":1},{"zone":"e","owner":"A","special":false,"known":[true,true,true],"occurrences":1}],"cancelled":false,"finished":false},
+    {"kind":"request","timing":"loseBefore","event":"lose","parent":"gain","player":"A","alive":true,"cards":["h","e"],"state":[{"zone":"h","owner":"A","special":false,"known":[true,false,false],"occurrences":1},{"zone":"e","owner":"A","special":false,"known":[true,true,true],"occurrences":1}],"cancelled":false,"finished":false},
+    {"kind":"callback","timing":"loseBefore","event":"lose","parent":"gain","player":"A","alive":true,"cards":["h","e"],"state":[{"zone":"h","owner":"A","special":false,"known":[true,false,false],"occurrences":1},{"zone":"e","owner":"A","special":false,"known":[true,true,true],"occurrences":1}],"cancelled":false,"finished":false},
+    {"kind":"request","timing":"loseBegin","event":"lose","parent":"gain","player":"A","alive":true,"cards":["h","e"],"state":[{"zone":"h","owner":"A","special":false,"known":[true,false,false],"occurrences":1},{"zone":"e","owner":"A","special":false,"known":[true,true,true],"occurrences":1}],"cancelled":false,"finished":false},
+    {"kind":"callback","timing":"loseBegin","event":"lose","parent":"gain","player":"A","alive":true,"cards":["h","e"],"state":[{"zone":"h","owner":"A","special":false,"known":[true,false,false],"occurrences":1},{"zone":"e","owner":"A","special":false,"known":[true,true,true],"occurrences":1}],"cancelled":false,"finished":false},
+    {"kind":"request","timing":"loseEnd","event":"lose","parent":"gain","player":"A","alive":true,"cards":["h","e"],"state":[{"zone":"s","owner":null,"special":true,"known":[false,false,false],"occurrences":1},{"zone":"s","owner":null,"special":true,"known":[true,true,true],"occurrences":1}],"cancelled":false,"finished":true},
+    {"kind":"callback","timing":"loseEnd","event":"lose","parent":"gain","player":"A","alive":true,"cards":["h","e"],"state":[{"zone":"s","owner":null,"special":true,"known":[false,false,false],"occurrences":1},{"zone":"s","owner":null,"special":true,"known":[true,true,true],"occurrences":1}],"cancelled":false,"finished":true},
+    {"kind":"request","timing":"loseAfter","event":"lose","parent":"gain","player":"A","alive":true,"cards":["h","e"],"state":[{"zone":"s","owner":null,"special":true,"known":[false,false,false],"occurrences":1},{"zone":"s","owner":null,"special":true,"known":[true,true,true],"occurrences":1}],"cancelled":false,"finished":true},
+    {"kind":"callback","timing":"loseAfter","event":"lose","parent":"gain","player":"A","alive":true,"cards":["h","e"],"state":[{"zone":"s","owner":null,"special":true,"known":[false,false,false],"occurrences":1},{"zone":"s","owner":null,"special":true,"known":[true,true,true],"occurrences":1}],"cancelled":false,"finished":true},
+    {"kind":"request","timing":"dieBefore","event":"die","parent":"reference_batch_give_death","player":"B","alive":true,"cards":[],"state":[{"zone":"s","owner":null,"special":true,"known":[false,false,false],"occurrences":1},{"zone":"s","owner":null,"special":true,"known":[true,true,true],"occurrences":1}],"cancelled":false,"finished":false},
+    {"kind":"callback","timing":"dieBefore","event":"die","parent":"reference_batch_give_death","player":"B","alive":true,"cards":[],"state":[{"zone":"s","owner":null,"special":true,"known":[false,false,false],"occurrences":1},{"zone":"s","owner":null,"special":true,"known":[true,true,true],"occurrences":1}],"cancelled":false,"finished":false},
+    {"kind":"request","timing":"die","event":"die","parent":"reference_batch_give_death","player":"B","alive":false,"cards":[],"state":[{"zone":"s","owner":null,"special":true,"known":[false,false,false],"occurrences":1},{"zone":"s","owner":null,"special":true,"known":[true,true,true],"occurrences":1}],"cancelled":false,"finished":false},
+    {"kind":"callback","timing":"die","event":"die","parent":"reference_batch_give_death","player":"B","alive":false,"cards":[],"state":[{"zone":"s","owner":null,"special":true,"known":[false,false,false],"occurrences":1},{"zone":"s","owner":null,"special":true,"known":[true,true,true],"occurrences":1}],"cancelled":false,"finished":false},
+    {"kind":"request","timing":"dieAfter","event":"die","parent":"reference_batch_give_death","player":"B","alive":false,"cards":["?","?","?","?"],"state":[{"zone":"s","owner":null,"special":true,"known":[false,false,false],"occurrences":1},{"zone":"s","owner":null,"special":true,"known":[true,true,true],"occurrences":1}],"cancelled":false,"finished":true},
+    {"kind":"callback","timing":"dieAfter","event":"die","parent":"reference_batch_give_death","player":"B","alive":false,"cards":["?","?","?","?"],"state":[{"zone":"s","owner":null,"special":true,"known":[false,false,false],"occurrences":1},{"zone":"s","owner":null,"special":true,"known":[true,true,true],"occurrences":1}],"cancelled":false,"finished":true},
+    {"kind":"callback","timing":"returned-from-die","event":"lose","parent":"gain","player":"A","alive":false,"cards":["h","e"],"state":[{"zone":"s","owner":null,"special":true,"known":[false,false,false],"occurrences":1},{"zone":"s","owner":null,"special":true,"known":[true,true,true],"occurrences":1}],"cancelled":false,"finished":true},
+    {"kind":"request","timing":"gainEnd","event":"gain","parent":"reference_fixture_use","player":"B","alive":false,"cards":["h","e"],"state":[{"zone":"s","owner":null,"special":true,"known":[false,false,false],"occurrences":1},{"zone":"s","owner":null,"special":true,"known":[true,true,true],"occurrences":1}],"cancelled":false,"finished":true},
+    {"kind":"callback","timing":"gainEnd","event":"gain","parent":"reference_fixture_use","player":"B","alive":false,"cards":["h","e"],"state":[{"zone":"s","owner":null,"special":true,"known":[false,false,false],"occurrences":1},{"zone":"s","owner":null,"special":true,"known":[true,true,true],"occurrences":1}],"cancelled":false,"finished":true},
+    {"kind":"request","timing":"gainAfter","event":"gain","parent":"reference_fixture_use","player":"B","alive":false,"cards":["h","e"],"state":[{"zone":"s","owner":null,"special":true,"known":[false,false,false],"occurrences":1},{"zone":"s","owner":null,"special":true,"known":[true,true,true],"occurrences":1}],"cancelled":false,"finished":true},
+    {"kind":"callback","timing":"gainAfter","event":"gain","parent":"reference_fixture_use","player":"B","alive":false,"cards":["h","e"],"state":[{"zone":"s","owner":null,"special":true,"known":[false,false,false],"occurrences":1},{"zone":"s","owner":null,"special":true,"known":[true,true,true],"occurrences":1}],"cancelled":false,"finished":true}
+  ]
+}
