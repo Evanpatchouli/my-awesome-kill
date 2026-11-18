@@ -120,47 +120,65 @@ fn cancelled_equipment_use_discards_paid_card_without_installing() {
 fn cancelled_wuxie_pays_once_and_does_not_respond() {
     let mut game = table();
     let wuxie = card(1, CardKind::Wuxie);
-    game.seat_mut(0).hand.push(wuxie);
+    let duel = card(2, CardKind::Juedou);
+    game.seat_mut(0).hand.extend([wuxie, duel]);
     observe(&mut game, move |ctx| {
-        assert!(ctx.game().resolving.contains(&wuxie));
-        TriggerStep::CancelSubject
+        if ctx.event().card_kind == Some(CardKind::Wuxie) {
+            assert!(ctx.game().resolving.contains(&wuxie));
+            TriggerStep::CancelSubject
+        } else {
+            TriggerStep::Done
+        }
     });
-    let context = crate::CounterContext {
-        card_kind: CardKind::Juedou,
-        source: Some(1),
-        target: 0,
-        negated: false,
-    };
-    run(
-        &mut game,
-        Program::Equipment(crate::classic::equipment::Flow::counter_response(
-            0, context,
-        )),
+    let program = game
+        .trick_uses(game.seat(0).unwrap(), duel)
+        .unwrap()
+        .into_iter()
+        .find(|item| item.targets == vec![1])
+        .unwrap()
+        .program;
+    run(&mut game, program);
+    let mut attempted = false;
+    let mut cancelled = false;
+    while let Some(crate::Decision::Cards(choice)) = game.decision.as_ref() {
+        let seat = choice.seat;
+        let play = !attempted && seat == 0 && choice.counter.is_some();
+        if play {
+            attempted = true;
+        }
+        let event = choice.event;
+        game.submit(crate::Command {
+            version: game.version,
+            seat,
+            action: crate::Action::Select {
+                event,
+                branch: u32::from(play),
+                cards: if play { vec![wuxie.id] } else { vec![] },
+                targets: vec![],
+            },
+        })
+        .unwrap();
+        cancelled |= game.events.iter().any(|event| {
+            event.kind
+                == EventKind::UseResponseCard {
+                    seat: 0,
+                    card: wuxie,
+                }
+                && event.status == crate::EventStatus::Cancelled
+        });
+    }
+    assert!(attempted);
+    assert_eq!(
+        game.seat(1).unwrap().hp,
+        3,
+        "cancelled Wuxie must not negate the Duel"
     );
-    let view = game.view(Some(0)).unwrap();
-    let choice = view.choice.unwrap();
-    game.submit(crate::Command {
-        version: view.version,
-        seat: 0,
-        action: crate::Action::Select {
-            event: choice.event,
-            branch: 1,
-            cards: vec![wuxie.id],
-            targets: vec![],
-        },
-    })
-    .unwrap();
     assert_eq!(
         game.discard.iter().filter(|&&card| card == wuxie).count(),
         1
     );
     assert!(!game.resolving.contains(&wuxie));
-    assert!(game.events.iter().any(|event| event.kind
-        == EventKind::UseResponseCard {
-            seat: 0,
-            card: wuxie
-        }
-        && event.status == crate::EventStatus::Cancelled));
+    assert!(cancelled);
 }
 
 #[test]

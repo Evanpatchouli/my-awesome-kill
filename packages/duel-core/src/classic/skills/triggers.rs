@@ -93,8 +93,8 @@ impl Game {
                 *amount,
                 cards.clone(),
             ),
-            JudgeBefore { seat, card } => ("judge", Some(*seat), None, None, 0, vec![*card]),
-            JudgeAfter { seat, card, .. } => ("judgeEnd", Some(*seat), None, None, 0, vec![*card]),
+            JudgeBefore { seat, .. } => ("judge", Some(*seat), None, None, 0, vec![]),
+            JudgeAfter { seat, .. } => ("judgeEnd", Some(*seat), None, None, 0, vec![]),
             ShaRedirect { seat, target, .. } => (
                 "useCardToTarget",
                 Some(*seat),
@@ -268,7 +268,6 @@ impl Game {
                     if let Some(HeroMoment::JudgeBefore { card: current, .. }) = &mut queue.moment {
                         *current = card;
                     }
-                    queue.event.cards = vec![card];
                     queue.adjustment = *adjustment;
                 }
                 _ => {
@@ -1158,6 +1157,7 @@ impl Game {
                 } else if let Some(choice) = selection(child).filter(|choice| choice.branch == 1) {
                     let replacement = self.take_card(owner, Zone::Hand, choice.cards[0]);
                     self.resolving.push(replacement);
+                    self.update_judging_card(card, replacement);
                     self.queue_hero_losses(owner, vec![(Zone::Hand, replacement)]);
                     self.next(EventKind::Discard { card });
                     self.next(EventKind::Reveal {
@@ -1175,8 +1175,10 @@ impl Game {
                     return;
                 }
                 if accepted(&child) {
-                    let card = self.take_resolving(card.id);
-                    self.put_in_hand(owner, card);
+                    if let Some(judge) = self.ordering_owners.get(&card.id).copied() {
+                        self.scheduler
+                            .next(self.gain_judgment_program(owner, card, judge));
+                    }
                 }
             }
             _ => {}

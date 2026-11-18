@@ -865,7 +865,11 @@ fn lightning_carries_source_less_thunder_and_physical_card_through_terminal_dama
         suit: Suit::Spade,
         rank: 5,
     });
-    game.scheduler.start(game.trick_judgment(2, lightning));
+    game.scheduler
+        .start(crate::Program::event(crate::EventKind::Phase {
+            seat: 2,
+            phase: crate::Phase::Judgment,
+        }));
     game.run(None);
     while let Some(crate::Decision::Cards(choice)) = &game.decision {
         let action = if choice.counter.is_some() {

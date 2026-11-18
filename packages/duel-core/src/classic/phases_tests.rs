@@ -5,6 +5,9 @@ use crate::scheduler::Work;
 use crate::{CardKind, Decision, TriggerOrder, TriggerRegistration, TriggerRole, TriggerStep};
 use std::sync::{Arc, Mutex};
 
+#[path = "phases_judgment_tests.rs"]
+mod judgment;
+
 fn table() -> Game {
     scene(&[Role::Lord, Role::Rebel, Role::Loyalist, Role::Rebel], 0)
 }

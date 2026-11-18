@@ -30,38 +30,34 @@ enum TrickStage {
     AfterCosts,
     AfterUseCard2,
     TargetStart,
-    TargetTimings {
-        layer: usize,
-        index: usize,
-    },
+    TargetTimings { layer: usize, index: usize },
     BeginEffects,
     BorrowedRequest,
     BorrowedPrepare(usize),
     BorrowedVictim(usize),
-    Counter {
-        index: usize,
-        passed: usize,
-        negated: bool,
-    },
-    CounterWait {
-        index: usize,
-        passed: usize,
-        negated: bool,
-    },
+    Counter,
+    CounterWait,
     Effect,
-    Response {
-        actor: SeatId,
-    },
-    Duel {
-        actor: SeatId,
-        remaining: u8,
-    },
+    Response { actor: SeatId },
+    Duel { actor: SeatId, remaining: u8 },
     Select,
-    Judgment,
-    JudgmentResult,
+    ApplyJudgment(Option<Card>),
 }
 
 impl Trick {
+    #[cfg(test)]
+    pub(crate) fn judgment_effect_name(&self) -> Option<&'static str> {
+        match (&self.stage, self.kind) {
+            (TrickStage::ApplyJudgment(_), CardKind::Lebu) => Some("lebu"),
+            (TrickStage::ApplyJudgment(None), CardKind::Shandian) => Some("shandianCancel"),
+            (TrickStage::ApplyJudgment(Some(_)), CardKind::Shandian) => Some("shandian"),
+            _ => None,
+        }
+    }
+    #[cfg(test)]
+    pub(crate) fn judgment_effect_material(&self) -> Option<Card> {
+        self.judgment_effect_name().and(self.card)
+    }
     pub(crate) fn base_damage_mut(&mut self) -> Option<&mut u16> {
         (matches!(self.stage, TrickStage::AfterUseCard2)
             && matches!(
@@ -79,6 +75,13 @@ impl Trick {
     }
 
     pub(crate) fn kind(&self) -> EventKind {
+        if matches!(self.stage, TrickStage::ApplyJudgment(_)) {
+            return EventKind::TrickEffect {
+                seat: self.seat,
+                target: self.seat,
+                kind: self.kind,
+            };
+        }
         match self.card {
             Some(card) => EventKind::UseTrick {
                 seat: self.seat,
@@ -94,6 +97,30 @@ impl Trick {
 }
 
 impl Game {
+    pub(crate) fn judgment_effect_program(
+        &self,
+        seat: SeatId,
+        card: Card,
+        kind: CardKind,
+        judged: Option<Card>,
+    ) -> Program {
+        Program::Trick(Trick {
+            base_damage: 1,
+            seat,
+            card: Some(card),
+            kind,
+            costs: vec![],
+            counterable: true,
+            initial_target: Some(seat),
+            targets: vec![seat],
+            borrowed_victims: vec![],
+            target_index: 0,
+            stage: TrickStage::ApplyJudgment(judged),
+            pool: vec![],
+            judgment: true,
+        })
+    }
+
     pub(crate) fn trick_uses(&self, player: &Seat, card: Card) -> Option<Vec<PlannedUse>> {
         use CardKind::*;
         let seat = player.id;
@@ -259,28 +286,6 @@ impl Game {
 }
 
 impl Game {
-    pub(crate) fn trick_judgment(&self, seat: SeatId, card: Card) -> Program {
-        Program::Trick(Trick {
-            base_damage: 1,
-            seat,
-            card: Some(card),
-            kind: self.judgment_kind(card),
-            costs: vec![],
-            counterable: true,
-            initial_target: Some(seat),
-            targets: vec![seat],
-            borrowed_victims: vec![],
-            target_index: 0,
-            stage: TrickStage::Counter {
-                index: 0,
-                passed: 0,
-                negated: false,
-            },
-            pool: Vec::new(),
-            judgment: true,
-        })
-    }
-
     fn pass_lightning(&mut self, target: SeatId, material: Card) {
         let next = self
             .living_order_from(target)
@@ -294,25 +299,15 @@ impl Game {
                     .iter()
                     .any(|card| self.judgment_kind(*card) == CardKind::Shandian)
             });
-        if let Some(next) = next {
-            let card = self.take_card(target, Zone::Judgment, material.id);
+        if let Some(next) = next.filter(|_| self.resolving.contains(&material)) {
+            let card = self.take_resolving(material.id);
             self.put_in_judgment(next, card, CardKind::Shandian);
-        } else {
-            self.scheduler.next(Program::DiscardFrom {
-                seat: target,
-                zone: Zone::Judgment,
-                card: material,
-            });
         }
     }
 
     fn advance_trick(&mut self, mut flow: Trick) {
         flow.target_index += 1;
-        flow.stage = TrickStage::Counter {
-            index: 0,
-            passed: if flow.counterable { 0 } else { usize::MAX },
-            negated: false,
-        };
+        flow.stage = TrickStage::Counter;
         self.scheduler.replace_current(Program::Trick(flow));
     }
 
@@ -454,19 +449,11 @@ impl Game {
                     if flow.kind == Jiedao && flow.borrowed_victims.len() < flow.targets.len() {
                         BorrowedPrepare(0)
                     } else {
-                        Counter {
-                            index: 0,
-                            passed: if flow.counterable { 0 } else { usize::MAX },
-                            negated: false,
-                        }
+                        Counter
                     };
                 self.scheduler.replace_current(Program::Trick(flow));
             }
-            Counter {
-                index,
-                passed,
-                negated,
-            } => {
+            Counter => {
                 if flow.target_index >= flow.targets.len() {
                     for card in flow.pool.drain(..) {
                         self.scheduler
@@ -495,60 +482,31 @@ impl Game {
                     self.advance_trick(flow);
                     return;
                 }
-                let order = self.living_order_from(self.active_seat);
-                if passed >= order.len() {
-                    if negated {
-                        if flow.judgment && flow.kind == Shandian {
-                            self.pass_lightning(
-                                target,
-                                flow.card.expect("lightning has a physical card"),
-                            );
-                            self.finish();
-                        } else if flow.judgment {
-                            self.scheduler.next(Program::DiscardFrom {
-                                seat: target,
-                                zone: Zone::Judgment,
-                                card: flow.card.expect("judgment has a physical card"),
-                            });
-                            self.finish();
-                        } else {
-                            self.advance_trick(flow);
-                        }
-                    } else {
-                        flow.stage = if flow.judgment { Judgment } else { Effect };
-                        self.scheduler.replace_current(Program::Trick(flow));
-                    }
-                    return;
+                if flow.counterable {
+                    let window = self.counter_window(crate::CounterContext {
+                        card_kind: flow.kind,
+                        source: Some(flow.seat),
+                        target,
+                        negated: false,
+                    });
+                    flow.stage = CounterWait;
+                    self.scheduler.replace_current(Program::Trick(flow));
+                    self.scheduler.next(window);
+                } else {
+                    flow.stage = Effect;
+                    self.scheduler.replace_current(Program::Trick(flow));
                 }
-                let actor = order[index % order.len()];
-                flow.stage = CounterWait {
-                    index,
-                    passed,
-                    negated,
-                };
-                let context = crate::CounterContext {
-                    card_kind: flow.kind,
-                    source: (!flow.judgment).then_some(flow.seat),
-                    target,
-                    negated,
-                };
-                self.scheduler.replace_current(Program::Trick(flow));
-                self.scheduler.next(Program::Equipment(
-                    super::equipment::Flow::counter_response(actor, context),
-                ));
             }
-            CounterWait {
-                index,
-                passed,
-                negated,
-            } => {
-                let responded = matches!(child, Some(Outcome::Finished(Resolution::Responded)));
-                flow.stage = Counter {
-                    index: index + 1,
-                    passed: if responded { 0 } else { passed + 1 },
-                    negated: if responded { !negated } else { negated },
-                };
-                self.scheduler.replace_current(Program::Trick(flow));
+            CounterWait => {
+                let target = flow.targets[flow.target_index];
+                if matches!(child, Some(Outcome::Finished(Resolution::Countered(false))))
+                    && self.is_alive(target)
+                {
+                    flow.stage = Effect;
+                    self.scheduler.replace_current(Program::Trick(flow));
+                } else {
+                    self.advance_trick(flow);
+                }
             }
             Effect => {
                 let target = flow.targets[flow.target_index];
@@ -837,11 +795,7 @@ impl Game {
             }
             BorrowedPrepare(index) => {
                 if index == flow.targets.len() {
-                    flow.stage = Counter {
-                        index: 0,
-                        passed: 0,
-                        negated: false,
-                    };
+                    flow.stage = Counter;
                 } else {
                     let holder = flow.targets[index];
                     if Some(holder) == flow.initial_target {
@@ -887,45 +841,33 @@ impl Game {
                 flow.stage = BorrowedPrepare(index + 1);
                 self.scheduler.replace_current(Program::Trick(flow));
             }
-            Judgment => {
-                let target = flow.targets[0];
-                flow.stage = JudgmentResult;
-                self.scheduler.replace_current(Program::Trick(flow));
-                self.scheduler.next(Program::Judge { seat: target });
-            }
-            JudgmentResult => {
-                let target = flow.targets[0];
-                let Some(Outcome::Finished(Resolution::Judged(card))) = child else {
-                    self.finish();
-                    return;
-                };
-                let face = self.face(card.id).expect("judgment card has a face");
-                let hit =
-                    face.suit == crate::classic_data::Suit::Spade && (2..=9).contains(&face.rank);
-                if flow.kind == Lebu {
-                    if face.suit != crate::classic_data::Suit::Heart {
-                        self.skip_play_phase(target);
+            ApplyJudgment(judged) => {
+                let material = flow.card.expect("delayed material");
+                if flow.kind == Shandian {
+                    let hit = judged
+                        .and_then(|card| self.face(card.id))
+                        .is_some_and(|face| {
+                            face.suit == crate::classic_data::Suit::Spade
+                                && (2..=9).contains(&face.rank)
+                        });
+                    if hit {
+                        self.scheduler.next(self.damage_program(
+                            None,
+                            flow.seat,
+                            3,
+                            Some(Shandian),
+                            vec![material],
+                        ));
+                    } else {
+                        self.pass_lightning(flow.seat, material);
                     }
-                    self.scheduler.next(Program::DiscardFrom {
-                        seat: target,
-                        zone: Zone::Judgment,
-                        card: flow.card.expect("judgment has a physical card"),
-                    });
-                } else if hit {
-                    let material = flow.card.expect("lightning has a physical card");
-                    let material = self.take_card(target, Zone::Judgment, material.id);
-                    self.resolving.push(material);
-                    self.scheduler.next(self.damage_program(
-                        None,
-                        target,
-                        3,
-                        Some(Shandian),
-                        vec![material],
-                    ));
-                    self.scheduler
-                        .after(Program::event(EventKind::Discard { card: material }));
-                } else {
-                    self.pass_lightning(target, flow.card.expect("lightning has a physical card"));
+                } else if flow.kind == Lebu {
+                    if judged
+                        .and_then(|card| self.face(card.id))
+                        .is_some_and(|face| face.suit != crate::classic_data::Suit::Heart)
+                    {
+                        self.skip_play_phase(flow.seat);
+                    }
                 }
                 self.finish();
             }

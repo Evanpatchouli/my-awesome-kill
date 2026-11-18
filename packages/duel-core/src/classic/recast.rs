@@ -222,6 +222,7 @@ enum MoveKind {
 #[derive(Clone, Copy)]
 enum LossDestination {
     Discard,
+    Ordering(EventId),
     Transfer(SeatId),
     Compare(EventId),
 }
@@ -229,6 +230,7 @@ enum LossDestination {
 #[derive(Clone, Copy)]
 enum GainOrigin {
     Compare(EventId),
+    Judgment(EventId),
     Created,
     Hand {
         seat: SeatId,
@@ -320,6 +322,7 @@ impl Movement {
                         origin,
                         GainOrigin::DrawPile
                             | GainOrigin::Compare(_)
+                            | GainOrigin::Judgment(_)
                             | GainOrigin::Hand { public: true, .. }
                             | GainOrigin::Expansion { .. }
                     )
@@ -371,6 +374,44 @@ impl Movement {
 }
 
 impl Game {
+    pub(crate) fn gain_judgment_program(
+        &self,
+        seat: SeatId,
+        card: Card,
+        owner: EventId,
+    ) -> Program {
+        Program::Recast(Flow::Movement(Movement::new(
+            seat,
+            MoveKind::Gain {
+                card,
+                origin: GainOrigin::Judgment(owner),
+            },
+        )))
+    }
+    pub(crate) fn judgment_loss_program(
+        &self,
+        owner: EventId,
+        seat: SeatId,
+        card: Card,
+    ) -> Program {
+        self.lose_to_ordering(seat, Zone::Judgment, card, owner)
+    }
+    pub(crate) fn lose_to_ordering(
+        &self,
+        seat: SeatId,
+        zone: Zone,
+        card: Card,
+        owner: EventId,
+    ) -> Program {
+        Program::Recast(Flow::Movement(Movement::new(
+            seat,
+            MoveKind::Lose {
+                card,
+                zone,
+                destination: LossDestination::Ordering(owner),
+            },
+        )))
+    }
     pub(crate) fn expansion_lose_program(
         &self,
         seat: SeatId,
@@ -901,6 +942,10 @@ impl Game {
                             let taken = self.take_card(seat, zone, card.id);
                             match destination {
                                 LossDestination::Discard => self.discard.push(taken),
+                                LossDestination::Ordering(owner) => {
+                                    self.resolving.push(taken);
+                                    self.ordering_owners.insert(taken.id, owner);
+                                }
                                 LossDestination::Transfer(_) => self.transferring.push(taken),
                                 LossDestination::Compare(comparison) => {
                                     self.place_compare_bid(comparison, seat, taken);
@@ -914,6 +959,20 @@ impl Game {
                             origin: GainOrigin::Compare(comparison),
                         } => {
                             if let Some(taken) = self.take_compare_bid(comparison, card.id) {
+                                self.put_in_hand(seat, taken);
+                                self.known_to_all.insert(taken.id);
+                                movement.committed = Some(taken);
+                            }
+                            None
+                        }
+                        Gain {
+                            card,
+                            origin: GainOrigin::Judgment(owner),
+                        } => {
+                            if self.resolving.contains(&card)
+                                && self.ordering_owners.get(&card.id) == Some(&owner)
+                            {
+                                let taken = self.take_resolving(card.id);
                                 self.put_in_hand(seat, taken);
                                 self.known_to_all.insert(taken.id);
                                 movement.committed = Some(taken);

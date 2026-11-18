@@ -1,12 +1,46 @@
 use super::skills::{HeroAdjustment, HeroMoment};
 use crate::scheduler::Outcome;
-use crate::{Card, EventKind, Game, Program, Resolution, SeatId, Zone};
+use crate::{Card, CardKind, EventId, EventKind, Game, Program, Resolution, SeatId, Zone};
+
+#[derive(Clone)]
+pub(crate) enum Cleanup {
+    Place {
+        owner: EventId,
+        seat: SeatId,
+        card: Card,
+    },
+    Ordering {
+        owner: EventId,
+        cards: Vec<Card>,
+    },
+    Cards {
+        owner: EventId,
+        cards: Vec<Card>,
+        moved: bool,
+    },
+}
+
+impl Cleanup {
+    pub(crate) fn kind(&self) -> EventKind {
+        match self {
+            Self::Place { seat, card, .. } => EventKind::Reveal {
+                seat: *seat,
+                card: *card,
+            },
+            Self::Ordering { .. } => EventKind::OrderingDiscard,
+            Self::Cards { cards, .. } => EventKind::CardsDiscard {
+                amount: cards.len(),
+            },
+        }
+    }
+}
 
 #[derive(Clone, Copy)]
 enum JudgeStep {
     Draw,
-    Revealed(Card),
     Replaced(Card),
+    Fixing(Card),
+    AfterFixing(Card),
     Finish(Card),
 }
 
@@ -14,14 +48,187 @@ enum JudgeStep {
 pub(crate) struct Judgment {
     pub(crate) seat: SeatId,
     keep_black: bool,
+    delayed_kind: Option<CardKind>,
+    drawn: Option<Card>,
     step: JudgeStep,
 }
 
 impl Game {
+    /// The current or most recent physical judgment result on an active frame.
+    pub fn judgment_card(&self, id: EventId) -> Option<Card> {
+        let (_, program) = self.scheduler.active_frame(id)?;
+        match program {
+            Program::Phase(flow) => flow.judgment_card(),
+            Program::Judgment(judge) => match judge.step {
+                JudgeStep::Replaced(card)
+                | JudgeStep::Fixing(card)
+                | JudgeStep::AfterFixing(card)
+                | JudgeStep::Finish(card) => Some(card),
+                JudgeStep::Draw => None,
+            },
+            _ => None,
+        }
+    }
+    /// The fixed result of a live delayed-card judgment, once `judgeFixing` starts.
+    pub fn judgment_result(&self, id: EventId) -> Option<bool> {
+        let (_, program) = self.scheduler.active_frame(id)?;
+        if let Program::Phase(flow) = program {
+            return flow.judgment_result();
+        }
+        let Program::Judgment(judge) = program else {
+            return None;
+        };
+        let card = match judge.step {
+            JudgeStep::AfterFixing(card) | JudgeStep::Finish(card) => card,
+            _ => return None,
+        };
+        self.delayed_judgment_value(judge.delayed_kind?, card)
+    }
+
+    pub(crate) fn delayed_judgment_value(&self, kind: CardKind, card: Card) -> Option<bool> {
+        let face = self.face(card.id)?;
+        match kind {
+            CardKind::Lebu => Some(face.suit == crate::classic_data::Suit::Heart),
+            CardKind::Shandian => Some(
+                !(face.suit == crate::classic_data::Suit::Spade && (2..=9).contains(&face.rank)),
+            ),
+            _ => None,
+        }
+    }
+
+    /// Card currently held by the live judge event before its result is fixed.
+    pub fn judging_card(&self, seat: SeatId) -> Option<Card> {
+        let mut id = Some(self.scheduler.current_id());
+        while let Some(current) = id {
+            let (event, program) = self.scheduler.active_frame(current)?;
+            if let Program::Judgment(judge) = program {
+                if judge.seat == seat {
+                    if let JudgeStep::Replaced(card) = judge.step {
+                        return Some(card);
+                    }
+                }
+            }
+            id = event.parent;
+        }
+        None
+    }
+
+    pub fn judging_owner(&self, card: crate::CardId) -> Option<SeatId> {
+        let mut id = Some(self.scheduler.current_id());
+        while let Some(current) = id {
+            let (event, program) = self.scheduler.active_frame(current)?;
+            if let Program::Judgment(judge) = program {
+                if matches!(judge.step, JudgeStep::Replaced(judging) if judging.id == card) {
+                    return Some(judge.seat);
+                }
+            }
+            id = event.parent;
+        }
+        None
+    }
+
+    pub(crate) fn update_judging_card(&mut self, old: Card, replacement: Card) {
+        let mut id = Some(self.scheduler.current_id());
+        while let Some(current) = id {
+            let Some((frame, program)) = self.scheduler.active_frame(current) else {
+                return;
+            };
+            let parent = frame.parent;
+            let matches = matches!(program, Program::Judgment(judge) if matches!(judge.step, JudgeStep::Replaced(card) if card == old));
+            if matches {
+                if let Some(Program::Judgment(judge)) = self.scheduler.active_program_mut(current) {
+                    judge.step = JudgeStep::Replaced(replacement);
+                }
+                return;
+            }
+            id = parent;
+        }
+    }
+
+    pub(crate) fn resolve_judgment_cleanup(&mut self, cleanup: Cleanup) {
+        match cleanup {
+            Cleanup::Place {
+                owner,
+                seat: _,
+                card,
+            } => {
+                self.resolving.push(card);
+                self.ordering_owners.insert(card.id, owner);
+                self.finish();
+            }
+            Cleanup::Ordering { owner, cards } => {
+                let cards: Vec<_> = cards
+                    .into_iter()
+                    .filter(|card| {
+                        self.resolving.contains(card)
+                            && self.ordering_owners.get(&card.id) == Some(&owner)
+                    })
+                    .collect();
+                if !cards.is_empty() {
+                    self.scheduler
+                        .next(Program::JudgmentCleanup(Cleanup::Cards {
+                            owner,
+                            cards,
+                            moved: false,
+                        }));
+                }
+                self.finish();
+            }
+            Cleanup::Cards {
+                owner,
+                cards,
+                moved: false,
+            } => {
+                let cards: Vec<_> = cards
+                    .into_iter()
+                    .filter(|card| {
+                        self.resolving.contains(card)
+                            && self.ordering_owners.get(&card.id) == Some(&owner)
+                    })
+                    .collect();
+                for &card in &cards {
+                    self.next(EventKind::Discard { card });
+                }
+                self.scheduler
+                    .replace_current(Program::JudgmentCleanup(Cleanup::Cards {
+                        owner,
+                        cards,
+                        moved: true,
+                    }));
+            }
+            Cleanup::Cards {
+                cards, moved: true, ..
+            } => {
+                if !cards.is_empty() {
+                    self.queue_timing(
+                        "cardsDiscardAfter",
+                        None,
+                        None,
+                        None,
+                        cards.len() as u16,
+                        &cards,
+                    );
+                }
+                self.finish();
+            }
+        }
+    }
     pub(crate) fn judge_program(&self, seat: SeatId, keep_black: bool) -> Program {
         Program::Judgment(Judgment {
             seat,
             keep_black,
+            delayed_kind: None,
+            drawn: None,
+            step: JudgeStep::Draw,
+        })
+    }
+
+    pub(crate) fn delayed_judge_program(&self, seat: SeatId, kind: CardKind) -> Program {
+        Program::Judgment(Judgment {
+            seat,
+            keep_black: false,
+            delayed_kind: Some(kind),
+            drawn: None,
             step: JudgeStep::Draw,
         })
     }
@@ -36,24 +243,25 @@ impl Game {
         let seat = judgment.seat;
         match judgment.step {
             JudgeStep::Draw => {
-                let Some(cards) = self.reveal_cards(1) else {
+                let Some(cards) = self.draw_from_piles(1) else {
                     self.scheduler.end(Cancelled);
                     return;
                 };
                 let card = cards[0];
-                judgment.step = JudgeStep::Revealed(card);
+                let owner = self.scheduler.current_id();
+                judgment.drawn = Some(card);
+                judgment.step = JudgeStep::Replaced(card);
                 self.scheduler.replace_current(Program::Judgment(judgment));
-                self.next(EventKind::Reveal { seat, card });
-            }
-            JudgeStep::Revealed(card) => {
+                self.scheduler
+                    .next(Program::JudgmentCleanup(Cleanup::Place {
+                        owner,
+                        seat,
+                        card,
+                    }));
                 let moment = HeroMoment::JudgeBefore { seat, card };
-                if self.has_hero_triggers(&moment) {
-                    judgment.step = JudgeStep::Replaced(card);
-                    self.scheduler.replace_current(Program::Judgment(judgment));
+                if self.wants_timing("judge") || self.has_hero_triggers(&moment) {
                     let dispatch = self.hero_triggers(moment);
                     self.scheduler.next(dispatch);
-                } else {
-                    self.apply_judgment(judgment, card);
                 }
             }
             JudgeStep::Replaced(original) => {
@@ -61,12 +269,33 @@ impl Game {
                     Some(Finished(Hero(HeroAdjustment::Judgment(card)))) => card,
                     _ => original,
                 };
+                if Some(card) != judgment.drawn && self.resolving.contains(&card) {
+                    let owner = self.scheduler.current_id();
+                    self.ordering_owners.insert(card.id, owner);
+                }
+                judgment.step = JudgeStep::Fixing(card);
+                self.scheduler.replace_current(Program::Judgment(judgment));
+            }
+            JudgeStep::Fixing(card) => {
+                judgment.step = JudgeStep::AfterFixing(card);
+                self.scheduler.replace_current(Program::Judgment(judgment));
+                self.queue_timing("judgeFixing", Some(seat), None, None, 0, &[]);
+            }
+            JudgeStep::AfterFixing(card) => {
                 self.apply_judgment(judgment, card);
             }
             JudgeStep::Finish(card) => {
-                if self.resolving.contains(&card) {
+                let owner = self.scheduler.current_id();
+                let mut cards = judgment.drawn.into_iter().collect::<Vec<_>>();
+                if !cards.contains(&card) {
+                    cards.push(card);
+                }
+                if cards.iter().any(|card| {
+                    self.resolving.contains(card)
+                        && self.ordering_owners.get(&card.id) == Some(&owner)
+                }) {
                     self.scheduler
-                        .after(Program::event(EventKind::Discard { card }));
+                        .after(Program::JudgmentCleanup(Cleanup::Ordering { owner, cards }));
                 }
                 self.scheduler.end(Finished(Judged(card)));
             }
@@ -81,7 +310,10 @@ impl Game {
         };
         judgment.step = JudgeStep::Finish(card);
         self.scheduler.replace_current(Program::Judgment(judgment));
-        self.queue_hero_moment(moment);
+        if self.wants_timing("judgeEnd") || self.has_hero_triggers(&moment) {
+            let dispatch = self.hero_triggers(moment);
+            self.scheduler.next(dispatch);
+        }
     }
 
     pub(crate) fn queue_hero_moment(&mut self, moment: HeroMoment) -> bool {

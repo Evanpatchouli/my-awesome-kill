@@ -1,6 +1,8 @@
 mod active_skill;
 pub use active_skill::{ActiveSkillId, ActiveSkillRegistration};
 mod card_use;
+mod location;
+pub use location::{CardLocation, CardZone};
 mod marks;
 pub use marks::SkillMark;
 mod classic;
@@ -44,6 +46,11 @@ use scheduler::{EventRef, Outcome, Scheduler, Work};
 
 #[derive(Clone)]
 enum Resolution {
+    CounterUse {
+        seat: SeatId,
+        cards: Vec<Card>,
+    },
+    Countered(bool),
     ExpansionDiscarded(Vec<Card>),
     CompareBid(Card),
     LockedBids(Vec<Card>),
@@ -124,6 +131,7 @@ enum DeathStage {
 #[derive(Clone)]
 enum Program {
     Bids(classic::compare::bids::BidFlow),
+    Counter(classic::counter::Flow),
     Death {
         source: Option<SeatId>,
         target: SeatId,
@@ -150,9 +158,6 @@ enum Program {
         request: ChoiceRequest,
         context: CounterContext,
     },
-    Judge {
-        seat: SeatId,
-    },
     Equipment(equipment::Flow),
     Trick(Trick),
     TargetTiming(classic::target_timing::TargetTiming),
@@ -160,6 +165,7 @@ enum Program {
     Dispatch(classic::skills::Dispatch),
     Registered(triggers::Registered),
     Judgment(Judgment),
+    JudgmentCleanup(classic::hero_integration::Cleanup),
     CardDamage(CardDamage),
     DiscardGroup {
         seat: SeatId,
@@ -214,6 +220,7 @@ impl Program {
     fn kind(&self) -> EventKind {
         match self {
             Self::Bids(flow) => flow.kind(),
+            Self::Counter(flow) => flow.kind(),
             Self::Death {
                 source,
                 target,
@@ -242,7 +249,6 @@ impl Program {
                 seat: choice.seat,
                 target: choice.target,
             },
-            Self::Judge { seat } => EventKind::Judge { seat: *seat },
             Self::Equipment(flow) => flow.kind(),
             Self::Trick(flow) => flow.kind(),
             Self::TargetTiming(flow) => flow.kind(),
@@ -252,6 +258,7 @@ impl Program {
             Self::Judgment(judgment) => EventKind::Judge {
                 seat: judgment.seat,
             },
+            Self::JudgmentCleanup(cleanup) => cleanup.kind(),
             Self::CardDamage(damage) => damage.kind(),
             Self::DiscardGroup { seat, cards } => EventKind::DiscardGroup {
                 seat: *seat,
@@ -318,6 +325,7 @@ impl From<SeatSetup> for Seat {
 }
 
 pub struct Game {
+    ordering_owners: HashMap<CardId, EventId>,
     marks: marks::State,
     indexed_triggers: HashMap<TriggerId, triggers::TriggerIndex>,
     turns: classic::turns::State,
@@ -382,6 +390,7 @@ impl Game {
 
     fn with_seats(seats: Vec<Seat>, active_seat: SeatId) -> Self {
         Self {
+            ordering_owners: HashMap::new(),
             marks: marks::State::default(),
             indexed_triggers: HashMap::new(),
             turns: classic::turns::State::default(),
@@ -992,6 +1001,7 @@ impl Game {
         let kind = program.kind();
         let program = match program {
             Program::Bids(flow) => return self.resolve_bids(event, flow, child, answer),
+            Program::Counter(flow) => return self.resolve_counter_window(flow, child),
             Program::Death {
                 source,
                 target,
@@ -1016,12 +1026,8 @@ impl Game {
             Program::CounterChoice { request, context } => {
                 return self.resolve_selection(event, request, Some(context), answer)
             }
-            Program::Judge { seat } => {
-                self.scheduler
-                    .replace_current(self.judge_program(seat, false));
-                return;
-            }
             Program::Judgment(judgment) => return self.resolve_judgment(judgment, child),
+            Program::JudgmentCleanup(cleanup) => return self.resolve_judgment_cleanup(cleanup),
             Program::CardDamage(damage) => return self.resolve_card_damage(event, damage, child),
             Program::DiscardGroup { seat, cards } => {
                 return self.resolve_discard_group(seat, cards)
@@ -1250,6 +1256,7 @@ impl Game {
     }
 
     fn take_resolving(&mut self, id: CardId) -> Card {
+        self.ordering_owners.remove(&id);
         self.compares.forget(id);
         Self::remove_card(&mut self.resolving, id)
     }

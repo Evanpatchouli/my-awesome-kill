@@ -1,7 +1,7 @@
 use super::skills::{HeroAdjustment, HeroMoment};
 use crate::scheduler::{EventRef, Outcome};
 use crate::{
-    Answer, Card, EventId, EventKind, Game, Phase, Program, Resolution, RuleError, SeatId,
+    Answer, Card, CardKind, EventId, EventKind, Game, Phase, Program, Resolution, RuleError, SeatId,
 };
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -40,6 +40,12 @@ pub(crate) struct Flow {
     stage: Stage,
     draw: u16,
     judge_card: Option<Card>,
+    judge_kind: Option<CardKind>,
+    judge_queue: Option<Vec<Card>>,
+    judge_index: usize,
+    ordering: Vec<Card>,
+    last_judgment_result: Option<bool>,
+    last_judgment_card: Option<Card>,
     waiting_hook: bool,
 }
 #[derive(Clone, Copy)]
@@ -50,7 +56,11 @@ enum Stage {
     Body,
     Play,
     Judge,
+    JudgeLoss,
     JudgeCard,
+    JudgeCounterWait,
+    JudgeResult,
+    JudgeEffect,
     DrawReady,
     DrawDone,
     DiscardStart,
@@ -80,8 +90,20 @@ impl Flow {
             stage: Stage::Enter,
             draw: 2,
             judge_card: None,
+            judge_kind: None,
+            judge_queue: None,
+            judge_index: 0,
+            ordering: Vec::new(),
+            last_judgment_result: None,
+            last_judgment_card: None,
             waiting_hook: false,
         }
+    }
+    pub(crate) fn judgment_result(&self) -> Option<bool> {
+        self.last_judgment_result
+    }
+    pub(crate) fn judgment_card(&self) -> Option<Card> {
+        self.last_judgment_card
     }
     pub(crate) fn kind(&self) -> EventKind {
         EventKind::Phase {
@@ -194,7 +216,7 @@ impl Game {
         let seat = flow.info.seat;
         let phase = flow.info.phase;
         if self.match_result().is_some() || !self.seat(seat).expect("the phase seat exists").alive {
-            self.finish();
+            self.finish_phase_ordering(event.id, &flow);
             return;
         }
         if flow.waiting_hook
@@ -301,29 +323,107 @@ impl Game {
                     return;
                 }
                 Stage::Judge => {
-                    if let Some(card) = self.seat(seat).expect("seat").judges.last().copied() {
-                        flow.judge_card = Some(card);
-                        flow.stage = Stage::JudgeCard;
-                        self.scheduler.replace_current(Program::Phase(flow.clone()));
-                        let queued = self.phase_hook(&flow, Timing::Body);
-                        flow.waiting_hook = queued;
-                        self.scheduler.replace_current(Program::Phase(flow.clone()));
-                        if queued {
-                            return;
+                    let queue = flow.judge_queue.get_or_insert_with(|| {
+                        self.seat(seat)
+                            .expect("seat")
+                            .judges
+                            .iter()
+                            .rev()
+                            .copied()
+                            .collect()
+                    });
+                    if let Some(card) = queue.get(flow.judge_index).copied() {
+                        flow.judge_index += 1;
+                        if !self.seat(seat).is_ok_and(|p| p.judges.contains(&card)) {
+                            continue;
                         }
-                        continue;
+                        flow.judge_card = Some(card);
+                        flow.judge_kind = Some(self.judgment_kind(card));
+                        flow.ordering.push(card);
+                        flow.stage = Stage::JudgeLoss;
+                        self.scheduler
+                            .next(self.judgment_loss_program(event.id, seat, card));
+                        self.scheduler.replace_current(Program::Phase(flow));
+                        return;
                     }
                     flow.stage = Stage::End;
                     continue;
                 }
-                Stage::JudgeCard => {
-                    let card = flow.judge_card.take().expect("judgment material selected");
-                    flow.stage = Stage::Judge;
-                    if self.seat(seat).is_ok_and(|p| p.judges.contains(&card)) {
-                        self.scheduler.next(self.trick_judgment(seat, card));
-                        self.scheduler.replace_current(Program::Phase(flow));
+                Stage::JudgeLoss => {
+                    let card = flow.judge_card.expect("judgment material selected");
+                    let moved = matches!(child, Some(Outcome::Finished(Resolution::RecastMove { card: Some(actual), .. })) if actual == card);
+                    if !moved || !self.resolving.contains(&card) {
+                        flow.judge_card = None;
+                        flow.stage = Stage::Judge;
+                        continue;
+                    }
+                    flow.stage = Stage::JudgeCard;
+                    self.scheduler.replace_current(Program::Phase(flow.clone()));
+                    let queued = self.phase_hook(&flow, Timing::Body);
+                    flow.waiting_hook = queued;
+                    self.scheduler.replace_current(Program::Phase(flow.clone()));
+                    if queued {
                         return;
                     }
+                    continue;
+                }
+                Stage::JudgeCard => {
+                    let context = crate::CounterContext {
+                        card_kind: flow.judge_kind.expect("judgment kind"),
+                        source: None,
+                        target: seat,
+                        negated: false,
+                    };
+                    flow.stage = Stage::JudgeCounterWait;
+                    self.scheduler.replace_current(Program::Phase(flow));
+                    self.scheduler.next(self.counter_window(context));
+                    return;
+                }
+                Stage::JudgeCounterWait => {
+                    if matches!(child, Some(Outcome::Finished(Resolution::Countered(true)))) {
+                        if flow.judge_kind == Some(CardKind::Shandian) {
+                            let material = flow.judge_card.expect("judgment material");
+                            flow.stage = Stage::JudgeEffect;
+                            self.scheduler.next(self.judgment_effect_program(
+                                seat,
+                                material,
+                                CardKind::Shandian,
+                                None,
+                            ));
+                            self.scheduler.replace_current(Program::Phase(flow));
+                            return;
+                        }
+                        flow.stage = Stage::Judge;
+                        continue;
+                    }
+                    flow.stage = Stage::JudgeResult;
+                    self.scheduler.next(
+                        self.delayed_judge_program(seat, flow.judge_kind.expect("judgment kind")),
+                    );
+                    self.scheduler.replace_current(Program::Phase(flow));
+                    return;
+                }
+                Stage::JudgeResult => {
+                    let Some(Outcome::Finished(Resolution::Judged(judged))) = child else {
+                        flow.stage = Stage::Judge;
+                        continue;
+                    };
+                    let material = flow.judge_card.expect("judgment material");
+                    let kind = flow.judge_kind.expect("judgment kind");
+                    flow.last_judgment_result = self.delayed_judgment_value(kind, judged);
+                    flow.last_judgment_card = Some(judged);
+                    flow.stage = Stage::JudgeEffect;
+                    self.scheduler.next(self.judgment_effect_program(
+                        seat,
+                        material,
+                        kind,
+                        Some(judged),
+                    ));
+                    self.scheduler.replace_current(Program::Phase(flow));
+                    return;
+                }
+                Stage::JudgeEffect => {
+                    flow.stage = Stage::Judge;
                     continue;
                 }
                 Stage::DrawReady => {
@@ -381,7 +481,7 @@ impl Game {
                     Some(Timing::After)
                 }
                 Stage::Finish => {
-                    self.finish();
+                    self.finish_phase_ordering(event.id, &flow);
                     return;
                 }
             };
@@ -399,6 +499,20 @@ impl Game {
                 }
             }
         }
+    }
+
+    fn finish_phase_ordering(&mut self, owner: EventId, flow: &Flow) {
+        if flow.ordering.iter().any(|card| {
+            self.resolving.contains(card) && self.ordering_owners.get(&card.id) == Some(&owner)
+        }) {
+            self.scheduler.after(Program::JudgmentCleanup(
+                super::hero_integration::Cleanup::Ordering {
+                    owner,
+                    cards: flow.ordering.clone(),
+                },
+            ));
+        }
+        self.finish();
     }
 }
 

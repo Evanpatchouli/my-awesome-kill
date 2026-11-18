@@ -384,9 +384,25 @@ pub enum CardTargetTiming {
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum EventKind {
-    GroupChoices { seat: SeatId, count: usize },
-    GroupBid { seat: SeatId, initiator: SeatId },
-    ShowBid { seat: SeatId },
+    GroupChoices {
+        seat: SeatId,
+        count: usize,
+    },
+    GroupBid {
+        seat: SeatId,
+        initiator: SeatId,
+    },
+    ShowBid {
+        seat: SeatId,
+    },
+    CounterWindow {
+        seat: SeatId,
+        kind: CardKind,
+    },
+    ChooseToUse {
+        seat: SeatId,
+        kind: CardKind,
+    },
     PhaseLoop,
     ActivateSkill {
         seat: SeatId,

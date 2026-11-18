@@ -9,7 +9,9 @@ use crate::{
 
 #[derive(Clone, Copy)]
 enum Step {
+    Begin,
     Start,
+    After,
     OfferArmor,
     Judge,
     Hand,
@@ -24,7 +26,7 @@ pub(crate) enum ResponseContext {
     Respond,
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub(crate) struct Response {
     pub(super) seat: SeatId,
     pub(super) kind: CardKind,
@@ -33,6 +35,9 @@ pub(crate) struct Response {
     allow_lord: bool,
     step: Step,
     counter: Option<CounterContext>,
+    result: Option<bool>,
+    observe_use: bool,
+    pending_cards: Option<Vec<Card>>,
 }
 
 impl Response {
@@ -43,16 +48,24 @@ impl Response {
             ignore_armor,
             context: ResponseContext::Use,
             allow_lord: true,
-            step: Step::Start,
+            step: Step::Begin,
             counter: None,
+            result: None,
+            observe_use: true,
+            pending_cards: None,
         }
     }
 
     pub(super) fn respond(seat: SeatId, kind: CardKind) -> Self {
         Self {
             context: ResponseContext::Respond,
+            step: Step::Start,
             ..Self::new(seat, kind, false)
         }
+    }
+
+    pub(super) fn is_use(&self) -> bool {
+        self.context == ResponseContext::Use
     }
 
     pub(super) fn counter(seat: SeatId, context: CounterContext) -> Self {
@@ -66,6 +79,7 @@ impl Response {
 #[derive(Clone, Copy)]
 enum PaymentStep {
     Pay,
+    Paid,
     Timing,
     Finish,
 }
@@ -124,9 +138,61 @@ impl Game {
         ) && response.context == ResponseContext::Use
             && !self.card_enabled(seat, kind)
         {
-            self.scheduler.end(Finished(Passed));
+            self.complete_response(response, false, None);
             return;
         }
+        if matches!(response.step, Step::Begin) {
+            if response.counter.is_some() {
+                response.observe_use = self.card_enabled(seat, kind)
+                    && self.seat(seat).is_ok_and(|player| {
+                        player.hand.iter().any(|card| card.kind == CardKind::Wuxie)
+                    });
+            }
+            response.step = Step::Start;
+            let source = response.counter.map(|context| context.target);
+            let observe = response.observe_use;
+            self.continue_equipment(Flow::Response(response));
+            if observe {
+                self.queue_timing("chooseToUseBegin", Some(seat), source, None, 0, &[]);
+            }
+            return;
+        }
+        if matches!(response.step, Step::After) {
+            if matches!(child, Some(Cancelled)) {
+                self.scheduler.end(Finished(Passed));
+            } else if let Some(cards) = response.pending_cards.take() {
+                let held = self.seat(seat).is_ok_and(|player| {
+                    cards
+                        .iter()
+                        .all(|card| player.hand.contains(card) || player.equipment.contains(card))
+                });
+                if !held || !self.card_enabled(seat, kind) {
+                    self.scheduler.end(Finished(Passed));
+                } else if response.counter.is_some() {
+                    self.scheduler
+                        .end(Finished(Resolution::CounterUse { seat, cards }));
+                } else {
+                    self.response_pay(response, cards);
+                }
+            } else {
+                self.scheduler
+                    .end(Finished(if response.result == Some(true) {
+                        Responded
+                    } else {
+                        Passed
+                    }));
+            }
+            return;
+        }
+        let child = if matches!(response.step, Step::Start) {
+            if matches!(child, Some(Cancelled)) {
+                self.complete_response(response, false, None);
+                return;
+            }
+            None
+        } else {
+            child
+        };
         match (response.step, child) {
             (Step::Start, None) if kind == CardKind::Shan => {
                 let armor = self
@@ -156,7 +222,7 @@ impl Game {
                 } else {
                     self.response_card_branches(seat, kind)
                 };
-                self.append_lord_branch(response, &mut branches);
+                self.append_lord_branch(&response, &mut branches);
                 self.choose_response(response, branches);
             }
             (Step::OfferArmor, Some(Finished(Selected(selection)))) => {
@@ -173,23 +239,23 @@ impl Game {
                     .face(judgment.id)
                     .is_some_and(|face| matches!(face.suit, Suit::Heart | Suit::Diamond))
                 {
-                    self.response_pay(response, vec![]);
+                    self.complete_response(response, true, Some(vec![]));
                 } else {
                     self.response_hand_shan(response);
                 }
             }
             (Step::Judge, Some(Cancelled)) => self.scheduler.end(Cancelled),
-            (Step::Hand, Some(Finished(Dodged))) | (Step::Pay, Some(Finished(_))) => {
-                self.scheduler.end(Finished(Responded))
-            }
-            (Step::Hand | Step::Pay, Some(Cancelled)) => self.scheduler.end(Finished(Passed)),
+            (Step::Hand, Some(Finished(Dodged))) => self.complete_response(response, true, None),
+            (Step::Pay, Some(Finished(_))) => self.complete_response(response, true, None),
+            (Step::Hand, Some(Cancelled)) => self.complete_response(response, false, None),
+            (Step::Pay, Some(Cancelled)) => self.complete_response(response, false, None),
             (Step::Lord, Some(Finished(Responded))) if response.context == ResponseContext::Use => {
-                self.response_pay(response, vec![])
+                self.complete_response(response, true, Some(vec![]))
             }
-            (Step::Lord, Some(Finished(Responded))) => self.scheduler.end(Finished(Responded)),
-            (Step::Hand, Some(Finished(Passed))) => self.scheduler.end(Finished(Passed)),
+            (Step::Lord, Some(Finished(Responded))) => self.complete_response(response, true, None),
+            (Step::Hand, Some(Finished(Passed))) => self.complete_response(response, false, None),
             (Step::Choose, Some(Finished(Selected(selection)))) => match selection.branch {
-                0 => self.scheduler.end(Finished(Passed)),
+                0 => self.complete_response(response, false, None),
                 99 => {
                     let request = self
                         .hero_lord_request(seat, kind, vec![])
@@ -198,7 +264,11 @@ impl Game {
                     self.continue_equipment(Flow::Response(response));
                     self.scheduler.next(request);
                 }
-                _ => self.response_pay(response, self.hero_cards_by_id(seat, &selection.cards)),
+                _ => self.complete_response(
+                    response,
+                    true,
+                    Some(self.hero_cards_by_id(seat, &selection.cards)),
+                ),
             },
             (Step::Lord, Some(_)) => {
                 response.allow_lord = false;
@@ -213,7 +283,7 @@ impl Game {
         }
     }
 
-    fn append_lord_branch(&self, response: Response, branches: &mut Vec<ChoiceBranch>) {
+    fn append_lord_branch(&self, response: &Response, branches: &mut Vec<ChoiceBranch>) {
         if response.allow_lord && self.hero_lord_request_available(response.seat, response.kind) {
             let name = if response.kind == CardKind::Shan {
                 "护驾"
@@ -246,7 +316,7 @@ impl Game {
 
     fn choose_response(&mut self, mut response: Response, mut branches: Vec<ChoiceBranch>) {
         response.step = Step::Choose;
-        self.continue_equipment(Flow::Response(response));
+        self.continue_equipment(Flow::Response(response.clone()));
         if let Some(context) = response.counter {
             if let Some(play) = branches.iter_mut().find(|branch| branch.id == 1) {
                 play.label = if context.negated {
@@ -271,13 +341,12 @@ impl Game {
 
     fn response_hand_shan(&mut self, mut response: Response) {
         let mut branches = self.hero_response_conversions(response.seat, CardKind::Shan);
-        self.append_lord_branch(response, &mut branches);
+        self.append_lord_branch(&response, &mut branches);
         if branches.is_empty() {
             response.step = Step::Hand;
+            let seat = response.seat;
             self.continue_equipment(Flow::Response(response));
-            self.next(EventKind::ChooseShan {
-                seat: response.seat,
-            });
+            self.next(EventKind::ChooseShan { seat });
         } else {
             let mut all = self.response_card_branches(response.seat, CardKind::Shan);
             all.append(&mut branches);
@@ -285,9 +354,51 @@ impl Game {
         }
     }
 
+    /// Result of a live chooseToUse frame, available from its After callback.
+    pub fn response_result(&self, subject: crate::EventId) -> Option<bool> {
+        match self.scheduler.active_frame(subject)?.1 {
+            Program::Equipment(Flow::Response(response)) if response.is_use() => response.result,
+            _ => None,
+        }
+    }
+
+    fn complete_response(
+        &mut self,
+        mut response: Response,
+        accepted: bool,
+        cards: Option<Vec<Card>>,
+    ) {
+        if cards.is_some() && response.counter.is_none() {
+            self.response_pay(response, cards.unwrap());
+            return;
+        }
+        if response.context == ResponseContext::Respond {
+            if let Some(cards) = cards {
+                self.response_pay(response, cards);
+            } else {
+                self.scheduler.end(Outcome::Finished(if accepted {
+                    Resolution::Responded
+                } else {
+                    Resolution::Passed
+                }));
+            }
+            return;
+        }
+        response.result = Some(accepted);
+        response.pending_cards = cards;
+        response.step = Step::After;
+        let seat = response.seat;
+        let source = response.counter.map(|context| context.target);
+        let observe = response.observe_use;
+        self.continue_equipment(Flow::Response(response));
+        if observe {
+            self.queue_timing("chooseToUseAfter", Some(seat), source, None, 0, &[]);
+        }
+    }
+
     fn response_pay(&mut self, mut response: Response, cards: Vec<Card>) {
         response.step = Step::Pay;
-        self.continue_equipment(Flow::Response(response));
+        self.continue_equipment(Flow::Response(response.clone()));
         self.scheduler
             .next(Program::Equipment(Flow::Payment(Payment {
                 seat: response.seat,
@@ -296,6 +407,16 @@ impl Game {
                 step: PaymentStep::Pay,
                 cards,
             })));
+    }
+
+    pub(crate) fn counter_payment(&self, seat: SeatId, cards: Vec<Card>) -> Program {
+        Program::Equipment(Flow::Payment(Payment {
+            seat,
+            kind: CardKind::Wuxie,
+            context: ResponseContext::Use,
+            step: PaymentStep::Pay,
+            cards,
+        }))
     }
 
     pub(super) fn resolve_response_payment(
@@ -308,11 +429,37 @@ impl Game {
                 if payment.kind == CardKind::Sha {
                     self.note_hero_sha_play(payment.seat);
                 }
+                if payment.kind == CardKind::Wuxie
+                    && matches!(payment.cards.as_slice(), [card] if card.kind == CardKind::Wuxie)
+                {
+                    let card = payment.cards[0];
+                    let owner = self.scheduler.current_id();
+                    let zone = self.zone_for_held_card(payment.seat, card.id);
+                    self.scheduler.after(Program::JudgmentCleanup(
+                        crate::classic::hero_integration::Cleanup::Ordering {
+                            owner,
+                            cards: vec![card],
+                        },
+                    ));
+                    payment.step = PaymentStep::Paid;
+                    let loss = self.lose_to_ordering(payment.seat, zone, card, owner);
+                    self.scheduler
+                        .replace_current(Program::Equipment(Flow::Payment(payment)));
+                    self.scheduler.next(loss);
+                    return;
+                }
                 self.queue_use_costs(payment.seat, &payment.cards);
                 for &card in &payment.cards {
                     self.scheduler
                         .after(Program::event(EventKind::Discard { card }));
                 }
+                payment.step = PaymentStep::Timing;
+                self.scheduler
+                    .replace_current(Program::Equipment(Flow::Payment(payment)));
+            }
+            PaymentStep::Paid => {
+                // Once useCard has started, its lose child may be cancelled or intercepted.
+                // Continue the use; ordering cleanup only collects cards owned by this use.
                 payment.step = PaymentStep::Timing;
                 self.scheduler
                     .replace_current(Program::Equipment(Flow::Payment(payment)));

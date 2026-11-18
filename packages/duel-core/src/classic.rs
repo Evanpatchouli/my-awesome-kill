@@ -1,5 +1,6 @@
 pub(crate) mod basic_use;
 pub(crate) mod compare;
+pub(crate) mod counter;
 pub(crate) mod elemental;
 pub(crate) mod equipment;
 #[cfg(test)]
@@ -380,7 +381,9 @@ impl Game {
                     event: choice.event,
                     card: choice.cards.first().copied(),
                 },
-                ChoiceKind::Content if choice.compare.is_some() || choice.compare_group.is_some() => {
+                ChoiceKind::Content
+                    if choice.compare.is_some() || choice.compare_group.is_some() =>
+                {
                     let bid = choice.branches.first()?;
                     let card = bid.cards.iter().min_by_key(|&&id| {
                         std::cmp::Reverse(self.face(id).map_or(0, |face| face.rank))

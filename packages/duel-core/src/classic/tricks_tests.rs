@@ -347,7 +347,10 @@ fn lightning_non_hit_moves_to_next_seat_without_duplicate() {
         suit: Suit::Heart,
         rank: 5,
     });
-    let flow = game.trick_judgment(0, lightning);
+    let flow = crate::Program::event(crate::EventKind::Phase {
+        seat: 0,
+        phase: crate::Phase::Judgment,
+    });
     game.scheduler.start(flow);
     game.run(None);
     pass_counters(&mut game);
@@ -368,7 +371,11 @@ fn lethal_lightning_discards_once_before_death_cleanup() {
         suit: Suit::Spade,
         rank: 5,
     });
-    game.scheduler.start(game.trick_judgment(0, lightning));
+    game.scheduler
+        .start(crate::Program::event(crate::EventKind::Phase {
+            seat: 0,
+            phase: crate::Phase::Judgment,
+        }));
     game.run(None);
     pass_counters(&mut game);
     while let Some(actor) = game.view(None).unwrap().waiting_for {
@@ -505,7 +512,11 @@ fn lightning_material_is_available_to_jianxiong_until_damage_finishes() {
         suit: Suit::Spade,
         rank: 5,
     });
-    game.scheduler.start(game.trick_judgment(0, lightning));
+    game.scheduler
+        .start(crate::Program::event(crate::EventKind::Phase {
+            seat: 0,
+            phase: crate::Phase::Judgment,
+        }));
     game.run(None);
     pass_counters(&mut game);
     assert_eq!(game.seat(0).unwrap().hp, 1);

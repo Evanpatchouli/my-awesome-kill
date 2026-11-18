@@ -75,6 +75,10 @@ impl Flow {
                 seat: attack.seat,
                 target: attack.target,
             },
+            Self::Response(response) if response.is_use() => EventKind::ChooseToUse {
+                seat: response.seat,
+                kind: response.kind,
+            },
             Self::Response(response) => EventKind::Respond {
                 seat: response.seat,
                 kind: response.kind,
