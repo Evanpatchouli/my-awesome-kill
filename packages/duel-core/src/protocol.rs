@@ -247,6 +247,8 @@ pub enum Phase {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ChoiceView {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub compare_group: Option<CompareGroup>,
     pub event: EventId,
     pub seat: SeatId,
     pub kind: ChoiceKind,
@@ -267,6 +269,13 @@ pub struct ChoiceView {
 pub struct CompareParticipants {
     pub initiator: SeatId,
     pub target: SeatId,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CompareGroup {
+    pub initiator: SeatId,
+    pub targets: Vec<SeatId>,
 }
 
 /// The original physical cards and effective numbers in initiator/target order.
@@ -375,6 +384,9 @@ pub enum CardTargetTiming {
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum EventKind {
+    GroupChoices { seat: SeatId, count: usize },
+    GroupBid { seat: SeatId, initiator: SeatId },
+    ShowBid { seat: SeatId },
     PhaseLoop,
     ActivateSkill {
         seat: SeatId,

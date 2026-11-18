@@ -109,6 +109,7 @@ impl Game {
                 branches: vec![],
                 counter: None,
                 compare: None,
+                compare_group: None,
             }));
         }
         false

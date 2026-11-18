@@ -1,9 +1,12 @@
 use crate::scheduler::{EventRef, Outcome};
 use crate::{
-    Answer, Card, CardId, ChoiceBranch, ChoiceKind, ChoiceView, CompareParticipants, CompareResult,
-    Decision, EventId, EventKind, Game, Program, Resolution, RuleError, SeatId,
+    Answer, Card, CardId, CompareParticipants, CompareResult, EventId, EventKind, Game, Program,
+    Resolution, RuleError, SeatId,
 };
 use std::collections::HashMap;
+
+pub(crate) mod bids;
+use bids::BidGroup;
 
 #[derive(Default)]
 pub(crate) struct State {
@@ -63,12 +66,6 @@ impl CompareResult {
 #[derive(Clone, Copy)]
 pub(crate) enum Flow {
     Compare(Comparing),
-    Collect(CompareParticipants, Collection),
-    Bid(CompareParticipants, usize, Bid),
-    Lose(CompareParticipants, [Card; 2]),
-    Show(SeatId, Card),
-    Cleanup([Card; 2]),
-    Discard([Option<Card>; 2], bool),
 }
 
 #[derive(Clone, Copy)]
@@ -93,15 +90,6 @@ enum Stage {
 }
 
 #[derive(Clone, Copy)]
-pub(crate) enum Collection {
-    Begin,
-    First,
-    FirstChosen,
-    SecondChosen(Card),
-    Finish([Card; 2]),
-}
-
-#[derive(Clone, Copy)]
 pub(crate) enum Bid {
     Begin,
     Select,
@@ -114,19 +102,6 @@ impl Flow {
             Self::Compare(event) => EventKind::Compare {
                 seat: event.seats.initiator,
                 target: event.seats.target,
-            },
-            Self::Collect(seats, _) => EventKind::CompareChoices {
-                seat: seats.initiator,
-                target: seats.target,
-            },
-            Self::Bid(seats, index, _) => EventKind::CompareBid {
-                seat: seats.seats()[index],
-            },
-            Self::Lose(_, _) => EventKind::LoseAsync,
-            Self::Show(seat, card) => EventKind::ShowCards { seat, card },
-            Self::Cleanup(_) => EventKind::OrderingDiscard,
-            Self::Discard(cards, _) => EventKind::CardsDiscard {
-                amount: cards.into_iter().flatten().count(),
             },
         }
     }
@@ -190,7 +165,7 @@ impl Game {
     /// Identify a real chooseCard subject made for a comparison, including inside its begin/after skills.
     pub fn compare_choice(&self, subject: EventId) -> Option<CompareParticipants> {
         match self.scheduler.active_frame(subject)?.1 {
-            Program::Compare(Flow::Bid(seats, ..)) => Some(*seats),
+            Program::Bids(flow) => flow.pair_choice(),
             _ => None,
         }
     }
@@ -198,7 +173,7 @@ impl Game {
     /// Trusted chooseCardAfter content can read this chooser's validated result.
     pub fn selected_compare_card(&self, subject: EventId) -> Option<Card> {
         match self.scheduler.active_frame(subject)?.1 {
-            Program::Compare(Flow::Bid(_, _, Bid::Finish(card))) => Some(*card),
+            Program::Bids(flow) => flow.selected(),
             _ => None,
         }
     }
@@ -336,65 +311,19 @@ impl Game {
         child: Option<Outcome<Resolution>>,
         answer: &mut Option<Answer>,
     ) {
-        if self.match_result().is_some() {
-            match flow {
-                Flow::Cleanup(..)
-                | Flow::Discard(..)
-                | Flow::Compare(Comparing {
-                    stage: Stage::After | Stage::Finish | Stage::Cancelled(_),
-                    ..
-                }) => {}
-                _ => {
-                    self.compares.live.remove(&event.id);
-                    self.scheduler.end(Outcome::Cancelled);
-                    return;
-                }
-            }
+        let Flow::Compare(compare) = flow;
+        if self.match_result().is_some()
+            && !matches!(
+                compare.stage,
+                Stage::After | Stage::Finish | Stage::Cancelled(_)
+            )
+        {
+            self.compares.live.remove(&event.id);
+            self.scheduler.end(Outcome::Cancelled);
+            return;
         }
-        match flow {
-            Flow::Compare(compare) => self.advance_compare(event, compare, child),
-            Flow::Collect(seats, stage) => self.collect_compare_cards(seats, stage, child),
-            Flow::Bid(seats, index, stage) => {
-                self.choose_compare_card(event, seats, index, stage, child, answer)
-            }
-            Flow::Lose(seats, cards) => {
-                // The participants' locked cards belong to the comparison. Each
-                // ordinary lose child reports only what it physically moved.
-                let comparison = event.parent.expect("comparison parent");
-                for (seat, card) in seats.seats().into_iter().zip(cards) {
-                    self.scheduler
-                        .next(self.lose_compare_program(comparison, seat, card));
-                }
-                self.finish();
-            }
-            Flow::Show(seat, card) => {
-                self.queue_timing("showCardsAfter", Some(seat), None, None, 1, &[card]);
-                self.finish();
-            }
-            Flow::Cleanup(cards) => {
-                self.cleanup_compare(event.parent.expect("comparison parent"), cards)
-            }
-            Flow::Discard(cards, moved) => {
-                if moved {
-                    let discarded: Vec<_> = cards.into_iter().flatten().collect();
-                    self.queue_timing(
-                        "cardsDiscardAfter",
-                        None,
-                        None,
-                        None,
-                        discarded.len() as u16,
-                        &discarded,
-                    );
-                    self.finish();
-                } else {
-                    for card in cards.into_iter().flatten() {
-                        self.next(EventKind::Discard { card });
-                    }
-                    self.scheduler
-                        .replace_current(Program::Compare(Flow::Discard(cards, true)));
-                }
-            }
-        }
+        let _ = answer;
+        self.advance_compare(event, compare, child);
     }
 
     fn advance_compare(
@@ -424,12 +353,16 @@ impl Game {
                     self.scheduler.end(Outcome::Cancelled);
                     return;
                 }
-                self.scheduler
-                    .next(Program::Compare(Flow::Collect(seats, Collection::Begin)));
+                let bids = self.collect_bids(BidGroup::Pair(seats));
+                self.scheduler.next(bids);
                 Collected
             }
             Collected => {
-                let Some(Outcome::Finished(Resolution::CompareBids(cards))) = child else {
+                let Some(Outcome::Finished(Resolution::LockedBids(cards))) = child else {
+                    self.scheduler.end(Outcome::Cancelled);
+                    return;
+                };
+                let Ok(cards): Result<[Card; 2], _> = cards.try_into() else {
                     self.scheduler.end(Outcome::Cancelled);
                     return;
                 };
@@ -437,9 +370,10 @@ impl Game {
                     self.scheduler.end(Outcome::Cancelled);
                     return;
                 }
-                self.scheduler
-                    .next(Program::Compare(Flow::Lose(seats, cards)));
-                self.scheduler.after(Program::Compare(Flow::Cleanup(cards)));
+                let payment = self.pay_bids(BidGroup::Pair(seats), cards.to_vec());
+                let cleanup = self.cleanup_bids(cards.to_vec());
+                self.scheduler.next(payment);
+                self.scheduler.after(cleanup);
                 Paid(cards)
             }
             Paid(cards) => {
@@ -447,24 +381,15 @@ impl Game {
                 Reveal(cards)
             }
             Reveal(cards) => {
-                for card in cards {
-                    if let Some(bid) = self
-                        .compares
-                        .ordering
-                        .get_mut(&card.id)
-                        .filter(|bid| bid.comparison == event.id)
-                    {
-                        bid.revealed = true;
-                    }
-                }
+                self.reveal_compare_bids(event.id, &cards);
                 self.next(EventKind::CompareReveal {
                     seat: seats.initiator,
                     target: seats.target,
                     cards,
                 });
                 for (seat, card) in seats.seats().into_iter().zip(cards) {
-                    self.scheduler
-                        .next(Program::Compare(Flow::Show(seat, card)));
+                    let show = self.show_bid(seat, card, true);
+                    self.scheduler.next(show);
                 }
                 Score(cards)
             }
@@ -536,146 +461,6 @@ impl Game {
         };
         self.scheduler
             .replace_current(Program::Compare(Flow::Compare(compare)));
-    }
-
-    fn collect_compare_cards(
-        &mut self,
-        seats: CompareParticipants,
-        stage: Collection,
-        child: Option<Outcome<Resolution>>,
-    ) {
-        use Collection::*;
-        let stage = match (stage, child) {
-            (_, Some(Outcome::Cancelled)) => {
-                self.scheduler.end(Outcome::Cancelled);
-                return;
-            }
-            (Begin, _) => {
-                self.queue_compare_hook("chooseCardOLBegin", seats);
-                First
-            }
-            (First, _) => {
-                self.scheduler
-                    .next(Program::Compare(Flow::Bid(seats, 0, Bid::Begin)));
-                FirstChosen
-            }
-            (FirstChosen, Some(Outcome::Finished(Resolution::CompareBid(first)))) => {
-                self.scheduler
-                    .next(Program::Compare(Flow::Bid(seats, 1, Bid::Begin)));
-                SecondChosen(first)
-            }
-            (SecondChosen(first), Some(Outcome::Finished(Resolution::CompareBid(second)))) => {
-                let cards = [first, second];
-                self.queue_compare_hook("chooseCardOLAfter", seats);
-                Finish(cards)
-            }
-            (Finish(cards), _) => {
-                self.scheduler
-                    .end(Outcome::Finished(Resolution::CompareBids(cards)));
-                return;
-            }
-            _ => unreachable!("a completed compare bid returns its selected hand card"),
-        };
-        self.scheduler
-            .replace_current(Program::Compare(Flow::Collect(seats, stage)));
-    }
-
-    fn choose_compare_card(
-        &mut self,
-        event: EventRef,
-        seats: CompareParticipants,
-        index: usize,
-        stage: Bid,
-        child: Option<Outcome<Resolution>>,
-        answer: &mut Option<Answer>,
-    ) {
-        let [seat, other] = [seats.seats()[index], seats.seats()[1 - index]];
-        if matches!(child, Some(Outcome::Cancelled)) {
-            self.scheduler.end(Outcome::Cancelled);
-            return;
-        }
-        match stage {
-            Bid::Begin => {
-                self.queue_timing(
-                    "chooseCardBegin",
-                    Some(seat),
-                    Some(seats.initiator),
-                    None,
-                    0,
-                    &[],
-                );
-                self.scheduler.replace_current(Program::Compare(Flow::Bid(
-                    seats,
-                    index,
-                    Bid::Select,
-                )));
-            }
-            Bid::Select => {
-                let player = self.seat(seat).expect("compare participant");
-                if !player.alive || player.hand.is_empty() {
-                    self.scheduler.end(Outcome::Cancelled);
-                    return;
-                }
-                if let Some(Answer::Select(selection)) = answer.take() {
-                    let card = *player
-                        .hand
-                        .iter()
-                        .find(|card| selection.cards == [card.id])
-                        .expect("a compare bid is one validated hand card");
-                    self.scheduler.replace_current(Program::Compare(Flow::Bid(
-                        seats,
-                        index,
-                        Bid::Finish(card),
-                    )));
-                    self.queue_timing(
-                        "chooseCardAfter",
-                        Some(seat),
-                        Some(seats.initiator),
-                        None,
-                        0,
-                        &[],
-                    );
-                } else {
-                    self.decision = Some(Decision::Cards(ChoiceView {
-                        event: event.id,
-                        seat,
-                        target: Some(other),
-                        kind: ChoiceKind::Content,
-                        min: 0,
-                        max: 0,
-                        cards: vec![],
-                        counter: None,
-                        compare: Some(seats),
-                        branches: vec![ChoiceBranch {
-                            id: 1,
-                            label: "请选择一张手牌拼点".into(),
-                            cards: player.hand.iter().map(|c| c.id).collect(),
-                            min_cards: 1,
-                            max_cards: 1,
-                            targets: vec![],
-                            min_targets: 0,
-                            max_targets: 0,
-                        }],
-                    }));
-                }
-            }
-            Bid::Finish(card) => self
-                .scheduler
-                .end(Outcome::Finished(Resolution::CompareBid(card))),
-        }
-    }
-
-    fn cleanup_compare(&mut self, comparison: EventId, cards: [Card; 2]) {
-        let remaining = cards.map(|card| {
-            self.compares
-                .owns_ordering(comparison, card.id)
-                .then_some(card)
-        });
-        if remaining.iter().any(Option::is_some) {
-            self.scheduler
-                .next(Program::Compare(Flow::Discard(remaining, false)));
-        }
-        self.finish();
     }
 }
 

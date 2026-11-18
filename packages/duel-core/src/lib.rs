@@ -46,7 +46,7 @@ use scheduler::{EventRef, Outcome, Scheduler, Work};
 enum Resolution {
     ExpansionDiscarded(Vec<Card>),
     CompareBid(Card),
-    CompareBids([Card; 2]),
+    LockedBids(Vec<Card>),
     Compared(CompareResult),
     RecastMove {
         event: EventId,
@@ -123,6 +123,7 @@ enum DeathStage {
 
 #[derive(Clone)]
 enum Program {
+    Bids(classic::compare::bids::BidFlow),
     Death {
         source: Option<SeatId>,
         target: SeatId,
@@ -212,6 +213,7 @@ impl Program {
 
     fn kind(&self) -> EventKind {
         match self {
+            Self::Bids(flow) => flow.kind(),
             Self::Death {
                 source,
                 target,
@@ -989,6 +991,7 @@ impl Game {
 
         let kind = program.kind();
         let program = match program {
+            Program::Bids(flow) => return self.resolve_bids(event, flow, child, answer),
             Program::Death {
                 source,
                 target,
@@ -1129,6 +1132,7 @@ impl Game {
                     branches: choice.branches,
                     counter,
                     compare: None,
+                    compare_group: None,
                 }));
             }
             _ => unreachable!("a content choice receives a selection"),
@@ -1162,6 +1166,7 @@ impl Game {
             branches: vec![],
             counter: None,
             compare: None,
+            compare_group: None,
         }));
     }
 
