@@ -330,8 +330,24 @@ pub enum EventStatus {
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub enum CardTargetTiming {
+    UseCardToPlayer,
+    UseCardToTarget,
+    UseCardToPlayered,
+    UseCardToTargeted,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum EventKind {
+    #[serde(rename_all = "camelCase")]
+    CardTargetTiming {
+        timing: CardTargetTiming,
+        seat: SeatId,
+        target: SeatId,
+        card_kind: CardKind,
+    },
     Compare {
         seat: SeatId,
         target: SeatId,

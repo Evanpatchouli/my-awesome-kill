@@ -320,6 +320,7 @@ fn multi_target_duel_never_requests_a_dead_source_to_respond() {
     game.seat_mut(0).hp = 1;
     game.seat_mut(0).hand.push(card(1, CardKind::Juedou));
     game.seat_mut(1).hand.push(card(2, CardKind::Sha));
+    game.seat_mut(3).hand.push(card(4, CardKind::Sha));
     game.grant_temporary(0, crate::qiaoshui::win_skill(0))
         .unwrap();
     submit(
@@ -347,6 +348,7 @@ fn multi_target_duel_never_requests_a_dead_source_to_respond() {
         },
     );
     let mut responded = false;
+    let mut second_responded = false;
     let mut observed_dead = false;
     for _ in 0..80 {
         let view = game.view(None).unwrap();
@@ -385,6 +387,29 @@ fn multi_target_duel_never_requests_a_dead_source_to_respond() {
             responded = true;
             continue;
         }
+        if observed_dead
+            && seat == 3
+            && choice.counter.is_none()
+            && choice.branches.iter().any(|b| b.cards.contains(&4))
+        {
+            let branch = choice
+                .branches
+                .iter()
+                .find(|b| b.cards.contains(&4))
+                .unwrap();
+            submit(
+                &mut game,
+                seat,
+                Action::Select {
+                    event: choice.event,
+                    branch: branch.id,
+                    cards: vec![4],
+                    targets: vec![],
+                },
+            );
+            second_responded = true;
+            continue;
+        }
         match choice.kind {
             ChoiceKind::Content => submit(
                 &mut game,
@@ -407,6 +432,6 @@ fn multi_target_duel_never_requests_a_dead_source_to_respond() {
             _ => panic!("unexpected choice"),
         }
     }
-    assert!(responded && observed_dead);
+    assert!(responded && observed_dead && second_responded);
     assert!(game.match_result().is_none());
 }

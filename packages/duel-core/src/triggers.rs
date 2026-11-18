@@ -453,6 +453,15 @@ impl Game {
     ) -> TriggerEvent {
         let subject = self.scheduler.current_id();
         let frame = self.scheduler.active_frame(subject);
+        let target = target.or_else(
+            || match (timing, frame.map(|(_, program)| program.kind())) {
+                (
+                    "useCard1" | "useCard2" | "useCard" | "useCardAfter",
+                    Some(crate::EventKind::UseTrick { card, target, .. }),
+                ) if card.kind == crate::CardKind::Jiedao => target,
+                _ => None,
+            },
+        );
         let (card_kind, nature) = match frame {
             Some((_, Program::CardDamage(hit))) => (hit.card.kind, hit.card.nature),
             Some((_, program)) => (

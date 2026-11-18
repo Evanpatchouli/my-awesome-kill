@@ -146,6 +146,7 @@ enum Program {
     },
     Equipment(equipment::Flow),
     Trick(Trick),
+    TargetTiming(classic::target_timing::TargetTiming),
     Hero(HeroFlow),
     Dispatch(classic::skills::Dispatch),
     Registered(triggers::Registered),
@@ -214,6 +215,7 @@ impl Program {
             Self::Judge { seat } => EventKind::Judge { seat: *seat },
             Self::Equipment(flow) => flow.kind(),
             Self::Trick(flow) => flow.kind(),
+            Self::TargetTiming(flow) => flow.kind(),
             Self::Hero(flow) => flow.kind(),
             Self::Dispatch(flow) => flow.kind(),
             Self::Registered(flow) => EventKind::RegisteredTrigger {
@@ -867,6 +869,7 @@ impl Game {
             Program::Recast(flow) => return self.resolve_recast(event, flow, child),
             Program::Equipment(flow) => return self.resolve_equipment(event, flow, child),
             Program::Trick(flow) => return self.resolve_trick(event, flow, child),
+            Program::TargetTiming(flow) => return self.resolve_card_target_timing(flow, child),
             Program::Hero(flow) => return self.resolve_hero(event, flow, child),
             Program::Dispatch(flow) => return self.resolve_dispatch(flow, child),
             Program::Registered(flow) => return self.resolve_registered(flow, child),

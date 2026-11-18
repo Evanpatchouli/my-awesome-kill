@@ -8,6 +8,7 @@ pub(crate) mod hero_integration;
 mod lifecycle;
 pub(crate) mod recast;
 pub(crate) mod skills;
+pub(crate) mod target_timing;
 #[cfg(test)]
 mod tests;
 pub(crate) mod tricks;

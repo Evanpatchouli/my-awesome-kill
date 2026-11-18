@@ -1,8 +1,8 @@
 use super::PlannedUse;
 use crate::scheduler::{EventRef, Outcome};
 use crate::{
-    Card, CardKind, ChoiceBranch, ChoiceRequest, DrawReason, EventKind, Game, Program, Resolution,
-    RuleError, Seat, SeatId, Zone,
+    Card, CardKind, CardTargetTiming, ChoiceBranch, ChoiceRequest, DrawReason, EventKind, Game,
+    Program, Resolution, RuleError, Seat, SeatId, Zone,
 };
 
 // A trick is one scheduler event; its private state is carried across child choices.
@@ -28,6 +28,11 @@ enum TrickStage {
     Start,
     AfterCosts,
     AfterUseCard2,
+    TargetStart,
+    TargetTimings {
+        layer: usize,
+        index: usize,
+    },
     BeginEffects,
     BorrowedRequest,
     BorrowedPrepare(usize),
@@ -364,6 +369,47 @@ impl Game {
                         kind: flow.kind,
                         cards: flow.costs.clone(),
                     });
+                }
+                flow.stage = TargetStart;
+                self.scheduler.replace_current(Program::Trick(flow));
+            }
+            TargetStart => {
+                if matches!(flow.kind, Lebu | Shandian)
+                    || !CardTargetTiming::ALL
+                        .iter()
+                        .any(|timing| self.wants_timing(timing.name()))
+                {
+                    flow.stage = BeginEffects;
+                } else {
+                    self.sort_card_targets(&mut flow.targets);
+                    flow.stage = TargetTimings { layer: 0, index: 0 };
+                }
+                self.scheduler.replace_current(Program::Trick(flow));
+            }
+            TargetTimings {
+                mut layer,
+                mut index,
+            } => {
+                while layer < CardTargetTiming::ALL.len() {
+                    if index == flow.targets.len() {
+                        layer += 1;
+                        index = 0;
+                        continue;
+                    }
+                    let timing = CardTargetTiming::ALL[layer];
+                    let target = flow.targets[index];
+                    index += 1;
+                    if self.queue_card_target_timing(
+                        timing,
+                        flow.seat,
+                        target,
+                        flow.kind,
+                        &flow.costs,
+                    ) {
+                        flow.stage = TargetTimings { layer, index };
+                        self.scheduler.replace_current(Program::Trick(flow));
+                        return;
+                    }
                 }
                 flow.stage = BeginEffects;
                 self.scheduler.replace_current(Program::Trick(flow));
