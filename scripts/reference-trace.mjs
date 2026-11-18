@@ -5,6 +5,7 @@ import { installTriggerOrderScenario } from './reference-trigger-order-cancel.mj
 import { checkReferenceRecastCallbacks, installReferenceRecast } from './reference-recast.mjs';
 import { checkReferenceLinkedDamage, installReferenceLinkedDamage } from './reference-linked-damage.mjs';
 import { checkReferenceCompare, installReferenceCompare } from './reference-compare.mjs';
+import { checkQiaoshuiTargets, installQiaoshuiTargets } from './reference-qiaoshui-targets.mjs';
 import { checkCompareBoundaries, installCompareBoundaries } from './reference-compare-boundaries.mjs';
 import { checkReferenceHp, installReferenceHp } from './reference-hp.mjs';
 import { checkReferenceExpansion, installReferenceExpansion } from './reference-expansion.mjs';
@@ -39,6 +40,7 @@ const descriptions = new Map([
   ['recast-callbacks', 'executed loss and gain callbacks when recasting a physical tiesuo'],
   ['linked-damage', 'tiesuo, faen, armor, and fire sha propagation across three turns'],
   ['compare', 'private pindian choices, public reveal, qiaoshui and jyzongshi across three turns'],
+  ['qiaoshui-targets', 'paired, automatic and selectable target changes after winning qiaoshui'],
   ['compare-boundaries', 'hidden hand knowledge and cancellation of paid pindian cards'],
   ['zhongyi-expansion', 'zhongyi expansion, limited use and cleanup at the next round'],
   ['damage-callback-cancel', 'damage callback cancellation after HP change for physical sha'],
@@ -55,12 +57,12 @@ if (argv.length && (argv.length !== 2 || !['--check', '--write'].includes(argv[0
   throw new Error('Usage: node scripts/reference-trace.mjs [--scenario name] [--check|--write path]');
 }
 const isRecast = scenario === 'tiesuo-recast' || scenario === 'recast-callbacks';
-if (scenario === 'zhongyi-expansion') {
+if (['zhongyi-expansion', 'qiaoshui-targets'].includes(scenario)) {
   sourceHashes['/character/standard/skill.js'] = 'ee769399395b93f3d8293cd5b880b8e708864329bd0d79a0b4f0d8bd6f855a9e';
 }
-if (isRecast || scenario === 'linked-damage') sourceHashes['/card/extra.js'] = '8a73678a49b4fc413d6dc0d506733e594fae619d91dc8013cd441a6cd107c35d';
+if (isRecast || ['linked-damage', 'qiaoshui-targets'].includes(scenario)) sourceHashes['/card/extra.js'] = '8a73678a49b4fc413d6dc0d506733e594fae619d91dc8013cd441a6cd107c35d';
 if (['recast-callbacks', 'compare', 'compare-boundaries'].includes(scenario)) sourceHashes['/noname/library/element/card.js'] = '5d3a07fadafa1c5661ec197edb8c71f613b3db1129933fdf7d8aa311f5811f8d';
-if (scenario === 'linked-damage' || scenario === 'compare') sourceHashes['/character/yijiang/skill.js'] = '5b0eb965a8428535bf3cd7d369c261b8ad95cccbeac8d8c817cad3490643a54f';
+if (['linked-damage', 'compare', 'qiaoshui-targets'].includes(scenario)) sourceHashes['/character/yijiang/skill.js'] = '5b0eb965a8428535bf3cd7d369c261b8ad95cccbeac8d8c817cad3490643a54f';
 
 const browser = await chromium.launch({ headless: true, executablePath });
 const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
@@ -97,6 +99,8 @@ try {
     await context.addInitScript(installCompareBoundaries);
   } else if (scenario === 'compare') {
     await context.addInitScript(installReferenceCompare);
+  } else if (scenario === 'qiaoshui-targets') {
+    await context.addInitScript(installQiaoshuiTargets);
   }
 
   const page = await context.newPage();
@@ -298,6 +302,7 @@ try {
     };
     const fixtures = ['reference_fixture_setup'];
     if (scenario === 'compare') await window.__installReferenceCompare({ lib, game, ui, get, _status });
+    else if (scenario === 'qiaoshui-targets') await window.__installQiaoshuiTargets({ lib, game, ui, get, _status });
     else fixtures.push('reference_fixture_use');
     for (const skill of fixtures) {
       game.finishSkill(skill);
@@ -328,6 +333,7 @@ try {
   if (scenario === 'linked-damage') checkReferenceLinkedDamage(captured.value);
   if (scenario === 'hp-cancel') checkReferenceHp(captured.value);
   if (scenario === 'compare') checkReferenceCompare(captured.value);
+  if (scenario === 'qiaoshui-targets') checkQiaoshuiTargets(captured.value);
   if (scenario === 'compare-boundaries') checkCompareBoundaries(captured.value);
   if (scenario === 'zhongyi-expansion') checkReferenceExpansion(captured.value);
   if (scenario === 'recast-callbacks') checkReferenceRecastCallbacks(captured.value);

@@ -1,0 +1,247 @@
+{
+  "schema": "noname-reference-trace-v1",
+  "referenceCommit": "c73270948d72949aa80009536b9fd5400767d091",
+  "mode": "identity",
+  "scenario": "paired, automatic and selectable target changes after winning qiaoshui",
+  "players": 8,
+  "online": false,
+  "trials": [
+    {
+      "name": "borrowed-swords",
+      "initial": {
+        "targets": [
+          "D",
+          "E"
+        ],
+        "mainZone": "A:h",
+        "bonus": true
+      },
+      "final": {
+        "targets": [
+          "B",
+          "D"
+        ],
+        "pairedTargets": [
+          "E",
+          "C",
+          "E"
+        ],
+        "mainZone": "d",
+        "bonus": false,
+        "useCount": 1,
+        "effects": {
+          "weapons": [
+            "B:e",
+            "A:h"
+          ],
+          "slash": [
+            "d",
+            "D:h"
+          ],
+          "shan": "d",
+          "jizhiDraw": "A:h",
+          "hp": [
+            4,
+            4
+          ],
+          "shanBonus": false,
+          "borrowedShaUseCount": 0
+        }
+      }
+    },
+    {
+      "name": "automatic-remove",
+      "initial": {
+        "targets": [
+          "B",
+          "C",
+          "D",
+          "E",
+          "F",
+          "G",
+          "H"
+        ],
+        "mainZone": "A:h",
+        "bonus": true
+      },
+      "final": {
+        "targets": [
+          "B",
+          "C",
+          "D",
+          "E",
+          "F",
+          "G"
+        ],
+        "pairedTargets": [],
+        "mainZone": "d",
+        "bonus": false,
+        "useCount": 1,
+        "effects": {
+          "removed": "H",
+          "hp": [
+            4,
+            3,
+            3,
+            4,
+            3,
+            3,
+            3,
+            4
+          ],
+          "response": "d",
+          "responderBonus": true
+        }
+      }
+    },
+    {
+      "name": "both-cancel",
+      "initial": {
+        "targets": [
+          "B",
+          "C"
+        ],
+        "mainZone": "A:h",
+        "bonus": true
+      },
+      "final": {
+        "targets": [
+          "B",
+          "C"
+        ],
+        "pairedTargets": [],
+        "mainZone": "d",
+        "bonus": false,
+        "useCount": 1,
+        "effects": {
+          "linked": [
+            "C"
+          ],
+          "wuxie": "d",
+          "nullifierBonus": false
+        }
+      }
+    }
+  ],
+  "expiry": {
+    "before": {
+      "restricted": true,
+      "canUse": false
+    },
+    "request": {
+      "restricted": true,
+      "canUse": false
+    },
+    "callback": {
+      "restricted": false,
+      "canUse": true
+    }
+  },
+  "events": [
+    {"sample":"borrowed-swords","kind":"request","timing":"loseAfter","event":"lose","parent":"useCard","player":"A","bonus":true,"mainZone":"o","material":[["jiedao","o"]]},
+    {"sample":"borrowed-swords","kind":"request","timing":"useCard1","event":"useCard","parent":"reference_qiaoshui_play","player":"A","bonus":true,"mainZone":"o","target":"D","targets":["D"],"pairedTargets":["E"],"pairedTarget":"E","material":[["jiedao","o"]]},
+    {"sample":"borrowed-swords","kind":"request","timing":"useCard2","event":"useCard","parent":"reference_qiaoshui_play","player":"A","bonus":true,"mainZone":"o","target":"D","targets":["D"],"pairedTargets":["E"],"pairedTarget":"E","material":[["jiedao","o"]]},
+    {"sample":"borrowed-swords","kind":"content","timing":"begin","event":"qiaoshui3","parent":"trigger","player":"A","bonus":true,"mainZone":"o"},
+    {"sample":"borrowed-swords","kind":"request","timing":"chooseTargetBegin","event":"chooseTarget","parent":"qiaoshui3","player":"A","bonus":false,"mainZone":"o","forced":false,"legal":["B"],"targets":["D"]},
+    {"sample":"borrowed-swords","kind":"request","timing":"chooseTargetAfter","event":"chooseTarget","parent":"qiaoshui3","player":"A","bonus":false,"mainZone":"o","forced":false,"result":{"accepted":true,"targets":["B"]},"targets":["D"]},
+    {"sample":"borrowed-swords","kind":"content","timing":"end","event":"qiaoshui3","parent":"trigger","player":"A","bonus":false,"mainZone":"o"},
+    {"sample":"borrowed-swords","kind":"request","timing":"useCard","event":"useCard","parent":"reference_qiaoshui_play","player":"A","bonus":false,"mainZone":"o","target":"D","targets":["D","B"],"pairedTargets":["E"],"pairedTarget":"E","material":[["jiedao","o"]]},
+    {"sample":"borrowed-swords","kind":"content","timing":"begin","event":"jizhi","parent":"trigger","player":"A","bonus":false,"mainZone":"o"},
+    {"sample":"borrowed-swords","kind":"request","timing":"gainAfter","event":"gain","parent":"draw","player":"A","bonus":false,"mainZone":"o","material":[["jizhiDraw","A:h"]]},
+    {"sample":"borrowed-swords","kind":"content","timing":"end","event":"jizhi","parent":"trigger","player":"A","bonus":false,"mainZone":"o"},
+    {"sample":"borrowed-swords","kind":"request","timing":"useCardToPlayer","event":"useCardToPlayer","parent":"useCard","player":"A","bonus":false,"mainZone":"o","target":"B","targets":["B","D"],"material":[["jiedao","o"]]},
+    {"sample":"borrowed-swords","kind":"request","timing":"useCardToPlayer","event":"useCardToPlayer","parent":"useCard","player":"A","bonus":false,"mainZone":"o","target":"D","targets":["B","D"],"material":[["jiedao","o"]]},
+    {"sample":"borrowed-swords","kind":"request","timing":"useCardToTarget","event":"useCardToTarget","parent":"useCard","player":"A","bonus":false,"mainZone":"o","target":"B","targets":["B","D"],"material":[["jiedao","o"]]},
+    {"sample":"borrowed-swords","kind":"request","timing":"useCardToTarget","event":"useCardToTarget","parent":"useCard","player":"A","bonus":false,"mainZone":"o","target":"D","targets":["B","D"],"material":[["jiedao","o"]]},
+    {"sample":"borrowed-swords","kind":"request","timing":"useCardToPlayered","event":"useCardToPlayered","parent":"useCard","player":"A","bonus":false,"mainZone":"o","target":"B","targets":["B","D"],"material":[["jiedao","o"]]},
+    {"sample":"borrowed-swords","kind":"request","timing":"useCardToPlayered","event":"useCardToPlayered","parent":"useCard","player":"A","bonus":false,"mainZone":"o","target":"D","targets":["B","D"],"material":[["jiedao","o"]]},
+    {"sample":"borrowed-swords","kind":"request","timing":"useCardToTargeted","event":"useCardToTargeted","parent":"useCard","player":"A","bonus":false,"mainZone":"o","target":"B","targets":["B","D"],"material":[["jiedao","o"]]},
+    {"sample":"borrowed-swords","kind":"request","timing":"useCardToTargeted","event":"useCardToTargeted","parent":"useCard","player":"A","bonus":false,"mainZone":"o","target":"D","targets":["B","D"],"material":[["jiedao","o"]]},
+    {"sample":"borrowed-swords","kind":"content","timing":"begin","event":"jiedaoContentBefore","parent":"useCard","player":"A","bonus":false,"mainZone":"o","target":"D","targets":["B","D"],"pairedTargets":["E"],"pairedTarget":"E","material":[["jiedao","o"]]},
+    {"sample":"borrowed-swords","kind":"request","timing":"chooseTargetBegin","event":"chooseTarget","parent":"jiedaoContentBefore","player":"A","bonus":false,"mainZone":"o","forced":true,"holder":"B","legal":["A","C","D","E","G","H"]},
+    {"sample":"borrowed-swords","kind":"request","timing":"chooseTargetAfter","event":"chooseTarget","parent":"jiedaoContentBefore","player":"A","bonus":false,"mainZone":"o","forced":true,"holder":"B","result":{"accepted":true,"targets":["C"]}},
+    {"sample":"borrowed-swords","kind":"content","timing":"end","event":"jiedaoContentBefore","parent":"useCard","player":"A","bonus":false,"mainZone":"o","target":"D","targets":["B","D"],"pairedTargets":["E","C","E"],"pairedTarget":"E","material":[["jiedao","o"]]},
+    {"sample":"borrowed-swords","kind":"content","timing":"begin","event":"jiedao","parent":"useCard","player":"A","bonus":false,"mainZone":"o","target":"B","targets":["B","D"],"pairedTargets":["E","C","E"],"pairedTarget":"E","material":[["jiedao","o"]]},
+    {"sample":"borrowed-swords","kind":"request","timing":"chooseToUseBegin","event":"chooseToUse","parent":"jiedao","player":"B","bonus":false,"mainZone":"o","respondTo":["A","jiedao"],"requiredTarget":"E"},
+    {"sample":"borrowed-swords","kind":"request","timing":"loseAfter","event":"lose","parent":"useCard","player":"B","bonus":false,"mainZone":"o","material":[["borrowedSha","o"]]},
+    {"sample":"borrowed-swords","kind":"request","timing":"useCard1","event":"useCard","parent":"chooseToUse","player":"B","bonus":false,"mainZone":"o","respondTo":["A","jiedao"],"targets":["E"],"material":[["borrowedSha","o"]]},
+    {"sample":"borrowed-swords","kind":"request","timing":"useCard2","event":"useCard","parent":"chooseToUse","player":"B","bonus":false,"mainZone":"o","respondTo":["A","jiedao"],"targets":["E"],"material":[["borrowedSha","o"]]},
+    {"sample":"borrowed-swords","kind":"request","timing":"useCard","event":"useCard","parent":"chooseToUse","player":"B","bonus":false,"mainZone":"o","respondTo":["A","jiedao"],"targets":["E"],"material":[["borrowedSha","o"]]},
+    {"sample":"borrowed-swords","kind":"request","timing":"chooseToUseBegin","event":"chooseToUse","parent":"sha","player":"E","bonus":true,"mainZone":"o","respondTo":["B","sha"]},
+    {"sample":"borrowed-swords","kind":"request","timing":"loseAfter","event":"lose","parent":"useCard","player":"E","bonus":true,"mainZone":"o","material":[["shan","o"]]},
+    {"sample":"borrowed-swords","kind":"request","timing":"useCard1","event":"useCard","parent":"chooseToUse","player":"E","bonus":true,"mainZone":"o","respondTo":["B","sha"],"targets":[],"material":[["shan","o"]]},
+    {"sample":"borrowed-swords","kind":"request","timing":"useCard2","event":"useCard","parent":"chooseToUse","player":"E","bonus":true,"mainZone":"o","respondTo":["B","sha"],"targets":[],"material":[["shan","o"]]},
+    {"sample":"borrowed-swords","kind":"content","timing":"begin","event":"qiaoshui3","parent":"trigger","player":"E","bonus":true,"mainZone":"o"},
+    {"sample":"borrowed-swords","kind":"content","timing":"end","event":"qiaoshui3","parent":"trigger","player":"E","bonus":false,"mainZone":"o"},
+    {"sample":"borrowed-swords","kind":"request","timing":"useCard","event":"useCard","parent":"chooseToUse","player":"E","bonus":false,"mainZone":"o","respondTo":["B","sha"],"targets":[],"material":[["shan","o"]]},
+    {"sample":"borrowed-swords","kind":"request","timing":"useCardAfter","event":"useCard","parent":"chooseToUse","player":"E","bonus":false,"mainZone":"o","respondTo":["B","sha"],"targets":[],"material":[["shan","o"]]},
+    {"sample":"borrowed-swords","kind":"request","timing":"cardsDiscardAfter","event":"cardsDiscard","parent":"orderingDiscard","player":null,"bonus":false,"mainZone":"o","material":[["shan","d"]]},
+    {"sample":"borrowed-swords","kind":"request","timing":"chooseToUseAfter","event":"chooseToUse","parent":"sha","player":"E","bonus":false,"mainZone":"o","result":{"accepted":true,"cards":["shan"]},"respondTo":["B","sha"]},
+    {"sample":"borrowed-swords","kind":"request","timing":"useCardAfter","event":"useCard","parent":"chooseToUse","player":"B","bonus":false,"mainZone":"o","respondTo":["A","jiedao"],"targets":["E"],"material":[["borrowedSha","o"]]},
+    {"sample":"borrowed-swords","kind":"request","timing":"cardsDiscardAfter","event":"cardsDiscard","parent":"orderingDiscard","player":null,"bonus":false,"mainZone":"o","material":[["borrowedSha","d"]]},
+    {"sample":"borrowed-swords","kind":"request","timing":"chooseToUseAfter","event":"chooseToUse","parent":"jiedao","player":"B","bonus":false,"mainZone":"o","result":{"accepted":true,"targets":["E"],"cards":["borrowedSha"]},"respondTo":["A","jiedao"],"requiredTarget":"E"},
+    {"sample":"borrowed-swords","kind":"content","timing":"end","event":"jiedao","parent":"useCard","player":"A","bonus":false,"mainZone":"o","target":"B","targets":["B","D"],"pairedTargets":["E","C","E"],"pairedTarget":"E","material":[["jiedao","o"]]},
+    {"sample":"borrowed-swords","kind":"content","timing":"begin","event":"jiedao","parent":"useCard","player":"A","bonus":false,"mainZone":"o","target":"D","targets":["B","D"],"pairedTargets":["E","C","E"],"pairedTarget":"C","material":[["jiedao","o"]]},
+    {"sample":"borrowed-swords","kind":"request","timing":"chooseToUseBegin","event":"chooseToUse","parent":"jiedao","player":"D","bonus":false,"mainZone":"o","respondTo":["A","jiedao"],"requiredTarget":"C"},
+    {"sample":"borrowed-swords","kind":"request","timing":"chooseToUseAfter","event":"chooseToUse","parent":"jiedao","player":"D","bonus":false,"mainZone":"o","result":{"accepted":false},"respondTo":["A","jiedao"],"requiredTarget":"C"},
+    {"sample":"borrowed-swords","kind":"request","timing":"loseAfter","event":"lose","parent":"gain","player":"D","bonus":false,"mainZone":"o","material":[["dWeapon","s"]]},
+    {"sample":"borrowed-swords","kind":"request","timing":"gainAfter","event":"gain","parent":"jiedao","player":"A","bonus":false,"mainZone":"o","material":[["dWeapon","A:h"]]},
+    {"sample":"borrowed-swords","kind":"content","timing":"end","event":"jiedao","parent":"useCard","player":"A","bonus":false,"mainZone":"o","target":"D","targets":["B","D"],"pairedTargets":["E","C","E"],"pairedTarget":"C","material":[["jiedao","o"]]},
+    {"sample":"borrowed-swords","kind":"request","timing":"useCardAfter","event":"useCard","parent":"reference_qiaoshui_play","player":"A","bonus":false,"mainZone":"o","target":"D","targets":["B","D"],"pairedTargets":["E","C","E"],"pairedTarget":"E","material":[["jiedao","o"]]},
+    {"sample":"borrowed-swords","kind":"request","timing":"cardsDiscardAfter","event":"cardsDiscard","parent":"orderingDiscard","player":null,"bonus":false,"mainZone":"d","material":[["jiedao","d"]]},
+    {"sample":"automatic-remove","kind":"request","timing":"loseAfter","event":"lose","parent":"useCard","player":"A","bonus":true,"mainZone":"o","material":[["nanman","o"]]},
+    {"sample":"automatic-remove","kind":"request","timing":"useCard1","event":"useCard","parent":"reference_qiaoshui_play","player":"A","bonus":true,"mainZone":"o","targets":["B","C","D","E","F","G","H"],"material":[["nanman","o"]]},
+    {"sample":"automatic-remove","kind":"request","timing":"useCard2","event":"useCard","parent":"reference_qiaoshui_play","player":"A","bonus":true,"mainZone":"o","targets":["B","C","D","E","F","G","H"],"material":[["nanman","o"]]},
+    {"sample":"automatic-remove","kind":"content","timing":"begin","event":"qiaoshui3","parent":"trigger","player":"A","bonus":true,"mainZone":"o"},
+    {"sample":"automatic-remove","kind":"request","timing":"chooseTargetBegin","event":"chooseTarget","parent":"qiaoshui3","player":"A","bonus":false,"mainZone":"o","forced":false,"legal":["B","C","D","E","F","G","H"],"targets":["B","C","D","E","F","G","H"]},
+    {"sample":"automatic-remove","kind":"request","timing":"chooseTargetAfter","event":"chooseTarget","parent":"qiaoshui3","player":"A","bonus":false,"mainZone":"o","forced":false,"result":{"accepted":true,"targets":["H"]},"targets":["B","C","D","E","F","G","H"]},
+    {"sample":"automatic-remove","kind":"content","timing":"end","event":"qiaoshui3","parent":"trigger","player":"A","bonus":false,"mainZone":"o"},
+    {"sample":"automatic-remove","kind":"request","timing":"useCard","event":"useCard","parent":"reference_qiaoshui_play","player":"A","bonus":false,"mainZone":"o","targets":["B","C","D","E","F","G"],"material":[["nanman","o"]]},
+    {"sample":"automatic-remove","kind":"content","timing":"begin","event":"nanman","parent":"useCard","player":"A","bonus":false,"mainZone":"o","target":"B","targets":["B","C","D","E","F","G"],"material":[["nanman","o"]]},
+    {"sample":"automatic-remove","kind":"request","timing":"chooseToRespondBegin","event":"chooseToRespond","parent":"nanman","player":"B","bonus":false,"mainZone":"o","respondTo":["A","nanman"]},
+    {"sample":"automatic-remove","kind":"request","timing":"chooseToRespondAfter","event":"chooseToRespond","parent":"nanman","player":"B","bonus":false,"mainZone":"o","result":{"accepted":false},"respondTo":["A","nanman"]},
+    {"sample":"automatic-remove","kind":"content","timing":"end","event":"nanman","parent":"useCard","player":"A","bonus":false,"mainZone":"o","target":"B","targets":["B","C","D","E","F","G"],"material":[["nanman","o"]]},
+    {"sample":"automatic-remove","kind":"content","timing":"begin","event":"nanman","parent":"useCard","player":"A","bonus":false,"mainZone":"o","target":"C","targets":["B","C","D","E","F","G"],"material":[["nanman","o"]]},
+    {"sample":"automatic-remove","kind":"content","timing":"end","event":"nanman","parent":"useCard","player":"A","bonus":false,"mainZone":"o","target":"C","targets":["B","C","D","E","F","G"],"material":[["nanman","o"]]},
+    {"sample":"automatic-remove","kind":"content","timing":"begin","event":"nanman","parent":"useCard","player":"A","bonus":false,"mainZone":"o","target":"D","targets":["B","C","D","E","F","G"],"material":[["nanman","o"]]},
+    {"sample":"automatic-remove","kind":"request","timing":"chooseToRespondBegin","event":"chooseToRespond","parent":"nanman","player":"D","bonus":true,"mainZone":"o","respondTo":["A","nanman"]},
+    {"sample":"automatic-remove","kind":"content","timing":"begin","event":"respond","parent":"chooseToRespond","player":"D","bonus":true,"mainZone":"o","respondTo":["A","nanman"],"material":[["refusedSha","D:h"]]},
+    {"sample":"automatic-remove","kind":"request","timing":"loseAfter","event":"lose","parent":"respond","player":"D","bonus":true,"mainZone":"o","material":[["refusedSha","o"]]},
+    {"sample":"automatic-remove","kind":"content","timing":"end","event":"respond","parent":"chooseToRespond","player":"D","bonus":true,"mainZone":"o","respondTo":["A","nanman"],"material":[["refusedSha","o"]]},
+    {"sample":"automatic-remove","kind":"request","timing":"cardsDiscardAfter","event":"cardsDiscard","parent":"orderingDiscard","player":null,"bonus":false,"mainZone":"o","material":[["refusedSha","d"]]},
+    {"sample":"automatic-remove","kind":"request","timing":"chooseToRespondAfter","event":"chooseToRespond","parent":"nanman","player":"D","bonus":true,"mainZone":"o","result":{"accepted":true,"cards":["refusedSha"]},"respondTo":["A","nanman"]},
+    {"sample":"automatic-remove","kind":"content","timing":"end","event":"nanman","parent":"useCard","player":"A","bonus":false,"mainZone":"o","target":"D","targets":["B","C","D","E","F","G"],"material":[["nanman","o"]]},
+    {"sample":"automatic-remove","kind":"content","timing":"begin","event":"nanman","parent":"useCard","player":"A","bonus":false,"mainZone":"o","target":"E","targets":["B","C","D","E","F","G"],"material":[["nanman","o"]]},
+    {"sample":"automatic-remove","kind":"request","timing":"chooseToRespondBegin","event":"chooseToRespond","parent":"nanman","player":"E","bonus":false,"mainZone":"o","respondTo":["A","nanman"]},
+    {"sample":"automatic-remove","kind":"request","timing":"chooseToRespondAfter","event":"chooseToRespond","parent":"nanman","player":"E","bonus":false,"mainZone":"o","result":{"accepted":false},"respondTo":["A","nanman"]},
+    {"sample":"automatic-remove","kind":"content","timing":"end","event":"nanman","parent":"useCard","player":"A","bonus":false,"mainZone":"o","target":"E","targets":["B","C","D","E","F","G"],"material":[["nanman","o"]]},
+    {"sample":"automatic-remove","kind":"content","timing":"begin","event":"nanman","parent":"useCard","player":"A","bonus":false,"mainZone":"o","target":"F","targets":["B","C","D","E","F","G"],"material":[["nanman","o"]]},
+    {"sample":"automatic-remove","kind":"content","timing":"end","event":"nanman","parent":"useCard","player":"A","bonus":false,"mainZone":"o","target":"F","targets":["B","C","D","E","F","G"],"material":[["nanman","o"]]},
+    {"sample":"automatic-remove","kind":"content","timing":"begin","event":"nanman","parent":"useCard","player":"A","bonus":false,"mainZone":"o","target":"G","targets":["B","C","D","E","F","G"],"material":[["nanman","o"]]},
+    {"sample":"automatic-remove","kind":"content","timing":"end","event":"nanman","parent":"useCard","player":"A","bonus":false,"mainZone":"o","target":"G","targets":["B","C","D","E","F","G"],"material":[["nanman","o"]]},
+    {"sample":"automatic-remove","kind":"request","timing":"useCardAfter","event":"useCard","parent":"reference_qiaoshui_play","player":"A","bonus":false,"mainZone":"o","targets":["B","C","D","E","F","G"],"material":[["nanman","o"]]},
+    {"sample":"automatic-remove","kind":"request","timing":"cardsDiscardAfter","event":"cardsDiscard","parent":"orderingDiscard","player":null,"bonus":false,"mainZone":"d","material":[["nanman","d"]]},
+    {"sample":"both-cancel","kind":"request","timing":"loseAfter","event":"lose","parent":"useCard","player":"A","bonus":true,"mainZone":"o","material":[["tiesuo","o"]]},
+    {"sample":"both-cancel","kind":"request","timing":"useCard1","event":"useCard","parent":"reference_qiaoshui_play","player":"A","bonus":true,"mainZone":"o","targets":["B","C"],"material":[["tiesuo","o"]]},
+    {"sample":"both-cancel","kind":"request","timing":"useCard2","event":"useCard","parent":"reference_qiaoshui_play","player":"A","bonus":true,"mainZone":"o","targets":["B","C"],"material":[["tiesuo","o"]]},
+    {"sample":"both-cancel","kind":"content","timing":"begin","event":"qiaoshui3","parent":"trigger","player":"A","bonus":true,"mainZone":"o"},
+    {"sample":"both-cancel","kind":"request","timing":"chooseControlBegin","event":"chooseControl","parent":"qiaoshui3","player":"A","bonus":false,"mainZone":"o"},
+    {"sample":"both-cancel","kind":"request","timing":"chooseControlAfter","event":"chooseControl","parent":"qiaoshui3","player":"A","bonus":false,"mainZone":"o","controls":["选项一","选项二","cancel2"],"choiceList":["为铁索连环【♣︎Q】增加一个目标","为铁索连环【♣︎Q】减少一个目标"],"result":{"control":"cancel2"}},
+    {"sample":"both-cancel","kind":"content","timing":"end","event":"qiaoshui3","parent":"trigger","player":"A","bonus":false,"mainZone":"o"},
+    {"sample":"both-cancel","kind":"request","timing":"useCard","event":"useCard","parent":"reference_qiaoshui_play","player":"A","bonus":false,"mainZone":"o","targets":["B","C"],"material":[["tiesuo","o"]]},
+    {"sample":"both-cancel","kind":"request","timing":"chooseToUseBegin","event":"chooseToUse","parent":"_wuxie","player":"D","bonus":true,"mainZone":"o","respondTo":["A","tiesuo"]},
+    {"sample":"both-cancel","kind":"request","timing":"chooseToUseAfter","event":"chooseToUse","parent":"_wuxie","player":"D","bonus":true,"mainZone":"o","result":{"accepted":true,"cards":["wuxie"]},"respondTo":["A","tiesuo"]},
+    {"sample":"both-cancel","kind":"request","timing":"loseAfter","event":"lose","parent":"useCard","player":"D","bonus":true,"mainZone":"o","material":[["wuxie","o"]]},
+    {"sample":"both-cancel","kind":"request","timing":"useCard1","event":"useCard","parent":"_wuxie","player":"D","bonus":true,"mainZone":"o","respondTo":["A","tiesuo"],"targets":[],"material":[["wuxie","o"]]},
+    {"sample":"both-cancel","kind":"request","timing":"useCard2","event":"useCard","parent":"_wuxie","player":"D","bonus":true,"mainZone":"o","respondTo":["A","tiesuo"],"targets":[],"material":[["wuxie","o"]]},
+    {"sample":"both-cancel","kind":"content","timing":"begin","event":"qiaoshui3","parent":"trigger","player":"D","bonus":true,"mainZone":"o"},
+    {"sample":"both-cancel","kind":"content","timing":"end","event":"qiaoshui3","parent":"trigger","player":"D","bonus":false,"mainZone":"o"},
+    {"sample":"both-cancel","kind":"request","timing":"useCard","event":"useCard","parent":"_wuxie","player":"D","bonus":false,"mainZone":"o","respondTo":["A","tiesuo"],"targets":[],"material":[["wuxie","o"]]},
+    {"sample":"both-cancel","kind":"request","timing":"useCardAfter","event":"useCard","parent":"_wuxie","player":"D","bonus":false,"mainZone":"o","respondTo":["A","tiesuo"],"targets":[],"material":[["wuxie","o"]]},
+    {"sample":"both-cancel","kind":"request","timing":"cardsDiscardAfter","event":"cardsDiscard","parent":"orderingDiscard","player":null,"bonus":false,"mainZone":"o","material":[["wuxie","d"]]},
+    {"sample":"both-cancel","kind":"content","timing":"begin","event":"tiesuo","parent":"useCard","player":"A","bonus":false,"mainZone":"o","target":"C","targets":["B","C"],"material":[["tiesuo","o"]]},
+    {"sample":"both-cancel","kind":"content","timing":"end","event":"tiesuo","parent":"useCard","player":"A","bonus":false,"mainZone":"o","target":"C","targets":["B","C"],"material":[["tiesuo","o"]]},
+    {"sample":"both-cancel","kind":"request","timing":"useCardAfter","event":"useCard","parent":"reference_qiaoshui_play","player":"A","bonus":false,"mainZone":"o","targets":["B","C"],"material":[["tiesuo","o"]]},
+    {"sample":"both-cancel","kind":"request","timing":"cardsDiscardAfter","event":"cardsDiscard","parent":"orderingDiscard","player":null,"bonus":false,"mainZone":"d","material":[["tiesuo","d"]]}
+  ]
+}

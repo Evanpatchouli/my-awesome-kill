@@ -31,6 +31,12 @@
 - **改点后获胜。** A 出红桃 7 桃，B 出方片 9 闪。测试席额外持有「天辩」的原版点数子技能 `tianbian_number`，其 `compare` 回调将 7 改为 13，`compareFixing` 时点数为 13 对 9。A 发动纵适，从处理区获得 B 的闪，自己的桃随后弃置。A 先以 B 为下一张杀的唯一目标，D 在普通攻击范围外。巧说在 `useCard2` 消耗临时技能，再让 A 选择并加入 D。B、D 各失去 1 点体力，A 接着使用的决斗只有 B 一个目标。
 - **平点与失利。** 7 对 7 的结果为 `bool: false`、`tie: true`，无赢家。4 对 10 的赢家为 B。两次 A 都通过纵适取回自己的桃，B 的闪进入弃牌堆。A 在该回合仍能对 B 使用杀，手中的决斗受巧说限制。`phaseEnd` 及 `phaseAfter` 请求时 A 仍有 `qiaoshui2`，实际执行 `phaseAfter` 观察技能时该技能已经移除，决斗重新可用。
 
+`qiaoshui-targets.json` 在八席身份局的同一个出牌阶段，通过 `addTempSkill` 直接授予巧说的胜利子技能，再使用实体牌。A 是 AI，H 是浏览器席。夹具设置 AI 选择偏好，并用 `Player.useCard` 提交初始目标。过滤、选择结果、时机和卡牌结算都由原版执行。
+
+- **借刀的额外持刀者与配对错位。** A 初始指定 D 持刀、E 受杀。`useCard2` 中巧说先消耗，再由 A 可选地新增持刀者 B。`useCard` 开始时持刀者是 D、B，集智在此时摸牌。原版接着把持刀者按座次排成 B、D，发出目标时机，之后才在 `jiedaoContentBefore` 要求 A 为 B 强制选一名受杀者。候选依据 B 的杀范围和目标合法性计算，A 选 C。原版保留已有的 `[E]`，又追加 C、E，得到 `[E,C,E]`。两份效果按下标实际发出 B→E、D→C。B 用出实体杀且保留青龙偃月刀，杀的使用次数仍为零。E 使用实体闪，体力保持 4。D 拒绝使用杀，A 获得 D 的诸葛连弩。借刀的实体牌只从 A 手牌支付一次。
+- **自动多目标与取消。** 南蛮入侵的初始目标为 B 至 H，巧说只给出可取消的减目标选择。A 移除 H，H 未受影响。铁索连环的初始目标为 B、C，巧说先给出增加、减少、取消三个选项。A 取消，仍消耗巧说且保留初始目标。D 对 B 的铁索效果使用无懈可击，只有 C 横置。
+- **响应与临时技能期限。** E 的闪和 D 的无懈可击都进入 `useCard2`，两人各自的 `qiaoshui3` 在没有目标选择的情况下消耗。D 在南蛮入侵中打出杀走 `respond`，支付实体牌后保留 `qiaoshui3`。最后为 A 授予 `qiaoshui2`，在原版 `phaseAfter` 请求时决斗仍受限，首个 `firstDo` 观察技能执行时限制已经解除。
+
 `zhongyi-expansion.json` 记录忠义跨两个自然轮次的 42 条时机观测。夹具在身份牌桌设置两支布尔队伍，直接调用原版登记的忠义、`useSkill` 和 `isFriendOf`。一张实体桃从手牌移入扩展区并获得 `zhongyi2` 标签，限定技成为已使用。友方的杀从一伤变二伤，敌方的杀和友方的其他伤害都是一伤。下一轮请求 `roundStart` 时牌仍在扩展区；处理该时机的技能执行时，临时效果已移除，材料已弃置一次，限定技的使用记录保留。
 
 `compare-boundaries.json` 用四局两席拼点观测已知手牌和取消边界。第三席原先认识 A 的一张桃；A 暗付这张桃或另一张牌时，其余手牌的旧知情记录都在 A 的 `loseAfter` 清除。双方已支付后在 `compareCardShowBefore` 取消，根事件没有比较结果，两张实体在收尾各弃置一次。仅取消 B 的 `loseBefore` 时，外层仍按原先锁定的两张牌结算 10 比 5，A 的材料弃置，B 的仍在手中。
@@ -53,8 +59,9 @@
    node scripts/reference-trace.mjs --scenario recast-callbacks --check tests/reference/recast-callbacks.json
    node scripts/reference-trace.mjs --scenario linked-damage --check tests/reference/linked-damage.json
    node scripts/reference-trace.mjs --scenario compare --check tests/reference/compare.json
+   node scripts/reference-trace.mjs --scenario qiaoshui-targets --check tests/reference/qiaoshui-targets.json
    node scripts/reference-trace.mjs --scenario compare-boundaries --check tests/reference/compare-boundaries.json
    node scripts/reference-trace.mjs --scenario zhongyi-expansion --check tests/reference/zhongyi-expansion.json
    ```
 
-运行器在隔离浏览器内核对八个共同上游源文件的 LF 归一化 SHA-256。重铸和连环伤害场景还校验 `card/extra.js`，重铸知情状态与拼点另核对 `element/card.js`，连环伤害与拼点另校验 `character/yijiang/skill.js`，忠义另校验 `character/standard/skill.js`。随后执行场景并逐项比较事件和结果。整个检出的版本由第 1 步确认。`--write <path>` 用于重新采集，默认将结果写至标准输出。
+运行器在隔离浏览器内核对八个共同上游源文件的 LF 归一化 SHA-256。重铸、连环伤害和巧说目标场景还校验 `card/extra.js`，重铸知情状态与拼点另核对 `element/card.js`，连环伤害、拼点和巧说目标另校验 `character/yijiang/skill.js`，忠义和巧说目标另校验 `character/standard/skill.js`。随后执行场景并逐项比较事件和结果。整个检出的版本由第 1 步确认。`--write <path>` 用于重新采集，默认将结果写至标准输出。
