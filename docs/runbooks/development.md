@@ -42,3 +42,7 @@ Android 的 ARM64 调试包位于 `apps/game/src-tauri/gen/android/app/build/out
 1. 为临时 AVD 设置独立的 `ANDROID_AVD_HOME`。选择两个空闲的模拟器控制与传输端口，另设独立的 `ANDROID_ADB_SERVER_PORT`。通过 Python `subprocess` 的 `env` 显式传递进程环境，将 SDK 下的 `emulator`、`emulator/lib64`、`emulator/lib64/qt/lib` 和 `emulator/qemu/windows-x86_64` 前置到 PATH。先执行 `emulator.exe -version` 核实返回 0。本机默认 PATH 曾导致 QEMU 返回 `0xC0000135`。
 2. 本次使用 `emulator.exe -avd mak_sandbox -ports 5566,5567 -read-only -no-snapshot -no-window -no-audio -gpu swiftshader_indirect`。`-read-only` 模式仍会在临时 AVD 目录生成缓存。等 `adb -P 15037 -s emulator-5566 shell getprop sys.boot_completed` 返回 `1` 后，将 APK 安装到该 serial。初次引导和首次 WebView 显示均需要时间。
 3. 从实际应用首页选择玩法、选将并入桌。用 `adb -P 15037 -s emulator-5566 exec-out screencap -p` 保存截图，并以 `dumpsys activity` 核对横屏。结束时向这个 serial 执行 `emu kill`，然后向对应的 ADB 端口执行 `kill-server`。
+
+系统栏修复后的 ARM64 调试包 SHA-256 为 `7EB2B285608FC40CE6C26DFEC7FF616672363E44AB3DD03A61A16361B6BFE68A`，已通过 Android v2 验签。用 API 36、160 dpi、640×320 的隔离模拟器实跑，状态栏与导航栏各占 24 px，Activity 将中间 640×272 交给 WebView。飞行模式下从首页选张飞进入八人局，实际点选过河拆桥、目标并确认，版本从 0 变为 1。WebView 根滚动量为 0，手牌和确认按钮下缘分别位于其内容区的 268px 和 264px。此包使用 `a6cd3bf` 的规则和 `d7b45b8` 的短横屏布局。
+
+在文件支持的 Windows 开发盘上运行构建和模拟器时，应同时查看承载 VHDX 的宿主卷。模拟器冷启动、Windows 页面文件和编译目录都可能占用同一个物理盘。复用 Cargo target，并在一次隔离 AVD 验证后关闭该实例及其专属 ADB 服务器，可减少重复写入和并发磁盘占用。
