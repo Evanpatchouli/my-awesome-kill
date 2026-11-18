@@ -31,6 +31,8 @@
 - **改点后获胜。** A 出红桃 7 桃，B 出方片 9 闪。测试席额外持有「天辩」的原版点数子技能 `tianbian_number`，其 `compare` 回调将 7 改为 13，`compareFixing` 时点数为 13 对 9。A 发动纵适，从处理区获得 B 的闪，自己的桃随后弃置。A 先以 B 为下一张杀的唯一目标，D 在普通攻击范围外。巧说在 `useCard2` 消耗临时技能，再让 A 选择并加入 D。B、D 各失去 1 点体力，A 接着使用的决斗只有 B 一个目标。
 - **平点与失利。** 7 对 7 的结果为 `bool: false`、`tie: true`，无赢家。4 对 10 的赢家为 B。两次 A 都通过纵适取回自己的桃，B 的闪进入弃牌堆。A 在该回合仍能对 B 使用杀，手中的决斗受巧说限制。`phaseEnd` 及 `phaseAfter` 请求时 A 仍有 `qiaoshui2`，实际执行 `phaseAfter` 观察技能时该技能已经移除，决斗重新可用。
 
+`zhongyi-expansion.json` 记录忠义跨两个自然轮次的 42 条时机观测。夹具在身份牌桌设置两支布尔队伍，直接调用原版登记的忠义、`useSkill` 和 `isFriendOf`。一张实体桃从手牌移入扩展区并获得 `zhongyi2` 标签，限定技成为已使用。友方的杀从一伤变二伤，敌方的杀和友方的其他伤害都是一伤。下一轮请求 `roundStart` 时牌仍在扩展区；处理该时机的技能执行时，临时效果已移除，材料已弃置一次，限定技的使用记录保留。
+
 ## 复现
 
 1. 在独立临时目录检出上述上游提交，保留 `apps/core`、`packages/fs`、`packages/jit` 和根目录的 `scripts`；可从本机 `.reference/noname` 用 `git clone --shared --sparse` 复用已有对象。通过 `git rev-parse HEAD` 确认提交。不要在项目运行时依赖该参考检出。
@@ -46,6 +48,7 @@
    node scripts/reference-trace.mjs --scenario recast-callbacks --check tests/reference/recast-callbacks.json
    node scripts/reference-trace.mjs --scenario linked-damage --check tests/reference/linked-damage.json
    node scripts/reference-trace.mjs --scenario compare --check tests/reference/compare.json
+   node scripts/reference-trace.mjs --scenario zhongyi-expansion --check tests/reference/zhongyi-expansion.json
    ```
 
-运行器在隔离浏览器内核对八个共同上游源文件的 LF 归一化 SHA-256。重铸和连环伤害场景还校验 `card/extra.js`，重铸知情状态与拼点另核对 `element/card.js`，连环伤害与拼点另校验 `character/yijiang/skill.js`。随后执行场景并逐项比较事件和结果。整个检出的版本由第 1 步确认。`--write <path>` 用于重新采集，默认将结果写至标准输出。
+运行器在隔离浏览器内核对八个共同上游源文件的 LF 归一化 SHA-256。重铸和连环伤害场景还校验 `card/extra.js`，重铸知情状态与拼点另核对 `element/card.js`，连环伤害与拼点另校验 `character/yijiang/skill.js`，忠义另校验 `character/standard/skill.js`。随后执行场景并逐项比较事件和结果。整个检出的版本由第 1 步确认。`--write <path>` 用于重新采集，默认将结果写至标准输出。

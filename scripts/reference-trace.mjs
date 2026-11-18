@@ -5,6 +5,7 @@ import { installTriggerOrderScenario } from './reference-trigger-order-cancel.mj
 import { checkReferenceRecastCallbacks, installReferenceRecast } from './reference-recast.mjs';
 import { checkReferenceLinkedDamage, installReferenceLinkedDamage } from './reference-linked-damage.mjs';
 import { checkReferenceCompare, installReferenceCompare } from './reference-compare.mjs';
+import { checkReferenceExpansion, installReferenceExpansion } from './reference-expansion.mjs';
 
 // This is an optional oracle runner. It needs a running, separate upstream dev
 // server and Playwright; neither is a runtime dependency of the game.
@@ -36,6 +37,7 @@ const descriptions = new Map([
   ['recast-callbacks', 'executed loss and gain callbacks when recasting a physical tiesuo'],
   ['linked-damage', 'tiesuo, faen, armor, and fire sha propagation across three turns'],
   ['compare', 'private pindian choices, public reveal, qiaoshui and jyzongshi across three turns'],
+  ['zhongyi-expansion', 'zhongyi expansion, limited use and cleanup at the next round'],
   ['damage-callback-cancel', 'damage callback cancellation after HP change for physical sha'],
 ]);
 let scenario = 'sha-no-shan';
@@ -49,6 +51,9 @@ if (argv.length && (argv.length !== 2 || !['--check', '--write'].includes(argv[0
   throw new Error('Usage: node scripts/reference-trace.mjs [--scenario name] [--check|--write path]');
 }
 const isRecast = scenario === 'tiesuo-recast' || scenario === 'recast-callbacks';
+if (scenario === 'zhongyi-expansion') {
+  sourceHashes['/character/standard/skill.js'] = 'ee769399395b93f3d8293cd5b880b8e708864329bd0d79a0b4f0d8bd6f855a9e';
+}
 if (isRecast || scenario === 'linked-damage') sourceHashes['/card/extra.js'] = '8a73678a49b4fc413d6dc0d506733e594fae619d91dc8013cd441a6cd107c35d';
 if (scenario === 'recast-callbacks' || scenario === 'compare') sourceHashes['/noname/library/element/card.js'] = '5d3a07fadafa1c5661ec197edb8c71f613b3db1129933fdf7d8aa311f5811f8d';
 if (scenario === 'linked-damage' || scenario === 'compare') sourceHashes['/character/yijiang/skill.js'] = '5b0eb965a8428535bf3cd7d369c261b8ad95cccbeac8d8c817cad3490643a54f';
@@ -80,6 +85,8 @@ try {
     await context.addInitScript(installReferenceRecast);
   } else if (scenario === 'linked-damage') {
     await context.addInitScript(installReferenceLinkedDamage);
+  } else if (scenario === 'zhongyi-expansion') {
+    await context.addInitScript(installReferenceExpansion);
   } else if (scenario === 'compare') {
     await context.addInitScript(installReferenceCompare);
   }
@@ -144,8 +151,9 @@ try {
           window.__referenceStages.push('phaseUseBegin: arranging scenario');
           const target = actor.next === game.me ? actor.previous : actor.next;
           if (!target || target === game.me || target === actor) throw new Error('No adjacent AI target');
-          if (scenario === 'linked-damage') {
-            const result = await window.__runReferenceLinkedDamage({ lib, game, ui, get, _status, actor, target });
+          if (scenario === 'linked-damage' || scenario === 'zhongyi-expansion') {
+            const run = scenario === 'linked-damage' ? window.__runReferenceLinkedDamage : window.__runReferenceExpansion;
+            const result = await run({ lib, game, ui, get, _status, actor, target });
             if (result) {
               window.__referenceResult = result;
               game.pause();
@@ -301,6 +309,7 @@ try {
   assert.deepEqual(errors, [], 'Upstream page errors occurred');
   if (scenario === 'linked-damage') checkReferenceLinkedDamage(captured.value);
   if (scenario === 'compare') checkReferenceCompare(captured.value);
+  if (scenario === 'zhongyi-expansion') checkReferenceExpansion(captured.value);
   if (scenario === 'recast-callbacks') checkReferenceRecastCallbacks(captured.value);
   if (scenario === 'sha-no-shan') assert.deepEqual(captured.value.final, {
     targetHp: 3, cardPosition: 'd', inActorHand: false, inDiscard: true, useCount: 1, targetAlive: true,
