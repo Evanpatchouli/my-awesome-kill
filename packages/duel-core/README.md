@@ -20,6 +20,14 @@
 
 原手牌在通过 `recastBefore` 和 `recastBegin` 后才公开。暗摸的替代牌只对本人可见，明获的牌通过 `knownHand` 可见，离开手牌后清除这项知情状态。内层失去、摸牌和获得的取消分别结算，已排队的子事件按顺序运行。电脑会在缺乏更好出牌时尝试一次重铸；即便该次被取消也可结束出牌。[原版请求与实际执行对照](../../tests/reference/recast-callbacks.json)
 
+### 两席拼点
+
+内容可先用 `Game::can_compare` 检查双方资格，在技能回调里调用 `TriggerContext::compare(initiator, target)`，并用 `TriggerStep::Continue` 等待结算。两席依次通过普通 `Select` 各选一张自己的手牌，持有席的 `choice.compare` 标明拼点双方。锁定原实体后，双方的失牌事件分别结算。每次实际暗付会清除旁观者对该席剩余手牌的公开知情。`compareReveal` 同时公开锁定的两张牌，随后依次派发双方的 `showCardsAfter`。单个失牌事件被取消时，那张牌仍参与揭示和计分，其实体保留在当前牌区。单机 AI 从当前持有席的合法选项中提交一张牌。轮到人类席时，对局保留该席的选择和版本，等待输入。
+
+技能在 `compare` 或 `compareFixing` 读取 `Game::comparison(subject)` 并用 `set_compare_number` 修改一方的有效点数。固定结果记录双方实体牌、最终点数、胜负、回合和父事件。在 `chooseToCompareAfter`，`gain_compare_card` 可经普通获得流程从处理区或弃牌堆领取一张锁定的拼点牌，领取后各席都知道其新归属。收尾只弃置本次拼点仍在处理区的实体。根事件在揭示前被取消时，会先派发 `chooseToCompareCancelled`，随后同样清理已进入处理区的实体。调用方可从 `compare_result()` 取得已结算的结果，也可从 `Game::compare_history()` 回查。
+
+八人普通身份局第 2、3、4 回合的回归逐行对照上游 51 条拼点请求，覆盖改点取胜、平局和负局，另外核对双方私选、共同翻牌、纵适拿牌和弃置后的所有权。另四组离线拼点的 78 条请求与回调覆盖暗付已知牌、暗付未知牌、根事件亮牌前取消和第二席失牌取消。[三回合实录](../../tests/reference/compare.json) · [知情与取消实录](../../tests/reference/compare-boundaries.json)
+
 ### 体力、护甲与横置
 
 `TriggerContext` 提供横置、翻面、增减护甲、造成伤害和创建实体牌的受检操作。内容创建的实体分配唯一 ID，按正常获得事件进入对应牌区。普通杀保留原有牌种，火和雷属性依实体 ID 登记，只有当前视角已知的牌才带有对应牌面信息。零护甲、正面朝上和未横置是通常的开局状态。

@@ -1,3 +1,4 @@
+pub(crate) mod compare;
 pub(crate) mod elemental;
 pub(crate) mod equipment;
 #[cfg(test)]
@@ -369,6 +370,18 @@ impl Game {
                     event: choice.event,
                     card: choice.cards.first().copied(),
                 },
+                ChoiceKind::Content if choice.compare.is_some() => {
+                    let bid = choice.branches.first()?;
+                    let card = bid.cards.iter().min_by_key(|&&id| {
+                        std::cmp::Reverse(self.face(id).map_or(0, |face| face.rank))
+                    })?;
+                    Action::Select {
+                        event: choice.event,
+                        branch: bid.id,
+                        cards: vec![*card],
+                        targets: vec![],
+                    }
+                }
                 ChoiceKind::Content => {
                     let counter = choice
                         .counter

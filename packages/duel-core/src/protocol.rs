@@ -215,6 +215,31 @@ pub struct ChoiceView {
     pub branches: Vec<ChoiceBranch>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub counter: Option<CounterContext>,
+    /// Present only for the acting seat's choice of a face-down comparison card.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub compare: Option<CompareParticipants>,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CompareParticipants {
+    pub initiator: SeatId,
+    pub target: SeatId,
+}
+
+/// The original physical cards and effective numbers in initiator/target order.
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CompareResult {
+    pub event: EventId,
+    pub parent: Option<EventId>,
+    pub turn: Option<u64>,
+    pub participants: CompareParticipants,
+    pub cards: [Card; 2],
+    pub numbers: [i32; 2],
+    pub won: bool,
+    pub tie: bool,
+    pub winner: Option<SeatId>,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -285,6 +310,34 @@ pub enum EventStatus {
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum EventKind {
+    Compare {
+        seat: SeatId,
+        target: SeatId,
+    },
+    CompareChoices {
+        seat: SeatId,
+        target: SeatId,
+    },
+    CompareBid {
+        seat: SeatId,
+    },
+    LoseAsync,
+    CompareReveal {
+        seat: SeatId,
+        target: SeatId,
+        cards: [Card; 2],
+    },
+    ShowCards {
+        seat: SeatId,
+        card: Card,
+    },
+    CompareResult {
+        result: CompareResult,
+    },
+    OrderingDiscard,
+    CardsDiscard {
+        amount: usize,
+    },
     Link {
         seat: SeatId,
         linked: bool,

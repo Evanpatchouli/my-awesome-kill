@@ -82,6 +82,7 @@ pub struct TriggerContext<'a> {
     game: &'a mut Game,
     owner: SeatId,
     event: &'a TriggerEvent,
+    last_compare: Option<crate::CompareResult>,
     operations: VecDeque<TriggerOperation>,
 }
 impl TriggerContext<'_> {
@@ -101,6 +102,42 @@ impl TriggerContext<'_> {
     }
     pub fn owner(&self) -> SeatId {
         self.owner
+    }
+
+    /// Schedule two independent private hand choices, a common reveal, and resolution.
+    pub fn compare(&mut self, initiator: SeatId, target: SeatId) -> Result<(), RuleError> {
+        self.game.compare_program(initiator, target)?;
+        self.operations
+            .push_back(TriggerOperation::Compare { initiator, target });
+        Ok(())
+    }
+
+    /// The latest comparison this skill awaited, including its original cards and event parent.
+    pub fn compare_result(&self) -> Option<crate::CompareResult> {
+        self.last_compare
+    }
+
+    /// Replace an effective score on the current compare or compareFixing subject.
+    pub fn set_compare_number(&mut self, seat: SeatId, number: i32) -> Result<(), RuleError> {
+        self.game.change_compare_number(self.event, seat, number)
+    }
+
+    /// Claim one revealed bid at chooseToCompareAfter through the ordinary gain lifecycle.
+    pub fn gain_compare_card(&mut self, seat: SeatId, card: CardId) -> Result<(), RuleError> {
+        if self.event.timing != "chooseToCompareAfter" {
+            return Err(RuleError::WrongEvent);
+        }
+        if self.claimed_cards().contains(&card) {
+            return Err(RuleError::InvalidSelection);
+        }
+        let subject = self.event.subject;
+        self.game.compare_gain_program(subject, seat, card)?;
+        self.operations.push_back(TriggerOperation::GainCompare {
+            subject,
+            seat,
+            card,
+        });
+        Ok(())
     }
 
     /// Reserve a new physical identity and queue its private gain through the normal gain event.
@@ -180,10 +217,14 @@ impl TriggerContext<'_> {
                 TriggerOperation::DiscardHand { cards, .. } => {
                     claimed.extend(cards.iter().map(|c| c.id))
                 }
-                TriggerOperation::Recast { card, .. } | TriggerOperation::GiveHand { card, .. } => {
+                TriggerOperation::Recast { card, .. }
+                | TriggerOperation::GiveHand { card, .. }
+                | TriggerOperation::GainCompare { card, .. } => {
                     claimed.insert(*card);
                 }
-                TriggerOperation::Emit(_) | TriggerOperation::Elemental(_) => {}
+                TriggerOperation::Emit(_)
+                | TriggerOperation::Elemental(_)
+                | TriggerOperation::Compare { .. } => {}
             }
         }
         claimed
@@ -224,6 +265,15 @@ impl TriggerContext<'_> {
 
 #[derive(Clone)]
 enum TriggerOperation {
+    Compare {
+        initiator: SeatId,
+        target: SeatId,
+    },
+    GainCompare {
+        subject: EventId,
+        seat: SeatId,
+        card: CardId,
+    },
     Elemental(crate::elemental::ContentAction),
     DiscardHand {
         seat: SeatId,
@@ -254,6 +304,7 @@ enum RegisteredState {
 
 #[derive(Clone)]
 pub(crate) struct Registered {
+    last_compare: Option<crate::CompareResult>,
     pub id: TriggerId,
     pub owner: SeatId,
     event: TriggerEvent,
@@ -274,6 +325,7 @@ impl Registered {
             event,
             effect,
             state: RegisteredState::Call(0),
+            last_compare: None,
         }
     }
 }
@@ -421,6 +473,9 @@ impl Game {
         mut flow: Registered,
         child: Option<Outcome<Resolution>>,
     ) {
+        if let Some(Outcome::Finished(Resolution::Compared(result))) = &child {
+            flow.last_compare = Some(*result);
+        }
         let (stage, selected) = match std::mem::replace(&mut flow.state, RegisteredState::Call(0)) {
             RegisteredState::Operations {
                 require_success: true,
@@ -461,6 +516,7 @@ impl Game {
             game: self,
             owner: flow.owner,
             event: &flow.event,
+            last_compare: flow.last_compare,
             operations: VecDeque::new(),
         };
         let then = (flow.effect)(&mut context, stage, selected.as_ref());
@@ -479,9 +535,30 @@ impl Game {
             // Recheck the entire next payment before allowing any card in it to move.
             let require_success = matches!(
                 operation,
-                TriggerOperation::Recast { .. } | TriggerOperation::GiveHand { .. }
+                TriggerOperation::Recast { .. }
+                    | TriggerOperation::GiveHand { .. }
+                    | TriggerOperation::Compare { .. }
+                    | TriggerOperation::GainCompare { .. }
             );
             let program = match operation {
+                TriggerOperation::Compare { initiator, target } => {
+                    let Ok(program) = self.compare_program(initiator, target) else {
+                        self.finish();
+                        return;
+                    };
+                    program
+                }
+                TriggerOperation::GainCompare {
+                    subject,
+                    seat,
+                    card,
+                } => {
+                    let Ok(program) = self.compare_gain_program(subject, seat, card) else {
+                        self.finish();
+                        return;
+                    };
+                    program
+                }
                 TriggerOperation::Elemental(action) => match action.program(self) {
                     Some(program) => program,
                     None => continue,

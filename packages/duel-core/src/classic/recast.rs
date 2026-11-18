@@ -199,7 +199,7 @@ enum MoveKind {
     DiscardToPile(Card),
     Lose {
         card: Card,
-        recipient: Option<SeatId>,
+        destination: LossDestination,
     },
     Draw,
     Gain {
@@ -209,7 +209,15 @@ enum MoveKind {
 }
 
 #[derive(Clone, Copy)]
+enum LossDestination {
+    Discard,
+    Transfer(SeatId),
+    Compare(EventId),
+}
+
+#[derive(Clone, Copy)]
 enum GainOrigin {
+    Compare(EventId),
     Created,
     Hand {
         seat: SeatId,
@@ -292,7 +300,9 @@ impl Movement {
                 card: self.committed.filter(|_| {
                     matches!(
                         origin,
-                        GainOrigin::DrawPile | GainOrigin::Hand { public: true, .. }
+                        GainOrigin::DrawPile
+                            | GainOrigin::Compare(_)
+                            | GainOrigin::Hand { public: true, .. }
                     )
                 }),
             },
@@ -342,6 +352,36 @@ impl Movement {
 }
 
 impl Game {
+    pub(crate) fn lose_compare_program(
+        &self,
+        comparison: EventId,
+        seat: SeatId,
+        card: Card,
+    ) -> Program {
+        Program::Recast(Flow::Movement(Movement::new(
+            seat,
+            MoveKind::Lose {
+                card,
+                destination: LossDestination::Compare(comparison),
+            },
+        )))
+    }
+
+    pub(crate) fn gain_compare_program(
+        &self,
+        comparison: EventId,
+        seat: SeatId,
+        card: Card,
+    ) -> Program {
+        Program::Recast(Flow::Movement(Movement::new(
+            seat,
+            MoveKind::Gain {
+                card,
+                origin: GainOrigin::Compare(comparison),
+            },
+        )))
+    }
+
     pub fn register_recast(&mut self, key: RecastKey, rule: RecastRule) -> Option<RecastRule> {
         if let Some((_, old)) = self.recast_rules.iter_mut().find(|(k, _)| *k == key) {
             return Some(std::mem::replace(old, rule));
@@ -743,7 +783,7 @@ impl Game {
                             seat,
                             Lose {
                                 card,
-                                recipient: None,
+                                destination: LossDestination::Discard,
                             },
                         )),
                         Draw => self
@@ -765,20 +805,33 @@ impl Game {
                             from,
                             Lose {
                                 card,
-                                recipient: Some(seat),
+                                destination: LossDestination::Transfer(seat),
                             },
                         )),
-                        Lose { card, recipient }
+                        Lose { card, destination }
                             if self.recast_held(seat, card)
-                                && recipient.is_none_or(|to| self.recast_alive(to)) =>
+                                && !matches!(destination, LossDestination::Transfer(to) if !self.recast_alive(to)) =>
                         {
                             let taken = self.take_card(seat, Zone::Hand, card.id);
-                            if recipient.is_none() {
-                                self.discard.push(taken);
-                            } else {
-                                self.transferring.push(taken);
+                            match destination {
+                                LossDestination::Discard => self.discard.push(taken),
+                                LossDestination::Transfer(_) => self.transferring.push(taken),
+                                LossDestination::Compare(comparison) => {
+                                    self.place_compare_bid(comparison, seat, taken);
+                                }
                             }
                             movement.committed = Some(taken);
+                            None
+                        }
+                        Gain {
+                            card,
+                            origin: GainOrigin::Compare(comparison),
+                        } => {
+                            if let Some(taken) = self.take_compare_bid(comparison, card.id) {
+                                self.put_in_hand(seat, taken);
+                                self.public_hand_cards.insert(taken.id);
+                                movement.committed = Some(taken);
+                            }
                             None
                         }
                         Gain {
@@ -815,7 +868,7 @@ impl Game {
                         let intercepted = matches!(
                             movement.kind,
                             Lose {
-                                recipient: None,
+                                destination: LossDestination::Discard,
                                 ..
                             }
                         );

@@ -18,6 +18,7 @@
 | 领域 | 相关文档 | 检索关键词 |
 | --- | --- | --- |
 | 经典身份局与牌堆 | [P1 对局契约](../specs/classic-duel.md) | Game::classic、card_uses、HeroMoment、GameView、CounterContext |
+| 可注册内容与跨包机制 | [Rust 内容接口](../../packages/duel-core/README.md)、[上游覆盖盘点](../exec-plans/active/noname-coverage.md) | TriggerContext、RecastState、DamageRecord、CompareResult、getKnownCards |
 | 运行与验证 | [启动](../runbooks/development.md)、[验证](../runbooks/testing.md) | Tauri、pnpm、战绩、种子 |
 | 产品方向与平台 | [产品愿景](../specs/product-vision.md) | 单机、自定义卡牌、Android、横屏 |
 | 技术选型与动效 | [目标架构](../architecture/target-architecture.md) | Tauri、Vue、SQLite、Tailwind、GSAP、motion |

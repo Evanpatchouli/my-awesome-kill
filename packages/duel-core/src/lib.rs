@@ -29,6 +29,9 @@ use scheduler::{EventRef, Outcome, Scheduler, Work};
 
 #[derive(Clone)]
 enum Resolution {
+    CompareBid(Card),
+    CompareBids([Card; 2]),
+    Compared(CompareResult),
     RecastMove {
         event: EventId,
         card: Option<Card>,
@@ -95,6 +98,8 @@ enum Zone {
 
 #[derive(Clone)]
 enum Program {
+    Compare(classic::compare::Flow),
+    PlayAfterBegin(SeatId),
     Elemental(elemental::Flow),
     Recast(classic::recast::Flow),
     Event(EventKind),
@@ -138,6 +143,11 @@ impl Program {
     fn kind(&self) -> EventKind {
         match self {
             Self::Event(kind) => *kind,
+            Self::Compare(flow) => flow.kind(),
+            Self::PlayAfterBegin(seat) => EventKind::Phase {
+                seat: *seat,
+                phase: Phase::Play,
+            },
             Self::Elemental(flow) => flow.kind(),
             Self::Recast(flow) => flow.kind(),
             Self::DiscardFrom { card, .. } => EventKind::Discard { card: *card },
@@ -223,6 +233,7 @@ impl From<SeatSetup> for Seat {
 }
 
 pub struct Game {
+    compares: classic::compare::State,
     #[cfg(test)]
     timing_observer: Option<triggers::TimingObserver>,
     elemental: elemental::State,
@@ -281,6 +292,7 @@ impl Game {
             #[cfg(test)]
             timing_observer: None,
             elemental: elemental::State::default(),
+            compares: classic::compare::State::default(),
             recast_rules: Vec::new(),
             transferring: Vec::new(),
             public_hand_cards: HashSet::new(),
@@ -412,7 +424,13 @@ impl Game {
             .as_ref()
             .map(|choice| self.hero_private_choice_cards(choice))
             .unwrap_or_default();
-        let visible = self.visible_card_ids(&seats, &private_choice_cards);
+        let resolving: Vec<_> = self
+            .resolving
+            .iter()
+            .filter(|c| !self.compares.hidden(c.id))
+            .copied()
+            .collect();
+        let visible = self.visible_card_ids(&seats, &private_choice_cards, &resolving);
         let card_faces = state
             .iter()
             .flat_map(|state| &state.faces)
@@ -435,7 +453,7 @@ impl Game {
             drawn: result == Some(MatchResult::Draw),
             seats,
             deck_count: state.map_or(0, |state| state.deck.len()),
-            resolving: self.resolving.clone(),
+            resolving,
             discard: self.discard.clone(),
             waiting_for: self.decision.as_ref().map(Decision::seat),
             counter_window: matches!(&self.decision, Some(Decision::Cards(choice)) if choice.counter.is_some()),
@@ -460,13 +478,14 @@ impl Game {
         &self,
         seats: &[SeatView],
         private_choice_cards: &[Card],
+        resolving: &[Card],
     ) -> HashSet<CardId> {
         use EventKind::{
             Discard, Equip, Reveal, UseCost, UseResponseCard, UseSha, UseShaTargets, UseShan,
             UseTao, UseTrick,
         };
 
-        let public_zones = self.resolving.iter().chain(&self.discard);
+        let public_zones = resolving.iter().chain(&self.discard);
         let seat_zones = seats.iter().flat_map(|seat| {
             seat.hand
                 .as_deref()
@@ -485,6 +504,7 @@ impl Game {
             | UseCost { card, .. }
             | UseResponseCard { card, .. }
             | EventKind::RecastReveal { card, .. }
+            | EventKind::ShowCards { card, .. }
             | EventKind::Gain {
                 card: Some(card), ..
             }
@@ -493,11 +513,22 @@ impl Game {
             | Discard { card } => Some(card.id),
             _ => None,
         });
+        let compare_faces = self
+            .events
+            .iter()
+            .filter_map(|e| match e.kind {
+                EventKind::CompareReveal { cards, .. } => Some(cards),
+                EventKind::CompareResult { result } => Some(result.cards),
+                _ => None,
+            })
+            .flatten()
+            .map(|c| c.id);
         public_zones
             .chain(seat_zones)
             .chain(private_choice_cards)
             .map(|card| card.id)
             .chain(revealed_events)
+            .chain(compare_faces)
             .collect()
     }
 
@@ -754,6 +785,10 @@ impl Game {
 
         let kind = program.kind();
         let program = match program {
+            Program::Compare(flow) => return self.resolve_compare(event, flow, child, answer),
+            Program::PlayAfterBegin(seat) => {
+                return self.resume_play_begin(event, seat, child, answer)
+            }
             Program::Elemental(flow) => return self.resolve_elemental(flow, child),
             Program::Recast(flow) => return self.resolve_recast(event, flow, child),
             Program::Equipment(flow) => return self.resolve_equipment(event, flow, child),
@@ -830,7 +865,10 @@ impl Game {
                 );
                 self.scheduler.replace_current(hit);
             }
-            (Reveal { .. } | RecastReveal { .. }, None) => self.finish(),
+            (
+                Reveal { .. } | RecastReveal { .. } | CompareReveal { .. } | CompareResult { .. },
+                None,
+            ) => self.finish(),
             (UseCost { seat, card }, None) => {
                 self.move_to_resolving(seat, card.id);
                 self.finish();
@@ -879,6 +917,7 @@ impl Game {
                     cards: vec![],
                     branches: choice.branches,
                     counter,
+                    compare: None,
                 }));
             }
             _ => unreachable!("a content choice receives a selection"),
@@ -911,6 +950,7 @@ impl Game {
             cards,
             branches: vec![],
             counter: None,
+            compare: None,
         }));
     }
 
@@ -991,6 +1031,7 @@ impl Game {
     }
 
     fn take_resolving(&mut self, id: CardId) -> Card {
+        self.compares.forget(id);
         Self::remove_card(&mut self.resolving, id)
     }
 

@@ -183,6 +183,14 @@ impl Game {
                 }
                 Some(_) => self.finish_phase(phase),
             },
+            Phase::Play
+                if child.is_none()
+                    && answer.is_none()
+                    && self.queue_timing("phaseUseBegin", Some(seat), None, None, 0, &[]) =>
+            {
+                self.scheduler
+                    .replace_current(Program::PlayAfterBegin(seat));
+            }
             Phase::Play => self.resolve_play(seat, answer),
             Phase::Discard => {
                 if matches!(
@@ -204,6 +212,25 @@ impl Game {
     fn finish_phase(&mut self, phase: Phase) {
         self.scheduler
             .end(Outcome::Finished(Resolution::PhaseFinished(phase)));
+    }
+
+    pub(crate) fn resume_play_begin(
+        &mut self,
+        event: EventRef,
+        seat: SeatId,
+        child: Option<Outcome<Resolution>>,
+        answer: &mut Option<Answer>,
+    ) {
+        self.scheduler
+            .replace_current(Program::event(EventKind::Phase {
+                seat,
+                phase: Phase::Play,
+            }));
+        if matches!(child, Some(Outcome::Cancelled)) {
+            self.finish_phase(Phase::Play);
+        } else {
+            self.resolve_phase(event, seat, Phase::Play, child, answer);
+        }
     }
 
     fn resolve_play(&mut self, seat: SeatId, answer: &mut Option<Answer>) {
@@ -275,6 +302,7 @@ impl Game {
                 cards,
                 branches: vec![],
                 counter: None,
+                compare: None,
             }));
         }
     }
