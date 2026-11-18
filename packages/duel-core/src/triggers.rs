@@ -8,6 +8,8 @@ use std::sync::Arc;
 
 /// A registration handle, unique for the lifetime of a game.
 pub type TriggerId = u64;
+#[cfg(test)]
+pub(crate) type TimingObserver = Arc<dyn Fn(&Game, &TriggerEvent) + Send + Sync>;
 pub type TriggerFilter = Arc<dyn Fn(&Game, &TriggerEvent, SeatId) -> bool + Send + Sync>;
 pub type TriggerEffect = Arc<
     dyn Fn(&mut TriggerContext<'_>, u16, Option<&TriggerSelection>) -> TriggerStep + Send + Sync,
@@ -46,11 +48,16 @@ pub struct TriggerRegistration {
 pub struct TriggerEvent {
     pub timing: String,
     pub subject: EventId,
+    pub parent: Option<EventId>,
     pub player: Option<SeatId>,
     pub source: Option<SeatId>,
     pub target: Option<SeatId>,
     pub amount: u16,
     pub cards: Vec<Card>,
+    pub card_kind: Option<crate::CardKind>,
+    pub nature: Option<crate::DamageNature>,
+    /// Signed change on changeHp and changeHujia subjects.
+    pub delta: Option<i32>,
 }
 #[derive(Clone, Debug)]
 /// The validated response to a content choice.
@@ -94,6 +101,25 @@ impl TriggerContext<'_> {
     }
     pub fn owner(&self) -> SeatId {
         self.owner
+    }
+
+    /// Reserve a new physical identity and queue its private gain through the normal gain event.
+    pub fn gain_created_card(
+        &mut self,
+        seat: SeatId,
+        kind: crate::CardKind,
+        suit: crate::classic_data::Suit,
+        rank: u8,
+        nature: Option<crate::DamageNature>,
+    ) -> Result<CardId, RuleError> {
+        if !self.game.seat(seat)?.alive {
+            return Err(RuleError::InactiveSeat { seat });
+        }
+        let card = self.game.create_content_card(kind, suit, rank, nature)?;
+        self.operations.push_back(TriggerOperation::Elemental(
+            crate::elemental::ContentAction::GainCreated { seat, card },
+        ));
+        Ok(card.id)
     }
     pub fn event(&self) -> &TriggerEvent {
         self.event
@@ -157,10 +183,23 @@ impl TriggerContext<'_> {
                 TriggerOperation::Recast { card, .. } | TriggerOperation::GiveHand { card, .. } => {
                     claimed.insert(*card);
                 }
-                TriggerOperation::Emit(_) => {}
+                TriggerOperation::Emit(_) | TriggerOperation::Elemental(_) => {}
             }
         }
         claimed
+    }
+
+    pub(crate) fn enqueue_elemental(
+        &mut self,
+        seat: SeatId,
+        action: crate::elemental::ContentAction,
+    ) -> Result<(), RuleError> {
+        if !self.game.seat(seat)?.alive {
+            return Err(RuleError::InactiveSeat { seat });
+        }
+        self.operations
+            .push_back(TriggerOperation::Elemental(action));
+        Ok(())
     }
     /// Enqueue a nested timing, returning whether a matching registration exists.
     pub fn emit(
@@ -185,6 +224,7 @@ impl TriggerContext<'_> {
 
 #[derive(Clone)]
 enum TriggerOperation {
+    Elemental(crate::elemental::ContentAction),
     DiscardHand {
         seat: SeatId,
         cards: Vec<Card>,
@@ -287,19 +327,73 @@ impl Game {
         amount: u16,
         cards: &[Card],
     ) -> Option<TriggerEvent> {
-        if !self.has_timing_registrations(timing) {
+        if !self.wants_timing(timing) {
             return None;
         }
-        let event = TriggerEvent {
+        let event = self.subject_timing(timing, player, source, target, amount, cards);
+        self.observe_timing_request(&event);
+        self.has_registered_candidates(&event).then_some(event)
+    }
+
+    pub(crate) fn wants_timing(&self, timing: &str) -> bool {
+        #[cfg(test)]
+        if self.timing_observer.is_some() {
+            return true;
+        }
+        self.has_timing_registrations(timing)
+    }
+
+    #[cfg(test)]
+    pub(crate) fn observe_timing_request(&self, event: &TriggerEvent) {
+        if let Some(observer) = &self.timing_observer {
+            observer(self, event);
+        }
+    }
+
+    #[cfg(not(test))]
+    #[inline]
+    pub(crate) fn observe_timing_request(&self, _: &TriggerEvent) {}
+
+    pub(crate) fn subject_timing(
+        &self,
+        timing: &'static str,
+        player: Option<SeatId>,
+        source: Option<SeatId>,
+        target: Option<SeatId>,
+        amount: u16,
+        cards: &[Card],
+    ) -> TriggerEvent {
+        let subject = self.scheduler.current_id();
+        let frame = self.scheduler.active_frame(subject);
+        let (card_kind, nature) = match frame {
+            Some((_, Program::CardDamage(hit))) => (hit.card.kind, hit.card.nature),
+            Some((_, program)) => (
+                match program.kind() {
+                    crate::EventKind::UseSha { .. } | crate::EventKind::UseShaTargets { .. } => {
+                        Some(crate::CardKind::Sha)
+                    }
+                    crate::EventKind::UseTrick { card, .. }
+                    | crate::EventKind::UseResponseCard { card, .. } => Some(card.kind),
+                    crate::EventKind::UseVirtual { kind, .. } => Some(kind),
+                    _ => None,
+                },
+                None,
+            ),
+            None => (None, None),
+        };
+        TriggerEvent {
             timing: timing.into(),
-            subject: self.scheduler.current_id(),
+            subject,
+            parent: frame.and_then(|(event, _)| event.parent),
             player,
             source,
             target,
             amount,
             cards: cards.to_vec(),
-        };
-        self.has_registered_candidates(&event).then_some(event)
+            card_kind,
+            nature,
+            delta: None,
+        }
     }
     pub(crate) fn registered_matches(&self, id: TriggerId, event: &TriggerEvent) -> bool {
         let Some(r) = self.trigger_registrations.get(&id) else {
@@ -380,7 +474,7 @@ impl Game {
         mut operations: VecDeque<TriggerOperation>,
         then: TriggerStep,
     ) {
-        if let Some(operation) = operations.pop_front() {
+        while let Some(operation) = operations.pop_front() {
             // Earlier children may have triggered other skills or paused for a decision.
             // Recheck the entire next payment before allowing any card in it to move.
             let require_success = matches!(
@@ -388,6 +482,10 @@ impl Game {
                 TriggerOperation::Recast { .. } | TriggerOperation::GiveHand { .. }
             );
             let program = match operation {
+                TriggerOperation::Elemental(action) => match action.program(self) {
+                    Some(program) => program,
+                    None => continue,
+                },
                 TriggerOperation::DiscardHand { seat, cards } => {
                     if !self
                         .seat(seat)

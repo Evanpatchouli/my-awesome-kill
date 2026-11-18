@@ -10,8 +10,10 @@ pub use triggers::{
 
 use std::collections::{HashMap, HashSet};
 
+use classic::elemental::{self, CardDamage};
+pub use classic::elemental::{DamageNature, DamageRecord};
 use classic::equipment;
-use classic::hero_integration::{CardDamage, Judgment};
+use classic::hero_integration::Judgment;
 pub use classic::recast::{
     RecastFilter, RecastGain, RecastGainFactory, RecastKey, RecastLoss, RecastLossFactory,
     RecastMovement, RecastRule, RecastSeat, RecastState,
@@ -40,7 +42,9 @@ enum Resolution {
     Selected(Selection),
     Responded,
     Judged(Card),
-    HpChanged,
+    HpChanged {
+        cancelled: bool,
+    },
     ForcedHit,
     Hero(HeroAdjustment),
 }
@@ -91,6 +95,7 @@ enum Zone {
 
 #[derive(Clone)]
 enum Program {
+    Elemental(elemental::Flow),
     Recast(classic::recast::Flow),
     Event(EventKind),
     DiscardFrom {
@@ -133,6 +138,7 @@ impl Program {
     fn kind(&self) -> EventKind {
         match self {
             Self::Event(kind) => *kind,
+            Self::Elemental(flow) => flow.kind(),
             Self::Recast(flow) => flow.kind(),
             Self::DiscardFrom { card, .. } => EventKind::Discard { card: *card },
             Self::Choose(choice)
@@ -177,6 +183,9 @@ struct Seat {
     hp: i32,
     max_hp: u16,
     alive: bool,
+    linked: bool,
+    turned_over: bool,
+    armor: u16,
     hero: Option<&'static General>,
     role: Option<Role>,
     hand: Vec<Card>,
@@ -201,6 +210,9 @@ impl From<SeatSetup> for Seat {
             hp: i32::from(setup.hp),
             max_hp: setup.hp,
             alive: setup.hp > 0,
+            linked: false,
+            turned_over: false,
+            armor: 0,
             hero: None,
             role: None,
             hand: setup.hand,
@@ -211,6 +223,9 @@ impl From<SeatSetup> for Seat {
 }
 
 pub struct Game {
+    #[cfg(test)]
+    timing_observer: Option<triggers::TimingObserver>,
+    elemental: elemental::State,
     recast_rules: Vec<(RecastKey, RecastRule)>,
     transferring: Vec<Card>,
     public_hand_cards: HashSet<CardId>,
@@ -263,6 +278,9 @@ impl Game {
 
     fn with_seats(seats: Vec<Seat>, active_seat: SeatId) -> Self {
         Self {
+            #[cfg(test)]
+            timing_observer: None,
+            elemental: elemental::State::default(),
             recast_rules: Vec::new(),
             transferring: Vec::new(),
             public_hand_cards: HashSet::new(),
@@ -356,6 +374,9 @@ impl Game {
                     hp: seat.hp,
                     max_hp: seat.max_hp,
                     alive: seat.alive,
+                    linked: seat.linked,
+                    turned_over: seat.turned_over,
+                    armor: seat.armor,
                     hero: seat.hero.map(|hero| hero.id.clone()),
                     role: seat.role.filter(|_| role_visible),
                     hand_count: seat.hand.len(),
@@ -391,9 +412,20 @@ impl Game {
             .as_ref()
             .map(|choice| self.hero_private_choice_cards(choice))
             .unwrap_or_default();
+        let visible = self.visible_card_ids(&seats, &private_choice_cards);
         let card_faces = state
-            .map(|state| self.visible_faces(state, &seats, &private_choice_cards))
-            .unwrap_or_default();
+            .iter()
+            .flat_map(|state| &state.faces)
+            .filter(|face| visible.contains(&face.id))
+            .copied()
+            .collect();
+        let card_natures = self
+            .elemental
+            .natures
+            .iter()
+            .filter(|(id, _)| visible.contains(id))
+            .map(|(&id, &nature)| (id, nature))
+            .collect();
         Ok(GameView {
             version: self.version,
             active_seat: self.active_seat,
@@ -419,16 +451,16 @@ impl Game {
             },
             private_choice_cards,
             card_faces,
+            card_natures,
             events: self.events.clone(),
         })
     }
 
-    fn visible_faces(
+    fn visible_card_ids(
         &self,
-        state: &Classic,
         seats: &[SeatView],
         private_choice_cards: &[Card],
-    ) -> Vec<CardFace> {
+    ) -> HashSet<CardId> {
         use EventKind::{
             Discard, Equip, Reveal, UseCost, UseResponseCard, UseSha, UseShaTargets, UseShan,
             UseTao, UseTrick,
@@ -461,17 +493,11 @@ impl Game {
             | Discard { card } => Some(card.id),
             _ => None,
         });
-        let visible: HashSet<_> = public_zones
+        public_zones
             .chain(seat_zones)
             .chain(private_choice_cards)
             .map(|card| card.id)
             .chain(revealed_events)
-            .collect();
-        state
-            .faces
-            .iter()
-            .filter(|face| visible.contains(&face.id))
-            .copied()
             .collect()
     }
 
@@ -693,21 +719,20 @@ impl Game {
                 continue;
             };
             match work {
-                Work::Started(event, program) => {
-                    self.record(event, program.kind(), EventStatus::Started)
-                }
+                Work::Started(event, program) => self.record(event, &program, EventStatus::Started),
                 Work::Run(event, program, child) => {
                     self.resolve(event, program, child, &mut answer)
                 }
                 Work::Ended(event, program, outcome) => {
                     let status = match outcome {
                         Outcome::Cancelled
+                        | Outcome::Finished(Resolution::HpChanged { cancelled: true })
                         | Outcome::Finished(Resolution::RecastMove {
                             cancelled: true, ..
                         }) => EventStatus::Cancelled,
                         Outcome::Finished(_) => EventStatus::Finished,
                     };
-                    self.record(event, program.kind(), status);
+                    self.record(event, &program, status);
                 }
             }
             if self.decision.is_some() {
@@ -729,6 +754,7 @@ impl Game {
 
         let kind = program.kind();
         let program = match program {
+            Program::Elemental(flow) => return self.resolve_elemental(flow, child),
             Program::Recast(flow) => return self.resolve_recast(event, flow, child),
             Program::Equipment(flow) => return self.resolve_equipment(event, flow, child),
             Program::Trick(flow) => return self.resolve_trick(event, flow, child),
@@ -745,7 +771,7 @@ impl Game {
                 return;
             }
             Program::Judgment(judgment) => return self.resolve_judgment(judgment, child),
-            Program::CardDamage(damage) => return self.resolve_card_damage(damage, child),
+            Program::CardDamage(damage) => return self.resolve_card_damage(event, damage, child),
             Program::DiscardGroup { seat, cards } => {
                 return self.resolve_discard_group(seat, cards)
             }
@@ -784,7 +810,7 @@ impl Game {
                 self.scheduler.end(Cancelled)
             }
             (Recover { target, amount, .. }, None) => {
-                self.queue_hp_change(target, i32::from(amount))
+                self.queue_health_change(target, i32::from(amount), None)
             }
             (Recover { .. }, Some(_)) => self.finish(),
             (
@@ -793,16 +819,16 @@ impl Game {
                     target,
                     amount,
                 },
-                child,
-            ) => self.resolve_damage(source, target, amount, child),
-            (ChangeHp { seat, after, .. }, None) => {
-                let classic = self.classic.is_some();
-                let player = self.seat_mut(seat);
-                player.hp = after;
-                if !classic {
-                    player.alive = after > 0;
-                }
-                self.scheduler.end(Finished(Resolution::HpChanged));
+                None,
+            ) => {
+                let hit = self.elemental_damage_program(
+                    source,
+                    target,
+                    amount,
+                    Default::default(),
+                    false,
+                );
+                self.scheduler.replace_current(hit);
             }
             (Reveal { .. } | RecastReveal { .. }, None) => self.finish(),
             (UseCost { seat, card }, None) => {
@@ -859,35 +885,6 @@ impl Game {
         }
     }
 
-    fn resolve_damage(
-        &mut self,
-        source: Option<SeatId>,
-        target: SeatId,
-        amount: u16,
-        child: Option<Outcome<Resolution>>,
-    ) {
-        self.resolve_card_damage(
-            self.damage_context(source, target, amount, None, vec![]),
-            child,
-        );
-    }
-
-    fn queue_hp_change(&mut self, target: SeatId, delta: i32) {
-        let player = self.seat(target).expect("the health change target exists");
-        let before = player.hp;
-        let signed = before.saturating_add(delta).min(i32::from(player.max_hp));
-        let after = if self.classic.is_some() {
-            signed
-        } else {
-            signed.max(0)
-        };
-        self.next(EventKind::ChangeHp {
-            seat: target,
-            before,
-            after,
-        });
-    }
-
     fn ask_for_card(
         &mut self,
         event: EventRef,
@@ -925,12 +922,21 @@ impl Game {
         self.scheduler.end(Outcome::Finished(Resolution::Complete));
     }
 
-    fn record(&mut self, event: EventRef, kind: EventKind, status: EventStatus) {
+    fn record(&mut self, event: EventRef, program: &Program, status: EventStatus) {
         self.events.push(GameEvent {
             id: event.id,
             parent: event.parent,
             status,
-            kind,
+            kind: match (status, program) {
+                (EventStatus::Started, Program::Elemental(elemental::Flow::Hp(hp))) => {
+                    hp.announced(self)
+                }
+                _ => program.kind(),
+            },
+            nature: match program {
+                Program::CardDamage(hit) => hit.card.nature,
+                _ => None,
+            },
         });
     }
 

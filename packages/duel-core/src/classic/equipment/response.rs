@@ -263,6 +263,7 @@ impl Game {
             self.queue_hero_moment(HeroMoment::UseTrick {
                 seat: payment.seat,
                 kind: payment.kind,
+                cards: payment.cards.clone(),
             });
         }
         for card in payment.cards {

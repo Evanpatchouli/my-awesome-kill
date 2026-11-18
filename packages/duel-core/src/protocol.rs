@@ -59,6 +59,7 @@ pub enum CardKind {
     Shunshou,
     Guohe,
     Jiedao,
+    Tiesuo,
     Wuxie,
     Lebu,
     Shandian,
@@ -134,6 +135,9 @@ pub struct GameView {
     pub skill_plays: Vec<SkillPlay>,
     pub private_choice_cards: Vec<Card>,
     pub card_faces: Vec<CardFace>,
+    /// Elemental natures of physical Sha currently visible to this viewer.
+    #[serde(default, skip_serializing_if = "std::collections::BTreeMap::is_empty")]
+    pub card_natures: std::collections::BTreeMap<CardId, crate::DamageNature>,
     /// Lifecycle records emitted since the latest accepted command, or during setup.
     pub events: Vec<GameEvent>,
 }
@@ -145,6 +149,12 @@ pub struct SeatView {
     pub hp: i32,
     pub max_hp: u16,
     pub alive: bool,
+    #[serde(default)]
+    pub linked: bool,
+    #[serde(default)]
+    pub turned_over: bool,
+    #[serde(default)]
+    pub armor: u16,
     pub hero: Option<String>,
     pub role: Option<Role>,
     pub hand_count: usize,
@@ -258,6 +268,8 @@ pub struct GameEvent {
     pub id: EventId,
     pub parent: Option<EventId>,
     pub status: EventStatus,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub nature: Option<crate::DamageNature>,
     #[serde(flatten)]
     pub kind: EventKind,
 }
@@ -273,6 +285,30 @@ pub enum EventStatus {
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum EventKind {
+    Link {
+        seat: SeatId,
+        linked: bool,
+    },
+    #[serde(rename_all = "camelCase")]
+    TurnOver {
+        seat: SeatId,
+        turned_over: bool,
+    },
+    ChangeArmor {
+        seat: SeatId,
+        delta: i32,
+    },
+    TrickEffect {
+        seat: SeatId,
+        target: SeatId,
+        kind: CardKind,
+    },
+    UnlinkAfterDamage {
+        seat: SeatId,
+    },
+    SpreadDamage {
+        seat: SeatId,
+    },
     Recast {
         seat: SeatId,
     },

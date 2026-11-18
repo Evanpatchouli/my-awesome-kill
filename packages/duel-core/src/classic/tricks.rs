@@ -22,6 +22,7 @@ pub(crate) struct Trick {
 
 #[derive(Clone)]
 enum TrickStage {
+    AfterUse,
     Start,
     AfterCosts,
     BeginEffects,
@@ -76,6 +77,14 @@ impl Game {
             .filter(|target| *target != seat)
             .collect();
         let target_lists: Vec<Vec<SeatId>> = match card.kind {
+            Tiesuo => {
+                let mut choices = Vec::new();
+                for (i, &first) in living.iter().enumerate() {
+                    choices.push(vec![first]);
+                    choices.extend(living[i + 1..].iter().map(|&second| vec![first, second]));
+                }
+                choices
+            }
             Wugu | Taoyuan => vec![living],
             Nanman | Wanjian => vec![others],
             Wuzhong | Shandian => vec![vec![seat]],
@@ -284,6 +293,13 @@ impl Game {
             return;
         }
         match flow.stage.clone() {
+            AfterUse => {
+                if matches!(child, Some(Outcome::Cancelled)) {
+                    self.scheduler.end(Outcome::Cancelled);
+                } else {
+                    self.finish();
+                }
+            }
             Start => {
                 self.queue_use_costs(flow.seat, &flow.costs);
                 flow.stage = AfterCosts;
@@ -294,6 +310,7 @@ impl Game {
                     self.queue_hero_moment(super::skills::HeroMoment::UseTrick {
                         seat: flow.seat,
                         kind: flow.kind,
+                        cards: flow.costs.clone(),
                     });
                 }
                 flow.stage = BeginEffects;
@@ -336,11 +353,31 @@ impl Game {
                 negated,
             } => {
                 if flow.target_index >= flow.targets.len() {
-                    for card in flow.pool {
+                    for card in flow.pool.drain(..) {
                         self.scheduler
                             .next(Program::event(EventKind::Discard { card }));
                     }
-                    self.finish();
+                    // Jiedao's second selection is the additional Sha victim, outside its trick effects.
+                    let last_effect = if flow.kind == Jiedao {
+                        0
+                    } else {
+                        flow.target_index.saturating_sub(1) as u16
+                    };
+                    if !flow.judgment
+                        && self.queue_timing(
+                            "useCardAfter",
+                            Some(flow.seat),
+                            None,
+                            None,
+                            last_effect,
+                            &flow.costs,
+                        )
+                    {
+                        flow.stage = AfterUse;
+                        self.scheduler.replace_current(Program::Trick(flow));
+                    } else {
+                        self.finish();
+                    }
                     return;
                 }
                 let target = flow.targets[flow.target_index];
@@ -406,6 +443,14 @@ impl Game {
             Effect => {
                 let target = flow.targets[flow.target_index];
                 match flow.kind {
+                    Tiesuo => {
+                        self.scheduler
+                            .next(Program::Elemental(super::elemental::Flow::Tiesuo {
+                                seat: flow.seat,
+                                target,
+                            }));
+                        self.advance_trick(flow);
+                    }
                     Wuzhong => {
                         self.queue_draw(target, 2, DrawReason::CardEffect);
                         self.advance_trick(flow);

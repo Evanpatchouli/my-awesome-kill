@@ -1,3 +1,4 @@
+pub(crate) mod elemental;
 pub(crate) mod equipment;
 #[cfg(test)]
 mod equipment_tests;
@@ -126,6 +127,9 @@ impl Game {
                     hp: i32::from(max_hp),
                     max_hp,
                     alive: true,
+                    linked: false,
+                    turned_over: false,
+                    armor: 0,
                     hero: Some(general),
                     role: Some(role),
                     hand: Vec::new(),
@@ -239,7 +243,9 @@ impl Game {
         let player = self.seat(seat).expect("the acting seat exists");
         let mut actions = vec![Action::EndPlay];
         for card in &player.hand {
-            if self.can_recast(seat, card.id) {
+            if (card.kind == CardKind::Tiesuo || !self.recast_rules.is_empty())
+                && self.can_recast(seat, card.id)
+            {
                 actions.push(Action::Recast { card: card.id });
             }
             if let Some(uses) = self.card_uses(player, *card) {
@@ -293,7 +299,7 @@ impl Game {
             .into_iter()
             .find(|planned| {
                 planned.targets == targets
-                    || card.kind == CardKind::Sha
+                    || matches!(card.kind, CardKind::Sha | CardKind::Tiesuo)
                         && planned.targets.len() == targets.len()
                         && planned
                             .targets

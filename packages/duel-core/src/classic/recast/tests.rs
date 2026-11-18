@@ -172,6 +172,10 @@ impl Probe {
             state.0,
             "factory",
             &TriggerEvent {
+                card_kind: None,
+                delta: None,
+                nature: None,
+                parent: None,
                 subject: state.0.scheduler.current_id(),
                 timing: timing.to_owned(),
                 player: Some(seat),
@@ -190,9 +194,7 @@ fn exercise(phase: &'static str) {
     ))
     .unwrap();
     let mut game = play_scene();
-    // P1 has the fixed standard deck. Register one physical trick in the same
-    // role as the reference tiesuo. The control and gained cards use their real kinds.
-    let material = card(1, CardKind::Guohe);
+    let material = card(1, CardKind::Tiesuo);
     let control = card(2, CardKind::Sha);
     game.seat_mut(0).hand.extend([material, control]);
     let initial_count = match phase {
@@ -260,6 +262,12 @@ fn exercise(phase: &'static str) {
         parent_events: game.events.clone(),
         actual: Arc::default(),
     };
+    let requests = probe.clone();
+    game.timing_observer = Some(Arc::new(move |game, event| {
+        if TIMINGS.contains(&event.timing.as_str()) {
+            requests.record(game, "request", event);
+        }
+    }));
     for &timing in TIMINGS {
         let sample = probe.clone();
         game.register_trigger(TriggerRegistration {
@@ -370,10 +378,18 @@ fn exercise(phase: &'static str) {
         .as_array()
         .unwrap()
         .iter()
-        .filter(|row| row[0] == phase && row[1] != "request")
+        .filter(|row| row[0] == phase)
         .cloned()
         .collect();
-    assert_eq!(*probe.actual.lock().unwrap(), expected);
+    let actual = probe.actual.lock().unwrap();
+    for index in 0..actual.len().max(expected.len()) {
+        assert_eq!(
+            actual.get(index),
+            expected.get(index),
+            "{phase} observation {index}"
+        );
+    }
+    drop(actual);
     let state = RecastState(&game);
     let material_zone = locations(state, material);
     let replacement_zone = locations(state, replacement);

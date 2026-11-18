@@ -18,11 +18,18 @@ pub(crate) struct Queue {
 }
 #[derive(Clone)]
 enum Candidate {
+    Elemental(crate::elemental::Rule),
     Native(SeatId, SkillId),
     Registered(crate::TriggerId),
     Qilin { source: SeatId, target: SeatId },
 }
 impl Queue {
+    pub(crate) fn with_elemental_rule(mut self, rule: Option<crate::elemental::Rule>) -> Self {
+        if let Some(rule) = rule {
+            self.pending = Some(vec![Candidate::Elemental(rule)]);
+        }
+        self
+    }
     pub(crate) fn kind(&self) -> EventKind {
         EventKind::Trigger {
             seat: self
@@ -71,7 +78,7 @@ impl Game {
             Draw { seat, amount } => ("phaseDrawBegin1", Some(*seat), None, None, *amount, vec![]),
             Discard { seat } => ("phaseDiscardBefore", Some(*seat), None, None, 0, vec![]),
             End { seat } => ("phaseJieshuBegin", Some(*seat), None, None, 0, vec![]),
-            UseTrick { seat, .. } => ("useCard", Some(*seat), None, None, 0, vec![]),
+            UseTrick { seat, cards, .. } => ("useCard", Some(*seat), None, None, 0, cards.clone()),
             DamageAfter {
                 source,
                 target,
@@ -112,15 +119,7 @@ impl Game {
                 cards.iter().map(|(_, card)| *card).collect(),
             ),
         };
-        crate::TriggerEvent {
-            timing: timing.into(),
-            subject: self.scheduler.current_id(),
-            player,
-            source,
-            target,
-            amount,
-            cards,
-        }
+        self.subject_timing(timing, player, source, target, amount, &cards)
     }
     pub(crate) fn has_hero_triggers(&self, moment: &HeroMoment) -> bool {
         if !self.register_hero_triggers(moment).is_empty() {
@@ -144,6 +143,7 @@ impl Game {
             _ => HeroAdjustment::None,
         };
         let event = self.moment_event(&moment);
+        self.observe_timing_request(&event);
         Program::Dispatch(Queue {
             moment: Some(moment),
             event,
@@ -186,15 +186,15 @@ impl Game {
             }
             return false;
         }
-        let event = crate::TriggerEvent {
-            timing: "damageBegin2".into(),
-            subject: self.scheduler.current_id(),
-            player: Some(target),
-            source: Some(source),
-            target: None,
+        let event = self.subject_timing(
+            "damageBegin2",
+            Some(target),
+            Some(source),
+            None,
             amount,
-            cards: cards.to_vec(),
-        };
+            cards,
+        );
+        self.observe_timing_request(&event);
         if !self.has_registered_candidates(&event) {
             if let Some(program) = native {
                 self.scheduler.next(program);
@@ -223,6 +223,17 @@ impl Game {
         mut queue: Queue,
         child: Option<Outcome<Resolution>>,
     ) {
+        if queue.event.source.is_some()
+            && matches!(
+                self.scheduler.active_frame(queue.event.subject),
+                Some((_, Program::CardDamage(_)))
+            )
+        {
+            queue.event.source = self.live_damage_source(queue.event.source);
+            if let Some(HeroMoment::DamageAfter { source, .. }) = &mut queue.moment {
+                *source = queue.event.source;
+            }
+        }
         if matches!(child, Some(Outcome::Cancelled)) && !queue.choosing {
             self.scheduler.end(Outcome::Cancelled);
             return;
@@ -315,6 +326,11 @@ impl Game {
         let pending = queue.pending.as_ref().unwrap();
         let key = |candidate: &Candidate| -> Option<(u8, usize, i64, usize)> {
             let (owner, group, priority) = match candidate {
+                Candidate::Elemental(rule) => (
+                    rule.owner(self),
+                    crate::TriggerOrder::Normal,
+                    rule.priority(),
+                ),
                 Candidate::Native(owner, _) => (*owner, crate::TriggerOrder::Normal, 0),
                 Candidate::Qilin { source, .. } => (*source, crate::TriggerOrder::Normal, 0),
                 Candidate::Registered(id) => {
@@ -324,6 +340,7 @@ impl Game {
             };
             let seat = order.iter().position(|s| *s == owner).unwrap_or(usize::MAX);
             let subpriority = match candidate {
+                Candidate::Elemental(_) => -1,
                 Candidate::Qilin { .. } => 25,
                 Candidate::Registered(id) if self.trigger_registrations[id].silent => -1,
                 _ => 0,
@@ -343,6 +360,7 @@ impl Game {
             .as_ref()
             .map(|moment| self.register_hero_triggers(moment));
         let eligible = |c: &Candidate| match c {
+            Candidate::Elemental(rule) => rule.eligible(self),
             Candidate::Native(owner, skill) => {
                 self.seat(*owner).is_ok_and(|s| s.alive)
                     && live_native
@@ -373,6 +391,7 @@ impl Game {
         if selected.is_some() {
             distinct.extend(queue.choice_indices.iter().copied().filter(|&i| {
                 pending.get(i).is_some_and(|candidate| match candidate {
+                    Candidate::Elemental(rule) => rule.eligible(self),
                     Candidate::Native(owner, skill) => {
                         self.seat(*owner).is_ok_and(|s| s.alive)
                             && self.has_skill(*owner, skill.as_str())
@@ -399,6 +418,7 @@ impl Game {
                         continue;
                     }
                     let identity = match candidate {
+                        Candidate::Elemental(rule) => (rule.owner(self), rule.skill().to_owned()),
                         Candidate::Native(owner, skill) => (*owner, skill.as_str().to_owned()),
                         Candidate::Qilin { source, .. } => (*source, "qilin_skill".to_owned()),
                         Candidate::Registered(id) => {
@@ -451,6 +471,7 @@ impl Game {
             .filter(|i| key(&pending[*i]) == Some(best_key))
             .collect();
         let visible = |c: &Candidate| match c {
+            Candidate::Elemental(_) => None,
             Candidate::Native(owner, skill) => self
                 .seat(*owner)
                 .ok()
@@ -471,6 +492,7 @@ impl Game {
             }),
         };
         let owner = |c: &Candidate| match c {
+            Candidate::Elemental(rule) => rule.owner(self),
             Candidate::Native(s, _) => *s,
             Candidate::Qilin { source, .. } => *source,
             Candidate::Registered(id) => self.trigger_registrations[id].owner,
@@ -509,6 +531,7 @@ impl Game {
         });
         let chosen_candidate = pending[chosen].clone();
         let identity = match &chosen_candidate {
+            Candidate::Elemental(rule) => (rule.owner(self), rule.skill().to_owned()),
             Candidate::Native(owner, skill) => (*owner, skill.as_str().to_owned()),
             Candidate::Qilin { source, .. } => (*source, "qilin_skill".to_owned()),
             Candidate::Registered(id) => {
@@ -526,6 +549,9 @@ impl Game {
                 }
                 // Indexed native repeats are separate activations; duplicate registrations across roles are not.
                 match c {
+                    Candidate::Elemental(rule) => {
+                        (rule.owner(self), rule.skill()) != (identity.0, identity.1.as_str())
+                    }
                     Candidate::Registered(id) => {
                         let r = &self.trigger_registrations[id];
                         (r.owner, r.skill.as_str()) != (identity.0, identity.1.as_str())
@@ -549,6 +575,7 @@ impl Game {
         let moment = queue.moment.clone();
         self.scheduler.replace_current(Program::Dispatch(queue));
         match chosen_candidate {
+            Candidate::Elemental(rule) => self.scheduler.next(rule.program(self)),
             Candidate::Qilin { source, target } => {
                 if let Some(program) = self.qilin_program(source, target) {
                     self.scheduler.next(program);
@@ -651,7 +678,7 @@ impl Game {
             }
             Discard { seat } => register(seat, Keji, 1),
             End { seat } => register(seat, Biyue, 1),
-            UseTrick { seat, kind } if !matches!(kind, CardKind::Lebu | CardKind::Shandian) => {
+            UseTrick { seat, kind, .. } if !matches!(kind, CardKind::Lebu | CardKind::Shandian) => {
                 register(seat, Jizhi, 1)
             }
             DamageAfter { target, amount, .. } => {
@@ -1378,6 +1405,10 @@ mod dispatch_regressions {
     fn start(game: &mut Game) {
         let event = TriggerEvent {
             timing: "testTiming".into(),
+            parent: None,
+            card_kind: None,
+            nature: None,
+            delta: None,
             subject: 0,
             player: Some(0),
             source: None,

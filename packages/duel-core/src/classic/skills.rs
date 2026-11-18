@@ -90,6 +90,7 @@ pub(crate) enum HeroMoment {
     UseTrick {
         seat: SeatId,
         kind: CardKind,
+        cards: Vec<Card>,
     },
     DamageAfter {
         source: Option<SeatId>,

@@ -61,6 +61,7 @@ fn start_attack(game: &mut Game) {
 
 fn event(id: u64, parent: Option<u64>, kind: EventKind, status: EventStatus) -> GameEvent {
     GameEvent {
+        nature: None,
         id,
         parent,
         kind,

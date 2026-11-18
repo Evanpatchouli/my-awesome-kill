@@ -159,8 +159,31 @@ enum RecastStage {
     End,
     After,
     Finish,
-    Cancel(Option<RecastMovement>),
-    FinishCancelled(Option<RecastMovement>),
+    Cancel(Option<RemainingRecast>),
+    FinishCancelled(Option<RemainingRecast>),
+}
+
+#[derive(Clone, Copy)]
+enum RemainingRecast {
+    AfterLoss(RecastMovement),
+    Gain(RecastMovement),
+}
+
+impl Recasting {
+    fn request(&self, game: &Game, name: &'static str) -> Option<TriggerEvent> {
+        game.prepare_timing(name, Some(self.seat), None, None, 1, &[self.card])
+    }
+
+    fn plan_gain(
+        &self,
+        game: &Game,
+        loss: RecastMovement,
+    ) -> (Option<TriggerEvent>, RecastGain, Option<TriggerEvent>) {
+        let before = self.request(game, "recastingGain");
+        let gain = (self.rule.gain)(RecastState(game), self.seat, self.card, &loss);
+        let after = self.request(game, "recastingGained");
+        (before, gain, after)
+    }
 }
 
 #[derive(Clone, Copy)]
@@ -187,6 +210,7 @@ enum MoveKind {
 
 #[derive(Clone, Copy)]
 enum GainOrigin {
+    Created,
     Hand {
         seat: SeatId,
         public: bool,
@@ -326,6 +350,20 @@ impl Game {
         None
     }
 
+    pub(crate) fn draw_one_program(&self, seat: SeatId) -> Program {
+        Program::Recast(Flow::Movement(Movement::new(seat, MoveKind::Draw)))
+    }
+
+    pub(crate) fn created_gain_program(&self, seat: SeatId, card: Card) -> Program {
+        Program::Recast(Flow::Movement(Movement::new(
+            seat,
+            MoveKind::Gain {
+                card,
+                origin: GainOrigin::Created,
+            },
+        )))
+    }
+
     fn recast_rule(&self, card: Card) -> Option<&RecastRule> {
         self.recast_rules
             .iter()
@@ -346,7 +384,7 @@ impl Game {
     ) -> Result<(Card, Option<&RecastRule>), RuleError> {
         let card = self.recast_hand_card(seat, id)?;
         let rule = self.recast_rule(card);
-        if (strict && rule.is_none())
+        if (strict && card.kind != CardKind::Tiesuo && rule.is_none())
             || rule
                 .and_then(|r| r.filter.as_ref())
                 .is_some_and(|f| !f(RecastState(self), seat, card))
@@ -376,7 +414,7 @@ impl Game {
     }
 
     pub fn can_recast(&self, seat: SeatId, id: CardId) -> bool {
-        !self.recast_rules.is_empty() && self.recast_terms(seat, id, true).is_ok()
+        self.recast_terms(seat, id, true).is_ok()
     }
 
     pub(crate) fn plan_recast(&self, seat: SeatId, id: CardId) -> Result<Program, RuleError> {
@@ -458,18 +496,20 @@ impl Game {
         let (seat, card) = (recast.seat, recast.card);
         if matches!(child, Some(Outcome::Cancelled)) {
             match recast.stage {
-                // The synchronous factory had already queued the movement before
-                // this timing ran. It drains before the cancellation notification.
-                RunLoss(_) | RunGain(_) => recast.cancelled_before_movement = true,
+                // The factory already queued the movement. Cancellation requests its
+                // notification now, but the existing child runs before its callbacks.
+                RunLoss(_) | RunGain(_) => {
+                    recast.cancelled_before_movement = true;
+                    recast.post = recast.request(self, "recastCancelled");
+                }
                 FinishCancelled(_) => {}
-                Paid(loss) | GainFactory(loss) => recast.stage = Cancel(Some(loss)),
+                Paid(loss) => recast.stage = Cancel(Some(RemainingRecast::AfterLoss(loss))),
+                GainFactory(loss) => recast.stage = Cancel(Some(RemainingRecast::Gain(loss))),
                 _ => recast.stage = Cancel(None),
             }
         }
         let hook =
             |game: &mut Self, name| game.queue_timing(name, Some(seat), None, None, 1, &[card]);
-        let request =
-            |game: &Self, name| game.prepare_timing(name, Some(seat), None, None, 1, &[card]);
         loop {
             let queued = match recast.stage {
                 Before => {
@@ -489,9 +529,9 @@ impl Game {
                     true
                 }
                 LossFactory => {
-                    let pre = request(self, "recastingLose");
+                    let pre = recast.request(self, "recastingLose");
                     let loss = (recast.rule.loss)(RecastState(self), seat, card);
-                    recast.post = request(self, "recastingLost");
+                    recast.post = recast.request(self, "recastingLost");
                     recast.stage = RunLoss(loss);
                     self.dispatch_recast_hook(pre)
                 }
@@ -532,7 +572,7 @@ impl Game {
                         moved: moved == Some(card),
                     };
                     if recast.cancelled_before_movement {
-                        recast.stage = Cancel(Some(movement));
+                        recast.stage = Cancel(Some(RemainingRecast::AfterLoss(movement)));
                         continue;
                     }
                     recast.stage = Paid(movement);
@@ -543,8 +583,7 @@ impl Game {
                     hook(self, "recast")
                 }
                 GainFactory(loss) => {
-                    let pre = request(self, "recastingGain");
-                    let gain = (recast.rule.gain)(RecastState(self), seat, card, &loss);
+                    let (pre, gain, post) = recast.plan_gain(self, loss);
                     let movement = match gain {
                         RecastGain::Draw => Some(Movement::new(seat, MoveKind::Draw)),
                         RecastGain::FromDeck { card: id } => RecastState(self)
@@ -561,7 +600,7 @@ impl Game {
                                 )
                             }),
                     };
-                    recast.post = request(self, "recastingGained");
+                    recast.post = post;
                     recast.stage = RunGain(movement);
                     self.dispatch_recast_hook(pre)
                 }
@@ -591,15 +630,26 @@ impl Game {
                     recast.stage = Finish;
                     hook(self, "recastAfter")
                 }
-                Cancel(pending_gain_factory) => {
-                    recast.stage = FinishCancelled(pending_gain_factory);
-                    hook(self, "recastCancelled")
+                Cancel(remaining) => {
+                    recast.stage = FinishCancelled(remaining);
+                    if recast.cancelled_before_movement {
+                        self.dispatch_recast_hook(recast.post.take())
+                    } else {
+                        hook(self, "recastCancelled")
+                    }
                 }
-                FinishCancelled(pending_gain_factory) => {
-                    // The cancelled subject stops new children, but its async
-                    // content still calls a synchronous factory after the loss.
-                    if let Some(loss) = pending_gain_factory {
-                        (recast.rule.gain)(RecastState(self), seat, card, &loss);
+                FinishCancelled(remaining) => {
+                    // The async content still makes its remaining timing requests
+                    // and calls the gain factory. A cancelled parent accepts no new children.
+                    if let Some(remaining) = remaining {
+                        let loss = match remaining {
+                            RemainingRecast::AfterLoss(loss) => {
+                                let _ = recast.request(self, "recast");
+                                loss
+                            }
+                            RemainingRecast::Gain(loss) => loss,
+                        };
+                        let _ = recast.plan_gain(self, loss);
                     }
                     self.scheduler.end(Outcome::Cancelled);
                     return;
@@ -733,7 +783,7 @@ impl Game {
                         }
                         Gain {
                             card,
-                            origin: GainOrigin::Drawn,
+                            origin: GainOrigin::Drawn | GainOrigin::Created,
                         } => {
                             self.seat_mut(seat).hand.push(card);
                             movement.committed = Some(card);

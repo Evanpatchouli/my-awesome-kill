@@ -110,6 +110,13 @@ impl Game {
             self.finish();
             return;
         }
+        if child.is_none() && self.seat(seat).is_ok_and(|player| player.turned_over) {
+            if let Some(flip) = self.seat_change(seat, super::elemental::Change::TurnOver(false)) {
+                self.scheduler.next(flip);
+            }
+            self.scheduler.end(Outcome::Cancelled);
+            return;
+        }
         let phase = match child {
             None => Phase::Preparation,
             Some(Outcome::Finished(Resolution::PhaseFinished(Phase::Preparation))) => {
