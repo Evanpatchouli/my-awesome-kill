@@ -63,10 +63,19 @@ impl Response {
     }
 }
 
+#[derive(Clone, Copy)]
+enum PaymentStep {
+    Pay,
+    Timing,
+    Finish,
+}
+
 #[derive(Clone)]
 pub(crate) struct Payment {
     seat: SeatId,
     kind: CardKind,
+    context: ResponseContext,
+    step: PaymentStep,
     cards: Vec<Card>,
 }
 
@@ -105,8 +114,14 @@ impl Game {
         }
         let seat = response.seat;
         let kind = response.kind;
-        if matches!(response.step, Step::Start)
-            && response.context == ResponseContext::Use
+        if !self.is_alive(seat) {
+            self.scheduler.end(Finished(Passed));
+            return;
+        }
+        if matches!(
+            response.step,
+            Step::Start | Step::OfferArmor | Step::Judge | Step::Choose | Step::Lord
+        ) && response.context == ResponseContext::Use
             && !self.card_enabled(seat, kind)
         {
             self.scheduler.end(Finished(Passed));
@@ -164,9 +179,14 @@ impl Game {
                 }
             }
             (Step::Judge, Some(Cancelled)) => self.scheduler.end(Cancelled),
-            (Step::Hand, Some(Finished(Dodged)))
-            | (Step::Pay, Some(Finished(_)))
-            | (Step::Lord, Some(Finished(Responded))) => self.scheduler.end(Finished(Responded)),
+            (Step::Hand, Some(Finished(Dodged))) | (Step::Pay, Some(Finished(_))) => {
+                self.scheduler.end(Finished(Responded))
+            }
+            (Step::Hand | Step::Pay, Some(Cancelled)) => self.scheduler.end(Finished(Passed)),
+            (Step::Lord, Some(Finished(Responded))) if response.context == ResponseContext::Use => {
+                self.response_pay(response, vec![])
+            }
+            (Step::Lord, Some(Finished(Responded))) => self.scheduler.end(Finished(Responded)),
             (Step::Hand, Some(Finished(Passed))) => self.scheduler.end(Finished(Passed)),
             (Step::Choose, Some(Finished(Selected(selection)))) => match selection.branch {
                 0 => self.scheduler.end(Finished(Passed)),
@@ -272,26 +292,53 @@ impl Game {
             .next(Program::Equipment(Flow::Payment(Payment {
                 seat: response.seat,
                 kind: response.kind,
+                context: response.context,
+                step: PaymentStep::Pay,
                 cards,
             })));
     }
 
-    pub(super) fn resolve_response_payment(&mut self, payment: Payment) {
-        if payment.kind == CardKind::Sha {
-            self.note_hero_sha_play(payment.seat);
+    pub(super) fn resolve_response_payment(
+        &mut self,
+        mut payment: Payment,
+        child: Option<Outcome<Resolution>>,
+    ) {
+        match payment.step {
+            PaymentStep::Pay => {
+                if payment.kind == CardKind::Sha {
+                    self.note_hero_sha_play(payment.seat);
+                }
+                self.queue_use_costs(payment.seat, &payment.cards);
+                for &card in &payment.cards {
+                    self.scheduler
+                        .after(Program::event(EventKind::Discard { card }));
+                }
+                payment.step = PaymentStep::Timing;
+                self.scheduler
+                    .replace_current(Program::Equipment(Flow::Payment(payment)));
+            }
+            PaymentStep::Timing => {
+                payment.step = PaymentStep::Finish;
+                self.scheduler
+                    .replace_current(Program::Equipment(Flow::Payment(payment.clone())));
+                if payment.context == ResponseContext::Use {
+                    self.queue_use_card2(payment.seat, payment.kind, &payment.cards);
+                }
+            }
+            PaymentStep::Finish => {
+                if matches!(child, Some(Outcome::Cancelled)) {
+                    self.scheduler.end(Outcome::Cancelled);
+                    return;
+                }
+                if payment.kind == CardKind::Wuxie {
+                    self.queue_hero_moment(HeroMoment::UseTrick {
+                        seat: payment.seat,
+                        kind: payment.kind,
+                        cards: payment.cards,
+                    });
+                }
+                self.finish();
+            }
         }
-        self.queue_use_costs(payment.seat, &payment.cards);
-        if payment.kind == CardKind::Wuxie {
-            self.queue_hero_moment(HeroMoment::UseTrick {
-                seat: payment.seat,
-                kind: payment.kind,
-                cards: payment.cards.clone(),
-            });
-        }
-        for card in payment.cards {
-            self.scheduler
-                .after(Program::event(EventKind::Discard { card }));
-        }
-        self.finish();
     }
 }

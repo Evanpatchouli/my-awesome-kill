@@ -96,6 +96,16 @@ pub struct TriggerContext<'a> {
     operations: VecDeque<TriggerOperation>,
 }
 impl TriggerContext<'_> {
+    /// Append a legal primary target to the current paid useCard2 subject.
+    pub fn add_use_target(&mut self, target: SeatId) -> Result<(), RuleError> {
+        self.game.edit_use_target(self.event, target, true)
+    }
+
+    /// Remove one live primary target while keeping at least one.
+    pub fn remove_use_target(&mut self, target: SeatId) -> Result<(), RuleError> {
+        self.game.edit_use_target(self.event, target, false)
+    }
+
     pub fn game(&self) -> &Game {
         self.game
     }

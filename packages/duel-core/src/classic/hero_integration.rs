@@ -117,52 +117,38 @@ impl Game {
     }
 
     pub(crate) fn queue_use_costs(&mut self, seat: SeatId, cards: &[Card]) {
-        let mut hand = 0;
-        let mut losses = Vec::with_capacity(cards.len());
-        for &card in cards {
-            let zone = self.zone_for_held_card(seat, card.id);
-            self.next(EventKind::UseCost { seat, card });
-            hand += usize::from(matches!(zone, Zone::Hand));
-            losses.push((zone, card));
+        if cards.is_empty() {
+            return;
         }
-        let moment = HeroMoment::LostCards {
+        let cards = cards
+            .iter()
+            .map(|&card| (self.zone_for_held_card(seat, card.id), card))
+            .collect();
+        self.scheduler.next(Program::UseCosts {
             seat,
-            cards: losses,
-        };
-        let empties_hand = hand > 0
-            && self
-                .seat(seat)
-                .is_ok_and(|player| player.hand.len() == hand);
-        if !cards.is_empty()
-            && (self.has_hero_triggers(&moment)
-                || (empties_hand && self.has_skill(seat, "lianying"))
-                || self.has_timing_registrations("loseAfter"))
-        {
-            // Eligibility is evaluated after the queued materials move.
+            cards,
+            paid: false,
+        });
+    }
+
+    pub(crate) fn resolve_use_costs(&mut self, seat: SeatId, cards: Vec<(Zone, Card)>, paid: bool) {
+        if !paid {
+            for &(_, card) in &cards {
+                self.next(EventKind::UseCost { seat, card });
+            }
+            self.scheduler.replace_current(Program::UseCosts {
+                seat,
+                cards,
+                paid: true,
+            });
+            return;
+        }
+        let moment = HeroMoment::LostCards { seat, cards };
+        if self.wants_timing("loseAfter") || self.has_hero_triggers(&moment) {
             let dispatch = self.hero_triggers(moment);
             self.scheduler.next(dispatch);
         }
-    }
-
-    pub(crate) fn resolve_virtual_tao(
-        &mut self,
-        seat: SeatId,
-        target: SeatId,
-        card: Card,
-        child: Option<Outcome<Resolution>>,
-    ) {
-        if child.is_none() {
-            self.queue_use_costs(seat, &[card]);
-            self.next(EventKind::Recover {
-                seat,
-                target,
-                amount: 1 + self.hero_tao_bonus(seat, target),
-            });
-            self.scheduler
-                .after(Program::event(EventKind::Discard { card }));
-        } else {
-            self.finish();
-        }
+        self.finish();
     }
 }
 #[cfg(test)]

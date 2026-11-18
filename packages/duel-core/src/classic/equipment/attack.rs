@@ -6,6 +6,9 @@ use crate::{Card, CardKind, EventKind, Game, Program, Resolution, SeatId};
 #[derive(Clone, Copy)]
 enum AttackStep {
     Pay,
+    UseCard2,
+    TargetsChanged,
+    BeforeTargets,
     Redirect(usize),
     Redirected(usize),
     Declare(usize),
@@ -28,6 +31,14 @@ pub(crate) struct Attack {
 }
 
 impl Attack {
+    pub(crate) fn use_targets(&self) -> &[SeatId] {
+        &self.targets
+    }
+
+    pub(crate) fn editable_targets(&mut self) -> Option<&mut Vec<SeatId>> {
+        matches!(self.step, AttackStep::TargetsChanged).then_some(&mut self.targets)
+    }
+
     pub(crate) fn event(&self) -> EventKind {
         match *self.cards.as_slice() {
             [card] if card.kind == CardKind::Sha => match self.announced_target {
@@ -138,10 +149,45 @@ impl Game {
                     self.scheduler
                         .after(Program::event(EventKind::Discard { card }));
                 }
+                attack.step = AttackStep::UseCard2;
+            }
+            AttackStep::UseCard2 => {
+                if !self.wants_timing("useCard2") && !self.wants_timing("useCard") {
+                    self.sort_card_targets(&mut attack.targets);
+                    attack.step = AttackStep::Redirect(0);
+                    self.continue_equipment(Flow::Attack(attack));
+                    return;
+                }
+                attack.step = AttackStep::TargetsChanged;
+                // The dispatcher reads and edits this same paid attack while it is suspended.
+                let cards = attack.cards.clone();
+                self.continue_equipment(Flow::Attack(attack));
+                self.queue_use_card2(seat, CardKind::Sha, &cards);
+                return;
+            }
+            AttackStep::TargetsChanged => {
+                if matches!(child, Some(Outcome::Cancelled)) {
+                    self.scheduler.end(Outcome::Cancelled);
+                    return;
+                }
+                self.queue_timing("useCard", Some(seat), None, None, 0, &attack.cards);
+                attack.step = AttackStep::BeforeTargets;
+            }
+            AttackStep::BeforeTargets => {
+                if matches!(child, Some(Outcome::Cancelled)) {
+                    self.scheduler.end(Outcome::Cancelled);
+                    return;
+                }
+                self.sort_card_targets(&mut attack.targets);
                 attack.step = AttackStep::Redirect(0);
             }
             AttackStep::Redirect(index) => {
                 attack.step = if let Some(&target) = attack.targets.get(index) {
+                    if !self.seat(target).is_ok_and(|s| s.alive) {
+                        attack.step = AttackStep::Redirect(index + 1);
+                        self.continue_equipment(Flow::Attack(attack));
+                        return;
+                    }
                     let moment = HeroMoment::ShaRedirect {
                         seat,
                         target,
@@ -166,6 +212,11 @@ impl Game {
             }
             AttackStep::Declare(index) => {
                 if let Some(&target) = attack.targets.get(index) {
+                    if !self.seat(target).is_ok_and(|s| s.alive) {
+                        attack.step = AttackStep::Declare(index + 1);
+                        self.continue_equipment(Flow::Attack(attack));
+                        return;
+                    }
                     attack.step = AttackStep::Aim(index);
                     let gender = |id| {
                         self.seat(id)
@@ -309,7 +360,7 @@ impl Game {
     }
 
     fn ask_shan(&mut self, target: SeatId, ignore_armor: bool) {
-        if self.classic.is_some() {
+        if self.classic.is_some() || !self.card_enabled(target, CardKind::Shan) {
             self.scheduler.next(Program::Equipment(Flow::response(
                 target,
                 CardKind::Shan,

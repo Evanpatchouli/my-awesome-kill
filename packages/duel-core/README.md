@@ -20,6 +20,12 @@
 
 `TemporarySkill::until_turn_end` 在全局 `phaseAfter` 或下次 `phaseBeforeStart` 到期。时机请求先记录当时状态，随即撤销这次授予的登记和修饰，然后选择实际执行的技能。`Game::has_skill` 和 `Game::card_enabled` 供可信内容查询。经典选牌、直接提交和 AI 使用相同的生效牌种约束，重铸、打出和救援分别走对应的规则。在巧说的八人平局和负局中，`phaseAfter` 请求时决斗仍被禁止，第一个技能回调里已可使用。[上游观测](../../tests/reference/compare.json)
 
+### 已支付用牌的目标
+
+`useCard2` 在实体进入处理区并完成失牌回调之后、逐目标结算之前派发。`Game::use_targets(subject)` 读取该次用牌的主目标，`additional_use_targets` 和 `removable_use_targets` 返回当前合法选项。内容响应这个时机时，可以调用 `TriggerContext::add_use_target` 或 `remove_use_target`。两者只修改本次用牌，保留事件 ID、支付和清理，并在执行时重新核对目标。额外的杀与顺手目标仍须满足牌面、武将和牌区条件，可以越过通常的距离限制。
+
+可选 Cargo feature `content-qiaoshui` 提供巧说的 Rust 内容登记。胜方在下一次使用基本牌或普通锦囊时先消耗临时技能，再选择增加、减少或放弃。南蛮中打出杀会保留机会，防御时使用闪和反制时使用无懈会消耗机会。借刀的主目标是持刀者，新增受杀者由用牌者按相应持刀者的攻击范围选择。锁定版本保留原受杀者数组并追加新选择，按排序后的持刀者位置结算。在八席实测中，最初指定 D 对 E 出杀，追加 B 并为 B 选 C，最终询问依次是 B 对 E 和 D 对 C。每份询问会重验实际受杀者。[借刀、南蛮与铁索的上游实测](../../tests/reference/qiaoshui-targets.json)
+
 ### 单张重铸
 
 可信内容可用 `Game::register_recast` 按牌种或实体 ID 登记重铸，实体登记优先。出牌阶段仅向有权的持有者列出可用的 `Action::Recast`。技能在其他时机也可通过 `TriggerContext::recast` 发起同一结算。谓词与移动工厂读取 `RecastState` 中的牌、位置、座位和回合信息。默认规则弃掉材料再摸牌；内容可替换为交给另一席或明获指定实体。经典牌堆仍为 104 张。

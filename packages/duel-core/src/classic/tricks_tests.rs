@@ -49,6 +49,108 @@ fn borrowed_weapon_requires_valid_holder_and_reachable_second_target() {
     assert_eq!(targets, vec![vec![1, 2], vec![1, 0]]);
 }
 
+#[test]
+fn borrowed_weapon_added_targets_use_upstream_positional_victims() {
+    use crate::{TriggerOrder, TriggerRegistration, TriggerRole, TriggerStep};
+    use std::sync::Arc;
+    let mut game = scene();
+    game.seat_mut(1).equipment.push(card(50, CardKind::Zhuge));
+    game.seat_mut(2)
+        .equipment
+        .push(card(51, CardKind::Qinglong));
+    game.register_trigger(TriggerRegistration {
+        owner: 0,
+        skill: "add_holder".into(),
+        timing: "useCard2".into(),
+        role: TriggerRole::Player,
+        order: TriggerOrder::First,
+        priority: 0,
+        label: None,
+        silent: true,
+        filter: Arc::new(|_, event, _| event.card_kind == Some(CardKind::Jiedao)),
+        effect: Arc::new(|ctx, _, _| {
+            ctx.add_use_target(1).unwrap();
+            TriggerStep::Done
+        }),
+    })
+    .unwrap();
+    start_trick(&mut game, card(20, CardKind::Jiedao), vec![2, 3]);
+    let view = game.view(Some(0)).unwrap();
+    assert_eq!(view.waiting_for, Some(0));
+    let choice = view.choice.unwrap();
+    assert_eq!(choice.target, Some(1));
+    let branch = &choice.branches[0];
+    assert!(branch.targets.contains(&0));
+    game.submit(Command {
+        version: view.version,
+        seat: 0,
+        action: Action::Select {
+            event: choice.event,
+            branch: branch.id,
+            cards: vec![],
+            targets: vec![0],
+        },
+    })
+    .unwrap();
+    pass_counters(&mut game);
+    let choice = game.view(Some(1)).unwrap().choice.unwrap();
+    assert_eq!(choice.target, Some(3));
+    select(&mut game, 0, vec![]);
+    pass_counters(&mut game);
+    assert_eq!(game.view(None).unwrap().waiting_for, Some(2));
+    assert_eq!(game.view(Some(2)).unwrap().choice.unwrap().target, Some(0));
+    select(&mut game, 0, vec![]);
+    assert!(game
+        .seat(0)
+        .unwrap()
+        .hand
+        .contains(&card(50, CardKind::Zhuge)));
+    assert!(game
+        .seat(0)
+        .unwrap()
+        .hand
+        .contains(&card(51, CardKind::Qinglong)));
+}
+
+#[test]
+fn added_trick_targets_resolve_in_turn_order_after_payment() {
+    use crate::{TriggerOrder, TriggerRegistration, TriggerRole, TriggerStep};
+    use std::sync::Arc;
+    let mut game = scene();
+    game.seat_mut(1).hand.push(card(41, CardKind::Tao));
+    game.seat_mut(2).hand.push(card(42, CardKind::Tao));
+    game.register_trigger(TriggerRegistration {
+        owner: 0,
+        skill: "add_guohe".into(),
+        timing: "useCard2".into(),
+        role: TriggerRole::Player,
+        order: TriggerOrder::First,
+        priority: 0,
+        label: None,
+        silent: true,
+        filter: Arc::new(|_, event, _| event.card_kind == Some(CardKind::Guohe)),
+        effect: Arc::new(|ctx, _, _| {
+            assert!(ctx.game().resolving.contains(&card(20, CardKind::Guohe)));
+            assert_eq!(
+                ctx.game().use_targets(ctx.event().subject),
+                Some([2].as_slice())
+            );
+            ctx.add_use_target(1).unwrap();
+            TriggerStep::Done
+        }),
+    })
+    .unwrap();
+    start_trick(&mut game, card(20, CardKind::Guohe), vec![2]);
+    pass_counters(&mut game);
+    assert_eq!(game.view(Some(0)).unwrap().choice.unwrap().target, Some(1));
+    select(&mut game, 0, vec![]);
+    pass_counters(&mut game);
+    assert_eq!(game.view(Some(0)).unwrap().choice.unwrap().target, Some(2));
+    select(&mut game, 0, vec![]);
+    assert!(game.discard.contains(&card(41, CardKind::Tao)));
+    assert!(game.discard.contains(&card(42, CardKind::Tao)));
+}
+
 fn scene() -> Game {
     use super::{Classic, TableRandom};
     use crate::classic_data::Role;

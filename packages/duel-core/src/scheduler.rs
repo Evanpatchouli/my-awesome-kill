@@ -67,6 +67,14 @@ impl<P: Clone, R: Clone> Scheduler<P, R> {
             .map(|frame| (frame.event, &frame.program))
     }
 
+    pub fn active_program_mut(&mut self, id: EventId) -> Option<&mut P> {
+        self.stack
+            .iter_mut()
+            .rev()
+            .find(|frame| frame.event.id == id)
+            .map(|frame| &mut frame.program)
+    }
+
     pub fn next(&mut self, program: P) {
         let frame = self.current();
         assert!(matches!(frame.state, State::Running));

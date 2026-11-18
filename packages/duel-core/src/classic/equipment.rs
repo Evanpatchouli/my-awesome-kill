@@ -41,9 +41,21 @@ pub(crate) fn has_slot(seat: &Seat, wanted: Slot, ignored: Option<CardId>) -> bo
         .any(|card| Some(card.id) != ignored && slot(card.kind) == Some(wanted))
 }
 
+#[derive(Clone, Copy)]
+pub(crate) enum EquipStep {
+    Pay,
+    Timing,
+    Replace,
+    Install,
+}
+
 #[derive(Clone)]
 pub(crate) enum Flow {
-    Equip { seat: SeatId, card: Card },
+    Equip {
+        seat: SeatId,
+        card: Card,
+        step: EquipStep,
+    },
     Attack(attack::Attack),
     Target(attack::Target),
     Response(response::Response),
@@ -54,7 +66,7 @@ pub(crate) enum Flow {
 impl Flow {
     pub(crate) fn kind(&self) -> EventKind {
         match self {
-            Self::Equip { seat, card } => EventKind::Equip {
+            Self::Equip { seat, card, .. } => EventKind::Equip {
                 seat: *seat,
                 card: *card,
             },
@@ -73,6 +85,20 @@ impl Flow {
                 target: skill.target,
                 kind: skill.kind,
             },
+        }
+    }
+
+    pub(crate) fn equipment_target(&self) -> Option<&SeatId> {
+        match self {
+            Self::Equip { seat, .. } => Some(seat),
+            _ => None,
+        }
+    }
+
+    pub(crate) fn response_uses_card(&self) -> Option<bool> {
+        match self {
+            Self::Response(response) => Some(response.context == response::ResponseContext::Use),
+            _ => None,
         }
     }
 
@@ -110,11 +136,11 @@ impl Game {
         child: Option<Outcome<Resolution>>,
     ) {
         match flow {
-            Flow::Equip { seat, card } => self.resolve_equip(seat, card, child.is_none()),
+            Flow::Equip { seat, card, step } => self.resolve_equip(seat, card, step, child),
             Flow::Attack(attack) => self.resolve_attack(attack, child),
             Flow::Target(target) => self.resolve_sha_target(target, child),
             Flow::Response(response) => self.resolve_response(response, child),
-            Flow::Payment(payment) => self.resolve_response_payment(payment),
+            Flow::Payment(payment) => self.resolve_response_payment(payment, child),
             Flow::Skill(skill) => self.resolve_equipment_skill(event, skill, child),
         }
     }
@@ -124,32 +150,73 @@ impl Game {
         let seat = player.id;
         Some(vec![PlannedUse {
             targets: vec![seat],
-            program: Program::Equipment(Flow::Equip { seat, card }),
+            program: Program::Equipment(Flow::Equip {
+                seat,
+                card,
+                step: EquipStep::Pay,
+            }),
         }])
     }
 
-    fn resolve_equip(&mut self, seat: SeatId, card: Card, first: bool) {
-        if first {
-            self.move_to_resolving(seat, card.id);
-            self.queue_hero_losses(seat, vec![(Zone::Hand, card)]);
-            let current = self.seat(seat).expect("the equipping seat exists");
-            let old = current
-                .equipment
-                .iter()
-                .find(|old| slot(old.kind) == slot(card.kind))
-                .copied();
-            if let Some(old) = old {
-                self.scheduler.next(Program::DiscardFrom {
-                    seat,
-                    zone: Zone::Equipment,
-                    card: old,
-                });
-                return;
+    fn resolve_equip(
+        &mut self,
+        seat: SeatId,
+        card: Card,
+        step: EquipStep,
+        child: Option<Outcome<Resolution>>,
+    ) {
+        match step {
+            EquipStep::Pay => {
+                self.queue_use_costs(seat, &[card]);
+                self.scheduler
+                    .replace_current(Program::Equipment(Flow::Equip {
+                        seat,
+                        card,
+                        step: EquipStep::Timing,
+                    }));
+            }
+            EquipStep::Timing => {
+                self.scheduler
+                    .replace_current(Program::Equipment(Flow::Equip {
+                        seat,
+                        card,
+                        step: EquipStep::Replace,
+                    }));
+                self.queue_use_card2(seat, card.kind, &[card]);
+            }
+            EquipStep::Replace => {
+                if matches!(child, Some(Outcome::Cancelled)) {
+                    self.scheduler
+                        .after(Program::event(EventKind::Discard { card }));
+                    self.scheduler.end(Outcome::Cancelled);
+                    return;
+                }
+                let current = self.seat(seat).expect("the equipping seat exists");
+                let old = current
+                    .equipment
+                    .iter()
+                    .find(|old| slot(old.kind) == slot(card.kind))
+                    .copied();
+                self.scheduler
+                    .replace_current(Program::Equipment(Flow::Equip {
+                        seat,
+                        card,
+                        step: EquipStep::Install,
+                    }));
+                if let Some(old) = old {
+                    self.scheduler.next(Program::DiscardFrom {
+                        seat,
+                        zone: Zone::Equipment,
+                        card: old,
+                    });
+                }
+            }
+            EquipStep::Install => {
+                let card = self.take_resolving(card.id);
+                self.seat_mut(seat).equipment.push(card);
+                self.finish();
             }
         }
-        let card = self.take_resolving(card.id);
-        self.seat_mut(seat).equipment.push(card);
-        self.finish();
     }
 
     pub(crate) fn weapon(&self, seat: SeatId) -> Option<Card> {
@@ -338,9 +405,10 @@ impl Game {
         targets: &[SeatId],
     ) -> Vec<ChoiceBranch> {
         let mut branches = vec![branch(0, "放弃", vec![], 0)];
-        if !targets.iter().all(|&target| {
-            self.in_sha_range(seat, target) && self.hero_allows_target(target, CardKind::Sha)
-        }) {
+        if !targets
+            .iter()
+            .all(|&target| self.accepts_sha_target(seat, target))
+        {
             return branches;
         }
         let actor = self.seat(seat).expect("the responding seat exists");

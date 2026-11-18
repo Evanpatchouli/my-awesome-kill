@@ -80,10 +80,23 @@ impl Game {
             self.finish();
             return;
         }
-        if matches!(child, Some(Outcome::Cancelled)) {
-            self.scheduler.end(Outcome::Cancelled);
-            return;
-        }
+        // Cancelling a phase finishes that child. Cancelling a timing on the turn itself ends the turn.
+        let child = match child {
+            Some(Outcome::Cancelled) if matches!(flow.stage, TurnStage::Phases) => {
+                let phase = self
+                    .classic
+                    .as_ref()
+                    .and_then(|state| state.turn)
+                    .expect("active turn")
+                    .phase;
+                Some(Outcome::Finished(Resolution::PhaseFinished(phase)))
+            }
+            Some(Outcome::Cancelled) => {
+                self.scheduler.end(Outcome::Cancelled);
+                return;
+            }
+            outcome => outcome,
+        };
         loop {
             let timing = match flow.stage {
                 TurnStage::RoundStart => {
@@ -496,7 +509,9 @@ impl Game {
                     self.next(EventKind::UseTao { seat, target, card });
                 } else {
                     self.scheduler
-                        .next(Program::VirtualTao { seat, target, card });
+                        .next(Program::BasicUse(super::basic_use::Flow::tao(
+                            seat, target, card, true,
+                        )));
                 }
             }
             return;

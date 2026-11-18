@@ -1,3 +1,4 @@
+mod card_use;
 mod classic;
 pub mod classic_data;
 mod protocol;
@@ -122,6 +123,7 @@ enum TurnStage {
 
 #[derive(Clone)]
 enum Program {
+    BasicUse(classic::basic_use::Flow),
     Compare(classic::compare::Flow),
     Turn(TurnFlow),
     PlayAfterBegin(SeatId),
@@ -153,17 +155,23 @@ enum Program {
         seat: SeatId,
         cards: Vec<(Zone, Card)>,
     },
-    Discarded(Card),
-    VirtualTao {
+    UseCosts {
         seat: SeatId,
-        target: SeatId,
-        card: Card,
+        cards: Vec<(Zone, Card)>,
+        paid: bool,
     },
+    Discarded(Card),
 }
 
 impl Program {
     fn event(kind: EventKind) -> Self {
         match kind {
+            EventKind::UseTao { seat, target, card } => {
+                Self::BasicUse(classic::basic_use::Flow::tao(seat, target, card, false))
+            }
+            EventKind::UseShan { seat, card } => {
+                Self::BasicUse(classic::basic_use::Flow::shan(seat, card, true))
+            }
             EventKind::Turn {
                 seat,
                 number,
@@ -181,6 +189,7 @@ impl Program {
 
     fn kind(&self) -> EventKind {
         match self {
+            Self::BasicUse(flow) => flow.kind(),
             Self::Event(kind) => *kind,
             Self::Compare(flow) => flow.kind(),
             Self::Turn(flow) => EventKind::Turn {
@@ -219,11 +228,11 @@ impl Program {
                 seat: *seat,
                 amount: cards.len(),
             },
-            Self::Discarded(card) => EventKind::Discard { card: *card },
-            Self::VirtualTao { seat, .. } => EventKind::UseVirtual {
+            Self::UseCosts { seat, cards, .. } => EventKind::Lose {
                 seat: *seat,
-                kind: CardKind::Tao,
+                amount: cards.len(),
             },
+            Self::Discarded(card) => EventKind::Discard { card: *card },
         }
     }
 
@@ -355,6 +364,10 @@ impl Game {
             trigger_registrations: HashMap::new(),
             next_trigger_id: 0,
         }
+    }
+
+    pub fn is_alive(&self, seat: SeatId) -> bool {
+        self.seat(seat).is_ok_and(|player| player.alive)
     }
 
     /// Walk the table once, starting at `start` and following the setup order.
@@ -871,37 +884,35 @@ impl Game {
             Program::DiscardGroup { seat, cards } => {
                 return self.resolve_discard_group(seat, cards)
             }
-            Program::Discarded(_) => return self.finish(),
-            Program::VirtualTao { seat, target, card } => {
-                return self.resolve_virtual_tao(seat, target, card, child)
+            Program::UseCosts { seat, cards, paid } => {
+                return self.resolve_use_costs(seat, cards, paid)
             }
+            Program::Discarded(_) => return self.finish(),
+            Program::BasicUse(flow) => return self.resolve_basic_use(flow, child),
             program => program,
         };
         match (kind, child) {
             (ChooseShan { seat }, None) => match answer.take() {
                 Some(Answer::Pass) => self.scheduler.end(Finished(Passed)),
-                Some(Answer::Card(card)) => self.next(UseShan { seat, card }),
+                Some(Answer::Card(card)) => {
+                    let uses_card = event
+                        .parent
+                        .and_then(|id| self.scheduler.active_frame(id))
+                        .and_then(|(_, program)| match program {
+                            Program::Equipment(flow) => flow.response_uses_card(),
+                            _ => None,
+                        })
+                        .unwrap_or(true);
+                    self.scheduler
+                        .next(Program::BasicUse(classic::basic_use::Flow::shan(
+                            seat, card, uses_card,
+                        )));
+                }
                 None => self.ask_for_card(event, seat, ChoiceKind::Shan, None, CardKind::Shan),
                 _ => unreachable!("a shan choice receives one card or a pass"),
             },
             (ChooseShan { .. }, Some(Finished(Dodged))) => self.scheduler.end(Finished(Dodged)),
-            (UseShan { seat, card }, None) => {
-                self.move_to_resolving(seat, card.id);
-                self.queue_hero_losses(seat, vec![(Zone::Hand, card)]);
-                self.scheduler.after(Program::event(Discard { card }));
-                self.scheduler.end(Finished(Dodged));
-            }
-            (UseTao { seat, target, card }, None) => {
-                self.move_to_resolving(seat, card.id);
-                self.queue_hero_losses(seat, vec![(Zone::Hand, card)]);
-                self.next(Recover {
-                    seat,
-                    target,
-                    amount: 1 + self.hero_tao_bonus(seat, target),
-                });
-                self.scheduler.after(Program::event(Discard { card }));
-            }
-            (UseTao { .. }, Some(_)) => self.finish(),
+            (ChooseShan { .. }, Some(_)) => self.scheduler.end(Finished(Passed)),
             (Recover { .. }, None) if self.match_result().is_some() => {
                 self.scheduler.end(Cancelled)
             }
