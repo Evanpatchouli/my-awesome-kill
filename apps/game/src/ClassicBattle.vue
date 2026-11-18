@@ -2,6 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import BattleEffects from './BattleEffects.vue'
 import CardFace from './CardFace.vue'
+import ClassicCompare from './ClassicCompare.vue'
 import HealthMeter from './HealthMeter.vue'
 import ClassicSeatZones from './ClassicSeatZones.vue'
 import { heroPortrait } from './battleArt'
@@ -66,6 +67,7 @@ const branches = computed(() => (choice.value?.kind === 'content' ? choice.value
 const virtuals = computed(() => props.view.virtualPlays ?? [])
 const skills = computed(() => props.view.skillPlays ?? [])
 const branch = computed<Branch | null>(() => {
+  if (choice.value?.compare) return choice.value.branches[0] ?? null
   if (selectedMode.value === 'choice')
     return branches.value.find((item) => item.id === selectedBranch.value) ?? null
   if (selectedMode.value === 'virtual')
@@ -151,6 +153,11 @@ const prompt = computed(() => {
     return `${seatName(props.view, props.view.waitingFor ?? props.view.activeSeat)}正在思考`
   const counter = counterPrompt(props.view)
   if (counter) return counter
+  if (choice.value?.compare) {
+    const { initiator, target } = choice.value.compare
+    const other = choice.value.seat === initiator ? target : initiator
+    return `与${seatName(props.view, other)}拼点，暗选一张手牌`
+  }
   if (choice.value?.prompt) return choice.value.prompt
   if (choice.value?.kind === 'discard') return `请选择 ${choice.value.min} 张牌弃置`
   if (choice.value?.kind === 'shan') return '请打出闪，或选择放弃'
@@ -188,8 +195,9 @@ function toggle(list: number[], id: number, max: number): number[] {
 function chooseHand(id: number) {
   if (!active.value) return
   if (branch.value) {
-    if (branchCards.value.has(id))
-      selectedCards.value = toggle(selectedCards.value, id, branch.value.maxCards)
+    if (!branchCards.value.has(id)) return
+    if (choice.value?.compare) selectedCards.value = selectedCards.value.includes(id) ? [] : [id]
+    else selectedCards.value = toggle(selectedCards.value, id, branch.value.maxCards)
   } else if (choice.value?.kind === 'discard') {
     if (handOptions.value.has(id))
       selectedCards.value = toggle(selectedCards.value, id, choice.value.max)
@@ -317,6 +325,7 @@ function canPickCard(id: number) {
           <li v-for="(line, i) in [...log].reverse()" :key="i">{{ line }}</li>
         </ol>
       </details>
+      <ClassicCompare :view="view" />
     </div>
     <div class="classic-opponents" aria-label="其他角色">
       <div
@@ -461,7 +470,7 @@ function canPickCard(id: number) {
         </div>
       </div>
       <div class="classic-controls" aria-label="对局操作">
-        <div v-if="branches.length" class="classic-options">
+        <div v-if="branches.length && !choice?.compare" class="classic-options">
           <button
             v-for="item in branches"
             :key="item.id"
@@ -503,7 +512,7 @@ function canPickCard(id: number) {
             {{ card.name }} {{ card.rank }}
           </button>
         </div>
-        <p v-if="branch">
+        <p v-if="branch && !choice?.compare">
           选牌 {{ selectedCards.length }}/{{ branch.minCards }}–{{ branch.maxCards }} · 目标
           {{ selectedTargets.length }}/{{ branch.minTargets }}–{{ branch.maxTargets }}
         </p>

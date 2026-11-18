@@ -2,6 +2,8 @@
 use duel_core::{Command, Game, GameSetup, SeatId};
 use wasm_bindgen::prelude::*;
 
+#[cfg(feature = "qa-compare")]
+mod qa_compare;
 #[cfg(feature = "qa-elemental")]
 mod qa_elemental;
 #[cfg(feature = "qa-recast")]

@@ -25,6 +25,21 @@ export interface Entity {
   id: number
   kind: string
 }
+interface CompareParticipants {
+  initiator: number
+  target: number
+}
+interface CompareResult {
+  event: number
+  parent: number | null
+  turn: number | null
+  participants: CompareParticipants
+  cards: [Entity, Entity]
+  numbers: [number, number]
+  won: boolean
+  tie: boolean
+  winner: number | null
+}
 export type DamageNature = 'fire' | 'thunder'
 export type TableCard = Omit<Card, 'suit' | 'rank'> & { suit?: Card['suit']; rank?: number }
 const damageNames: Record<DamageNature, string> = { fire: '火焰', thunder: '雷电' }
@@ -79,6 +94,7 @@ export interface Choice {
   branches: Branch[]
   prompt?: string
   counter?: { cardKind: string; source: number | null; target: number; negated: boolean } | null
+  compare?: CompareParticipants
 }
 interface EventRecord {
   id: number
@@ -88,6 +104,8 @@ interface EventRecord {
   seat?: number
   target?: number
   card?: Entity
+  cards?: [Entity, Entity]
+  result?: CompareResult
   amount?: number
   before?: number
   after?: number
@@ -143,6 +161,48 @@ export function seatName(view: TableView, id: number | undefined) {
   const seat = view.seats.find((s) => s.id === id)
   return seat ? (generalById.get(seat.hero)?.name ?? seat.hero) : '牌堆'
 }
+const suits = { spade: '♠', heart: '♥', club: '♣', diamond: '♦' }
+export function printedFace(card: TableCard) {
+  if (!card.suit || card.rank == null) return card.name
+  const rank =
+    ({ 1: 'A', 11: 'J', 12: 'Q', 13: 'K' } as Record<number, string>)[card.rank] ?? card.rank
+  return `${suits[card.suit]}${rank} ${card.name}`
+}
+
+function comparedBids(
+  view: TableView,
+  seats: CompareParticipants,
+  cards: [Entity, Entity],
+  numbers?: [number, number],
+) {
+  return ([0, 1] as const).map((i) => {
+    const seat = i === 0 ? seats.initiator : seats.target
+    const card = faceOf(view, cards[i])
+    return { seat, name: seatName(view, seat), card, face: printedFace(card), points: numbers?.[i] }
+  })
+}
+export interface PublicComparison {
+  event: number
+  bids: ReturnType<typeof comparedBids>
+  outcome?: string
+}
+export function publicComparison(view: TableView, e: EventRecord): PublicComparison | undefined {
+  if (e.status !== 'started') return
+  if (e.type === 'compareResult' && e.result) {
+    const { event, participants, cards, numbers, winner } = e.result
+    return {
+      event,
+      bids: comparedBids(view, participants, cards, numbers),
+      outcome: winner == null ? '拼点平局' : `${seatName(view, winner)}拼点获胜`,
+    }
+  }
+  if (e.type === 'compareReveal' && e.parent != null && e.seat != null && e.target != null && e.cards) {
+    return {
+      event: e.parent,
+      bids: comparedBids(view, { initiator: e.seat, target: e.target }, e.cards),
+    }
+  }
+}
 const cardEffects: Partial<Record<string, 'play' | 'respond' | 'equip' | 'judge'>> = {
   useSha: 'play',
   useShaTargets: 'play',
@@ -195,6 +255,12 @@ export function counterPrompt(view: TableView): string | undefined {
 
 export function describeEvent(view: TableView, e: EventRecord): string | undefined {
   if (!isPresentationEvent(e)) return
+  const comparison = publicComparison(view, e)
+  if (comparison) {
+    const { bids, outcome } = comparison
+    if (outcome) return `${outcome} · ${bids.map((b) => `${b.name} ${b.points}点`).join(' / ')}`
+    return `拼点亮牌 · ${bids.map((b) => `${b.name}【${b.face}】`).join(' / ')}`
+  }
   const who = seatName(view, e.seat)
   if (e.card && cardEffects[e.type] && e.type !== 'reveal') {
     const verb = e.type === 'equip' ? '装备' : cardEffects[e.type] === 'respond' ? '打出' : '使用'
