@@ -15,6 +15,7 @@ import { checkZhongyiTransitDeath, installZhongyiTransitDeath } from './referenc
 import { checkPhaseScheduling, installPhaseScheduling } from './reference-phase-scheduling.mjs';
 import { checkPhaseQueue, installPhaseQueue } from './reference-phase-queue.mjs';
 import { checkJudgmentZones, installJudgmentZones } from './reference-judgment-zones.mjs';
+import { checkCounterPayment, installCounterPayment } from './reference-counter-payment.mjs';
 
 // This is an optional oracle runner. It needs a running, separate upstream dev
 // server and Playwright; neither is a runtime dependency of the game.
@@ -55,6 +56,7 @@ const descriptions = new Map([
   ['phase-scheduling', 'dangxian play segments and fangquan extra turns in one natural seat cycle'],
   ['phase-queue', 'insertPhase queue ordering, a nested append, and a queued player who dies'],
   ['judgment-zones', 'delayed-card and judgment-card zones across ordinary and cancelled judgments'],
+  ['counter-payment', 'physical wuxie moved or blocked around selection and payment for a delayed card'],
   ['damage-callback-cancel', 'damage callback cancellation after HP change for physical sha'],
   ['hp-cancel', 'cancelling changeHpBefore and changeHpEnd during a linked armored fire sha'],
 ]);
@@ -74,7 +76,7 @@ if (['zhongyi-expansion', 'zhongyi-boundaries', 'zhongyi-transit-death', 'qiaosh
 }
 if (isRecast || ['linked-damage', 'qiaoshui-targets'].includes(scenario)) sourceHashes['/card/extra.js'] = '8a73678a49b4fc413d6dc0d506733e594fae619d91dc8013cd441a6cd107c35d';
 if (['recast-callbacks', 'compare', 'compare-boundaries', 'compare-multiple', 'zhongyi-boundaries', 'zhongyi-transit-death'].includes(scenario)) sourceHashes['/noname/library/element/card.js'] = '5d3a07fadafa1c5661ec197edb8c71f613b3db1129933fdf7d8aa311f5811f8d';
-if (['zhongyi-boundaries', 'zhongyi-transit-death', 'phase-scheduling', 'phase-queue', 'compare-multiple'].includes(scenario)) {
+if (['zhongyi-boundaries', 'zhongyi-transit-death', 'phase-scheduling', 'phase-queue', 'compare-multiple', 'counter-payment'].includes(scenario)) {
   sourceHashes['/noname/get/index.js'] = '8515ed7242d2638720180507a778cb273d8f33743eac12c5237d2f50e805823d';
 }
 if (['zhongyi-transit-death', 'phase-scheduling', 'phase-queue', 'compare-multiple'].includes(scenario)) {
@@ -138,6 +140,8 @@ try {
     await context.addInitScript(installPhaseQueue);
   } else if (scenario === 'judgment-zones') {
     await context.addInitScript(installJudgmentZones);
+  } else if (scenario === 'counter-payment') {
+    await context.addInitScript(installCounterPayment);
   } else if (scenario === 'compare-boundaries') {
     await context.addInitScript(installCompareBoundaries);
   } else if (scenario === 'compare-multiple') {
@@ -221,6 +225,7 @@ try {
             'compare-boundaries': window.__runCompareBoundaries,
             'compare-multiple': window.__runCompareMultiple,
             'judgment-zones': window.__runJudgmentZones,
+            'counter-payment': window.__runCounterPayment,
           };
           const run = multiTurn[scenario];
           if (run) {
@@ -393,6 +398,7 @@ try {
   if (scenario === 'phase-scheduling') checkPhaseScheduling(captured.value);
   if (scenario === 'phase-queue') checkPhaseQueue(captured.value);
   if (scenario === 'judgment-zones') checkJudgmentZones(captured.value);
+  if (scenario === 'counter-payment') checkCounterPayment(captured.value);
   if (scenario === 'recast-callbacks') checkReferenceRecastCallbacks(captured.value);
   if (scenario === 'sha-no-shan') assert.deepEqual(captured.value.final, {
     targetHp: 3, cardPosition: 'd', inActorHand: false, inDiscard: true, useCount: 1, targetAlive: true,

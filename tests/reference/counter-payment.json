@@ -1,0 +1,127 @@
+{
+  "schema": "noname-reference-trace-v1",
+  "referenceCommit": "c73270948d72949aa80009536b9fd5400767d091",
+  "mode": "identity",
+  "scenario": "physical wuxie moved or blocked around selection and payment for a delayed card",
+  "players": 8,
+  "nextJudgmentSeat": "D",
+  "trials": [
+    {
+      "name": "move-after-choice",
+      "selected": true,
+      "before": {
+        "hp": 8,
+        "counter": "A:h",
+        "delayed": "B:j",
+        "revealed": "c"
+      },
+      "after": {
+        "hp": 8,
+        "counter": "d",
+        "delayed": "D:j",
+        "revealed": "c"
+      }
+    },
+    {
+      "name": "cancel-payment",
+      "selected": true,
+      "before": {
+        "hp": 8,
+        "counter": "A:h",
+        "delayed": "B:j",
+        "revealed": "c"
+      },
+      "after": {
+        "hp": 8,
+        "counter": "A:h",
+        "delayed": "D:j",
+        "revealed": "c"
+      }
+    },
+    {
+      "name": "move-in-payment",
+      "selected": true,
+      "before": {
+        "hp": 8,
+        "counter": "A:h",
+        "delayed": "B:j",
+        "revealed": "c"
+      },
+      "after": {
+        "hp": 8,
+        "counter": "C:h",
+        "delayed": "D:j",
+        "revealed": "c"
+      }
+    }
+  ],
+  "events": [
+    {"sample":"move-after-choice","kind":"request","timing":"phaseJudge","event":"phaseJudge","parent":"reference_fixture_use","player":"B","counter":"A:h","delayed":"o","revealed":"c","hp":8},
+    {"sample":"move-after-choice","kind":"content","timing":"begin","event":"_wuxie","parent":"trigger","player":"B","counter":"A:h","delayed":"o","revealed":"c","hp":8,"triggerTiming":"phaseJudge"},
+    {"sample":"move-after-choice","kind":"request","timing":"chooseToUseBegin","event":"chooseToUse","parent":"_wuxie","player":"A","counter":"A:h","delayed":"o","revealed":"c","hp":8,"accepted":null,"selectedPhysical":false},
+    {"sample":"move-after-choice","kind":"request","timing":"chooseToUseAfter","event":"chooseToUse","parent":"_wuxie","player":"A","counter":"A:h","delayed":"o","revealed":"c","hp":8,"accepted":true,"selectedPhysical":true},
+    {"sample":"move-after-choice","kind":"callback","timing":"chooseToUseAfter","event":"chooseToUse","parent":"_wuxie","player":"A","counter":"A:h","delayed":"o","revealed":"c","hp":8,"accepted":true,"selectedPhysical":true},
+    {"sample":"move-after-choice","kind":"request","timing":"loseBefore","event":"lose","parent":"gain","player":"A","counter":"A:h","delayed":"o","revealed":"c","hp":8,"eventHasPhysical":true},
+    {"sample":"move-after-choice","kind":"request","timing":"loseAfter","event":"lose","parent":"gain","player":"A","counter":"s","delayed":"o","revealed":"c","hp":8,"eventHasPhysical":true},
+    {"sample":"move-after-choice","kind":"request","timing":"gainAfter","event":"gain","parent":"reference_counter_payment","player":"C","counter":"C:h","delayed":"o","revealed":"c","hp":8,"eventHasPhysical":true},
+    {"sample":"move-after-choice","kind":"callback","timing":"after-transfer","event":"chooseToUse","parent":"_wuxie","player":"A","counter":"C:h","delayed":"o","revealed":"c","hp":8,"accepted":true,"selectedPhysical":true},
+    {"sample":"move-after-choice","kind":"request","timing":"useCardBefore","event":"useCard","parent":"_wuxie","player":"A","counter":"C:h","delayed":"o","revealed":"c","hp":8,"eventHasPhysical":true,"cardHasPhysical":true},
+    {"sample":"move-after-choice","kind":"request","timing":"loseBefore","event":"lose","parent":"useCard","player":"C","counter":"C:h","delayed":"o","revealed":"c","hp":8,"eventHasPhysical":true,"usedBy":"A"},
+    {"sample":"move-after-choice","kind":"callback","timing":"loseBefore","event":"lose","parent":"useCard","player":"C","counter":"C:h","delayed":"o","revealed":"c","hp":8,"eventHasPhysical":true,"usedBy":"A"},
+    {"sample":"move-after-choice","kind":"request","timing":"loseAfter","event":"lose","parent":"useCard","player":"C","counter":"o","delayed":"o","revealed":"c","hp":8,"eventHasPhysical":true,"usedBy":"A"},
+    {"sample":"move-after-choice","kind":"request","timing":"useCard0","event":"useCard","parent":"_wuxie","player":"A","counter":"o","delayed":"o","revealed":"c","hp":8,"eventHasPhysical":true,"cardHasPhysical":true},
+    {"sample":"move-after-choice","kind":"request","timing":"useCard1","event":"useCard","parent":"_wuxie","player":"A","counter":"o","delayed":"o","revealed":"c","hp":8,"eventHasPhysical":true,"cardHasPhysical":true},
+    {"sample":"move-after-choice","kind":"request","timing":"useCard2","event":"useCard","parent":"_wuxie","player":"A","counter":"o","delayed":"o","revealed":"c","hp":8,"eventHasPhysical":true,"cardHasPhysical":true},
+    {"sample":"move-after-choice","kind":"content","timing":"begin","event":"_wuxie","parent":"trigger","player":"A","counter":"o","delayed":"o","revealed":"c","hp":8,"triggerTiming":"useCardToBegin"},
+    {"sample":"move-after-choice","kind":"content","timing":"begin","event":"wuxie","parent":"useCard","player":"A","counter":"o","delayed":"o","revealed":"c","hp":8},
+    {"sample":"move-after-choice","kind":"content","timing":"end","event":"wuxie","parent":"useCard","player":"A","counter":"o","delayed":"o","revealed":"c","hp":8},
+    {"sample":"move-after-choice","kind":"request","timing":"useCardAfter","event":"useCard","parent":"_wuxie","player":"A","counter":"o","delayed":"o","revealed":"c","hp":8,"eventHasPhysical":true,"cardHasPhysical":true},
+    {"sample":"move-after-choice","kind":"request","timing":"cardsDiscardAfter","event":"cardsDiscard","parent":"orderingDiscard","player":null,"counter":"d","delayed":"o","revealed":"c","hp":8,"eventHasPhysical":true},
+    {"sample":"move-after-choice","kind":"content","timing":"begin","event":"shandianCancel","parent":"phaseJudge","player":"B","counter":"d","delayed":"o","revealed":"c","hp":8},
+    {"sample":"move-after-choice","kind":"content","timing":"end","event":"shandianCancel","parent":"phaseJudge","player":"B","counter":"d","delayed":"D:j","revealed":"c","hp":8},
+    {"sample":"cancel-payment","kind":"request","timing":"phaseJudge","event":"phaseJudge","parent":"reference_fixture_use","player":"B","counter":"A:h","delayed":"o","revealed":"c","hp":8},
+    {"sample":"cancel-payment","kind":"content","timing":"begin","event":"_wuxie","parent":"trigger","player":"B","counter":"A:h","delayed":"o","revealed":"c","hp":8,"triggerTiming":"phaseJudge"},
+    {"sample":"cancel-payment","kind":"request","timing":"chooseToUseBegin","event":"chooseToUse","parent":"_wuxie","player":"A","counter":"A:h","delayed":"o","revealed":"c","hp":8,"accepted":null,"selectedPhysical":false},
+    {"sample":"cancel-payment","kind":"request","timing":"chooseToUseAfter","event":"chooseToUse","parent":"_wuxie","player":"A","counter":"A:h","delayed":"o","revealed":"c","hp":8,"accepted":true,"selectedPhysical":true},
+    {"sample":"cancel-payment","kind":"callback","timing":"chooseToUseAfter","event":"chooseToUse","parent":"_wuxie","player":"A","counter":"A:h","delayed":"o","revealed":"c","hp":8,"accepted":true,"selectedPhysical":true},
+    {"sample":"cancel-payment","kind":"request","timing":"useCardBefore","event":"useCard","parent":"_wuxie","player":"A","counter":"A:h","delayed":"o","revealed":"c","hp":8,"eventHasPhysical":true,"cardHasPhysical":true},
+    {"sample":"cancel-payment","kind":"request","timing":"loseBefore","event":"lose","parent":"useCard","player":"A","counter":"A:h","delayed":"o","revealed":"c","hp":8,"eventHasPhysical":true,"usedBy":"A"},
+    {"sample":"cancel-payment","kind":"callback","timing":"loseBefore","event":"lose","parent":"useCard","player":"A","counter":"A:h","delayed":"o","revealed":"c","hp":8,"eventHasPhysical":true,"usedBy":"A"},
+    {"sample":"cancel-payment","kind":"request","timing":"loseCancelled","event":"lose","parent":"useCard","player":"A","counter":"A:h","delayed":"o","revealed":"c","hp":8,"eventHasPhysical":true,"usedBy":"A"},
+    {"sample":"cancel-payment","kind":"request","timing":"useCard0","event":"useCard","parent":"_wuxie","player":"A","counter":"A:h","delayed":"o","revealed":"c","hp":8,"eventHasPhysical":true,"cardHasPhysical":true},
+    {"sample":"cancel-payment","kind":"request","timing":"useCard1","event":"useCard","parent":"_wuxie","player":"A","counter":"A:h","delayed":"o","revealed":"c","hp":8,"eventHasPhysical":true,"cardHasPhysical":true},
+    {"sample":"cancel-payment","kind":"request","timing":"useCard2","event":"useCard","parent":"_wuxie","player":"A","counter":"A:h","delayed":"o","revealed":"c","hp":8,"eventHasPhysical":true,"cardHasPhysical":true},
+    {"sample":"cancel-payment","kind":"content","timing":"begin","event":"_wuxie","parent":"trigger","player":"A","counter":"A:h","delayed":"o","revealed":"c","hp":8,"triggerTiming":"useCardToBegin"},
+    {"sample":"cancel-payment","kind":"request","timing":"chooseToUseBegin","event":"chooseToUse","parent":"_wuxie","player":"A","counter":"A:h","delayed":"o","revealed":"c","hp":8,"accepted":null,"selectedPhysical":false},
+    {"sample":"cancel-payment","kind":"request","timing":"chooseToUseAfter","event":"chooseToUse","parent":"_wuxie","player":"A","counter":"A:h","delayed":"o","revealed":"c","hp":8,"accepted":false,"selectedPhysical":false},
+    {"sample":"cancel-payment","kind":"content","timing":"begin","event":"wuxie","parent":"useCard","player":"A","counter":"A:h","delayed":"o","revealed":"c","hp":8},
+    {"sample":"cancel-payment","kind":"content","timing":"end","event":"wuxie","parent":"useCard","player":"A","counter":"A:h","delayed":"o","revealed":"c","hp":8},
+    {"sample":"cancel-payment","kind":"request","timing":"useCardAfter","event":"useCard","parent":"_wuxie","player":"A","counter":"A:h","delayed":"o","revealed":"c","hp":8,"eventHasPhysical":true,"cardHasPhysical":true},
+    {"sample":"cancel-payment","kind":"content","timing":"begin","event":"shandianCancel","parent":"phaseJudge","player":"B","counter":"A:h","delayed":"o","revealed":"c","hp":8},
+    {"sample":"cancel-payment","kind":"content","timing":"end","event":"shandianCancel","parent":"phaseJudge","player":"B","counter":"A:h","delayed":"D:j","revealed":"c","hp":8},
+    {"sample":"move-in-payment","kind":"request","timing":"phaseJudge","event":"phaseJudge","parent":"reference_fixture_use","player":"B","counter":"A:h","delayed":"o","revealed":"c","hp":8},
+    {"sample":"move-in-payment","kind":"content","timing":"begin","event":"_wuxie","parent":"trigger","player":"B","counter":"A:h","delayed":"o","revealed":"c","hp":8,"triggerTiming":"phaseJudge"},
+    {"sample":"move-in-payment","kind":"request","timing":"chooseToUseBegin","event":"chooseToUse","parent":"_wuxie","player":"A","counter":"A:h","delayed":"o","revealed":"c","hp":8,"accepted":null,"selectedPhysical":false},
+    {"sample":"move-in-payment","kind":"request","timing":"chooseToUseAfter","event":"chooseToUse","parent":"_wuxie","player":"A","counter":"A:h","delayed":"o","revealed":"c","hp":8,"accepted":true,"selectedPhysical":true},
+    {"sample":"move-in-payment","kind":"callback","timing":"chooseToUseAfter","event":"chooseToUse","parent":"_wuxie","player":"A","counter":"A:h","delayed":"o","revealed":"c","hp":8,"accepted":true,"selectedPhysical":true},
+    {"sample":"move-in-payment","kind":"request","timing":"useCardBefore","event":"useCard","parent":"_wuxie","player":"A","counter":"A:h","delayed":"o","revealed":"c","hp":8,"eventHasPhysical":true,"cardHasPhysical":true},
+    {"sample":"move-in-payment","kind":"request","timing":"loseBefore","event":"lose","parent":"useCard","player":"A","counter":"A:h","delayed":"o","revealed":"c","hp":8,"eventHasPhysical":true,"usedBy":"A"},
+    {"sample":"move-in-payment","kind":"callback","timing":"loseBefore","event":"lose","parent":"useCard","player":"A","counter":"A:h","delayed":"o","revealed":"c","hp":8,"eventHasPhysical":true,"usedBy":"A"},
+    {"sample":"move-in-payment","kind":"request","timing":"loseBefore","event":"lose","parent":"gain","player":"A","counter":"A:h","delayed":"o","revealed":"c","hp":8,"eventHasPhysical":true},
+    {"sample":"move-in-payment","kind":"request","timing":"loseAfter","event":"lose","parent":"gain","player":"A","counter":"s","delayed":"o","revealed":"c","hp":8,"eventHasPhysical":true},
+    {"sample":"move-in-payment","kind":"request","timing":"gainAfter","event":"gain","parent":"reference_counter_payment","player":"C","counter":"C:h","delayed":"o","revealed":"c","hp":8,"eventHasPhysical":true},
+    {"sample":"move-in-payment","kind":"callback","timing":"after-transfer","event":"lose","parent":"useCard","player":"A","counter":"C:h","delayed":"o","revealed":"c","hp":8,"eventHasPhysical":true,"usedBy":"A"},
+    {"sample":"move-in-payment","kind":"request","timing":"loseAfter","event":"lose","parent":"useCard","player":"A","counter":"C:h","delayed":"o","revealed":"c","hp":8,"eventHasPhysical":false,"usedBy":"A"},
+    {"sample":"move-in-payment","kind":"request","timing":"useCard0","event":"useCard","parent":"_wuxie","player":"A","counter":"C:h","delayed":"o","revealed":"c","hp":8,"eventHasPhysical":true,"cardHasPhysical":true},
+    {"sample":"move-in-payment","kind":"request","timing":"useCard1","event":"useCard","parent":"_wuxie","player":"A","counter":"C:h","delayed":"o","revealed":"c","hp":8,"eventHasPhysical":true,"cardHasPhysical":true},
+    {"sample":"move-in-payment","kind":"request","timing":"useCard2","event":"useCard","parent":"_wuxie","player":"A","counter":"C:h","delayed":"o","revealed":"c","hp":8,"eventHasPhysical":true,"cardHasPhysical":true},
+    {"sample":"move-in-payment","kind":"content","timing":"begin","event":"_wuxie","parent":"trigger","player":"A","counter":"C:h","delayed":"o","revealed":"c","hp":8,"triggerTiming":"useCardToBegin"},
+    {"sample":"move-in-payment","kind":"request","timing":"chooseToUseBegin","event":"chooseToUse","parent":"_wuxie","player":"C","counter":"C:h","delayed":"o","revealed":"c","hp":8,"accepted":null,"selectedPhysical":false},
+    {"sample":"move-in-payment","kind":"request","timing":"chooseToUseAfter","event":"chooseToUse","parent":"_wuxie","player":"C","counter":"C:h","delayed":"o","revealed":"c","hp":8,"accepted":false,"selectedPhysical":false},
+    {"sample":"move-in-payment","kind":"content","timing":"begin","event":"wuxie","parent":"useCard","player":"A","counter":"C:h","delayed":"o","revealed":"c","hp":8},
+    {"sample":"move-in-payment","kind":"content","timing":"end","event":"wuxie","parent":"useCard","player":"A","counter":"C:h","delayed":"o","revealed":"c","hp":8},
+    {"sample":"move-in-payment","kind":"request","timing":"useCardAfter","event":"useCard","parent":"_wuxie","player":"A","counter":"C:h","delayed":"o","revealed":"c","hp":8,"eventHasPhysical":true,"cardHasPhysical":true},
+    {"sample":"move-in-payment","kind":"content","timing":"begin","event":"shandianCancel","parent":"phaseJudge","player":"B","counter":"C:h","delayed":"o","revealed":"c","hp":8},
+    {"sample":"move-in-payment","kind":"content","timing":"end","event":"shandianCancel","parent":"phaseJudge","player":"B","counter":"C:h","delayed":"D:j","revealed":"c","hp":8}
+  ]
+}

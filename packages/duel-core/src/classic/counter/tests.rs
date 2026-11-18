@@ -225,59 +225,172 @@ fn sha_shan_after_follows_payment_but_wanjian_shan_is_pure_response() {
     }
 }
 
+fn pump(game: &mut Game, mut answer: Option<crate::Answer>) {
+    while let Some(work) = game.scheduler.poll() {
+        if let crate::scheduler::Work::Run(event, program, child) = work {
+            game.resolve(event, program, child, &mut answer);
+        }
+        if game.decision.is_some() {
+            break;
+        }
+    }
+}
+
 #[test]
-fn after_callback_can_remove_selected_wuxie_without_double_payment() {
-    let mut game = scene(&[Role::Lord, Role::Rebel, Role::Renegade], 0);
-    game.classic = None;
-    let wuxie = card(1, CardKind::Wuxie);
-    game.seat_mut(1).hand.push(wuxie);
-    game.register_trigger(TriggerRegistration {
-        owner: 0,
-        skill: "intercept".into(),
-        timing: "chooseToUseAfter".into(),
-        role: TriggerRole::Global,
-        order: TriggerOrder::First,
-        priority: 0,
-        label: None,
-        silent: true,
-        filter: Arc::new(|_, event, _| event.player == Some(1)),
-        effect: Arc::new(move |ctx, _, _| {
-            if ctx.game().response_result(ctx.event().subject) == Some(true) {
-                ctx.discard_hand(1, &[wuxie.id]).unwrap();
-            }
-            TriggerStep::Done
-        }),
-    })
-    .unwrap();
-    let context = CounterContext {
-        card_kind: CardKind::Juedou,
-        source: Some(0),
-        target: 2,
-        negated: false,
-    };
-    game.scheduler.start(game.counter_window(context));
-    game.run(None);
-    while let Some(crate::Decision::Cards(choice)) = game.decision.as_ref() {
-        let seat = choice.seat;
-        let play = seat == 1 && game.seat(1).unwrap().hand.contains(&wuxie);
-        let event = choice.event;
-        game.submit(Command {
-            version: game.version,
-            seat,
-            action: Action::Select {
-                event,
-                branch: u32::from(play),
-                cards: if play { vec![wuxie.id] } else { vec![] },
-                targets: vec![],
-            },
+fn accepted_lightning_counter_follows_the_three_real_loss_boundaries() {
+    for mode in 0..3 {
+        let mut game = scene(
+            &[Role::Lord, Role::Rebel, Role::Loyalist, Role::Renegade],
+            0,
+        );
+        let lightning = card(10, CardKind::Shandian);
+        let judgment = card(11, CardKind::Sha);
+        let wuxie = card(12, CardKind::Wuxie);
+        game.seat_mut(0).judges.push(lightning);
+        game.seat_mut(1).hand.push(wuxie);
+        let state = game.classic.as_mut().unwrap();
+        state.deck.push(judgment);
+        state.faces.push(crate::CardFace {
+            id: judgment.id,
+            suit: crate::classic_data::Suit::Spade,
+            rank: 5,
+        });
+        let observed = Arc::new(Mutex::new(Vec::<(String, Option<u32>, usize)>::new()));
+        let rows = observed.clone();
+        game.register_trigger(TriggerRegistration {
+            owner: 0,
+            skill: "choice_move".into(),
+            timing: "chooseToUseAfter".into(),
+            role: TriggerRole::Global,
+            order: TriggerOrder::First,
+            priority: 0,
+            label: None,
+            silent: true,
+            filter: Arc::new(|_, event, _| event.player == Some(1)),
+            effect: Arc::new(move |ctx, _, _| {
+                assert_eq!(
+                    ctx.event().source,
+                    Some(0),
+                    "source is delayed-card judgment target"
+                );
+                if mode == 0 && ctx.game().response_result(ctx.event().subject) == Some(true) {
+                    ctx.give_hand(1, 2, wuxie.id).unwrap();
+                }
+                TriggerStep::Done
+            }),
         })
         .unwrap();
+        game.register_trigger(TriggerRegistration {
+            owner: 0,
+            skill: "loss_interruption".into(),
+            timing: "loseBefore".into(),
+            role: TriggerRole::Global,
+            order: TriggerOrder::First,
+            priority: 0,
+            label: None,
+            silent: true,
+            filter: Arc::new(move |game, event, _| {
+                event.cards.contains(&wuxie)
+                    && matches!(
+                        event.parent.and_then(|id| game.event_kind(id)),
+                        Some(EventKind::UseResponseCard { .. })
+                    )
+            }),
+            effect: Arc::new(move |ctx, _, _| match mode {
+                1 => TriggerStep::CancelSubject,
+                2 => {
+                    ctx.give_hand(1, 2, wuxie.id).unwrap();
+                    TriggerStep::Done
+                }
+                _ => TriggerStep::Done,
+            }),
+        })
+        .unwrap();
+        for timing in ["loseBefore", "loseAfter", "useCard2", "cardsDiscardAfter"] {
+            let rows = rows.clone();
+            game.register_trigger(TriggerRegistration {
+                owner: 0,
+                skill: format!("trace_{timing}"),
+                timing: timing.into(),
+                role: TriggerRole::Global,
+                order: TriggerOrder::Last,
+                priority: 0,
+                label: None,
+                silent: true,
+                filter: Arc::new(move |game, event, _| match timing {
+                    "loseBefore" | "loseAfter" => matches!(
+                        event.parent.and_then(|id| game.event_kind(id)),
+                        Some(EventKind::UseResponseCard { .. })
+                    ),
+                    "useCard2" => event.card_kind == Some(CardKind::Wuxie),
+                    _ => event.cards.contains(&wuxie),
+                }),
+                effect: Arc::new(move |ctx, _, _| {
+                    rows.lock().unwrap().push((
+                        timing.into(),
+                        ctx.event().player,
+                        ctx.event().cards.len(),
+                    ));
+                    TriggerStep::Done
+                }),
+            })
+            .unwrap();
+        }
+        game.scheduler
+            .start(Program::Phase(crate::classic::phases::Flow::new(
+                0,
+                crate::Phase::Judgment,
+                None,
+                1,
+            )));
+        pump(&mut game, None);
+        let mut used = false;
+        while let Some(crate::Decision::Cards(choice)) = game.decision.take() {
+            let play = choice.seat == 1 && !used;
+            if play {
+                used = true;
+            }
+            pump(
+                &mut game,
+                Some(crate::Answer::Select(crate::Selection {
+                    branch: u32::from(play),
+                    cards: if play { vec![wuxie.id] } else { vec![] },
+                    targets: vec![],
+                })),
+            );
+        }
+        assert!(used);
+        assert_eq!(
+            game.seat(0).unwrap().hp,
+            4,
+            "lightning is countered in mode {mode}"
+        );
+        assert!(
+            game.classic.as_ref().unwrap().deck.contains(&judgment),
+            "no judgment draw in mode {mode}"
+        );
+        assert!(game.seat(1).unwrap().judges.contains(&lightning));
+        assert_eq!(game.seat(1).unwrap().hand.contains(&wuxie), mode == 1);
+        assert_eq!(game.seat(2).unwrap().hand.contains(&wuxie), mode == 2);
+        assert_eq!(
+            game.discard.iter().filter(|&&card| card == wuxie).count(),
+            usize::from(mode == 0)
+        );
+        let rows = observed.lock().unwrap();
+        assert!(rows
+            .iter()
+            .any(|row| row.0 == "useCard2" && row.1 == Some(1)));
+        if mode == 0 {
+            assert!(rows.contains(&("loseBefore".into(), Some(2), 1)));
+            assert!(rows.contains(&("loseAfter".into(), Some(2), 1)));
+            assert!(rows.contains(&("cardsDiscardAfter".into(), None, 1)));
+        } else if mode == 2 {
+            assert!(rows.contains(&("loseAfter".into(), Some(1), 0)));
+            assert!(!rows.iter().any(|row| row.0 == "cardsDiscardAfter"));
+        } else {
+            assert!(!rows.iter().any(|row| row.0 == "cardsDiscardAfter"));
+        }
     }
-    assert_eq!(
-        game.discard.iter().filter(|&&card| card == wuxie).count(),
-        1
-    );
-    assert!(!game.resolving.contains(&wuxie));
 }
 
 #[test]

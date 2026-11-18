@@ -202,6 +202,7 @@ pub(crate) struct Movement {
     kind: MoveKind,
     stage: MoveStage,
     committed: Option<Card>,
+    allow_intercepted: bool,
 }
 
 #[derive(Clone, Copy)]
@@ -271,6 +272,7 @@ impl Movement {
             kind,
             stage: MoveStage::Before,
             committed: None,
+            allow_intercepted: false,
         }
     }
 
@@ -411,6 +413,11 @@ impl Game {
                 destination: LossDestination::Ordering(owner),
             },
         )))
+    }
+    pub(crate) fn use_loss_to_ordering(&self, seat: SeatId, zone: Zone, card: Card, owner: EventId) -> Program {
+        let mut movement = Movement::new(seat, MoveKind::Lose { card, zone, destination: LossDestination::Ordering(owner) });
+        movement.allow_intercepted = true;
+        Program::Recast(Flow::Movement(movement))
     }
     pub(crate) fn expansion_lose_program(
         &self,
@@ -1010,7 +1017,7 @@ impl Game {
                     } else {
                         // The original default lose still finishes with an empty card
                         // list if a loseBefore skill moved the material to another zone.
-                        let intercepted = matches!(
+                        let intercepted = movement.allow_intercepted || matches!(
                             movement.kind,
                             Lose {
                                 destination: LossDestination::Discard,

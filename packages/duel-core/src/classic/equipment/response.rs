@@ -166,11 +166,12 @@ impl Game {
                         .iter()
                         .all(|card| player.hand.contains(card) || player.equipment.contains(card))
                 });
-                if !held || !self.card_enabled(seat, kind) {
-                    self.scheduler.end(Finished(Passed));
-                } else if response.counter.is_some() {
+                if response.counter.is_some() {
+                    // The choice is already accepted. Later hooks may have moved its material.
                     self.scheduler
                         .end(Finished(Resolution::CounterUse { seat, cards }));
+                } else if !held || !self.card_enabled(seat, kind) {
+                    self.scheduler.end(Finished(Passed));
                 } else {
                     self.response_pay(response, cards);
                 }
@@ -434,18 +435,32 @@ impl Game {
                 {
                     let card = payment.cards[0];
                     let owner = self.scheduler.current_id();
-                    let zone = self.zone_for_held_card(payment.seat, card.id);
+                    let holder = self.seats.iter().find_map(|player| {
+                        if player.hand.contains(&card) {
+                            Some((player.id, crate::Zone::Hand))
+                        } else if player.equipment.contains(&card) {
+                            Some((player.id, crate::Zone::Equipment))
+                        } else {
+                            None
+                        }
+                    });
                     self.scheduler.after(Program::JudgmentCleanup(
                         crate::classic::hero_integration::Cleanup::Ordering {
                             owner,
                             cards: vec![card],
                         },
                     ));
-                    payment.step = PaymentStep::Paid;
-                    let loss = self.lose_to_ordering(payment.seat, zone, card, owner);
-                    self.scheduler
-                        .replace_current(Program::Equipment(Flow::Payment(payment)));
-                    self.scheduler.next(loss);
+                    if let Some((holder, zone)) = holder {
+                        payment.step = PaymentStep::Paid;
+                        let loss = self.use_loss_to_ordering(holder, zone, card, owner);
+                        self.scheduler
+                            .replace_current(Program::Equipment(Flow::Payment(payment)));
+                        self.scheduler.next(loss);
+                    } else {
+                        payment.step = PaymentStep::Timing;
+                        self.scheduler
+                            .replace_current(Program::Equipment(Flow::Payment(payment)));
+                    }
                     return;
                 }
                 self.queue_use_costs(payment.seat, &payment.cards);

@@ -66,6 +66,12 @@
 
 `judgment-zones.json` 在八席身份局独立复跑六种延时判定，区分放入判定区的实体牌和从牌堆翻开的判定牌。乐不思蜀失败时只登记跳过出牌，天妒可获得成功的判定牌；闪电命中造成无来源三点雷伤，未命中或被无懈抵消则转入下家判定区。无懈抵消乐时不开始判定，预置判定牌留在牌堆。两张牌独立移动：延时牌先经以 `phaseJudge` 为父的失牌进入处理区，判定事件的父也是 `phaseJudge`；通常判定牌在效果前弃置，延时牌在阶段 `After` 后弃置或在效果中迁走。`judge` 请求瞬间上游 `get.position` 尚无结果，但 `get.owner` 已指向判定者；到 `judgeFixing` 才观察到判定牌位于处理区。`revealedOwner` 和 `revealed` 分别保留这两项观测。
 
+`counter-payment.json` 记录同一八席身份局三次实体无懈可击。每次 B 的闪电原会翻到黑桃 8，A 通过原版离线选择接受无懈，随后选择均按夹具的 AI 偏好拒绝。三种干预都保留 `useCard1`、`useCard2`、`useCardAfter` 和无懈内容执行。B 保持 8 点体力，判定牌留在牌堆，实体闪电移到下家。
+
+- **选牌后转移。** `_wuxie` 的 `chooseToUseAfter` 回调将 A 已选的实体交给 C。随后原版仍为 A 创建包含同一实体的 `useCard`。支付失牌的角色为 C，牌从 C 的手牌移入处理区，最后弃置一次。
+- **取消支付。** `useCard` 创建后，在支付的 `loseBefore` 回调取消失牌。原版请求 `loseCancelled`，实体留在 A 手牌，无懈用牌事件仍引用该牌。
+- **支付时转移。** `useCard` 创建后，在支付的 `loseBefore` 回调将实体交给 C。原支付仍发出 `loseAfter`，其材料列表已经不含该实体。无懈继续引用同一张牌，实体留在 C 手牌。
+
 `phase-queue.json` 在另一局八席身份牌桌用观察技能直接调用上游 `Player.insertPhase`，并用原版 `die` 让排队的非主公 E 死亡。`operation` 给出每次调用使用的前插参数与队列前后状态。第一轮的 A 自然回合结束时追加 C、D、E，再把 B 前插到尚未出队的 A 之前。
 
 - A 的 `phaseAfter` 请求仍显示 B 在队首。随后的第一个额外回合是 C，B 的额外事件已不在队列、未开始也未完成。B 随后正常进入自然回合。这个样本覆盖已有自然回合占队首时调用 `insertPhase(source, true)` 的行为。
@@ -96,6 +102,7 @@
    node scripts/reference-trace.mjs --scenario phase-scheduling --check tests/reference/phase-scheduling.json
    node scripts/reference-trace.mjs --scenario phase-queue --check tests/reference/phase-queue.json
    node scripts/reference-trace.mjs --scenario judgment-zones --check tests/reference/judgment-zones.json
+   node scripts/reference-trace.mjs --scenario counter-payment --check tests/reference/counter-payment.json
    node scripts/reference-trace.mjs --scenario zhongyi-expansion --check tests/reference/zhongyi-expansion.json
    node scripts/reference-trace.mjs --scenario zhongyi-boundaries --check tests/reference/zhongyi-boundaries.json
    node scripts/reference-trace.mjs --scenario zhongyi-transit-death --check tests/reference/zhongyi-transit-death.json
