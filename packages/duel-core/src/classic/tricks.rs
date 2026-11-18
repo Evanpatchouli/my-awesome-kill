@@ -545,7 +545,9 @@ impl Game {
                     Jiedao => {
                         let victim = flow.targets[1];
                         let mut branches = self.sha_use_branches(target, &[victim]);
-                        if self.hero_lord_request_available(target, Sha) {
+                        if self.card_enabled(target, Sha)
+                            && self.hero_lord_request_available(target, Sha)
+                        {
                             branches.push(ChoiceBranch {
                                 id: 1000,
                                 label: "激将".into(),

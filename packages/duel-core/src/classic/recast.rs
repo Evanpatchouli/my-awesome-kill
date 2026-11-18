@@ -170,13 +170,13 @@ enum RemainingRecast {
 }
 
 impl Recasting {
-    fn request(&self, game: &Game, name: &'static str) -> Option<TriggerEvent> {
+    fn request(&self, game: &mut Game, name: &'static str) -> Option<TriggerEvent> {
         game.prepare_timing(name, Some(self.seat), None, None, 1, &[self.card])
     }
 
     fn plan_gain(
         &self,
-        game: &Game,
+        game: &mut Game,
         loss: RecastMovement,
     ) -> (Option<TriggerEvent>, RecastGain, Option<TriggerEvent>) {
         let before = self.request(game, "recastingGain");

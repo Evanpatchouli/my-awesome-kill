@@ -65,6 +65,28 @@ pub enum CardKind {
     Shandian,
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum CardType {
+    Basic,
+    Trick,
+    Delay,
+    Equipment,
+}
+
+impl CardKind {
+    pub fn card_type(self) -> CardType {
+        use CardKind::*;
+        match self {
+            Sha | Shan | Tao => CardType::Basic,
+            Wugu | Taoyuan | Nanman | Wanjian | Juedou | Wuzhong | Shunshou | Guohe | Jiedao
+            | Tiesuo | Wuxie => CardType::Trick,
+            Lebu | Shandian => CardType::Delay,
+            Bagua | Jueying | Dilu | Zhuahuang | Chitu | Dawan | Zixin | Zhuge | Cixiong
+            | Qinggang | Qinglong | Zhangba | Guanshi | Fangtian | Qilin => CardType::Equipment,
+        }
+    }
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Command {

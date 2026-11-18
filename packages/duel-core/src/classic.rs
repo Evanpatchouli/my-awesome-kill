@@ -261,6 +261,9 @@ impl Game {
 
     fn card_uses(&self, player: &Seat, card: Card) -> Option<Vec<PlannedUse>> {
         let seat = player.id;
+        if !self.card_enabled(seat, card.kind) {
+            return Some(Vec::new());
+        }
         let uses = match card.kind {
             CardKind::Sha => self.physical_sha_uses(player, card),
             CardKind::Tao if player.hp < i32::from(player.max_hp) => vec![PlannedUse {

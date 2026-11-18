@@ -22,6 +22,16 @@ pub enum TriggerRole {
     Target,
     Global,
 }
+impl TriggerRole {
+    pub(crate) fn matches(self, owner: SeatId, event: &TriggerEvent) -> bool {
+        match self {
+            Self::Player => event.player == Some(owner),
+            Self::Source => event.source == Some(owner),
+            Self::Target => event.target == Some(owner),
+            Self::Global => true,
+        }
+    }
+}
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 /// Execution group. Normal triggers are grouped by seat.
 pub enum TriggerOrder {
@@ -99,6 +109,20 @@ impl TriggerContext<'_> {
     /// Revoke a registration, including a pending candidate in this event.
     pub fn unregister_trigger(&mut self, id: TriggerId) -> bool {
         self.game.unregister_trigger(id)
+    }
+
+    /// Grant a named skill. A second grant refreshes its expiry.
+    pub fn grant_temporary(
+        &mut self,
+        owner: SeatId,
+        skill: crate::TemporarySkill,
+    ) -> Result<(), RuleError> {
+        self.game.grant_temporary(owner, skill)
+    }
+
+    /// Remove just this temporary skill and its owned callbacks and modifiers.
+    pub fn remove_temporary(&mut self, owner: SeatId, name: &str) -> bool {
+        self.game.remove_temporary(owner, name)
     }
     pub fn owner(&self) -> SeatId {
         self.owner
@@ -349,9 +373,11 @@ impl Game {
         self.trigger_registrations.remove(&id).is_some()
     }
     pub(crate) fn has_timing_registrations(&self, timing: &str) -> bool {
-        self.trigger_registrations
-            .values()
-            .any(|r| r.timing == timing)
+        self.has_expiry_at(timing)
+            || self
+                .trigger_registrations
+                .values()
+                .any(|r| r.timing == timing)
     }
     pub(crate) fn queue_timing(
         &mut self,
@@ -371,7 +397,7 @@ impl Game {
     }
 
     pub(crate) fn prepare_timing(
-        &self,
+        &mut self,
         timing: &'static str,
         player: Option<SeatId>,
         source: Option<SeatId>,
@@ -383,7 +409,7 @@ impl Game {
             return None;
         }
         let event = self.subject_timing(timing, player, source, target, amount, cards);
-        self.observe_timing_request(&event);
+        self.begin_timing_request(&event);
         self.has_registered_candidates(&event).then_some(event)
     }
 
@@ -456,12 +482,7 @@ impl Game {
     fn registration_applies(&self, r: &TriggerRegistration, event: &TriggerEvent) -> bool {
         r.timing == event.timing
             && self.seat(r.owner).is_ok_and(|s| s.alive)
-            && match r.role {
-                TriggerRole::Player => event.player == Some(r.owner),
-                TriggerRole::Source => event.source == Some(r.owner),
-                TriggerRole::Target => event.target == Some(r.owner),
-                TriggerRole::Global => true,
-            }
+            && r.role.matches(r.owner, event)
     }
     pub(crate) fn has_registered_candidates(&self, event: &TriggerEvent) -> bool {
         self.trigger_registrations

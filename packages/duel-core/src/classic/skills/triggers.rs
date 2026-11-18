@@ -125,25 +125,26 @@ impl Game {
         if !self.register_hero_triggers(moment).is_empty() {
             return true;
         }
-        if self.trigger_registrations.is_empty() {
+        if self.trigger_registrations.is_empty() && self.temporary_skills.is_empty() {
             return false;
         }
         let event = self.moment_event(moment);
         self.has_registered_candidates(&event)
+            || self.has_matching_expiry(&event)
             || (matches!(moment, HeroMoment::Draw { .. }) && {
                 let mut second = event;
                 second.timing = "phaseDrawBegin2".into();
-                self.has_registered_candidates(&second)
+                self.has_registered_candidates(&second) || self.has_matching_expiry(&second)
             })
     }
-    pub(crate) fn hero_triggers(&self, moment: HeroMoment) -> Program {
+    pub(crate) fn hero_triggers(&mut self, moment: HeroMoment) -> Program {
         let adjustment = match moment {
             HeroMoment::Draw { amount, .. } => HeroAdjustment::Draw(amount),
             HeroMoment::JudgeBefore { card, .. } => HeroAdjustment::Judgment(card),
             _ => HeroAdjustment::None,
         };
         let event = self.moment_event(&moment);
-        self.observe_timing_request(&event);
+        self.begin_timing_request(&event);
         Program::Dispatch(Queue {
             moment: Some(moment),
             event,
@@ -179,7 +180,7 @@ impl Game {
         cards: &[crate::Card],
     ) -> bool {
         let native = self.qilin_program(source, target);
-        if self.trigger_registrations.is_empty() || !self.has_timing_registrations("damageBegin2") {
+        if !self.has_timing_registrations("damageBegin2") {
             if let Some(program) = native {
                 self.scheduler.next(program);
                 return true;
@@ -194,7 +195,7 @@ impl Game {
             amount,
             cards,
         );
-        self.observe_timing_request(&event);
+        self.begin_timing_request(&event);
         if !self.has_registered_candidates(&event) {
             if let Some(program) = native {
                 self.scheduler.next(program);
@@ -454,6 +455,7 @@ impl Game {
                 && queue.event.timing == "phaseDrawBegin1"
             {
                 queue.event.timing = "phaseDrawBegin2".into();
+                self.begin_timing_request(&queue.event);
                 queue.pending = None;
                 queue.scanned_registrations.clear();
                 queue.completed.clear();
@@ -1604,7 +1606,8 @@ mod dispatch_regressions {
             amount: 1,
             cards: vec![],
         };
-        game.scheduler.start(game.hero_triggers(moment));
+        let dispatch = game.hero_triggers(moment);
+        game.scheduler.start(dispatch);
         game.run(None);
         assert_eq!(*log.lock().unwrap(), ["custom"]);
         assert!(game.view(Some(0)).unwrap().choice.is_none());

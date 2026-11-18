@@ -211,6 +211,9 @@ impl Trial {
                             .all(|c| view.card_faces.iter().any(|f| f.id == c.id)));
                     }
                     trial.log.lock().unwrap().returned = Some(result);
+                    if !result.won {
+                        crate::qiaoshui::grant_loss(ctx).unwrap();
+                    }
                     TriggerStep::Done
                 }
                 _ => unreachable!(),
@@ -987,3 +990,4 @@ fn public_compare_matches_choices_physical_movements_scores_and_cleanup_on_three
         assert_eq!(reference.len(), 17);
     }
 }
+mod turn_expiry;

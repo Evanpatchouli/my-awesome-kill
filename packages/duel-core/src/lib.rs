@@ -1,8 +1,12 @@
 mod classic;
 pub mod classic_data;
 mod protocol;
+#[cfg(any(test, feature = "content-qiaoshui"))]
+pub mod qiaoshui;
 mod scheduler;
+mod temporary;
 mod triggers;
+pub use temporary::{CardEnabled, SkillExpiry, TemporarySkill};
 pub use triggers::{
     TriggerContext, TriggerEffect, TriggerEvent, TriggerFilter, TriggerId, TriggerOrder,
     TriggerRegistration, TriggerRole, TriggerSelection, TriggerStep,
@@ -97,9 +101,31 @@ enum Zone {
 }
 
 #[derive(Clone)]
+struct TurnFlow {
+    seat: SeatId,
+    number: u64,
+    round: u64,
+    stage: TurnStage,
+    round_start: bool,
+}
+
+#[derive(Clone, Copy)]
+enum TurnStage {
+    RoundStart,
+    BeforeStart,
+    StartPhases,
+    Phases,
+    End,
+    After,
+    Finish,
+}
+
+#[derive(Clone)]
 enum Program {
     Compare(classic::compare::Flow),
+    Turn(TurnFlow),
     PlayAfterBegin(SeatId),
+    PlayAfterEnd(SeatId),
     Elemental(elemental::Flow),
     Recast(classic::recast::Flow),
     Event(EventKind),
@@ -137,14 +163,32 @@ enum Program {
 
 impl Program {
     fn event(kind: EventKind) -> Self {
-        Self::Event(kind)
+        match kind {
+            EventKind::Turn {
+                seat,
+                number,
+                round,
+            } => Self::Turn(TurnFlow {
+                seat,
+                number,
+                round,
+                stage: TurnStage::RoundStart,
+                round_start: number == 1,
+            }),
+            _ => Self::Event(kind),
+        }
     }
 
     fn kind(&self) -> EventKind {
         match self {
             Self::Event(kind) => *kind,
             Self::Compare(flow) => flow.kind(),
-            Self::PlayAfterBegin(seat) => EventKind::Phase {
+            Self::Turn(flow) => EventKind::Turn {
+                seat: flow.seat,
+                number: flow.number,
+                round: flow.round,
+            },
+            Self::PlayAfterBegin(seat) | Self::PlayAfterEnd(seat) => EventKind::Phase {
                 seat: *seat,
                 phase: Phase::Play,
             },
@@ -184,7 +228,7 @@ impl Program {
     }
 
     fn respond(seat: SeatId, kind: CardKind) -> Self {
-        Self::Equipment(equipment::Flow::response(seat, kind, false))
+        Self::Equipment(equipment::Flow::respond(seat, kind))
     }
 }
 
@@ -233,6 +277,7 @@ impl From<SeatSetup> for Seat {
 }
 
 pub struct Game {
+    temporary_skills: Vec<temporary::Grant>,
     compares: classic::compare::State,
     #[cfg(test)]
     timing_observer: Option<triggers::TimingObserver>,
@@ -289,6 +334,7 @@ impl Game {
 
     fn with_seats(seats: Vec<Seat>, active_seat: SeatId) -> Self {
         Self {
+            temporary_skills: Vec::new(),
             #[cfg(test)]
             timing_observer: None,
             elemental: elemental::State::default(),
@@ -632,6 +678,9 @@ impl Game {
             return Err(RuleError::InvalidTarget);
         }
         let card = self.card_in_hand(seat, card, CardKind::Sha)?;
+        if !self.card_enabled(seat, CardKind::Sha) {
+            return Err(RuleError::InvalidSelection);
+        }
         Ok(self.attack_program(seat, vec![card], vec![target]))
     }
 
@@ -786,8 +835,20 @@ impl Game {
         let kind = program.kind();
         let program = match program {
             Program::Compare(flow) => return self.resolve_compare(event, flow, child, answer),
+            Program::Turn(flow) => return self.resolve_turn_flow(flow, child),
             Program::PlayAfterBegin(seat) => {
                 return self.resume_play_begin(event, seat, child, answer)
+            }
+            Program::PlayAfterEnd(_) => {
+                if matches!(child, Some(Outcome::Cancelled)) {
+                    self.scheduler.end(Outcome::Cancelled);
+                } else {
+                    self.scheduler
+                        .end(Outcome::Finished(Resolution::PhaseFinished(
+                            crate::Phase::Play,
+                        )));
+                }
+                return;
             }
             Program::Elemental(flow) => return self.resolve_elemental(flow, child),
             Program::Recast(flow) => return self.resolve_recast(event, flow, child),

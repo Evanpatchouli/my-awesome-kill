@@ -18,11 +18,18 @@ enum Step {
     Pay,
 }
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(crate) enum ResponseContext {
+    Use,
+    Respond,
+}
+
 #[derive(Clone, Copy)]
 pub(crate) struct Response {
     pub(super) seat: SeatId,
     pub(super) kind: CardKind,
     ignore_armor: bool,
+    pub(super) context: ResponseContext,
     allow_lord: bool,
     step: Step,
     counter: Option<CounterContext>,
@@ -34,9 +41,17 @@ impl Response {
             seat,
             kind,
             ignore_armor,
+            context: ResponseContext::Use,
             allow_lord: true,
             step: Step::Start,
             counter: None,
+        }
+    }
+
+    pub(super) fn respond(seat: SeatId, kind: CardKind) -> Self {
+        Self {
+            context: ResponseContext::Respond,
+            ..Self::new(seat, kind, false)
         }
     }
 
@@ -72,7 +87,7 @@ impl Payment {
 
 impl Game {
     pub(crate) fn forbid_lord_request_program(&self, seat: SeatId, kind: CardKind) -> Program {
-        let mut response = Response::new(seat, kind, false);
+        let mut response = Response::respond(seat, kind);
         response.allow_lord = false;
         Program::Equipment(Flow::Response(response))
     }
@@ -90,6 +105,13 @@ impl Game {
         }
         let seat = response.seat;
         let kind = response.kind;
+        if matches!(response.step, Step::Start)
+            && response.context == ResponseContext::Use
+            && !self.card_enabled(seat, kind)
+        {
+            self.scheduler.end(Finished(Passed));
+            return;
+        }
         match (response.step, child) {
             (Step::Start, None) if kind == CardKind::Shan => {
                 let armor = self
@@ -115,7 +137,7 @@ impl Game {
             }
             (Step::Start, None) => {
                 let mut branches = if kind == CardKind::Sha {
-                    self.sha_use_branches(seat, &[])
+                    self.sha_response_branches(seat, &[])
                 } else {
                     self.response_card_branches(seat, kind)
                 };

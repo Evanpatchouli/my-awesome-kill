@@ -6,6 +6,7 @@ use crate::{
     Program, RuleError, SeatId,
 };
 
+mod card_enabled;
 mod extended;
 
 fn assigned(heroes: &[&str], active: SeatId) -> Game {

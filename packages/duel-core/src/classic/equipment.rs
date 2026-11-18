@@ -80,6 +80,10 @@ impl Flow {
         Self::Response(response::Response::new(seat, kind, ignore_armor))
     }
 
+    pub(crate) fn respond(seat: SeatId, kind: CardKind) -> Self {
+        Self::Response(response::Response::respond(seat, kind))
+    }
+
     pub(crate) fn counter_response(seat: SeatId, context: CounterContext) -> Self {
         Self::Response(response::Response::counter(seat, context))
     }
@@ -234,10 +238,12 @@ impl Game {
 
     pub(crate) fn virtual_plays(&self, seat: SeatId) -> Vec<VirtualPlay> {
         let mut plays = self.hero_play_conversions(seat);
+        plays.retain(|play| self.card_enabled(seat, play.kind));
         let Ok(actor) = self.seat(seat) else {
             return plays;
         };
-        if actor.hand.len() < 2
+        if !self.card_enabled(seat, CardKind::Sha)
+            || actor.hand.len() < 2
             || !self.has_weapon(seat, CardKind::Zhangba)
             || !self.may_play_sha(seat)
         {
@@ -320,6 +326,17 @@ impl Game {
     }
 
     pub(crate) fn sha_use_branches(&self, seat: SeatId, targets: &[SeatId]) -> Vec<ChoiceBranch> {
+        if !self.card_enabled(seat, CardKind::Sha) {
+            return vec![branch(0, "放弃", vec![], 0)];
+        }
+        self.sha_response_branches(seat, targets)
+    }
+
+    pub(crate) fn sha_response_branches(
+        &self,
+        seat: SeatId,
+        targets: &[SeatId],
+    ) -> Vec<ChoiceBranch> {
         let mut branches = vec![branch(0, "放弃", vec![], 0)];
         if !targets.iter().all(|&target| {
             self.in_sha_range(seat, target) && self.hero_allows_target(target, CardKind::Sha)

@@ -50,7 +50,8 @@ impl Game {
                 if self.has_hero_triggers(&moment) {
                     judgment.step = JudgeStep::Replaced(card);
                     self.scheduler.replace_current(Program::Judgment(judgment));
-                    self.scheduler.next(self.hero_triggers(moment));
+                    let dispatch = self.hero_triggers(moment);
+                    self.scheduler.next(dispatch);
                 } else {
                     self.apply_judgment(judgment, card);
                 }
@@ -87,7 +88,8 @@ impl Game {
         if self.match_result().is_some() || !self.has_hero_triggers(&moment) {
             return false;
         }
-        self.scheduler.next(self.hero_triggers(moment));
+        let dispatch = self.hero_triggers(moment);
+        self.scheduler.next(dispatch);
         true
     }
 
@@ -137,7 +139,8 @@ impl Game {
                 || self.has_timing_registrations("loseAfter"))
         {
             // Eligibility is evaluated after the queued materials move.
-            self.scheduler.next(self.hero_triggers(moment));
+            let dispatch = self.hero_triggers(moment);
+            self.scheduler.next(dispatch);
         }
     }
 

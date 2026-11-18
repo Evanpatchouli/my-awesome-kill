@@ -14,6 +14,12 @@
 
 回调用 `TriggerStep` 指定结束、选择、下一阶段或取消当前被触发事件。`TriggerContext::discard_hand` 校验整批实体，在先前子事件完成后再次核对所有权，再实际付款。中途已被移走的材料会终止后续付款和技能正文，先前已经结算的费用保留。`damageBegin4` 取消可阻止扣血；`damage` 技能执行时体力已更新，此时取消会保留伤害造成的体力变化。两条路径的杀都在 `useCardAfter` 之后完成实体清理。[可复现的上游局面](../../tests/reference/README.md)
 
+### 临时技能与用牌权限
+
+可信技能通过 `TriggerContext::grant_temporary` 为指定座位添加 `TemporarySkill`。它可以携带可撤销的触发登记和按生效牌种判断的 `card_enabled` 谓词。`SkillExpiry` 将时机与持有者的 player/source/target/global 角色关联。同名临时技能再次授予时更新期限，原有武将技能继续保留。内容可通过 `remove_temporary` 提前移除。
+
+`TemporarySkill::until_turn_end` 在全局 `phaseAfter` 或下次 `phaseBeforeStart` 到期。时机请求先记录当时状态，随即撤销这次授予的登记和修饰，然后选择实际执行的技能。`Game::has_skill` 和 `Game::card_enabled` 供可信内容查询。经典选牌、直接提交和 AI 使用相同的生效牌种约束，重铸、打出和救援分别走对应的规则。在巧说的八人平局和负局中，`phaseAfter` 请求时决斗仍被禁止，第一个技能回调里已可使用。[上游观测](../../tests/reference/compare.json)
+
 ### 单张重铸
 
 可信内容可用 `Game::register_recast` 按牌种或实体 ID 登记重铸，实体登记优先。出牌阶段仅向有权的持有者列出可用的 `Action::Recast`。技能在其他时机也可通过 `TriggerContext::recast` 发起同一结算。谓词与移动工厂读取 `RecastState` 中的牌、位置、座位和回合信息。默认规则弃掉材料再摸牌；内容可替换为交给另一席或明获指定实体。经典牌堆仍为 104 张。

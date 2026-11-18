@@ -160,7 +160,13 @@ impl Game {
                     .iter()
                     .copied()
                     .filter(|&target| {
-                        male(target) && self.hero_allows_target(target, CardKind::Juedou)
+                        male(target)
+                            && self.hero_allows_target(target, CardKind::Juedou)
+                            && others.iter().copied().any(|source| {
+                                source != target
+                                    && male(source)
+                                    && self.card_enabled(source, CardKind::Juedou)
+                            })
                     })
                     .collect(),
                 1,
@@ -169,6 +175,7 @@ impl Game {
         if actor.alive
             && self.has_lord_skill(seat, Jijiang.as_str())
             && self.may_play_sha(seat)
+            && self.card_enabled(seat, CardKind::Sha)
             && self.hero_lord_request_available(seat, CardKind::Sha)
         {
             let targets = others
@@ -298,6 +305,7 @@ impl Game {
                             .skip(1)
                             .filter(|&candidate| {
                                 candidate != target
+                                    && self.card_enabled(candidate, CardKind::Juedou)
                                     && self
                                         .seat(candidate)
                                         .ok()
@@ -466,7 +474,7 @@ impl Game {
                 self.scheduler.next(response);
                 return;
             }
-            let mut options = self.sha_use_branches(supplier, &[]);
+            let mut options = self.sha_response_branches(supplier, &[]);
             options.retain(|choice| choice.id != 99);
             if options.len() > 1 {
                 let lord = request.lord;

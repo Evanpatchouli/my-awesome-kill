@@ -3,14 +3,6 @@ use crate::classic_data::{Role, Suit};
 use crate::{Card, CardId, CardKind, ChoiceBranch, Game, Phase, SeatId, VirtualPlay};
 
 impl Game {
-    pub(crate) fn has_skill(&self, seat: SeatId, id: &str) -> bool {
-        self.seat(seat)
-            .ok()
-            .filter(|seat| seat.alive)
-            .and_then(|seat| seat.hero)
-            .is_some_and(|hero| hero.skills.iter().any(|skill| skill.id == id))
-    }
-
     pub(crate) fn has_lord_skill(&self, seat: SeatId, skill: &str) -> bool {
         self.has_skill(seat, skill)
             && self

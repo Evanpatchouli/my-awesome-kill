@@ -780,7 +780,7 @@ impl Game {
     }
 
     fn state_timing(
-        &self,
+        &mut self,
         timing: &'static str,
         seat: SeatId,
         delta: Option<i32>,
@@ -795,11 +795,11 @@ impl Game {
     }
 
     pub(crate) fn timing_program(
-        &self,
+        &mut self,
         event: TriggerEvent,
         rule: Option<Rule>,
     ) -> Option<Program> {
-        self.observe_timing_request(&event);
+        self.begin_timing_request(&event);
         if rule.is_none() && !self.has_registered_candidates(&event) {
             return None;
         }

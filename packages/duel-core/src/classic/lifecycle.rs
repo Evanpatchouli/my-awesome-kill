@@ -4,7 +4,8 @@ use crate::classic_data::{self, Role};
 use crate::scheduler::{EventRef, Outcome};
 use crate::{
     Answer, CardId, CardKind, ChoiceBranch, ChoiceKind, ChoiceRequest, ChoiceView, Decision,
-    DrawReason, EventKind, Game, Phase, Program, Resolution, SeatId, TurnView, Zone,
+    DrawReason, EventKind, Game, Phase, Program, Resolution, SeatId, TurnFlow, TurnStage, TurnView,
+    Zone,
 };
 
 impl Game {
@@ -50,18 +51,116 @@ impl Game {
                 phase: Phase::Preparation,
             }
         };
+        let round_start = state
+            .turn
+            .is_none_or(|previous| previous.round != turn.round);
         let state = self.classic.as_mut().expect("the table is classic");
         state.turn = Some(turn);
         state.sha_played = false;
         state.hero_turn = HeroTurn::default();
         state.skip_play = false;
         self.active_seat = turn.seat;
-        self.scheduler.start(Program::event(EventKind::Turn {
+        self.scheduler.start(Program::Turn(TurnFlow {
             seat: turn.seat,
             number: turn.number,
             round: turn.round,
+            stage: TurnStage::RoundStart,
+            round_start,
         }));
         true
+    }
+
+    pub(crate) fn resolve_turn_flow(
+        &mut self,
+        mut flow: TurnFlow,
+        child: Option<Outcome<Resolution>>,
+    ) {
+        let seat = flow.seat;
+        if self.match_result().is_some() || !self.seat(seat).expect("the turn seat exists").alive {
+            self.finish();
+            return;
+        }
+        if matches!(child, Some(Outcome::Cancelled)) {
+            self.scheduler.end(Outcome::Cancelled);
+            return;
+        }
+        loop {
+            let timing = match flow.stage {
+                TurnStage::RoundStart => {
+                    flow.stage = TurnStage::BeforeStart;
+                    flow.round_start.then_some("roundStart")
+                }
+                TurnStage::BeforeStart => {
+                    flow.stage = TurnStage::StartPhases;
+                    Some("phaseBeforeStart")
+                }
+                TurnStage::StartPhases => {
+                    if self.seat(seat).is_ok_and(|player| player.turned_over) {
+                        if let Some(flip) =
+                            self.seat_change(seat, super::elemental::Change::TurnOver(false))
+                        {
+                            self.scheduler.next(flip);
+                        }
+                        self.scheduler.end(Outcome::Cancelled);
+                        return;
+                    }
+                    flow.stage = TurnStage::Phases;
+                    self.scheduler.replace_current(Program::Turn(flow));
+                    self.next(EventKind::Phase {
+                        seat,
+                        phase: Phase::Preparation,
+                    });
+                    return;
+                }
+                TurnStage::Phases => {
+                    if matches!(
+                        child,
+                        Some(Outcome::Finished(Resolution::PhaseFinished(Phase::End)))
+                    ) {
+                        flow.stage = TurnStage::End;
+                        continue;
+                    }
+                    let phase = match child {
+                        Some(Outcome::Finished(Resolution::PhaseFinished(Phase::Preparation))) => {
+                            Phase::Judgment
+                        }
+                        Some(Outcome::Finished(Resolution::PhaseFinished(Phase::Judgment))) => {
+                            Phase::Draw
+                        }
+                        Some(Outcome::Finished(Resolution::PhaseFinished(Phase::Draw))) => {
+                            Phase::Play
+                        }
+                        Some(Outcome::Finished(Resolution::PhaseFinished(Phase::Play))) => {
+                            Phase::Discard
+                        }
+                        Some(Outcome::Finished(Resolution::PhaseFinished(Phase::Discard))) => {
+                            Phase::End
+                        }
+                        _ => unreachable!("a turn advances after a phase finishes"),
+                    };
+                    self.next(EventKind::Phase { seat, phase });
+                    return;
+                }
+                TurnStage::End => {
+                    flow.stage = TurnStage::After;
+                    Some("phaseEnd")
+                }
+                TurnStage::After => {
+                    flow.stage = TurnStage::Finish;
+                    Some("phaseAfter")
+                }
+                TurnStage::Finish => {
+                    self.finish();
+                    return;
+                }
+            };
+            if let Some(timing) = timing {
+                if self.queue_timing(timing, Some(seat), None, None, 0, &[]) {
+                    self.scheduler.replace_current(Program::Turn(flow));
+                    return;
+                }
+            }
+        }
     }
 
     pub(crate) fn resolve_classic(
@@ -82,7 +181,6 @@ impl Game {
                 }
                 self.finish();
             }
-            EventKind::Turn { seat, .. } => self.resolve_turn(seat, child),
             EventKind::Phase { seat, phase } => {
                 self.resolve_phase(event, seat, phase, child, answer)
             }
@@ -103,36 +201,6 @@ impl Game {
             EventKind::GameOver { .. } => self.finish(),
             _ => unreachable!("the event cannot receive this child result"),
         }
-    }
-
-    fn resolve_turn(&mut self, seat: SeatId, child: Option<Outcome<Resolution>>) {
-        if self.match_result().is_some() || !self.seat(seat).expect("the turn seat exists").alive {
-            self.finish();
-            return;
-        }
-        if child.is_none() && self.seat(seat).is_ok_and(|player| player.turned_over) {
-            if let Some(flip) = self.seat_change(seat, super::elemental::Change::TurnOver(false)) {
-                self.scheduler.next(flip);
-            }
-            self.scheduler.end(Outcome::Cancelled);
-            return;
-        }
-        let phase = match child {
-            None => Phase::Preparation,
-            Some(Outcome::Finished(Resolution::PhaseFinished(Phase::Preparation))) => {
-                Phase::Judgment
-            }
-            Some(Outcome::Finished(Resolution::PhaseFinished(Phase::Judgment))) => Phase::Draw,
-            Some(Outcome::Finished(Resolution::PhaseFinished(Phase::Draw))) => Phase::Play,
-            Some(Outcome::Finished(Resolution::PhaseFinished(Phase::Play))) => Phase::Discard,
-            Some(Outcome::Finished(Resolution::PhaseFinished(Phase::Discard))) => Phase::End,
-            Some(Outcome::Finished(Resolution::PhaseFinished(Phase::End))) => {
-                self.finish();
-                return;
-            }
-            _ => unreachable!("a turn advances after a phase finishes"),
-        };
-        self.next(EventKind::Phase { seat, phase });
     }
 
     fn resolve_phase(
@@ -236,7 +304,13 @@ impl Game {
     fn resolve_play(&mut self, seat: SeatId, answer: &mut Option<Answer>) {
         match answer.take() {
             None => self.decision = Some(Decision::Play(seat)),
-            Some(Answer::EndPlay) => self.finish_phase(Phase::Play),
+            Some(Answer::EndPlay) => {
+                if self.queue_timing("phaseUseEnd", Some(seat), None, None, 0, &[]) {
+                    self.scheduler.replace_current(Program::PlayAfterEnd(seat));
+                } else {
+                    self.finish_phase(Phase::Play);
+                }
+            }
             Some(Answer::Play(program)) => {
                 if matches!(program.kind(), EventKind::Recast { .. }) {
                     self.classic
@@ -507,5 +581,143 @@ fn save_branch(id: u32, label: &str, cards: Vec<CardId>, count: usize) -> Choice
         targets: vec![],
         min_targets: 0,
         max_targets: 0,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{
+        Action, ChoiceKind, Command, Game, TriggerOrder, TriggerRegistration, TriggerRole,
+        TriggerStep,
+    };
+    use std::sync::{Arc, Mutex};
+
+    #[test]
+    fn turn_timings_wait_for_callbacks_across_rounds_and_face_down_turn() {
+        let log = Arc::new(Mutex::new(Vec::new()));
+        let mut registrations = Vec::new();
+        for timing in [
+            "roundStart",
+            "phaseBeforeStart",
+            "phaseUseEnd",
+            "phaseEnd",
+            "phaseAfter",
+        ] {
+            let observed = log.clone();
+            registrations.push(TriggerRegistration {
+                owner: 0,
+                skill: format!("probe_{timing}"),
+                timing: timing.into(),
+                role: TriggerRole::Global,
+                order: TriggerOrder::First,
+                priority: 0,
+                label: None,
+                silent: true,
+                filter: Arc::new(|_, _, _| true),
+                effect: Arc::new(move |ctx, _, _| {
+                    let turn = ctx.game().classic.as_ref().unwrap().turn.unwrap();
+                    observed.lock().unwrap().push((
+                        turn.number,
+                        turn.round,
+                        ctx.event().timing.clone(),
+                        "callback",
+                        ctx.game().seat(turn.seat).unwrap().turned_over,
+                    ));
+                    TriggerStep::Done
+                }),
+            });
+        }
+        let mut game = Game::classic_with_triggers(5, 0, "guanyu", 4, registrations).unwrap();
+        let first = game.classic.as_ref().unwrap().turn.unwrap();
+        let flipped = game.living_order_from(first.seat)[1];
+        game.seat_mut(flipped).turned_over = true;
+        let observed = log.clone();
+        game.timing_observer = Some(Arc::new(move |game, event| {
+            if [
+                "roundStart",
+                "phaseBeforeStart",
+                "phaseUseEnd",
+                "phaseEnd",
+                "phaseAfter",
+            ]
+            .contains(&event.timing.as_str())
+            {
+                let turn = game.classic.as_ref().unwrap().turn.unwrap();
+                observed.lock().unwrap().push((
+                    turn.number,
+                    turn.round,
+                    event.timing.clone(),
+                    "request",
+                    game.seat(turn.seat).unwrap().turned_over,
+                ));
+            }
+        }));
+        for _ in 0..100 {
+            if game.classic.as_ref().unwrap().turn.unwrap().round == 2 {
+                break;
+            }
+            let public = game.view(None).unwrap();
+            let seat = public.waiting_for.unwrap();
+            let action = match game.view(Some(seat)).unwrap().choice {
+                None => Action::EndPlay,
+                Some(choice) => match choice.kind {
+                    ChoiceKind::Discard => Action::Discard {
+                        event: choice.event,
+                        cards: choice.cards[..choice.min].to_vec(),
+                    },
+                    ChoiceKind::Shan | ChoiceKind::Save => Action::Choose {
+                        event: choice.event,
+                        card: None,
+                    },
+                    ChoiceKind::Content => {
+                        let branch = choice
+                            .branches
+                            .iter()
+                            .find(|b| b.id == 0)
+                            .unwrap_or(&choice.branches[0]);
+                        Action::Select {
+                            event: choice.event,
+                            branch: branch.id,
+                            cards: branch.cards[..branch.min_cards].to_vec(),
+                            targets: branch.targets[..branch.min_targets].to_vec(),
+                        }
+                    }
+                },
+            };
+            game.submit(Command {
+                version: public.version,
+                seat,
+                action,
+            })
+            .unwrap();
+        }
+        let log = log.lock().unwrap();
+        assert_eq!(log[0].2, "roundStart");
+        assert_eq!(log[1].2, "phaseBeforeStart");
+        assert!(log
+            .iter()
+            .any(|row| row.0 == 2 && row.2 == "phaseBeforeStart" && row.3 == "callback" && row.4));
+        assert!(!log
+            .iter()
+            .any(|row| row.0 == 2
+                && ["phaseUseEnd", "phaseEnd", "phaseAfter"].contains(&row.2.as_str())));
+        let second_round: Vec<_> = log
+            .iter()
+            .filter(|row| row.1 == 2)
+            .map(|row| (row.2.as_str(), row.3))
+            .collect();
+        assert_eq!(
+            second_round,
+            [
+                ("roundStart", "request"),
+                ("roundStart", "callback"),
+                ("phaseBeforeStart", "request"),
+                ("phaseBeforeStart", "callback")
+            ]
+        );
+        for pair in log.iter().filter(|row| row.3 == "request") {
+            let index = log.iter().position(|row| std::ptr::eq(row, pair)).unwrap();
+            assert_eq!((&log[index + 1].2, log[index + 1].3), (&pair.2, "callback"));
+        }
     }
 }
