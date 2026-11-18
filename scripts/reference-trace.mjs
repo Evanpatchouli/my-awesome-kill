@@ -31,6 +31,7 @@ const descriptions = new Map([
   ['sha-no-shan', 'ordinary physical sha against an adjacent AI target with no shan'],
   ['trigger-order-cancel', 'damage trigger ordering, cost, and cancellation for physical sha'],
   ['tiesuo-recast', 'default and custom loss and gain when recasting a physical tiesuo'],
+  ['damage-callback-cancel', 'damage callback cancellation after HP change for physical sha'],
 ]);
 let scenario = 'sha-no-shan';
 const scenarioIndex = argv.indexOf('--scenario');
@@ -178,6 +179,21 @@ try {
           const labels = player => player === actor ? 'A' : player === target ? 'B' : player ? 'other' : null;
           const events = [];
           const proto = lib.element.GameEvent.prototype;
+          const skillCallbacks = [];
+          if (scenario === 'damage-callback-cancel') {
+            for (const timing of ['damage', 'damageCancelled', 'damageSource', 'damageEnd', 'damageAfter', 'shaDamage', 'useCardAfter']) {
+              const skillId = 'reference_damage_hp_' + timing;
+              lib.skill[skillId] = {
+                trigger: { global: timing }, forced: true, silent: true, firstDo: true,
+                async content(event, trigger) {
+                  skillCallbacks.push({ timing, hp: target.hp, trigger: trigger.name, triggerParent: trigger.getParent()?.name, callbackParent: event.getParent()?.name });
+                  if (timing === 'damage') trigger.cancel();
+                },
+              };
+              game.finishSkill(skillId);
+              actor.addSkill(skillId);
+            }
+          }
           const originalTrigger = proto.trigger;
           proto.trigger = function (name) {
             const row = [
@@ -210,6 +226,7 @@ try {
             return;
           }
           window.__referenceResult = {
+            ...(scenario === 'damage-callback-cancel' ? { skillCallbacks } : {}),
             setup,
             eventColumns: ['hook', 'event', 'player', 'source', 'target', 'targetHp', 'cardPosition'],
             events,
@@ -257,6 +274,12 @@ try {
   if (scenario === 'sha-no-shan') assert.deepEqual(captured.value.final, {
     targetHp: 3, cardPosition: 'd', inActorHand: false, inDiscard: true, useCount: 1, targetAlive: true,
   });
+  if (scenario === 'damage-callback-cancel') {
+    assert.deepEqual(captured.value.skillCallbacks.map(({ timing, hp }) => [timing, hp]), [
+      ['damage', 3], ['damageCancelled', 3], ['shaDamage', 3], ['useCardAfter', 3],
+    ]);
+    assert.equal(captured.value.final.targetHp, 3);
+  }
   if (scenario === 'tiesuo-recast') {
     const { setup, afterDefault, overrideSetup, callbacks, afterOverride } = captured.value;
     assert.equal(setup.material.strict, true);

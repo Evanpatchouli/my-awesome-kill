@@ -1,7 +1,8 @@
 use duel_core::{
     Action, Card, CardKind, Command, EventKind, EventStatus, Game, GameEvent, GameSetup, GameView,
-    RuleError, SeatId, SeatSetup,
+    RuleError, SeatId, SeatSetup, TriggerOrder, TriggerRegistration, TriggerRole, TriggerStep,
 };
+use std::sync::{Arc, Mutex};
 
 const TARGET: SeatId = 19;
 const OBSERVER: SeatId = 80;
@@ -225,6 +226,174 @@ fn passing_applies_one_damage_and_allows_a_new_root_event() {
             EventStatus::Started
         )
     );
+}
+
+#[test]
+fn registered_sha_cancellation_preserves_material_and_paid_health() {
+    let timings = [
+        "damageBefore",
+        "damageBegin",
+        "damageBegin1",
+        "damageBegin2",
+        "damageBegin3",
+        "damageBegin4",
+        "damage",
+        "damageSource",
+        "damageEnd",
+        "damageAfter",
+        "damageCancelled",
+        "shaDamage",
+        "useCardAfter",
+    ];
+    for cancel_index in 5..=9 {
+        let cancel_at = timings[cancel_index];
+        let mut game = Game::new(setup(SHAN)).unwrap();
+        let observed = Arc::new(Mutex::new(Vec::new()));
+        for timing in timings {
+            let log = observed.clone();
+            let (owner, role, fields) = match timing {
+                "useCardAfter" => (SOURCE, TriggerRole::Player, (Some(SOURCE), None, None, 0)),
+                "shaDamage" => (
+                    TARGET,
+                    TriggerRole::Target,
+                    (Some(SOURCE), None, Some(TARGET), 0),
+                ),
+                "damageEnd" => (
+                    TARGET,
+                    TriggerRole::Player,
+                    (Some(TARGET), Some(SOURCE), None, 1),
+                ),
+                _ => (
+                    SOURCE,
+                    TriggerRole::Source,
+                    (Some(TARGET), Some(SOURCE), None, 1),
+                ),
+            };
+            game.register_trigger(TriggerRegistration {
+                owner,
+                skill: format!("observe_{timing}"),
+                timing: timing.into(),
+                role,
+                order: TriggerOrder::Normal,
+                priority: 0,
+                label: None,
+                silent: true,
+                filter: Arc::new(|_, _, _| true),
+                effect: Arc::new(move |ctx, _, _| {
+                    let event = ctx.event();
+                    assert_eq!(
+                        (event.player, event.source, event.target, event.amount),
+                        fields
+                    );
+                    assert_eq!(event.cards, [SHA]);
+                    let view = ctx.game().view(None).unwrap();
+                    assert_eq!(view.resolving, [SHA]);
+                    log.lock()
+                        .unwrap()
+                        .push((timing, event.subject, view.seats[0].hp));
+                    if timing == cancel_at || timing == "damageCancelled" {
+                        TriggerStep::CancelSubject
+                    } else {
+                        TriggerStep::Done
+                    }
+                }),
+            })
+            .unwrap();
+        }
+        start_attack(&mut game);
+        let held = game.view(Some(TARGET)).unwrap();
+        game.submit(Command {
+            version: held.version,
+            seat: TARGET,
+            action: Action::Choose {
+                event: held.choice.unwrap().event,
+                card: None,
+            },
+        })
+        .unwrap();
+
+        let view = game.view(None).unwrap();
+        let damage = view
+            .events
+            .iter()
+            .find(|event| {
+                event.status == EventStatus::Cancelled
+                    && matches!(event.kind, EventKind::Damage { .. })
+            })
+            .unwrap();
+        let target = view
+            .events
+            .iter()
+            .find(|event| {
+                event.status == EventStatus::Finished
+                    && matches!(event.kind, EventKind::ShaEffect { .. })
+            })
+            .unwrap();
+        let use_sha = view
+            .events
+            .iter()
+            .find(|event| {
+                event.status == EventStatus::Finished
+                    && matches!(event.kind, EventKind::UseSha { .. })
+            })
+            .unwrap();
+        let paid_hp = if cancel_index >= 6 { 2 } else { 3 };
+        assert_eq!(damage.parent, Some(target.id));
+        assert_eq!(target.parent, Some(use_sha.id));
+        let mut expected: Vec<_> = timings[..=cancel_index]
+            .iter()
+            .enumerate()
+            .map(|(index, &timing)| {
+                let hp = if index >= 6 { 2 } else { 3 };
+                (timing, damage.id, hp)
+            })
+            .collect();
+        expected.extend([
+            ("damageCancelled", damage.id, paid_hp),
+            ("shaDamage", target.id, paid_hp),
+            ("useCardAfter", use_sha.id, paid_hp),
+        ]);
+        assert_eq!(
+            *observed.lock().unwrap(),
+            expected,
+            "cancelled at {cancel_at}"
+        );
+        if cancel_at == "damage" {
+            let oracle: serde_json::Value = serde_json::from_str(include_str!(
+                "../../../tests/reference/damage-callback-cancel.json"
+            ))
+            .unwrap();
+            let callbacks = oracle["skillCallbacks"].as_array().unwrap();
+            let expected_callbacks: Vec<_> = callbacks
+                .iter()
+                .map(|callback| {
+                    let timing = callback["timing"].as_str().unwrap();
+                    let subject = match callback["trigger"].as_str().unwrap() {
+                        "damage" => {
+                            assert_eq!(callback["triggerParent"], "sha");
+                            damage.id
+                        }
+                        "sha" => {
+                            assert_eq!(callback["triggerParent"], "useCard");
+                            target.id
+                        }
+                        "useCard" => {
+                            assert_eq!(callback["triggerParent"], "reference_fixture_use");
+                            use_sha.id
+                        }
+                        other => panic!("unexpected oracle subject: {other}"),
+                    };
+                    assert_eq!(callback["callbackParent"], "trigger");
+                    (timing, subject, callback["hp"].as_i64().unwrap() as i32 - 1)
+                })
+                .collect();
+            let actual = observed.lock().unwrap();
+            assert_eq!(&actual[6..], expected_callbacks);
+        }
+        assert_eq!(view.seats[0].hp, paid_hp);
+        assert_eq!(view.discard, [SHA]);
+        assert!(view.resolving.is_empty());
+    }
 }
 
 #[test]

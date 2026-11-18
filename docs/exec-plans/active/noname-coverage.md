@@ -6,7 +6,7 @@
 
 - Rust 调度器已运行嵌套事件、按序子事件和 after 收尾、暂停/恢复、取消、版本拒绝与不同席位投影。普通身份局支持六阶段、存活距离、主公与隐藏身份、求桃、死亡、奖惩和终局。2/4/8 席完整局检查实体守恒，单独的八人性能测量覆盖 100 局。
 - 全部 standard_2008 25 将（40 个技能）及 104 张实体牌已对照数据。武将能力、锦囊及装备在同一调度器内运行。用例包含替换装、双目标借刀、虚拟材料、无懈链、全桌求助、改判与私看、用杀次数与材料成本。运行 `cargo test --locked --manifest-path packages/duel-core/Cargo.toml`，查看针对具体行为命名的测试。
-- 上游原版八人身份局实跑一次物理杀、目标无闪，记录 83 次时机调用。Rust/WASM 检查其中六个可比里程碑以及 HP、牌区，并非所有 83 个时机已一一实现。实际顺序为 damage 时目标仍为 4 HP，changeHp 后为 3；useCardAfter 时杀仍在处理区，随后移入弃牌堆。见[原版对照步骤](../../../tests/reference/README.md)。
+- 上游原版八人身份局实跑一次物理杀、目标无闪，记录 83 次时机请求。Rust/WASM 对照其中六个里程碑及 HP、牌区。请求 `damage` 时目标仍为 4 HP；另一条受伤技能实测显示，对应回调开始时 `changeHp` 已将体力减至 3。`useCardAfter` 时杀仍在处理区，随后移入弃牌堆。[原版对照步骤](../../../tests/reference/README.md)
 - 独立上游局记录了取消伤害的 126 次时机调用。A 的同优先级选项为 Alpha、Beta，实选 Beta 后，原先可用的低优先级候选被重新筛除。随后 B 支付一张桃，A 的 lastDo 取消伤害。B 仍有 4 体力，杀已计次，`useCardAfter` 与后续弃置都发生。记录同时保留技能事件的父事件、被触发的伤害及其父事件。见[时机与取消轨迹](../../../tests/reference/trigger-order-cancel.json)。
 - 编译后的 Rust/WASM 经真实 Vue 入口运行。种子 20 验证 25 将筛选、赵云、多人隐藏信息、整组弃牌、牌移动与受伤、换装、响应、退出/重开；另测诸葛亮观星与刘备仁德。核心与 UI 独立复核发现的无懈窗口、连弩材料、技能发动日志问题已修复。测试结果详见[运行手册](../../runbooks/testing.md)。
 
@@ -27,7 +27,7 @@
 
 ## 仍需迁移或证明的能力
 
-1. **一般事件时机。** 对照 gameEvent.ts 的 loop、trigger、insert/insertAfter、checkSkipped、untrigger、cancel、neutralize/unneutralize，以及 content.ts 的 arrangeTrigger/createTrigger。现有经典触发队列覆盖有限个 HeroMoment，尚需通用的 Before/Begin/End/After/Omitted/Skipped/Cancelled 语义、角色/来源/目标/全局注册、firstDo/lastDo、同席同优先级的选择、逐次重新过滤、动态增删和到期。还需验证额外回合、插入/跳过阶段与事件历史。旧脚本的 goto/redo 兼容 API 不必照搬，行为仍要核实。
+1. **一般事件时机。** Rust 已提供按名称和 player/source/target/global 角色注册的实际技能派发，在普通出杀、受伤、阶段和判定等已接入时机运行。已验证 first/last、按座次选序、逐次重验、开放组动态增删、真实支付与伤害取消。其余事件须逐个落实真实的 Before/Begin/End/After/Omitted/Skipped/Cancelled、临时技能到期、额外回合、插入/跳过阶段、事件历史、neutralize/unneutralize。依据为 gameEvent.ts 的 loop、trigger、insert/insertAfter、checkSkipped、untrigger、cancel 以及 content.ts 的 arrangeTrigger/createTrigger。
 2. **牌及共享区域。** 处理区在途、普通区和标准延时牌已有用例。继续验证批量同时转移、洗牌耗尽、扩展区与标签、重铸、同时暗选再亮牌、装备栏/判定区禁用、扩展装备位与重排、动态目标和跨来源判定。
 3. **角色生命周期与修饰。** 继续迁移数值护甲、伤害性质与连环、翻面、体力上限改变、角色重生/休整、明置/暗置、副将和更换势力、限定与觉醒、临时技能到期及任意组合修饰。曹操的护驾技能与数值护甲是不同机制。
 4. **投影、重放与模式接口。** 目前可累加每次事件投影，但仍需模式无关的历史查询、确定性命令重放、视角切换与私有事件边界。要区分离线游戏语义与原联机运输；例如离线拼点也会调用 chooseCardOL，双方暗选汇总须迁移。原版菜单、服务器或 JS 沙盒不因名字被列入对局功能，也不能凭 OL 前缀遗漏本地行为。
@@ -36,7 +36,7 @@
 
 下列为已定位的**待实跑**用例，可作为测试专用内容，不向玩家开放扩展包或第二个模式。
 
-- **一般派发与取消。** 上游已实跑同席同优先级、另席高优先级、firstDo/lastDo、source/player/global、费用、取消与 after 清理。用此轨迹验证 Rust 通用时机及已有标准技；另需覆盖 target 角色、动态增删及跳过阶段。
+- **一般派发与取消。** 同席选序、跨席高优先级、firstDo/lastDo、费用、取消与 after 清理已用上游轨迹对照 Rust。target 角色、公开入口、动态增删与麒麟弓有针对性回归。阶段跳过与中途取消仍需独立场景；`loseAfter` 等跨动作时机的通用数据须随对应机制继续接入。
 - **铁索与法恩。** card/extra.js 中的 tiesuo，character/yijiang/skill.js 中的 faen，noname/library/skill.js 的 _lianhuan 与 _lianhuan4。B、C 横置，仅对 B 造成火焰伤害；核对受伤次数、伤害性质/来源、解除横置、法恩时机以及传播途中状态变化。
 - **巧说与纵适。** character/yijiang/skill.js 的 qiaoshui、jyzongshi 与 content.ts 的 chooseToCompare。两席先分别暗选再共同亮牌，核实点数修改、平点、胜败后牌的归属、下张牌的合法目标和临时技过期。
 - **忠义扩展区。** mode/versus.js 中对关羽的技能配置、character/standard/skill.js 的 zhongyi/zhongyi2、addToExpansion/roundStart。实体牌离开原区并获得标签，限定技一次，友方杀伤害增加，下轮移除效果和弃牌各一次。

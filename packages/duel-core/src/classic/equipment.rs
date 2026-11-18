@@ -46,7 +46,6 @@ pub(crate) enum Flow {
     Equip { seat: SeatId, card: Card },
     Attack(attack::Attack),
     Target(attack::Target),
-    ShaDamage(attack::ShaDamage),
     Response(response::Response),
     Payment(response::Payment),
     Skill(skill::Skill),
@@ -63,11 +62,6 @@ impl Flow {
             Self::Target(attack) => EventKind::ShaEffect {
                 seat: attack.seat,
                 target: attack.target,
-            },
-            Self::ShaDamage(damage) => EventKind::Damage {
-                source: Some(damage.seat),
-                target: damage.target,
-                amount: damage.amount,
             },
             Self::Response(response) => EventKind::Respond {
                 seat: response.seat,
@@ -115,7 +109,6 @@ impl Game {
             Flow::Equip { seat, card } => self.resolve_equip(seat, card, child.is_none()),
             Flow::Attack(attack) => self.resolve_attack(attack, child),
             Flow::Target(target) => self.resolve_sha_target(target, child),
-            Flow::ShaDamage(damage) => self.resolve_sha_damage(damage, child),
             Flow::Response(response) => self.resolve_response(response, child),
             Flow::Payment(payment) => self.resolve_response_payment(payment),
             Flow::Skill(skill) => self.resolve_equipment_skill(event, skill, child),

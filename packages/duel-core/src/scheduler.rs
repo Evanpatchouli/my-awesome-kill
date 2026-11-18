@@ -55,6 +55,10 @@ impl<P: Clone, R: Clone> Scheduler<P, R> {
         self.push(program, None);
     }
 
+    pub fn current_id(&self) -> EventId {
+        self.stack.last().map_or(0, |frame| frame.event.id)
+    }
+
     pub fn next(&mut self, program: P) {
         let frame = self.current();
         assert!(matches!(frame.state, State::Running));

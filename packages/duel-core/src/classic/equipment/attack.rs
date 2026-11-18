@@ -12,6 +12,7 @@ enum AttackStep {
     Aim(usize),
     Aimed(usize),
     Resolve(usize),
+    After,
 }
 
 #[derive(Clone)]
@@ -53,6 +54,7 @@ enum TargetStep {
     Defend,
     Miss,
     Damage,
+    AfterDamage,
 }
 
 #[derive(Clone)]
@@ -63,22 +65,6 @@ pub(crate) struct Target {
     ignore_armor: bool,
     direct_hit: bool,
     shan_required: u8,
-    cards: Vec<Card>,
-}
-
-#[derive(Clone, Copy)]
-enum DamageStep {
-    Before,
-    AfterBow,
-    Apply,
-}
-
-#[derive(Clone)]
-pub(crate) struct ShaDamage {
-    pub(super) seat: SeatId,
-    pub(super) target: SeatId,
-    pub(super) amount: u16,
-    step: DamageStep,
     cards: Vec<Card>,
 }
 
@@ -140,7 +126,14 @@ impl Game {
                         .expect("the table is classic")
                         .sha_played = true;
                 }
-                self.queue_use_costs(attack.payer, &attack.cards);
+                if self.classic.is_some() {
+                    self.queue_use_costs(attack.payer, &attack.cards);
+                } else {
+                    // The prescribed table records material payment on the Sha event itself.
+                    for card in &attack.cards {
+                        self.move_to_resolving(attack.payer, card.id);
+                    }
+                }
                 for &card in &attack.cards {
                     self.scheduler
                         .after(Program::event(EventKind::Discard { card }));
@@ -223,7 +216,12 @@ impl Game {
                     .enumerate()
                     .find(|(_, target)| self.seat(*target).is_ok_and(|target| target.alive))
                 else {
-                    self.finish();
+                    attack.step = AttackStep::After;
+                    if self.queue_timing("useCardAfter", Some(seat), None, None, 0, &attack.cards) {
+                        self.continue_equipment(Flow::Attack(attack));
+                    } else {
+                        self.finish();
+                    }
                     return;
                 };
                 let target = Target {
@@ -238,6 +236,10 @@ impl Game {
                 attack.step = AttackStep::Resolve(index + offset + 1);
                 self.scheduler
                     .next(Program::Equipment(Flow::Target(target)));
+            }
+            AttackStep::After => {
+                self.finish_attack_hook(child);
+                return;
             }
         }
         self.continue_equipment(Flow::Attack(attack));
@@ -255,17 +257,16 @@ impl Game {
             }
             (TargetStep::Defend, None | Some(Outcome::Finished(Resolution::Passed)))
             | (TargetStep::Miss, Some(Outcome::Finished(Resolution::ForcedHit))) => {
-                let damage = ShaDamage {
-                    seat,
+                let damage = self.damage_program(
+                    Some(seat),
                     target,
-                    step: DamageStep::Before,
-                    amount: 1 + self.hero_damage_bonus(Some(seat), Some(CardKind::Sha)),
-                    cards: attack.cards.clone(),
-                };
+                    1,
+                    Some(CardKind::Sha),
+                    attack.cards.clone(),
+                );
                 attack.step = TargetStep::Damage;
                 self.continue_equipment(Flow::Target(attack));
-                self.scheduler
-                    .next(Program::Equipment(Flow::ShaDamage(damage)));
+                self.scheduler.next(damage);
             }
             (TargetStep::Defend, Some(Outcome::Finished(Resolution::Responded))) => {
                 if attack.shan_required > 1 {
@@ -286,50 +287,51 @@ impl Game {
             (TargetStep::Defend | TargetStep::Miss, Some(_)) => {
                 self.scheduler.end(Outcome::Cancelled)
             }
-            (TargetStep::Damage, Some(_)) => self.finish(),
+            (TargetStep::Damage, Some(_)) => {
+                // A landed Sha reports its damage result even when damage was cancelled.
+                if self.queue_timing(
+                    "shaDamage",
+                    Some(seat),
+                    None,
+                    Some(target),
+                    0,
+                    &attack.cards,
+                ) {
+                    attack.step = TargetStep::AfterDamage;
+                    self.continue_equipment(Flow::Target(attack));
+                } else {
+                    self.finish();
+                }
+            }
+            (TargetStep::AfterDamage, child @ Some(_)) => self.finish_attack_hook(child),
             _ => unreachable!("the attack target waits for defense, a miss skill, or damage"),
         }
     }
 
     fn ask_shan(&mut self, target: SeatId, ignore_armor: bool) {
-        self.scheduler.next(Program::Equipment(Flow::response(
-            target,
-            CardKind::Shan,
-            ignore_armor,
-        )));
+        if self.classic.is_some() {
+            self.scheduler.next(Program::Equipment(Flow::response(
+                target,
+                CardKind::Shan,
+                ignore_armor,
+            )));
+        } else {
+            self.next(EventKind::ChooseShan { seat: target });
+        }
     }
 
-    pub(super) fn resolve_sha_damage(
-        &mut self,
-        mut damage: ShaDamage,
-        child: Option<Outcome<Resolution>>,
-    ) {
-        let (seat, target) = (damage.seat, damage.target);
-        match damage.step {
-            DamageStep::Before
-                if self.has_weapon(seat, CardKind::Qilin)
-                    && !self.target_horses(target).is_empty() =>
-            {
-                damage.step = DamageStep::AfterBow;
-                self.continue_equipment(Flow::ShaDamage(damage));
-                self.scheduler
-                    .next(Program::Equipment(Flow::Skill(Skill::new(
-                        seat,
-                        target,
-                        CardKind::Qilin,
-                    ))));
-            }
-            DamageStep::Before | DamageStep::AfterBow => {
-                damage.step = DamageStep::Apply;
-                let context =
-                    self.damage_context(Some(seat), target, damage.amount, damage.cards.clone());
-                self.continue_equipment(Flow::ShaDamage(damage));
-                self.resolve_card_damage(context, None);
-            }
-            DamageStep::Apply => self.resolve_card_damage(
-                self.damage_context(Some(seat), target, damage.amount, damage.cards),
-                child,
-            ),
+    fn finish_attack_hook(&mut self, child: Option<Outcome<Resolution>>) {
+        if matches!(child, Some(Outcome::Cancelled)) {
+            self.scheduler.end(Outcome::Cancelled);
+        } else {
+            self.finish();
         }
+    }
+
+    pub(crate) fn qilin_program(&self, seat: SeatId, target: SeatId) -> Option<Program> {
+        (self.seat(seat).is_ok_and(|seat| seat.alive)
+            && self.has_weapon(seat, CardKind::Qilin)
+            && !self.target_horses(target).is_empty())
+        .then(|| Program::Equipment(Flow::Skill(Skill::new(seat, target, CardKind::Qilin))))
     }
 }

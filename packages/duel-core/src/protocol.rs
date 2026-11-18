@@ -376,6 +376,10 @@ pub enum EventKind {
     Trigger {
         seat: SeatId,
     },
+    RegisteredTrigger {
+        seat: SeatId,
+        registration: u64,
+    },
     DiscardGroup {
         seat: SeatId,
         amount: usize,

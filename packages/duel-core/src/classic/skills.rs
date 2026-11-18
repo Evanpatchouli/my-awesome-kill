@@ -3,6 +3,7 @@ mod modifiers;
 #[cfg(test)]
 mod tests;
 mod triggers;
+pub(crate) use triggers::Queue as Dispatch;
 
 use crate::scheduler::{EventRef, Outcome};
 use crate::{
@@ -50,7 +51,6 @@ pub(crate) struct HeroTurn {
 
 #[derive(Clone)]
 pub(crate) enum HeroFlow {
-    Triggers(triggers::Queue),
     Trigger(triggers::Trigger),
     Activation { seat: SeatId, skill: SkillId },
     Active(active::Active),
@@ -60,9 +60,6 @@ pub(crate) enum HeroFlow {
 impl HeroFlow {
     pub(crate) fn kind(&self) -> EventKind {
         match self {
-            Self::Triggers(queue) => EventKind::Trigger {
-                seat: queue.moment.seat(),
-            },
             Self::Trigger(trigger) => trigger.kind(),
             Self::Activation { seat, skill } => EventKind::Skill {
                 seat: *seat,
@@ -124,24 +121,6 @@ pub(crate) enum HeroMoment {
     },
 }
 
-impl HeroMoment {
-    fn seat(&self) -> SeatId {
-        match *self {
-            Self::Preparation { seat }
-            | Self::Draw { seat, .. }
-            | Self::Discard { seat }
-            | Self::End { seat }
-            | Self::UseTrick { seat, .. }
-            | Self::JudgeBefore { seat, .. }
-            | Self::JudgeAfter { seat, .. }
-            | Self::ShaRedirect { seat, .. }
-            | Self::ShaTarget { seat, .. }
-            | Self::LostCards { seat, .. } => seat,
-            Self::DamageAfter { target, .. } => target,
-        }
-    }
-}
-
 #[derive(Clone, Copy)]
 pub(crate) enum HeroAdjustment {
     None,
@@ -191,7 +170,6 @@ impl Game {
         child: Option<Outcome<Resolution>>,
     ) {
         match flow {
-            HeroFlow::Triggers(queue) => self.resolve_hero_triggers(queue, child),
             HeroFlow::Trigger(trigger) => self.resolve_hero_trigger(trigger, child),
             HeroFlow::Activation { .. } => self.finish(),
             HeroFlow::Active(active) => self.resolve_hero_active(active, child),

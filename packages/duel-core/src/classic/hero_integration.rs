@@ -17,13 +17,29 @@ pub(crate) struct Judgment {
     step: JudgeStep,
 }
 
+#[derive(Clone, Copy)]
+enum DamageStage {
+    Before(usize),
+    Hp,
+    CheckDying,
+    Dying,
+    Source,
+    End,
+    After,
+    Finish,
+    Cancelled,
+    CancelledFinish,
+}
+
 #[derive(Clone)]
 pub(crate) struct CardDamage {
     source: Option<SeatId>,
     target: SeatId,
     amount: u16,
+    card_kind: Option<CardKind>,
     cards: Vec<Card>,
     allows_damage_skills: bool,
+    stage: DamageStage,
 }
 
 impl CardDamage {
@@ -118,13 +134,7 @@ impl Game {
         cards: Vec<Card>,
     ) -> Program {
         let amount = amount.saturating_add(self.hero_damage_bonus(source, kind));
-        Program::CardDamage(CardDamage {
-            source,
-            target,
-            amount,
-            cards,
-            allows_damage_skills: true,
-        })
+        Program::CardDamage(self.damage_context(source, target, amount, kind, cards))
     }
 
     pub(crate) fn queue_lose_hp(&mut self, seat: SeatId, amount: u16) {
@@ -132,8 +142,10 @@ impl Game {
             source: None,
             target: seat,
             amount,
+            card_kind: None,
             cards: vec![],
             allows_damage_skills: false,
+            stage: DamageStage::Before(0),
         }));
     }
 
@@ -142,66 +154,143 @@ impl Game {
         source: Option<SeatId>,
         target: SeatId,
         amount: u16,
+        card_kind: Option<CardKind>,
         cards: Vec<Card>,
     ) -> CardDamage {
         CardDamage {
             source,
             target,
             amount,
+            card_kind,
             cards,
             allows_damage_skills: true,
+            stage: DamageStage::Before(0),
         }
     }
 
     pub(crate) fn resolve_card_damage(
         &mut self,
-        damage: CardDamage,
+        mut damage: CardDamage,
         child: Option<Outcome<Resolution>>,
     ) {
+        use DamageStage::*;
         use Outcome::Finished;
-        use Resolution::{Complete, HpChanged};
-        let CardDamage {
-            source,
-            target,
-            amount,
-            cards,
-            allows_damage_skills,
-        } = damage;
-        match child {
-            None if self.match_result().is_some() => self.scheduler.end(Outcome::Cancelled),
-            None => self.queue_hp_change(target, -i32::from(amount)),
-            Some(Finished(HpChanged))
-                if self.classic.is_some()
-                    && self
-                        .seat(target)
-                        .is_ok_and(|seat| seat.hp <= 0 && seat.alive) =>
-            {
-                self.next(EventKind::Dying { source, target });
+        use Resolution::HpChanged;
+
+        if matches!(child, Some(Outcome::Cancelled))
+            && matches!(damage.stage, Before(_) | CheckDying | End | After | Finish)
+        {
+            damage.stage = Cancelled;
+        }
+        if self.match_result().is_some() && !matches!(damage.stage, Cancelled | CancelledFinish) {
+            if matches!(damage.stage, Before(0)) {
+                self.scheduler.end(Outcome::Cancelled);
+            } else {
+                self.finish();
             }
-            Some(Finished(HpChanged | Complete))
-                if allows_damage_skills
-                    && self.classic.is_some()
-                    && self.match_result().is_none()
-                    && self.seat(target).is_ok_and(|seat| seat.alive) =>
-            {
-                if !self.queue_hero_moment(HeroMoment::DamageAfter {
-                    source,
-                    target,
-                    amount,
-                    cards,
-                }) {
-                    self.finish();
+            return;
+        }
+        let (source, target, amount) = (damage.source, damage.target, damage.amount);
+        let damage_timings = [
+            "damageBefore",
+            "damageBegin",
+            "damageBegin1",
+            "damageBegin2",
+            "damageBegin3",
+            "damageBegin4",
+        ];
+        let queue_hook = |game: &mut Self, timing, cards: &[Card]| {
+            game.queue_timing(timing, Some(target), source, None, amount, cards)
+        };
+        loop {
+            let queued = match damage.stage {
+                Before(index) if damage.allows_damage_skills && index < damage_timings.len() => {
+                    let timing = damage_timings[index];
+                    damage.stage = Before(index + 1);
+                    match (timing, damage.card_kind, source) {
+                        ("damageBegin2", Some(CardKind::Sha), Some(source)) => {
+                            self.queue_sha_damage_begin2(source, target, amount, &damage.cards)
+                        }
+                        _ => queue_hook(self, timing, &damage.cards),
+                    }
                 }
+                Before(_) => {
+                    damage.stage = Hp;
+                    self.queue_hp_change(target, -i32::from(amount));
+                    true
+                }
+                Cancelled => {
+                    damage.stage = CancelledFinish;
+                    queue_hook(self, "damageCancelled", &damage.cards)
+                }
+                CancelledFinish => {
+                    self.scheduler.end(Outcome::Cancelled);
+                    return;
+                }
+                Hp if !matches!(child, Some(Finished(HpChanged))) => {
+                    self.finish();
+                    return;
+                }
+                Hp => {
+                    damage.stage = CheckDying;
+                    damage.allows_damage_skills && queue_hook(self, "damage", &damage.cards)
+                }
+                CheckDying
+                    if self.classic.is_some()
+                        && self
+                            .seat(target)
+                            .is_ok_and(|seat| seat.hp <= 0 && seat.alive) =>
+                {
+                    damage.stage = Dying;
+                    self.next(EventKind::Dying { source, target });
+                    true
+                }
+                CheckDying | Dying => {
+                    if !damage.allows_damage_skills {
+                        self.finish();
+                        return;
+                    }
+                    damage.stage = Source;
+                    false
+                }
+                Source => {
+                    damage.stage = End;
+                    queue_hook(self, "damageSource", &damage.cards)
+                }
+                End => {
+                    damage.stage = After;
+                    let moment = |cards| HeroMoment::DamageAfter {
+                        source,
+                        target,
+                        amount,
+                        cards,
+                    };
+                    if self.has_hero_triggers(&moment(Vec::new())) {
+                        self.scheduler
+                            .next(self.hero_triggers(moment(damage.cards.clone())));
+                        true
+                    } else {
+                        false
+                    }
+                }
+                After => {
+                    damage.stage = Finish;
+                    queue_hook(self, "damageAfter", &damage.cards)
+                }
+                Finish => {
+                    self.finish();
+                    return;
+                }
+            };
+            if queued {
+                self.scheduler.replace_current(Program::CardDamage(damage));
+                return;
             }
-            Some(_) => self.finish(),
         }
     }
 
     pub(crate) fn queue_hero_moment(&mut self, moment: HeroMoment) -> bool {
-        if self.classic.is_none()
-            || self.match_result().is_some()
-            || !self.has_hero_triggers(&moment)
-        {
+        if self.match_result().is_some() || !self.has_hero_triggers(&moment) {
             return false;
         }
         self.scheduler.next(self.hero_triggers(moment));
@@ -252,20 +341,22 @@ impl Game {
             hand += usize::from(matches!(zone, Zone::Hand));
             equipment += usize::from(matches!(zone, Zone::Equipment));
         }
+        let moment = HeroMoment::LostCards {
+            seat,
+            hand_count: hand,
+            equipment_count: equipment,
+        };
         let empties_hand = hand > 0
             && self
                 .seat(seat)
                 .is_ok_and(|player| player.hand.len() == hand);
-        if empties_hand && self.has_skill(seat, "lianying")
-            || equipment > 0 && self.has_skill(seat, "xiaoji")
+        if (hand > 0 || equipment > 0)
+            && (self.has_hero_triggers(&moment)
+                || (empties_hand && self.has_skill(seat, "lianying"))
+                || self.has_timing_registrations("loseAfter"))
         {
-            // The trigger queue checks the zones once all materials have moved.
-            self.scheduler
-                .next(self.hero_triggers(HeroMoment::LostCards {
-                    seat,
-                    hand_count: hand,
-                    equipment_count: equipment,
-                }));
+            // Eligibility is evaluated after the queued materials move.
+            self.scheduler.next(self.hero_triggers(moment));
         }
     }
 
@@ -290,3 +381,5 @@ impl Game {
         }
     }
 }
+#[cfg(test)]
+mod dispatch_tests;

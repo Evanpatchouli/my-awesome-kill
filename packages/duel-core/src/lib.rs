@@ -2,6 +2,11 @@ mod classic;
 pub mod classic_data;
 mod protocol;
 mod scheduler;
+mod triggers;
+pub use triggers::{
+    TriggerContext, TriggerEffect, TriggerEvent, TriggerFilter, TriggerId, TriggerOrder,
+    TriggerRegistration, TriggerRole, TriggerSelection, TriggerStep,
+};
 
 use std::collections::{HashMap, HashSet};
 
@@ -94,6 +99,8 @@ enum Program {
     Equipment(equipment::Flow),
     Trick(Trick),
     Hero(HeroFlow),
+    Dispatch(classic::skills::Dispatch),
+    Registered(triggers::Registered),
     Judgment(Judgment),
     CardDamage(CardDamage),
     DiscardGroup {
@@ -128,6 +135,11 @@ impl Program {
             Self::Equipment(flow) => flow.kind(),
             Self::Trick(flow) => flow.kind(),
             Self::Hero(flow) => flow.kind(),
+            Self::Dispatch(flow) => flow.kind(),
+            Self::Registered(flow) => EventKind::RegisteredTrigger {
+                seat: flow.owner,
+                registration: flow.id,
+            },
             Self::Judgment(judgment) => EventKind::Judge {
                 seat: judgment.seat,
             },
@@ -198,6 +210,8 @@ pub struct Game {
     scheduler: Scheduler<Program, Resolution>,
     events: Vec<GameEvent>,
     classic: Option<Classic>,
+    trigger_registrations: HashMap<TriggerId, TriggerRegistration>,
+    next_trigger_id: TriggerId,
 }
 
 impl Game {
@@ -245,6 +259,8 @@ impl Game {
             scheduler: Scheduler::new(),
             events: Vec::new(),
             classic: None,
+            trigger_registrations: HashMap::new(),
+            next_trigger_id: 0,
         }
     }
 
@@ -450,7 +466,7 @@ impl Game {
         let answer = match command.action {
             Action::PlaySha { card, target } if self.classic.is_none() => {
                 let use_sha = self.plan_sha(command.seat, card, target)?;
-                self.scheduler.start(Program::event(use_sha));
+                self.scheduler.start(use_sha);
                 None
             }
             Action::PlaySha { card, target } => {
@@ -517,7 +533,7 @@ impl Game {
         Ok(())
     }
 
-    fn plan_sha(&self, seat: SeatId, card: CardId, target: SeatId) -> Result<EventKind, RuleError> {
+    fn plan_sha(&self, seat: SeatId, card: CardId, target: SeatId) -> Result<Program, RuleError> {
         if self.decision.is_some() {
             return Err(RuleError::ChoicePending);
         }
@@ -530,7 +546,7 @@ impl Game {
             return Err(RuleError::InvalidTarget);
         }
         let card = self.card_in_hand(seat, card, CardKind::Sha)?;
-        Ok(EventKind::UseSha { seat, target, card })
+        Ok(self.attack_program(seat, vec![card], vec![target]))
     }
 
     fn checked_play_seat(&self, seat: SeatId) -> Result<(), RuleError> {
@@ -677,13 +693,15 @@ impl Game {
     ) {
         use EventKind::*;
         use Outcome::{Cancelled, Finished};
-        use Resolution::{Complete, Dodged, Passed};
+        use Resolution::{Dodged, Passed};
 
         let kind = program.kind();
         let program = match program {
             Program::Equipment(flow) => return self.resolve_equipment(event, flow, child),
             Program::Trick(flow) => return self.resolve_trick(event, flow, child),
             Program::Hero(flow) => return self.resolve_hero(event, flow, child),
+            Program::Dispatch(flow) => return self.resolve_dispatch(flow, child),
+            Program::Registered(flow) => return self.resolve_registered(flow, child),
             Program::Choose(choice) => return self.resolve_selection(event, choice, None, answer),
             Program::CounterChoice { request, context } => {
                 return self.resolve_selection(event, request, Some(context), answer)
@@ -705,22 +723,6 @@ impl Game {
             program => program,
         };
         match (kind, child) {
-            (UseSha { seat, target, card }, None) => {
-                self.move_to_resolving(seat, card.id);
-                self.next(ShaEffect { seat, target });
-                self.scheduler.after(Program::event(Discard { card }));
-            }
-            (UseSha { .. }, Some(_)) => self.finish(),
-            (ShaEffect { target, .. }, None) => self.next(ChooseShan { seat: target }),
-            (ShaEffect { seat, target }, Some(Finished(Passed))) => self.next(Damage {
-                source: Some(seat),
-                target,
-                amount: 1,
-            }),
-            (ShaEffect { .. }, Some(Finished(Dodged))) => {
-                self.scheduler.end(Cancelled);
-            }
-            (ShaEffect { .. }, Some(Finished(Complete))) => self.finish(),
             (ChooseShan { seat }, None) => match answer.take() {
                 Some(Answer::Pass) => self.scheduler.end(Finished(Passed)),
                 Some(Answer::Card(card)) => self.next(UseShan { seat, card }),
@@ -835,7 +837,10 @@ impl Game {
         amount: u16,
         child: Option<Outcome<Resolution>>,
     ) {
-        self.resolve_card_damage(self.damage_context(source, target, amount, vec![]), child);
+        self.resolve_card_damage(
+            self.damage_context(source, target, amount, None, vec![]),
+            child,
+        );
     }
 
     fn queue_hp_change(&mut self, target: SeatId, delta: i32) {

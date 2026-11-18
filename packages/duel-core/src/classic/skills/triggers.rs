@@ -5,9 +5,33 @@ use crate::{CardId, CardKind, DrawReason, EventKind, Game, Program, Resolution, 
 
 #[derive(Clone)]
 pub(crate) struct Queue {
-    pub(super) moment: HeroMoment,
-    pending: Option<Vec<(SeatId, SkillId)>>,
+    moment: Option<HeroMoment>,
+    event: crate::TriggerEvent,
+    pending: Option<Vec<Candidate>>,
     adjustment: HeroAdjustment,
+    choosing: bool,
+    choice_indices: Vec<usize>,
+    anchor: SeatId,
+    scanned_registrations: std::collections::HashSet<crate::TriggerId>,
+    completed: std::collections::HashSet<(SeatId, String)>,
+    cursor: Option<(u8, usize)>,
+}
+#[derive(Clone)]
+enum Candidate {
+    Native(SeatId, SkillId),
+    Registered(crate::TriggerId),
+    Qilin { source: SeatId, target: SeatId },
+}
+impl Queue {
+    pub(crate) fn kind(&self) -> EventKind {
+        EventKind::Trigger {
+            seat: self
+                .event
+                .player
+                .or(self.event.target)
+                .unwrap_or(self.anchor),
+        }
+    }
 }
 
 #[derive(Clone)]
@@ -40,50 +64,184 @@ impl Trigger {
 }
 
 impl Game {
-    pub(crate) fn has_hero_triggers(&self, moment: &HeroMoment) -> bool {
-        !self.register_hero_triggers(moment).is_empty()
+    fn moment_event(&self, moment: &HeroMoment) -> crate::TriggerEvent {
+        use HeroMoment::*;
+        let (timing, player, source, target, amount, cards) = match moment {
+            Preparation { seat } => ("phaseZhunbeiBegin", Some(*seat), None, None, 0, vec![]),
+            Draw { seat, amount } => ("phaseDrawBegin1", Some(*seat), None, None, *amount, vec![]),
+            Discard { seat } => ("phaseDiscardBefore", Some(*seat), None, None, 0, vec![]),
+            End { seat } => ("phaseJieshuBegin", Some(*seat), None, None, 0, vec![]),
+            UseTrick { seat, .. } => ("useCard", Some(*seat), None, None, 0, vec![]),
+            DamageAfter {
+                source,
+                target,
+                amount,
+                cards,
+            } => (
+                "damageEnd",
+                Some(*target),
+                *source,
+                None,
+                *amount,
+                cards.clone(),
+            ),
+            JudgeBefore { seat, card } => ("judge", Some(*seat), None, None, 0, vec![*card]),
+            JudgeAfter { seat, card, .. } => ("judgeEnd", Some(*seat), None, None, 0, vec![*card]),
+            ShaRedirect { seat, target, .. } => (
+                "useCardToTarget",
+                Some(*seat),
+                None,
+                Some(*target),
+                0,
+                vec![],
+            ),
+            ShaTarget { seat, target } => (
+                "useCardToPlayered",
+                Some(*seat),
+                None,
+                Some(*target),
+                0,
+                vec![],
+            ),
+            LostCards { seat, .. } => ("loseAfter", Some(*seat), None, None, 0, vec![]),
+        };
+        crate::TriggerEvent {
+            timing: timing.into(),
+            subject: self.scheduler.current_id(),
+            player,
+            source,
+            target,
+            amount,
+            cards,
+        }
     }
-
+    pub(crate) fn has_hero_triggers(&self, moment: &HeroMoment) -> bool {
+        if !self.register_hero_triggers(moment).is_empty() {
+            return true;
+        }
+        if self.trigger_registrations.is_empty() {
+            return false;
+        }
+        let event = self.moment_event(moment);
+        self.has_registered_candidates(&event)
+            || (matches!(moment, HeroMoment::Draw { .. }) && {
+                let mut second = event;
+                second.timing = "phaseDrawBegin2".into();
+                self.has_registered_candidates(&second)
+            })
+    }
     pub(crate) fn hero_triggers(&self, moment: HeroMoment) -> Program {
         let adjustment = match moment {
             HeroMoment::Draw { amount, .. } => HeroAdjustment::Draw(amount),
             HeroMoment::JudgeBefore { card, .. } => HeroAdjustment::Judgment(card),
             _ => HeroAdjustment::None,
         };
-        Program::Hero(HeroFlow::Triggers(Queue {
-            moment,
+        let event = self.moment_event(&moment);
+        Program::Dispatch(Queue {
+            moment: Some(moment),
+            event,
             pending: None,
             adjustment,
-        }))
+            choosing: false,
+            choice_indices: Vec::new(),
+            anchor: self.active_seat,
+            scanned_registrations: Default::default(),
+            completed: Default::default(),
+            cursor: None,
+        })
     }
-
-    pub(super) fn resolve_hero_triggers(
+    pub(crate) fn dispatch_for_timing(&self, event: crate::TriggerEvent) -> Queue {
+        Queue {
+            moment: None,
+            event,
+            pending: None,
+            adjustment: HeroAdjustment::None,
+            choosing: false,
+            choice_indices: Vec::new(),
+            anchor: self.active_seat,
+            scanned_registrations: Default::default(),
+            completed: Default::default(),
+            cursor: None,
+        }
+    }
+    pub(crate) fn queue_sha_damage_begin2(
+        &mut self,
+        source: SeatId,
+        target: SeatId,
+        amount: u16,
+        cards: &[crate::Card],
+    ) -> bool {
+        let native = self.qilin_program(source, target);
+        if self.trigger_registrations.is_empty() || !self.has_timing_registrations("damageBegin2") {
+            if let Some(program) = native {
+                self.scheduler.next(program);
+                return true;
+            }
+            return false;
+        }
+        let event = crate::TriggerEvent {
+            timing: "damageBegin2".into(),
+            subject: self.scheduler.current_id(),
+            player: Some(target),
+            source: Some(source),
+            target: None,
+            amount,
+            cards: cards.to_vec(),
+        };
+        if !self.has_registered_candidates(&event) {
+            if let Some(program) = native {
+                self.scheduler.next(program);
+                return true;
+            }
+            return false;
+        }
+        let has_bow = self.seat(source).is_ok_and(|seat| {
+            seat.alive
+                && seat
+                    .equipment
+                    .iter()
+                    .any(|card| card.kind == CardKind::Qilin)
+        });
+        let mut queue = self.dispatch_for_timing(event);
+        queue.pending = Some(if has_bow {
+            vec![Candidate::Qilin { source, target }]
+        } else {
+            vec![]
+        });
+        self.scheduler.next(Program::Dispatch(queue));
+        true
+    }
+    pub(crate) fn resolve_dispatch(
         &mut self,
         mut queue: Queue,
         child: Option<Outcome<Resolution>>,
     ) {
-        if let Some(Outcome::Finished(Resolution::Hero(adjustment))) = child {
-            match adjustment {
+        if matches!(child, Some(Outcome::Cancelled)) && !queue.choosing {
+            self.scheduler.end(Outcome::Cancelled);
+            return;
+        }
+        if let Some(Outcome::Finished(Resolution::Hero(adjustment))) = &child {
+            match *adjustment {
                 HeroAdjustment::None => {}
                 HeroAdjustment::Draw(amount) => {
-                    let HeroMoment::Draw {
+                    if let Some(HeroMoment::Draw {
                         amount: current, ..
-                    } = &mut queue.moment
-                    else {
-                        unreachable!()
-                    };
-                    *current = amount;
-                    queue.adjustment = adjustment;
+                    }) = &mut queue.moment
+                    {
+                        *current = amount;
+                    }
+                    queue.event.amount = amount;
+                    queue.adjustment = *adjustment;
                 }
                 HeroAdjustment::Judgment(card) => {
-                    let HeroMoment::JudgeBefore { card: current, .. } = &mut queue.moment else {
-                        unreachable!()
-                    };
-                    *current = card;
-                    queue.adjustment = adjustment;
+                    if let Some(HeroMoment::JudgeBefore { card: current, .. }) = &mut queue.moment {
+                        *current = card;
+                    }
+                    queue.event.cards = vec![card];
+                    queue.adjustment = *adjustment;
                 }
-                HeroAdjustment::Skip | HeroAdjustment::Redirect(_) | HeroAdjustment::DirectHit => {
-                    self.finish_hero(adjustment);
+                _ => {
+                    self.finish_hero(*adjustment);
                     return;
                 }
             }
@@ -92,26 +250,377 @@ impl Game {
             self.finish_hero(queue.adjustment);
             return;
         }
-        let pending = queue
-            .pending
-            .get_or_insert_with(|| self.register_hero_triggers(&queue.moment));
-        while let Some((owner, skill)) = pending.pop() {
-            if !self.seat(owner).is_ok_and(|seat| seat.alive) {
-                continue;
+        if queue.pending.is_none() {
+            let mut candidates = Vec::new();
+            if let Some(moment) = &queue.moment {
+                let mut native = self.register_hero_triggers(moment);
+                if matches!(moment, HeroMoment::Draw { .. }) {
+                    native.retain(|(_, skill)| {
+                        (*skill == SkillId::Tuxi) == (queue.event.timing == "phaseDrawBegin1")
+                    });
+                }
+                native.reverse();
+                candidates.extend(
+                    native
+                        .into_iter()
+                        .map(|(seat, skill)| Candidate::Native(seat, skill)),
+                );
             }
-            let moment = queue.moment.clone();
-            self.scheduler
-                .replace_current(Program::Hero(HeroFlow::Triggers(queue)));
-            self.scheduler
-                .next(Program::Hero(HeroFlow::Trigger(Trigger {
-                    owner,
-                    skill,
-                    moment,
-                    stage: Stage::Start,
-                })));
+            queue.pending = Some(candidates);
+        }
+        let order = self.seat_order_from(queue.anchor).unwrap_or_default();
+        // A suspended choice uses stable indexes. Newly registered content is merged
+        // after that choice resumes, into groups which have not yet closed.
+        if !queue.choosing {
+            let mut ids: Vec<_> = self.trigger_registrations.keys().copied().collect();
+            ids.sort_unstable();
+            for id in ids {
+                if !queue.scanned_registrations.insert(id) {
+                    continue;
+                }
+                let registration = &self.trigger_registrations[&id];
+                if registration.timing != queue.event.timing
+                    || queue
+                        .completed
+                        .contains(&(registration.owner, registration.skill.clone()))
+                {
+                    continue;
+                }
+                let seat = order
+                    .iter()
+                    .position(|s| *s == registration.owner)
+                    .unwrap_or(usize::MAX);
+                let group = match registration.order {
+                    crate::TriggerOrder::First => (0, 0),
+                    crate::TriggerOrder::Normal => (1, seat),
+                    crate::TriggerOrder::Last => (2, 0),
+                };
+                if queue.cursor.is_some_and(|cursor| group < cursor) {
+                    continue;
+                }
+                queue
+                    .pending
+                    .as_mut()
+                    .unwrap()
+                    .push(Candidate::Registered(id));
+            }
+        }
+        let pending = queue.pending.as_ref().unwrap();
+        let key = |candidate: &Candidate| -> Option<(u8, usize, i64, usize)> {
+            let (owner, group, priority) = match candidate {
+                Candidate::Native(owner, _) => (*owner, crate::TriggerOrder::Normal, 0),
+                Candidate::Qilin { source, .. } => (*source, crate::TriggerOrder::Normal, 0),
+                Candidate::Registered(id) => {
+                    let r = self.trigger_registrations.get(id)?;
+                    (r.owner, r.order, r.priority)
+                }
+            };
+            let seat = order.iter().position(|s| *s == owner).unwrap_or(usize::MAX);
+            let subpriority = match candidate {
+                Candidate::Qilin { .. } => 25,
+                Candidate::Registered(id) if self.trigger_registrations[id].silent => -1,
+                _ => 0,
+            };
+            Some(match group {
+                crate::TriggerOrder::First => {
+                    (0, 0, -i64::from(priority) * 100 + subpriority, seat)
+                }
+                crate::TriggerOrder::Normal => {
+                    (1, seat, -i64::from(priority) * 100 + subpriority, 0)
+                }
+                crate::TriggerOrder::Last => (2, 0, -i64::from(priority) * 100 + subpriority, seat),
+            })
+        };
+        let live_native = queue
+            .moment
+            .as_ref()
+            .map(|moment| self.register_hero_triggers(moment));
+        let eligible = |c: &Candidate| match c {
+            Candidate::Native(owner, skill) => {
+                self.seat(*owner).is_ok_and(|s| s.alive)
+                    && live_native
+                        .as_ref()
+                        .is_some_and(|skills| skills.contains(&(*owner, *skill)))
+                    && queue
+                        .moment
+                        .as_ref()
+                        .is_some_and(|moment| self.native_trigger_eligible(*owner, *skill, moment))
+            }
+            Candidate::Registered(id) => self.registered_matches(*id, &queue.event),
+            Candidate::Qilin { source, target } => self.qilin_program(*source, *target).is_some(),
+        };
+        let selected = if queue.choosing {
+            queue.choosing = false;
+            match child {
+                Some(Outcome::Finished(Resolution::Selected(s))) if s.branch > 0 => {
+                    Some((s.branch - 1) as usize)
+                }
+                _ => None,
+            }
+        } else {
+            None
+        };
+        // A pass evaluates every candidate in the current first/seat/last group once.
+        // A choice resumes that same pass without running its predicates again.
+        let mut distinct = Vec::new();
+        if selected.is_some() {
+            distinct.extend(queue.choice_indices.iter().copied().filter(|&i| {
+                pending.get(i).is_some_and(|candidate| match candidate {
+                    Candidate::Native(owner, skill) => {
+                        self.seat(*owner).is_ok_and(|s| s.alive)
+                            && self.has_skill(*owner, skill.as_str())
+                    }
+                    Candidate::Registered(id) => self.trigger_registrations.contains_key(id),
+                    Candidate::Qilin { source, target } => {
+                        self.qilin_program(*source, *target).is_some()
+                    }
+                })
+            }));
+        } else {
+            let mut groups: Vec<_> = pending
+                .iter()
+                .filter_map(&key)
+                .map(|k| (k.0, k.1))
+                .collect();
+            groups.sort_unstable();
+            groups.dedup();
+            for group in groups {
+                let mut seen = std::collections::HashMap::new();
+                for (i, candidate) in pending.iter().enumerate() {
+                    if !key(candidate).is_some_and(|k| (k.0, k.1) == group) || !eligible(candidate)
+                    {
+                        continue;
+                    }
+                    let identity = match candidate {
+                        Candidate::Native(owner, skill) => (*owner, skill.as_str().to_owned()),
+                        Candidate::Qilin { source, .. } => (*source, "qilin_skill".to_owned()),
+                        Candidate::Registered(id) => {
+                            let r = &self.trigger_registrations[id];
+                            (r.owner, r.skill.clone())
+                        }
+                    };
+                    if let Some(&index) = seen.get(&identity) {
+                        if key(candidate) < key(&pending[distinct[index]]) {
+                            distinct[index] = i;
+                        }
+                    } else {
+                        seen.insert(identity, distinct.len());
+                        distinct.push(i);
+                    }
+                }
+                if !distinct.is_empty() {
+                    break;
+                }
+            }
+        }
+        if selected.is_some_and(|index| !distinct.contains(&index)) {
+            queue.choice_indices.clear();
+            self.scheduler.replace_current(Program::Dispatch(queue));
             return;
         }
-        self.finish_hero(queue.adjustment);
+        let best = distinct
+            .iter()
+            .filter_map(|&i| key(&pending[i]).map(|k| (i, k)))
+            .min_by_key(|(_, k)| *k);
+        let Some((first, best_key)) = best else {
+            if matches!(queue.moment, Some(HeroMoment::Draw { .. }))
+                && queue.event.timing == "phaseDrawBegin1"
+            {
+                queue.event.timing = "phaseDrawBegin2".into();
+                queue.pending = None;
+                queue.scanned_registrations.clear();
+                queue.completed.clear();
+                queue.cursor = None;
+                self.scheduler.replace_current(Program::Dispatch(queue));
+            } else {
+                self.finish_hero(queue.adjustment);
+            }
+            return;
+        };
+        let selected = selected.filter(|i| distinct.contains(i));
+        let tied: Vec<usize> = distinct
+            .iter()
+            .copied()
+            .filter(|i| key(&pending[*i]) == Some(best_key))
+            .collect();
+        let visible = |c: &Candidate| match c {
+            Candidate::Native(owner, skill) => self
+                .seat(*owner)
+                .ok()
+                .and_then(|seat| seat.hero)
+                .and_then(|hero| {
+                    hero.skills
+                        .iter()
+                        .find(|definition| definition.id == skill.as_str())
+                })
+                .map(|definition| definition.name.clone()),
+            Candidate::Qilin { .. } => Some("麒麟弓".into()),
+            Candidate::Registered(id) => self.trigger_registrations.get(id).and_then(|r| {
+                if r.silent {
+                    None
+                } else {
+                    r.label.clone().filter(|s| !s.is_empty())
+                }
+            }),
+        };
+        let owner = |c: &Candidate| match c {
+            Candidate::Native(s, _) => *s,
+            Candidate::Qilin { source, .. } => *source,
+            Candidate::Registered(id) => self.trigger_registrations[id].owner,
+        };
+        if selected.is_none()
+            && best_key.0 == 1
+            && tied.len() > 1
+            && tied.iter().all(|i| visible(&pending[*i]).is_some())
+        {
+            {
+                let seat = owner(&pending[first]);
+                let branches = tied
+                    .iter()
+                    .map(|i| option((*i + 1) as u32, &visible(&pending[*i]).unwrap()))
+                    .collect();
+                queue.choosing = true;
+                queue.choice_indices = tied.clone();
+                self.scheduler.replace_current(Program::Dispatch(queue));
+                self.scheduler.next(Program::Choose(crate::ChoiceRequest {
+                    seat,
+                    target: None,
+                    branches,
+                }));
+                return;
+            }
+        }
+        let chosen = selected.unwrap_or_else(|| {
+            if best_key.0 == 1 {
+                tied.iter()
+                    .copied()
+                    .find(|i| visible(&pending[*i]).is_none())
+                    .unwrap_or(first)
+            } else {
+                first
+            }
+        });
+        let chosen_candidate = pending[chosen].clone();
+        let identity = match &chosen_candidate {
+            Candidate::Native(owner, skill) => (*owner, skill.as_str().to_owned()),
+            Candidate::Qilin { source, .. } => (*source, "qilin_skill".to_owned()),
+            Candidate::Registered(id) => {
+                let r = &self.trigger_registrations[id];
+                (r.owner, r.skill.clone())
+            }
+        };
+        let registered_chosen = matches!(chosen_candidate, Candidate::Registered(_));
+        let pruned: Vec<_> = pending
+            .iter()
+            .enumerate()
+            .filter(|(i, c)| {
+                if *i == chosen || !key(c).is_some_and(|k| k >= best_key) {
+                    return false;
+                }
+                // Indexed native repeats are separate activations; duplicate registrations across roles are not.
+                match c {
+                    Candidate::Registered(id) => {
+                        let r = &self.trigger_registrations[id];
+                        (r.owner, r.skill.as_str()) != (identity.0, identity.1.as_str())
+                    }
+                    Candidate::Qilin { source, .. } => {
+                        !registered_chosen
+                            || (*source, "qilin_skill") != (identity.0, identity.1.as_str())
+                    }
+                    Candidate::Native(owner, skill) => {
+                        !registered_chosen
+                            || (*owner, skill.as_str()) != (identity.0, identity.1.as_str())
+                    }
+                }
+            })
+            .map(|(_, c)| c.clone())
+            .collect();
+        queue.pending = Some(pruned);
+        queue.cursor = Some((best_key.0, best_key.1));
+        queue.completed.insert(identity);
+        let event = queue.event.clone();
+        let moment = queue.moment.clone();
+        self.scheduler.replace_current(Program::Dispatch(queue));
+        match chosen_candidate {
+            Candidate::Qilin { source, target } => {
+                if let Some(program) = self.qilin_program(source, target) {
+                    self.scheduler.next(program);
+                }
+            }
+            Candidate::Native(owner, skill) => {
+                self.scheduler
+                    .next(Program::Hero(HeroFlow::Trigger(Trigger {
+                        owner,
+                        skill,
+                        moment: moment.unwrap(),
+                        stage: Stage::Start,
+                    })))
+            }
+            Candidate::Registered(id) => {
+                let owner = self.trigger_registrations[&id].owner;
+                let effect = self.trigger_registrations[&id].effect.clone();
+                self.scheduler
+                    .next(Program::Registered(crate::triggers::Registered::new(
+                        id, owner, event, effect,
+                    )));
+            }
+        }
+    }
+
+    // Match the availability gates used by the native skill before presenting
+    // it alongside other same-priority skills to the owner.
+    fn native_trigger_eligible(&self, owner: SeatId, skill: SkillId, moment: &HeroMoment) -> bool {
+        use SkillId::*;
+        match (skill, moment) {
+            (Jianxiong, HeroMoment::DamageAfter { cards, .. }) => {
+                cards.iter().any(|card| self.resolving.contains(card))
+            }
+            (Fankui, HeroMoment::DamageAfter { source, .. }) => source.is_some_and(|source| {
+                self.seat(source).is_ok_and(|seat| {
+                    seat.alive
+                        && ((!seat.hand.is_empty() && source != owner)
+                            || !seat.equipment.is_empty())
+                })
+            }),
+            (Tuxi, HeroMoment::Draw { .. }) => {
+                self.living_order_from(owner).into_iter().any(|target| {
+                    target != owner && self.seat(target).is_ok_and(|seat| !seat.hand.is_empty())
+                })
+            }
+            (Luoyi | Yingzi, HeroMoment::Draw { amount, .. }) => *amount > 0,
+            (Keji, HeroMoment::Discard { .. }) => {
+                self.classic
+                    .as_ref()
+                    .is_some_and(|state| !state.hero_turn.played_sha)
+                    && self
+                        .seat(owner)
+                        .is_ok_and(|seat| seat.hand.len() > usize::try_from(seat.hp).unwrap_or(0))
+            }
+            (Guicai, HeroMoment::JudgeBefore { .. }) => {
+                !self.hero_owned_card_ids(owner, false).is_empty()
+            }
+            (Tiandu, HeroMoment::JudgeAfter { card, .. }) => self.resolving.contains(card),
+            (
+                Liuli,
+                HeroMoment::ShaRedirect {
+                    seat: attacker,
+                    target: original,
+                    excluded,
+                },
+            ) => self
+                .hero_owned_card_ids(owner, true)
+                .into_iter()
+                .any(|cost| {
+                    self.living_order_from(*original).into_iter().any(|target| {
+                        target != *original
+                            && target != *attacker
+                            && !excluded.contains(&target)
+                            && self.hero_allows_target(target, CardKind::Sha)
+                            && self.in_sha_range_without(owner, target, Some(cost))
+                    })
+                }),
+            _ => true,
+        }
     }
 
     fn register_hero_triggers(&self, moment: &HeroMoment) -> Vec<(SeatId, SkillId)> {
@@ -803,4 +1312,282 @@ impl Game {
 
 fn accepted(child: &Option<Outcome<Resolution>>) -> bool {
     matches!(child, Some(Outcome::Finished(Resolution::Selected(choice))) if choice.branch == 1)
+}
+
+#[cfg(test)]
+mod dispatch_regressions {
+    use super::*;
+    use crate::{
+        Action, Card, ChoiceKind, Command, GameSetup, SeatSetup, TriggerEvent, TriggerOrder,
+        TriggerRegistration, TriggerRole, TriggerStep,
+    };
+    use std::sync::{Arc, Mutex};
+
+    fn game() -> Game {
+        Game::new(GameSetup {
+            active_seat: 0,
+            seats: vec![
+                SeatSetup {
+                    id: 0,
+                    hp: 4,
+                    hand: vec![],
+                },
+                SeatSetup {
+                    id: 1,
+                    hp: 4,
+                    hand: vec![],
+                },
+            ],
+        })
+        .unwrap()
+    }
+    fn registration(
+        name: &'static str,
+        order: TriggerOrder,
+        label: Option<&str>,
+        log: Arc<Mutex<Vec<&'static str>>>,
+    ) -> TriggerRegistration {
+        TriggerRegistration {
+            owner: 0,
+            skill: name.into(),
+            timing: "testTiming".into(),
+            role: TriggerRole::Global,
+            order,
+            priority: 0,
+            label: label.map(str::to_owned),
+            silent: false,
+            filter: Arc::new(|_, _, _| true),
+            effect: Arc::new(move |_, _, _| {
+                log.lock().unwrap().push(name);
+                TriggerStep::Done
+            }),
+        }
+    }
+    fn start(game: &mut Game) {
+        let event = TriggerEvent {
+            timing: "testTiming".into(),
+            subject: 0,
+            player: Some(0),
+            source: None,
+            target: None,
+            amount: 0,
+            cards: vec![],
+        };
+        game.scheduler
+            .start(Program::Dispatch(game.dispatch_for_timing(event)));
+        game.run(None);
+    }
+    fn choose(game: &mut Game, branch: u32) {
+        let choice = game.view(Some(0)).unwrap().choice.unwrap();
+        assert_eq!(choice.kind, ChoiceKind::Content);
+        game.submit(Command {
+            version: game.version,
+            seat: 0,
+            action: Action::Select {
+                event: choice.event,
+                branch,
+                cards: vec![],
+                targets: vec![],
+            },
+        })
+        .unwrap();
+    }
+    #[test]
+    fn first_and_last_keep_registration_order_when_one_is_unnamed() {
+        let mut game = game();
+        let log = Arc::new(Mutex::new(vec![]));
+        for (name, order, label) in [
+            ("first_named", TriggerOrder::First, Some("named")),
+            ("first_unnamed", TriggerOrder::First, None),
+            ("last_named", TriggerOrder::Last, Some("named")),
+            ("last_unnamed", TriggerOrder::Last, None),
+        ] {
+            game.register_trigger(registration(name, order, label, log.clone()))
+                .unwrap();
+        }
+        start(&mut game);
+        assert_eq!(
+            *log.lock().unwrap(),
+            ["first_named", "first_unnamed", "last_named", "last_unnamed"]
+        );
+    }
+    #[test]
+    fn callbacks_add_open_group_and_revoke_pending_content() {
+        let mut game = game();
+        let log = Arc::new(Mutex::new(vec![]));
+        let revoked = game
+            .register_trigger(registration(
+                "revoked",
+                TriggerOrder::Last,
+                None,
+                log.clone(),
+            ))
+            .unwrap();
+        let log_clone = log.clone();
+        let mut add = registration("add", TriggerOrder::Normal, None, log.clone());
+        add.effect = Arc::new(move |ctx, _, _| {
+            log_clone.lock().unwrap().push("add");
+            assert!(ctx.unregister_trigger(revoked));
+            ctx.register_trigger(registration(
+                "added",
+                TriggerOrder::Last,
+                None,
+                log_clone.clone(),
+            ))
+            .unwrap();
+            TriggerStep::Done
+        });
+        game.register_trigger(add).unwrap();
+        start(&mut game);
+        assert_eq!(*log.lock().unwrap(), ["add", "added"]);
+    }
+    #[test]
+    fn registrations_added_while_choice_is_suspended_join_later_group() {
+        let mut game = game();
+        let log = Arc::new(Mutex::new(vec![]));
+        for name in ["one", "two"] {
+            game.register_trigger(registration(
+                name,
+                TriggerOrder::Normal,
+                Some(name),
+                log.clone(),
+            ))
+            .unwrap();
+        }
+        start(&mut game);
+        assert!(game.view(Some(0)).unwrap().choice.is_some());
+        game.register_trigger(registration("last", TriggerOrder::Last, None, log.clone()))
+            .unwrap();
+        choose(&mut game, 1);
+        assert_eq!(*log.lock().unwrap(), ["one", "two", "last"]);
+    }
+    #[test]
+    fn revoking_a_suspended_choice_does_not_execute_it_or_stall() {
+        let mut game = game();
+        let log = Arc::new(Mutex::new(vec![]));
+        let revoked = game
+            .register_trigger(registration(
+                "one",
+                TriggerOrder::Normal,
+                Some("one"),
+                log.clone(),
+            ))
+            .unwrap();
+        game.register_trigger(registration(
+            "two",
+            TriggerOrder::Normal,
+            Some("two"),
+            log.clone(),
+        ))
+        .unwrap();
+        start(&mut game);
+        assert!(game.unregister_trigger(revoked));
+        choose(&mut game, 1);
+        assert_eq!(*log.lock().unwrap(), ["two"]);
+        assert!(game.view(Some(0)).unwrap().choice.is_none());
+    }
+
+    #[test]
+    fn newly_registered_closed_groups_and_completed_skills_do_not_reappear() {
+        let mut game = game();
+        let log = Arc::new(Mutex::new(vec![]));
+        let output = log.clone();
+        let mut normal = registration("normal", TriggerOrder::Normal, None, log.clone());
+        normal.effect = Arc::new(move |ctx, _, _| {
+            output.lock().unwrap().push("normal");
+            ctx.register_trigger(registration(
+                "late_first",
+                TriggerOrder::First,
+                None,
+                output.clone(),
+            ))
+            .unwrap();
+            ctx.register_trigger(registration(
+                "normal",
+                TriggerOrder::Last,
+                None,
+                output.clone(),
+            ))
+            .unwrap();
+            ctx.register_trigger(registration(
+                "late_last",
+                TriggerOrder::Last,
+                None,
+                output.clone(),
+            ))
+            .unwrap();
+            TriggerStep::Done
+        });
+        game.register_trigger(normal).unwrap();
+        start(&mut game);
+        assert_eq!(*log.lock().unwrap(), ["normal", "late_last"]);
+    }
+
+    #[test]
+    fn a_callback_can_add_a_skill_to_its_open_seat_group() {
+        let mut game = game();
+        let log = Arc::new(Mutex::new(vec![]));
+        let output = log.clone();
+        let mut first = registration("first", TriggerOrder::Normal, None, log.clone());
+        first.effect = Arc::new(move |ctx, _, _| {
+            output.lock().unwrap().push("first");
+            ctx.register_trigger(registration(
+                "second",
+                TriggerOrder::Normal,
+                None,
+                output.clone(),
+            ))
+            .unwrap();
+            TriggerStep::Done
+        });
+        game.register_trigger(first).unwrap();
+        start(&mut game);
+        assert_eq!(*log.lock().unwrap(), ["first", "second"]);
+    }
+
+    #[test]
+    fn unavailable_native_skill_is_absent_from_order_choice() {
+        let mut game = game();
+        game.seat_mut(0).hero = crate::classic_data::roster()
+            .iter()
+            .find(|hero| hero.id == "caocao");
+        let log = Arc::new(Mutex::new(vec![]));
+        let mut custom = registration("custom", TriggerOrder::Normal, Some("custom"), log.clone());
+        custom.timing = "damageEnd".into();
+        game.register_trigger(custom).unwrap();
+        let moment = HeroMoment::DamageAfter {
+            source: Some(1),
+            target: 0,
+            amount: 1,
+            cards: vec![],
+        };
+        game.scheduler.start(game.hero_triggers(moment));
+        game.run(None);
+        assert_eq!(*log.lock().unwrap(), ["custom"]);
+        assert!(game.view(Some(0)).unwrap().choice.is_none());
+    }
+
+    #[test]
+    fn native_damage_skills_without_material_are_not_eligible() {
+        let mut game = game();
+        let material = Card {
+            id: 8,
+            kind: CardKind::Sha,
+        };
+        let moment = HeroMoment::DamageAfter {
+            source: Some(1),
+            target: 0,
+            amount: 1,
+            cards: vec![material],
+        };
+        assert!(!game.native_trigger_eligible(0, SkillId::Jianxiong, &moment));
+        assert!(!game.native_trigger_eligible(0, SkillId::Fankui, &moment));
+        game.resolving.push(material);
+        game.seat_mut(1).hand.push(Card {
+            id: 9,
+            kind: CardKind::Tao,
+        });
+        assert!(game.native_trigger_eligible(0, SkillId::Jianxiong, &moment));
+        assert!(game.native_trigger_eligible(0, SkillId::Fankui, &moment));
+    }
 }

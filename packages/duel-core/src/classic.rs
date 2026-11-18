@@ -76,6 +76,17 @@ impl Game {
         hero_id: &str,
         count: usize,
     ) -> Result<Self, RuleError> {
+        Self::classic_with_triggers(seed, human, hero_id, count, Vec::new())
+    }
+
+    /// Start a classic table with callbacks installed before its opening event.
+    pub fn classic_with_triggers(
+        seed: u32,
+        human: SeatId,
+        hero_id: &str,
+        count: usize,
+        registrations: Vec<crate::TriggerRegistration>,
+    ) -> Result<Self, RuleError> {
         let mut roles =
             classic_data::deal_roles(count).ok_or(RuleError::UnsupportedSeatCount { count })?;
         if human as usize >= count {
@@ -157,6 +168,9 @@ impl Game {
             result: None,
             result_announced: false,
         });
+        for registration in registrations {
+            game.register_trigger(registration)?;
+        }
         game.scheduler
             .start(Program::event(EventKind::Opening { lord }));
         game.run(None);
