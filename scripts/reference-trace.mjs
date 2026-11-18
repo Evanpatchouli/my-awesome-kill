@@ -5,6 +5,7 @@ import { installTriggerOrderScenario } from './reference-trigger-order-cancel.mj
 import { checkReferenceRecastCallbacks, installReferenceRecast } from './reference-recast.mjs';
 import { checkReferenceLinkedDamage, installReferenceLinkedDamage } from './reference-linked-damage.mjs';
 import { checkReferenceCompare, installReferenceCompare } from './reference-compare.mjs';
+import { checkReferenceHp, installReferenceHp } from './reference-hp.mjs';
 import { checkReferenceExpansion, installReferenceExpansion } from './reference-expansion.mjs';
 
 // This is an optional oracle runner. It needs a running, separate upstream dev
@@ -39,6 +40,7 @@ const descriptions = new Map([
   ['compare', 'private pindian choices, public reveal, qiaoshui and jyzongshi across three turns'],
   ['zhongyi-expansion', 'zhongyi expansion, limited use and cleanup at the next round'],
   ['damage-callback-cancel', 'damage callback cancellation after HP change for physical sha'],
+  ['hp-cancel', 'cancelling changeHpBefore and changeHpEnd during a linked armored fire sha'],
 ]);
 let scenario = 'sha-no-shan';
 const scenarioIndex = argv.indexOf('--scenario');
@@ -85,6 +87,8 @@ try {
     await context.addInitScript(installReferenceRecast);
   } else if (scenario === 'linked-damage') {
     await context.addInitScript(installReferenceLinkedDamage);
+  } else if (scenario === 'hp-cancel') {
+    await context.addInitScript(installReferenceHp);
   } else if (scenario === 'zhongyi-expansion') {
     await context.addInitScript(installReferenceExpansion);
   } else if (scenario === 'compare') {
@@ -151,6 +155,11 @@ try {
           window.__referenceStages.push('phaseUseBegin: arranging scenario');
           const target = actor.next === game.me ? actor.previous : actor.next;
           if (!target || target === game.me || target === actor) throw new Error('No adjacent AI target');
+          if (scenario === 'hp-cancel') {
+            window.__referenceResult = await window.__runReferenceHp({ lib, game, ui, actor, target, human: game.me });
+            game.pause();
+            return;
+          }
           if (scenario === 'linked-damage' || scenario === 'zhongyi-expansion') {
             const run = scenario === 'linked-damage' ? window.__runReferenceLinkedDamage : window.__runReferenceExpansion;
             const result = await run({ lib, game, ui, get, _status, actor, target });
@@ -308,6 +317,7 @@ try {
   if (captured.error) throw new Error(captured.error);
   assert.deepEqual(errors, [], 'Upstream page errors occurred');
   if (scenario === 'linked-damage') checkReferenceLinkedDamage(captured.value);
+  if (scenario === 'hp-cancel') checkReferenceHp(captured.value);
   if (scenario === 'compare') checkReferenceCompare(captured.value);
   if (scenario === 'zhongyi-expansion') checkReferenceExpansion(captured.value);
   if (scenario === 'recast-callbacks') checkReferenceRecastCallbacks(captured.value);
