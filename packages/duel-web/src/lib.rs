@@ -2,6 +2,9 @@
 use duel_core::{Command, Game, GameSetup, SeatId};
 use wasm_bindgen::prelude::*;
 
+#[cfg(feature = "qa-recast")]
+mod qa_recast;
+
 #[wasm_bindgen]
 pub struct Duel {
     game: Game,

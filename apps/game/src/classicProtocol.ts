@@ -38,6 +38,7 @@ export interface Branch {
 export type Action =
   | { type: 'endPlay' }
   | { type: 'playCard'; card: number; targets: number[] }
+  | { type: 'recast'; card: number }
   | { type: 'choose'; event: number; card: number | null }
   | { type: 'discard'; event: number; cards: number[] }
   | { type: 'select'; event: number; branch: number; cards: number[]; targets: number[] }
@@ -52,6 +53,7 @@ export interface SeatView {
   maxHp: number
   handCount: number
   hand: Entity[] | null
+  knownHand?: Entity[]
   equipment: Entity[]
   judges: Entity[]
   judgeAssignments: Entity[]
@@ -132,11 +134,16 @@ const cardEffects: Partial<Record<string, 'play' | 'respond' | 'equip' | 'judge'
   reveal: 'judge',
 }
 
+function isPresentationEvent(e: EventRecord) {
+  if (e.type === 'draw') return e.status === 'finished' && (e.amount ?? 0) > 0
+  return e.status === 'started'
+}
+
 export function visualEvents(view: TableView): FeedbackEvent[] {
   const cues: FeedbackEvent[] = []
   const announced = new Set<number>()
   for (const e of view.events) {
-    if (e.status !== 'started' || e.seat == null) continue
+    if (!isPresentationEvent(e) || e.seat == null) continue
     if (e.type === 'changeHp' && e.before != null && e.after != null && e.before !== e.after) {
       cues.push({
         type: e.after < e.before ? 'damage' : 'heal',
@@ -166,13 +173,14 @@ export function counterPrompt(view: TableView): string | undefined {
 }
 
 export function describeEvent(view: TableView, e: EventRecord): string | undefined {
-  if (e.status !== 'started') return
+  if (!isPresentationEvent(e)) return
   const who = seatName(view, e.seat)
   if (e.card && cardEffects[e.type] && e.type !== 'reveal') {
     const verb = e.type === 'equip' ? '装备' : cardEffects[e.type] === 'respond' ? '打出' : '使用'
     return `${who}${verb}【${cardName(e.card.kind)}】${e.target == null ? '' : ' → ' + seatName(view, e.target)}`
   }
   if (e.type === 'useVirtual' && e.kind) return `${who}使用转化牌【${cardName(e.kind)}】`
+  if (e.type === 'recastReveal' && e.card) return `${who}重铸【${cardName(e.card.kind)}】`
   if (e.type === 'reveal' && e.card) return `${who}判定亮出【${cardName(e.card.kind)}】`
   if (e.type === 'changeHp') return `${who}体力 ${e.before} → ${e.after}`
   if (e.type === 'death') return `${seatName(view, e.target)}阵亡 · ${e.role ? roles[e.role] : ''}`

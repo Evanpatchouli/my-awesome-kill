@@ -27,6 +27,20 @@
 
 运行 `cargo test --release --locked --manifest-path packages/duel-core/Cargo.toml --lib benchmark_seeded_eight_player_games -- --ignored --nocapture`。游戏使用真实 Rust 规则，按固定种子跑完一局后验牌区守恒；进程启动、浏览器动画和 I/O 不算作结算耗时。[Rust 核心说明](../../packages/duel-core/README.md)记录测量方法和详细结果。
 
+### 重铸的真实 WebAssembly 交互
+
+在项目根目录构建带测试内容的独立绑定，随后用普通 Vite 开发入口运行烟测。示例中的第二套绑定放在临时目录，正常发行版保持默认 Cargo features。
+
+```powershell
+$env:MAK_RECAST_BINDINGS = Join-Path $env:TEMP 'mak-recast-bindings'
+cargo build --release --locked --target wasm32-unknown-unknown --target-dir packages/duel-web/target --manifest-path packages/duel-web/Cargo.toml --features qa-recast
+wasm-bindgen --target web --out-name duel --out-dir $env:MAK_RECAST_BINDINGS packages/duel-web/target/wasm32-unknown-unknown/release/duel_web.wasm
+# 另一个终端运行 pnpm dev
+node apps/game/smoke-recast.mjs
+```
+
+该脚本从普通首页选将，验证标准局没有重铸操作，再从实际 Rust 测试内容检查只可重铸的闪和亦可指定目标的杀。种子 3 的两次重铸使版本 0→1→2、牌堆 94→93→92，手牌保持六张。它还验证暗摸与明获对另一席的投影、动作锁以及旧版本拒绝。
+
 2026-11-18 的经典模式检查结果：
 
 - 初版经典身份局的 84 项 Rust 测试和旧 TS 基线 33 项通过。加入通用派发后，从暂存的发布配置源码复跑 98 项 Rust 测试，100 场八人局全部终局并校验牌区守恒。Windows / Intel i7-13620H 上这一轮共 55,247 次决定，决策与执行 p95 为 7.5 µs，单席投影加 JSON 序列化 p95 为 11.7 µs；耗时随本机负载变化。

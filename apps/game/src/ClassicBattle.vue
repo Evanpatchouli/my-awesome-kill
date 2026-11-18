@@ -60,7 +60,10 @@ const cardActions = computed(() =>
     (action): action is Extract<Action, { type: 'playCard' }> => action.type === 'playCard',
   ),
 )
-const playable = computed(() => new Set(cardActions.value.map((action) => action.card)))
+const recastActions = computed(() => props.view.actions.filter((action) => action.type === 'recast'))
+const playable = computed(
+  () => new Set([...cardActions.value, ...recastActions.value].map((action) => action.card)),
+)
 const branches = computed(() => (choice.value?.kind === 'content' ? choice.value.branches : []))
 const virtuals = computed(() => props.view.virtualPlays ?? [])
 const skills = computed(() => props.view.skillPlays ?? [])
@@ -76,6 +79,11 @@ const handOptions = computed(() => new Set(choice.value?.cards ?? []))
 const branchCards = computed(() => new Set(branch.value?.cards ?? []))
 const currentActions = computed(() =>
   cardActions.value.filter((action) => action.card === selectedCard.value),
+)
+const selectedRecast = computed(() =>
+  selectedMode.value === 'card' && !choice.value
+    ? recastActions.value.find((action) => action.card === selectedCard.value)
+    : undefined,
 )
 const possibleTargets = computed(() => {
   if (branch.value) return new Set(branch.value.targets)
@@ -95,7 +103,6 @@ const exactAction = computed(() =>
   ),
 )
 const canConfirm = computed(() => {
-  if (props.view.waitingFor === props.view.humanSeat && props.locked) return '正在结算…'
   if (!active.value) return false
   if (choice.value?.kind === 'discard')
     return (
@@ -143,6 +150,10 @@ const prompt = computed(() => {
     return `是否救援 ${seatName(props.view, choice.value.target ?? undefined)}？`
   if (choice.value?.kind === 'content') return '请选择一项并完成所需选择'
   if (branch.value) return branch.value.label
+  if (selectedRecast.value) {
+    if (!currentActions.value.length) return '可重铸此牌'
+    return exactAction.value ? '确认使用此牌，或选择重铸' : '选择目标使用此牌，或直接重铸'
+  }
   if (selectedMode.value === 'card' && selectedCard.value !== null) return '请选择目标，再确认使用'
   return '选择手牌、技能或结束出牌'
 })
@@ -166,7 +177,6 @@ function toggle(list: number[], id: number, max: number): number[] {
   return list.length < max ? [...list, id] : list
 }
 function chooseHand(id: number) {
-  if (props.view.waitingFor === props.view.humanSeat && props.locked) return '正在结算…'
   if (!active.value) return
   if (branch.value) {
     if (branchCards.value.has(id))
@@ -190,7 +200,6 @@ function choosePool(id: number) {
     selectedCards.value = toggle(selectedCards.value, id, branch.value.maxCards)
 }
 function chooseSeat(id: number) {
-  if (props.view.waitingFor === props.view.humanSeat && props.locked) return '正在结算…'
   if (!active.value) return
   const index = selectedTargets.value.indexOf(id)
   if (index >= 0) {
@@ -240,6 +249,9 @@ function confirm() {
   else action = exactAction.value
   if (action) emit('act', action, props.view.version)
 }
+function recast() {
+  if (active.value && selectedRecast.value) emit('act', selectedRecast.value, props.view.version)
+}
 function pass() {
   if (
     active.value &&
@@ -264,7 +276,6 @@ function isCardSelected(id: number) {
   return selectedCard.value === id || selectedCards.value.includes(id)
 }
 function canPickCard(id: number) {
-  if (props.view.waitingFor === props.view.humanSeat && props.locked) return '正在结算…'
   if (!active.value) return false
   if (branch.value) return branchCards.value.has(id)
   if (choice.value) return handOptions.value.has(id)
@@ -340,6 +351,7 @@ function canPickCard(id: number) {
           :label="seatName(view, seat.id)"
           :equipment="seatCards(seat, 'equipment')"
           :judges="seatCards(seat, 'judges')"
+          :known-hand="seat.knownHand?.map((card) => faceOf(card))"
         />
       </div>
     </div>
@@ -489,12 +501,25 @@ function canPickCard(id: number) {
             放弃</button
           ><button
             v-if="!choice && view.actions.some((a) => a.type === 'endPlay')"
-            class="secondary"
+            class="secondary whitespace-nowrap"
             :disabled="!active"
             @click="emit('act', { type: 'endPlay' }, view.version)"
           >
             结束出牌</button
-          ><button :disabled="!canConfirm" @click="confirm">确认</button>
+          ><button
+            v-if="selectedRecast"
+            :class="{ secondary: !!exactAction }"
+            :disabled="!active"
+            @click="recast"
+          >
+            重铸</button
+          ><button
+            v-if="!selectedRecast || currentActions.length"
+            :disabled="!canConfirm"
+            @click="confirm"
+          >
+            确认
+          </button>
         </div>
       </div>
     </div>
