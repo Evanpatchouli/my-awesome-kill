@@ -251,6 +251,28 @@ fn rebel_reward_draws_three_after_death_on_an_ongoing_table() {
 }
 
 #[test]
+fn killer_dying_during_the_victims_discard_cannot_receive_a_reward() {
+    use crate::{TriggerOrder, TriggerRegistration, TriggerRole, TriggerStep};
+    use std::sync::Arc;
+    let mut game = scene(&[Role::Lord, Role::Loyalist, Role::Rebel, Role::Rebel], 0);
+    game.seat_mut(1).hp = 1;
+    game.seat_mut(2).hp = 1;
+    let material = card(900, CardKind::Sha);
+    game.seat_mut(2).hand.push(material);
+    game.register_trigger(TriggerRegistration {
+        owner: 0, skill: "nested_death".into(), timing: "loseAfter".into(), role: TriggerRole::Global,
+        order: TriggerOrder::First, priority: 0, label: None, silent: true,
+        filter: Arc::new(move |game, event, _| !game.is_alive(2) && event.player == Some(2) && event.cards.contains(&material)),
+        effect: Arc::new(|ctx, _, _| { ctx.lose_hp(1, 1).unwrap(); TriggerStep::Done }),
+    }).unwrap();
+    damage(&mut game, 1, 2, 1);
+    pass_all_saves(&mut game);
+    assert!(!game.is_alive(1) && !game.is_alive(2));
+    assert!(game.seat(1).unwrap().hand.is_empty());
+    assert_eq!(game.discard.iter().filter(|&&card| card == material).count(), 1);
+}
+
+#[test]
 fn terminal_death_freezes_after_cleanup_and_before_a_kill_reward() {
     let mut game = scene(&[Role::Lord, Role::Rebel], 0);
     game.seat_mut(1).hp = 1;

@@ -585,6 +585,10 @@ impl Game {
                 if let Some(discard) = self.discard_all_expansions_program(target) {
                     self.scheduler.next(discard);
                 }
+                self.scheduler.replace_current(next(DeathStage::Reward));
+                return;
+            }
+            DeathStage::Reward => {
                 if self.match_result().is_none() {
                     self.queue_death_reward(source, role);
                 }

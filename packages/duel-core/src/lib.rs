@@ -111,6 +111,7 @@ enum Zone {
 enum DeathStage {
     Begin,
     Cleanup,
+    Reward,
     After,
     Finish,
 }
