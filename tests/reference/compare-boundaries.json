@@ -1,0 +1,199 @@
+{
+  "schema": "noname-reference-trace-v1",
+  "referenceCommit": "c73270948d72949aa80009536b9fd5400767d091",
+  "mode": "identity",
+  "scenario": "hidden hand knowledge and cancellation of paid pindian cards",
+  "players": 8,
+  "trials": [
+    {
+      "sample": "bid-hidden",
+      "initialKnowledge": [
+        [
+          "aKnown"
+        ],
+        []
+      ],
+      "chosen": "aHidden",
+      "finalZones": [
+        "d",
+        "d"
+      ],
+      "finalKnowledge": [
+        [],
+        []
+      ],
+      "cancelled": false,
+      "hasResult": true,
+      "won": true,
+      "points": [
+        10,
+        5
+      ]
+    },
+    {
+      "sample": "bid-known",
+      "initialKnowledge": [
+        [
+          "aKnown"
+        ],
+        []
+      ],
+      "chosen": "aKnown",
+      "finalZones": [
+        "d",
+        "d"
+      ],
+      "finalKnowledge": [
+        [],
+        []
+      ],
+      "cancelled": false,
+      "hasResult": true,
+      "won": true,
+      "points": [
+        11,
+        5
+      ]
+    },
+    {
+      "sample": "cancel-before-reveal",
+      "initialKnowledge": [
+        [
+          "aKnown"
+        ],
+        []
+      ],
+      "chosen": "aHidden",
+      "finalZones": [
+        "d",
+        "d"
+      ],
+      "finalKnowledge": [
+        [],
+        []
+      ],
+      "cancelled": true,
+      "hasResult": false,
+      "won": null,
+      "points": null
+    },
+    {
+      "sample": "cancel-second-loss",
+      "initialKnowledge": [
+        [
+          "aKnown"
+        ],
+        []
+      ],
+      "chosen": "aHidden",
+      "finalZones": [
+        "d",
+        "B:h"
+      ],
+      "finalKnowledge": [
+        [],
+        []
+      ],
+      "cancelled": false,
+      "hasResult": true,
+      "won": true,
+      "points": [
+        10,
+        5
+      ]
+    }
+  ],
+  "eventColumns": [
+    "sample",
+    "kind",
+    "timing",
+    "event",
+    "parent",
+    "seat",
+    "bidA",
+    "bidB",
+    "knownA",
+    "knownB",
+    "eventCards"
+  ],
+  "events": [
+    ["bid-hidden","request","chooseCardAfter","chooseCard","chooseCardOL","A","A:h","B:h",["aKnown"],[],[]],
+    ["bid-hidden","effect","chooseCardAfter","chooseCard","chooseCardOL","A","A:h","B:h",["aKnown"],[],[]],
+    ["bid-hidden","request","chooseCardAfter","chooseCard","chooseCardOL","B","A:h","B:h",["aKnown"],[],[]],
+    ["bid-hidden","effect","chooseCardAfter","chooseCard","chooseCardOL","B","A:h","B:h",["aKnown"],[],[]],
+    ["bid-hidden","request","loseAfter","lose","loseAsync","A","o","B:h",[],[],["aHidden"]],
+    ["bid-hidden","effect","loseAfter","lose","loseAsync","A","o","B:h",[],[],["aHidden"]],
+    ["bid-hidden","request","loseAfter","lose","loseAsync","B","o","o",[],[],["bBid"]],
+    ["bid-hidden","effect","loseAfter","lose","loseAsync","B","o","o",[],[],["bBid"]],
+    ["bid-hidden","request","compareCardShowBefore","chooseToCompare","reference_fixture_use","A","o","o",[],[],[]],
+    ["bid-hidden","effect","compareCardShowBefore","chooseToCompare","reference_fixture_use","A","o","o",[],[],[]],
+    ["bid-hidden","request","showCardsAfter","showCards","chooseToCompare","A","o","o",[],[],["aHidden"]],
+    ["bid-hidden","effect","showCardsAfter","showCards","chooseToCompare","A","o","o",[],[],["aHidden"]],
+    ["bid-hidden","request","showCardsAfter","showCards","chooseToCompare","B","o","o",[],[],["bBid"]],
+    ["bid-hidden","effect","showCardsAfter","showCards","chooseToCompare","B","o","o",[],[],["bBid"]],
+    ["bid-hidden","request","compare","chooseToCompare","reference_fixture_use","A","o","o",[],[],[]],
+    ["bid-hidden","effect","compare","chooseToCompare","reference_fixture_use","A","o","o",[],[],[]],
+    ["bid-hidden","request","compareFixing","chooseToCompare","reference_fixture_use","A","o","o",[],[],[]],
+    ["bid-hidden","effect","compareFixing","chooseToCompare","reference_fixture_use","A","o","o",[],[],[]],
+    ["bid-hidden","request","chooseToCompareAfter","chooseToCompare","reference_fixture_use","A","o","o",[],[],[]],
+    ["bid-hidden","effect","chooseToCompareAfter","chooseToCompare","reference_fixture_use","A","o","o",[],[],[]],
+    ["bid-hidden","request","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,"d","d",[],[],["aHidden","bBid"]],
+    ["bid-hidden","effect","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,"d","d",[],[],["aHidden","bBid"]],
+    ["bid-known","request","chooseCardAfter","chooseCard","chooseCardOL","A","A:h","B:h",["aKnown"],[],[]],
+    ["bid-known","effect","chooseCardAfter","chooseCard","chooseCardOL","A","A:h","B:h",["aKnown"],[],[]],
+    ["bid-known","request","chooseCardAfter","chooseCard","chooseCardOL","B","A:h","B:h",["aKnown"],[],[]],
+    ["bid-known","effect","chooseCardAfter","chooseCard","chooseCardOL","B","A:h","B:h",["aKnown"],[],[]],
+    ["bid-known","request","loseAfter","lose","loseAsync","A","o","B:h",[],[],["aKnown"]],
+    ["bid-known","effect","loseAfter","lose","loseAsync","A","o","B:h",[],[],["aKnown"]],
+    ["bid-known","request","loseAfter","lose","loseAsync","B","o","o",[],[],["bBid"]],
+    ["bid-known","effect","loseAfter","lose","loseAsync","B","o","o",[],[],["bBid"]],
+    ["bid-known","request","compareCardShowBefore","chooseToCompare","reference_fixture_use","A","o","o",[],[],[]],
+    ["bid-known","effect","compareCardShowBefore","chooseToCompare","reference_fixture_use","A","o","o",[],[],[]],
+    ["bid-known","request","showCardsAfter","showCards","chooseToCompare","A","o","o",[],[],["aKnown"]],
+    ["bid-known","effect","showCardsAfter","showCards","chooseToCompare","A","o","o",[],[],["aKnown"]],
+    ["bid-known","request","showCardsAfter","showCards","chooseToCompare","B","o","o",[],[],["bBid"]],
+    ["bid-known","effect","showCardsAfter","showCards","chooseToCompare","B","o","o",[],[],["bBid"]],
+    ["bid-known","request","compare","chooseToCompare","reference_fixture_use","A","o","o",[],[],[]],
+    ["bid-known","effect","compare","chooseToCompare","reference_fixture_use","A","o","o",[],[],[]],
+    ["bid-known","request","compareFixing","chooseToCompare","reference_fixture_use","A","o","o",[],[],[]],
+    ["bid-known","effect","compareFixing","chooseToCompare","reference_fixture_use","A","o","o",[],[],[]],
+    ["bid-known","request","chooseToCompareAfter","chooseToCompare","reference_fixture_use","A","o","o",[],[],[]],
+    ["bid-known","effect","chooseToCompareAfter","chooseToCompare","reference_fixture_use","A","o","o",[],[],[]],
+    ["bid-known","request","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,"d","d",[],[],["aKnown","bBid"]],
+    ["bid-known","effect","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,"d","d",[],[],["aKnown","bBid"]],
+    ["cancel-before-reveal","request","chooseCardAfter","chooseCard","chooseCardOL","A","A:h","B:h",["aKnown"],[],[]],
+    ["cancel-before-reveal","effect","chooseCardAfter","chooseCard","chooseCardOL","A","A:h","B:h",["aKnown"],[],[]],
+    ["cancel-before-reveal","request","chooseCardAfter","chooseCard","chooseCardOL","B","A:h","B:h",["aKnown"],[],[]],
+    ["cancel-before-reveal","effect","chooseCardAfter","chooseCard","chooseCardOL","B","A:h","B:h",["aKnown"],[],[]],
+    ["cancel-before-reveal","request","loseAfter","lose","loseAsync","A","o","B:h",[],[],["aHidden"]],
+    ["cancel-before-reveal","effect","loseAfter","lose","loseAsync","A","o","B:h",[],[],["aHidden"]],
+    ["cancel-before-reveal","request","loseAfter","lose","loseAsync","B","o","o",[],[],["bBid"]],
+    ["cancel-before-reveal","effect","loseAfter","lose","loseAsync","B","o","o",[],[],["bBid"]],
+    ["cancel-before-reveal","request","compareCardShowBefore","chooseToCompare","reference_fixture_use","A","o","o",[],[],[]],
+    ["cancel-before-reveal","effect","compareCardShowBefore","chooseToCompare","reference_fixture_use","A","o","o",[],[],[]],
+    ["cancel-before-reveal","request","chooseToCompareCancelled","chooseToCompare","reference_fixture_use","A","o","o",[],[],[]],
+    ["cancel-before-reveal","effect","chooseToCompareCancelled","chooseToCompare","reference_fixture_use","A","o","o",[],[],[]],
+    ["cancel-before-reveal","request","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,"d","d",[],[],["aHidden","bBid"]],
+    ["cancel-before-reveal","effect","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,"d","d",[],[],["aHidden","bBid"]],
+    ["cancel-second-loss","request","chooseCardAfter","chooseCard","chooseCardOL","A","A:h","B:h",["aKnown"],[],[]],
+    ["cancel-second-loss","effect","chooseCardAfter","chooseCard","chooseCardOL","A","A:h","B:h",["aKnown"],[],[]],
+    ["cancel-second-loss","request","chooseCardAfter","chooseCard","chooseCardOL","B","A:h","B:h",["aKnown"],[],[]],
+    ["cancel-second-loss","effect","chooseCardAfter","chooseCard","chooseCardOL","B","A:h","B:h",["aKnown"],[],[]],
+    ["cancel-second-loss","request","loseAfter","lose","loseAsync","A","o","B:h",[],[],["aHidden"]],
+    ["cancel-second-loss","effect","loseAfter","lose","loseAsync","A","o","B:h",[],[],["aHidden"]],
+    ["cancel-second-loss","request","compareCardShowBefore","chooseToCompare","reference_fixture_use","A","o","B:h",[],[],[]],
+    ["cancel-second-loss","effect","compareCardShowBefore","chooseToCompare","reference_fixture_use","A","o","B:h",[],[],[]],
+    ["cancel-second-loss","request","showCardsAfter","showCards","chooseToCompare","A","o","B:h",[],[],["aHidden"]],
+    ["cancel-second-loss","effect","showCardsAfter","showCards","chooseToCompare","A","o","B:h",[],[],["aHidden"]],
+    ["cancel-second-loss","request","showCardsAfter","showCards","chooseToCompare","B","o","B:h",[],[],["bBid"]],
+    ["cancel-second-loss","effect","showCardsAfter","showCards","chooseToCompare","B","o","B:h",[],[],["bBid"]],
+    ["cancel-second-loss","request","compare","chooseToCompare","reference_fixture_use","A","o","B:h",[],[],[]],
+    ["cancel-second-loss","effect","compare","chooseToCompare","reference_fixture_use","A","o","B:h",[],[],[]],
+    ["cancel-second-loss","request","compareFixing","chooseToCompare","reference_fixture_use","A","o","B:h",[],[],[]],
+    ["cancel-second-loss","effect","compareFixing","chooseToCompare","reference_fixture_use","A","o","B:h",[],[],[]],
+    ["cancel-second-loss","request","chooseToCompareAfter","chooseToCompare","reference_fixture_use","A","o","B:h",[],[],[]],
+    ["cancel-second-loss","effect","chooseToCompareAfter","chooseToCompare","reference_fixture_use","A","o","B:h",[],[],[]],
+    ["cancel-second-loss","request","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,"d","B:h",[],[],["aHidden"]],
+    ["cancel-second-loss","effect","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,"d","B:h",[],[],["aHidden"]]
+  ]
+}
