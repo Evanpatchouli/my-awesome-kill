@@ -27,6 +27,16 @@ Android 工程已初始化，可在 `apps/game` 运行 `pnpm tauri android dev`�
 
 若 Windows 的 pnpm 或 rustup shim 因装入点策略无法启动，应修复系统的执行/联接策略，或使用可信位置安装的 Node、pnpm 和 Rust 工具链。仅绕过 pnpm 启动器不能解决 pnpm workspace 联接同样被系统拒绝的问题。若只需检查 Rust 版本，可直接调用 rustup toolchain 的 `bin/cargo.exe` 和 `bin/rustc.exe`。不要提交本机生成的依赖目录和构建产物。
 
+本机已验证的 pnpm 10.20.0 来自核过 npm 签名与 SHA-512 的发行包，wasm-bindgen 0.2.130 来自核过 SHA-256 的官方 Windows 构建。已有这两份工具缓存时，可在当前 PowerShell 进程使用以下路径运行项目命令。
+
+```powershell
+$stableBin = Join-Path $env:USERPROFILE '.rustup/toolchains/stable-x86_64-pc-windows-msvc/bin'
+$toolBin = Join-Path $env:LOCALAPPDATA 'my-awesome-kill/tools'
+$env:PATH = "$toolBin/pnpm-10.20.0;$toolBin/wasm-bindgen-0.2.130;$stableBin;$env:PATH"
+pnpm --version
+wasm-bindgen --version
+```
+
 ## 本机验证边界
 
 Windows 上已验证前端生产构建、Rust `cargo check` 和 SQLite 重复对局 ID 的单元测试。前端构建后，可使用 `cargo build --release --features tauri/custom-protocol --manifest-path apps/game/src-tauri/Cargo.toml` 生成内置前端资源的程序，直接运行 `apps/game/src-tauri/target/release/my-awesome-kill.exe`。这不是安装包；首次构建仍需 Rust 和 Windows 构建工具。已在开发端口关闭时验证生产程序进入经典模式、25 将画廊并选择曹操进入牌桌。
@@ -44,5 +54,13 @@ Android 的 ARM64 调试包位于 `apps/game/src-tauri/gen/android/app/build/out
 3. 从实际应用首页选择玩法、选将并入桌。用 `adb -P 15037 -s emulator-5566 exec-out screencap -p` 保存截图，并以 `dumpsys activity` 核对横屏。结束时向这个 serial 执行 `emu kill`，然后向对应的 ADB 端口执行 `kill-server`。
 
 系统栏修复后的 ARM64 调试包 SHA-256 为 `7EB2B285608FC40CE6C26DFEC7FF616672363E44AB3DD03A61A16361B6BFE68A`，已通过 Android v2 验签。用 API 36、160 dpi、640×320 的隔离模拟器实跑，状态栏与导航栏各占 24 px，Activity 将中间 640×272 交给 WebView。飞行模式下从首页选张飞进入八人局，实际点选过河拆桥、目标并确认，版本从 0 变为 1。WebView 根滚动量为 0，手牌和确认按钮下缘分别位于其内容区的 268px 和 264px。此包使用 `a6cd3bf` 的规则和 `d7b45b8` 的短横屏布局。
+
+### 包含两席拼点的本地构建
+
+`bbe1f51` 的 Windows release 程序位于 `apps/game/src-tauri/target/release/my-awesome-kill.exe`，SHA-256 为 `202947EEB2BACD373EB2D1BFC4F31740479A76275F2FF7A1375F88A73865DB98`。关闭本地开发与预览服务后，使用隔离 WebView2 资料从 `http://tauri.localhost` 实际选张飞、进入八人局并指定目标出牌。WebView 读取的内嵌 WASM SHA-256 为 `AFE033E354986D28ADF944DD1F86795AB0F1A0E699C10F1A3911FEA0DA67EC74`。
+
+同一生产构建的 Android 调试包位于 `apps/game/src-tauri/gen/android/app/build/outputs/apk/arm64/debug/app-arm64-debug-bbe1f51.apk`，SHA-256 为 `7FFB92DC72134B238943AA0EDEA1A1615D9B0C3CC333C88B533A16CEF8F072FA`。完整包为 144,530,551 字节。通过 v2 验签和 16 KiB zip 对齐检查，工件内实际 ARM64 库的 WASM 和 CSS 与最终 dist 的哈希分别一致。使用已有 Gradle 工程时，重新生成 APK 封装输出可避免旧原生库在增量 ZIP 中形成大块空洞。
+
+新包也在独立 API 36 模拟器上实际安装过。设备内 `base.apk` 和 WebView 实际加载的 WASM 都与以上 SHA-256 一致。飞行模式下从首页滚动选将页，选曹操并进入八人局。在万箭齐发响应中点击闪并确认，手牌 4→3，弃牌堆 7→8。640×320 屏幕下 WebView 占据 `[0,24]–[640,296]`，手牌和按钮在 640×272 可用范围内；七个对手席位以横向列表呈现，右缘可见部分末席。
 
 在文件支持的 Windows 开发盘上运行构建和模拟器时，应同时查看承载 VHDX 的宿主卷。模拟器冷启动、Windows 页面文件和编译目录都可能占用同一个物理盘。复用 Cargo target，并在一次隔离 AVD 验证后关闭该实例及其专属 ADB 服务器，可减少重复写入和并发磁盘占用。
