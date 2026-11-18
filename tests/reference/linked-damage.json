@@ -1,0 +1,700 @@
+{
+  "schema": "noname-reference-trace-v1",
+  "referenceCommit": "c73270948d72949aa80009536b9fd5400767d091",
+  "mode": "identity",
+  "scenario": "tiesuo, faen, armor, and fire sha propagation across three turns",
+  "players": 8,
+  "trials": [
+    {
+      "sample": "unarmored",
+      "turn": 1,
+      "initial": {
+        "states": {
+          "A": {
+            "hp": 4,
+            "hujia": 0,
+            "linked": false,
+            "handSize": 2
+          },
+          "B": {
+            "hp": 4,
+            "hujia": 0,
+            "linked": false,
+            "handSize": 0
+          },
+          "C": {
+            "hp": 4,
+            "hujia": 0,
+            "linked": false,
+            "handSize": 0
+          }
+        },
+        "skills": {
+          "A": [],
+          "B": [
+            "faen"
+          ],
+          "C": []
+        },
+        "turnOwner": "A",
+        "targetIsHuman": false,
+        "actorHand": [
+          [
+            "tiesuo",
+            "club",
+            10
+          ],
+          [
+            "sha",
+            "heart",
+            4
+          ]
+        ],
+        "fireNature": "fire",
+        "canUseTiesuo": [
+          true,
+          true
+        ],
+        "canUseFireSha": true,
+        "priorShaUses": 0
+      },
+      "afterTiesuo": {
+        "A": {
+          "hp": 4,
+          "hujia": 0,
+          "linked": false,
+          "handSize": 1
+        },
+        "B": {
+          "hp": 4,
+          "hujia": 0,
+          "linked": true,
+          "handSize": 1
+        },
+        "C": {
+          "hp": 4,
+          "hujia": 0,
+          "linked": true,
+          "handSize": 1
+        }
+      },
+      "choices": [
+        {
+          "owner": "B",
+          "target": "B",
+          "accepted": true
+        },
+        {
+          "owner": "B",
+          "target": "C",
+          "accepted": true
+        }
+      ],
+      "effects": [
+        {
+          "name": "faen",
+          "owner": "B",
+          "target": "B",
+          "linkedBefore": true,
+          "linkedAfter": true,
+          "timing": "linkAfter",
+          "drawn": [
+            [
+              "tao",
+              "heart",
+              7
+            ]
+          ]
+        },
+        {
+          "name": "tiesuo",
+          "owner": "A",
+          "target": "B",
+          "linkedBefore": false,
+          "linkedAfter": true
+        },
+        {
+          "name": "faen",
+          "owner": "B",
+          "target": "C",
+          "linkedBefore": true,
+          "linkedAfter": true,
+          "timing": "linkAfter",
+          "drawn": [
+            [
+              "tao",
+              "heart",
+              8
+            ]
+          ]
+        },
+        {
+          "name": "tiesuo",
+          "owner": "A",
+          "target": "C",
+          "linkedBefore": false,
+          "linkedAfter": true
+        }
+      ],
+      "damage": [
+        {
+          "source": "A",
+          "target": "B",
+          "nature": "fire",
+          "amount": 1,
+          "absorbed": 0,
+          "parent": "sha",
+          "physicalSha": true,
+          "inTargetHistory": true
+        },
+        {
+          "source": "A",
+          "target": "C",
+          "nature": "fire",
+          "amount": 1,
+          "absorbed": 0,
+          "parent": "_lianhuan",
+          "physicalSha": true,
+          "inTargetHistory": true
+        }
+      ],
+      "final": {
+        "states": {
+          "A": {
+            "hp": 4,
+            "hujia": 0,
+            "linked": false,
+            "handSize": 0
+          },
+          "B": {
+            "hp": 3,
+            "hujia": 0,
+            "linked": false,
+            "handSize": 1
+          },
+          "C": {
+            "hp": 3,
+            "hujia": 0,
+            "linked": false,
+            "handSize": 1
+          }
+        },
+        "damageCounts": {
+          "A": 0,
+          "B": 1,
+          "C": 1
+        },
+        "tiesuoInDiscard": true,
+        "shaInDiscard": true,
+        "tiesuoUses": 1,
+        "shaUses": 1
+      }
+    },
+    {
+      "sample": "armored",
+      "turn": 2,
+      "initial": {
+        "states": {
+          "A": {
+            "hp": 4,
+            "hujia": 0,
+            "linked": false,
+            "handSize": 2
+          },
+          "B": {
+            "hp": 4,
+            "hujia": 1,
+            "linked": false,
+            "handSize": 0
+          },
+          "C": {
+            "hp": 4,
+            "hujia": 0,
+            "linked": false,
+            "handSize": 0
+          }
+        },
+        "skills": {
+          "A": [],
+          "B": [
+            "faen"
+          ],
+          "C": []
+        },
+        "turnOwner": "A",
+        "targetIsHuman": false,
+        "actorHand": [
+          [
+            "tiesuo",
+            "club",
+            10
+          ],
+          [
+            "sha",
+            "heart",
+            4
+          ]
+        ],
+        "fireNature": "fire",
+        "canUseTiesuo": [
+          true,
+          true
+        ],
+        "canUseFireSha": true,
+        "priorShaUses": 0
+      },
+      "afterTiesuo": {
+        "A": {
+          "hp": 4,
+          "hujia": 0,
+          "linked": false,
+          "handSize": 1
+        },
+        "B": {
+          "hp": 4,
+          "hujia": 1,
+          "linked": true,
+          "handSize": 1
+        },
+        "C": {
+          "hp": 4,
+          "hujia": 0,
+          "linked": true,
+          "handSize": 0
+        }
+      },
+      "choices": [
+        {
+          "owner": "B",
+          "target": "B",
+          "accepted": true
+        },
+        {
+          "owner": "B",
+          "target": "C",
+          "accepted": false
+        }
+      ],
+      "effects": [
+        {
+          "name": "faen",
+          "owner": "B",
+          "target": "B",
+          "linkedBefore": true,
+          "linkedAfter": true,
+          "timing": "linkAfter",
+          "drawn": [
+            [
+              "tao",
+              "heart",
+              7
+            ]
+          ]
+        },
+        {
+          "name": "tiesuo",
+          "owner": "A",
+          "target": "B",
+          "linkedBefore": false,
+          "linkedAfter": true
+        },
+        {
+          "name": "tiesuo",
+          "owner": "A",
+          "target": "C",
+          "linkedBefore": false,
+          "linkedAfter": true
+        }
+      ],
+      "damage": [
+        {
+          "source": "A",
+          "target": "B",
+          "nature": "fire",
+          "amount": 1,
+          "absorbed": 1,
+          "parent": "sha",
+          "physicalSha": true,
+          "inTargetHistory": true
+        },
+        {
+          "source": "A",
+          "target": "C",
+          "nature": "fire",
+          "amount": 1,
+          "absorbed": 0,
+          "parent": "_lianhuan",
+          "physicalSha": true,
+          "inTargetHistory": true
+        }
+      ],
+      "final": {
+        "states": {
+          "A": {
+            "hp": 4,
+            "hujia": 0,
+            "linked": false,
+            "handSize": 0
+          },
+          "B": {
+            "hp": 4,
+            "hujia": 0,
+            "linked": false,
+            "handSize": 1
+          },
+          "C": {
+            "hp": 3,
+            "hujia": 0,
+            "linked": false,
+            "handSize": 0
+          }
+        },
+        "damageCounts": {
+          "A": 0,
+          "B": 1,
+          "C": 1
+        },
+        "tiesuoInDiscard": true,
+        "shaInDiscard": true,
+        "tiesuoUses": 1,
+        "shaUses": 1
+      }
+    },
+    {
+      "sample": "recheck",
+      "turn": 3,
+      "initial": {
+        "states": {
+          "A": {
+            "hp": 4,
+            "hujia": 0,
+            "linked": false,
+            "handSize": 2
+          },
+          "B": {
+            "hp": 4,
+            "hujia": 0,
+            "linked": false,
+            "handSize": 0
+          },
+          "C": {
+            "hp": 4,
+            "hujia": 0,
+            "linked": false,
+            "handSize": 0
+          },
+          "D": {
+            "hp": 4,
+            "hujia": 0,
+            "linked": true,
+            "handSize": 0
+          }
+        },
+        "skills": {
+          "A": [],
+          "B": [
+            "faen"
+          ],
+          "C": [],
+          "D": []
+        },
+        "turnOwner": "A",
+        "targetIsHuman": false,
+        "actorHand": [
+          [
+            "tiesuo",
+            "club",
+            10
+          ],
+          [
+            "sha",
+            "heart",
+            4
+          ]
+        ],
+        "fireNature": "fire",
+        "canUseTiesuo": [
+          true,
+          true
+        ],
+        "canUseFireSha": true,
+        "priorShaUses": 0
+      },
+      "afterTiesuo": {
+        "A": {
+          "hp": 4,
+          "hujia": 0,
+          "linked": false,
+          "handSize": 1
+        },
+        "B": {
+          "hp": 4,
+          "hujia": 0,
+          "linked": true,
+          "handSize": 1
+        },
+        "C": {
+          "hp": 4,
+          "hujia": 0,
+          "linked": true,
+          "handSize": 1
+        },
+        "D": {
+          "hp": 4,
+          "hujia": 0,
+          "linked": true,
+          "handSize": 0
+        }
+      },
+      "choices": [
+        {
+          "owner": "B",
+          "target": "B",
+          "accepted": true
+        },
+        {
+          "owner": "B",
+          "target": "C",
+          "accepted": true
+        }
+      ],
+      "effects": [
+        {
+          "name": "faen",
+          "owner": "B",
+          "target": "B",
+          "linkedBefore": true,
+          "linkedAfter": true,
+          "timing": "linkAfter",
+          "drawn": [
+            [
+              "tao",
+              "heart",
+              7
+            ]
+          ]
+        },
+        {
+          "name": "tiesuo",
+          "owner": "A",
+          "target": "B",
+          "linkedBefore": false,
+          "linkedAfter": true
+        },
+        {
+          "name": "faen",
+          "owner": "B",
+          "target": "C",
+          "linkedBefore": true,
+          "linkedAfter": true,
+          "timing": "linkAfter",
+          "drawn": [
+            [
+              "tao",
+              "heart",
+              8
+            ]
+          ]
+        },
+        {
+          "name": "tiesuo",
+          "owner": "A",
+          "target": "C",
+          "linkedBefore": false,
+          "linkedAfter": true
+        }
+      ],
+      "damage": [
+        {
+          "source": "A",
+          "target": "B",
+          "nature": "fire",
+          "amount": 1,
+          "absorbed": 0,
+          "parent": "sha",
+          "physicalSha": true,
+          "inTargetHistory": true
+        },
+        {
+          "source": "A",
+          "target": "C",
+          "nature": "fire",
+          "amount": 1,
+          "absorbed": 0,
+          "parent": "_lianhuan",
+          "physicalSha": true,
+          "inTargetHistory": true
+        }
+      ],
+      "recheck": {
+        "duringDamageTo": "C",
+        "pending": [
+          "D"
+        ],
+        "linkedBefore": true,
+        "linkedAfter": false
+      },
+      "final": {
+        "states": {
+          "A": {
+            "hp": 4,
+            "hujia": 0,
+            "linked": false,
+            "handSize": 0
+          },
+          "B": {
+            "hp": 3,
+            "hujia": 0,
+            "linked": false,
+            "handSize": 1
+          },
+          "C": {
+            "hp": 3,
+            "hujia": 0,
+            "linked": false,
+            "handSize": 1
+          },
+          "D": {
+            "hp": 4,
+            "hujia": 0,
+            "linked": false,
+            "handSize": 0
+          }
+        },
+        "damageCounts": {
+          "A": 0,
+          "B": 1,
+          "C": 1,
+          "D": 0
+        },
+        "tiesuoInDiscard": true,
+        "shaInDiscard": true,
+        "tiesuoUses": 1,
+        "shaUses": 1
+      }
+    }
+  ],
+  "eventColumns": [
+    "sample",
+    "kind",
+    "timing",
+    "event",
+    "parent",
+    "player",
+    "source",
+    "card",
+    "nature",
+    "amount",
+    "hp",
+    "hujia",
+    "linked"
+  ],
+  "events": [
+    ["unarmored","request","linkBefore","link","tiesuo","B",null,null,null,null,4,0,false],
+    ["unarmored","request","linkAfter","link","tiesuo","B",null,null,null,null,4,0,true],
+    ["unarmored","callback","linkAfter","link","tiesuo","B",null,null,null,null,4,0,true],
+    ["unarmored","request","linkBefore","link","tiesuo","C",null,null,null,null,4,0,false],
+    ["unarmored","request","linkAfter","link","tiesuo","C",null,null,null,null,4,0,true],
+    ["unarmored","callback","linkAfter","link","tiesuo","C",null,null,null,null,4,0,true],
+    ["unarmored","request","useCardAfter","useCard","reference_fixture_use","A",null,"tiesuo",null,1,4,0,false],
+    ["unarmored","request","damage","damage","sha","B","A","sha","fire",1,4,0,true],
+    ["unarmored","request","changeHp","changeHp","damage","B",null,null,null,-1,3,0,true],
+    ["unarmored","callback","changeHp","changeHp","damage","B",null,null,null,-1,3,0,true],
+    ["unarmored","request","linkBefore","link","_lianhuan4","B",null,null,null,null,3,0,true],
+    ["unarmored","request","linkAfter","link","_lianhuan4","B",null,null,null,null,3,0,false],
+    ["unarmored","callback","linkAfter","link","_lianhuan4","B",null,null,null,null,3,0,false],
+    ["unarmored","callback","damage","damage","sha","B","A","sha","fire",1,3,0,false],
+    ["unarmored","request","damageSource","damage","sha","B","A","sha","fire",1,3,0,false],
+    ["unarmored","callback","damageSource","damage","sha","B","A","sha","fire",1,3,0,false],
+    ["unarmored","request","damageEnd","damage","sha","B","A","sha","fire",1,3,0,false],
+    ["unarmored","callback","damageEnd","damage","sha","B","A","sha","fire",1,3,0,false],
+    ["unarmored","request","damageAfter","damage","sha","B","A","sha","fire",1,3,0,false],
+    ["unarmored","callback","damageAfter","damage","sha","B","A","sha","fire",1,3,0,false],
+    ["unarmored","request","damage","damage","_lianhuan","C","A","sha","fire",1,4,0,true],
+    ["unarmored","request","changeHp","changeHp","damage","C",null,null,null,-1,3,0,true],
+    ["unarmored","callback","changeHp","changeHp","damage","C",null,null,null,-1,3,0,true],
+    ["unarmored","request","linkBefore","link","_lianhuan4","C",null,null,null,null,3,0,true],
+    ["unarmored","request","linkAfter","link","_lianhuan4","C",null,null,null,null,3,0,false],
+    ["unarmored","callback","linkAfter","link","_lianhuan4","C",null,null,null,null,3,0,false],
+    ["unarmored","callback","damage","damage","_lianhuan","C","A","sha","fire",1,3,0,false],
+    ["unarmored","request","damageSource","damage","_lianhuan","C","A","sha","fire",1,3,0,false],
+    ["unarmored","callback","damageSource","damage","_lianhuan","C","A","sha","fire",1,3,0,false],
+    ["unarmored","request","damageEnd","damage","_lianhuan","C","A","sha","fire",1,3,0,false],
+    ["unarmored","callback","damageEnd","damage","_lianhuan","C","A","sha","fire",1,3,0,false],
+    ["unarmored","request","damageAfter","damage","_lianhuan","C","A","sha","fire",1,3,0,false],
+    ["unarmored","callback","damageAfter","damage","_lianhuan","C","A","sha","fire",1,3,0,false],
+    ["unarmored","request","useCardAfter","useCard","reference_fixture_use","A",null,"sha",null,0,4,0,false],
+    ["armored","request","linkBefore","link","tiesuo","B",null,null,null,null,4,1,false],
+    ["armored","request","linkAfter","link","tiesuo","B",null,null,null,null,4,1,true],
+    ["armored","callback","linkAfter","link","tiesuo","B",null,null,null,null,4,1,true],
+    ["armored","request","linkBefore","link","tiesuo","C",null,null,null,null,4,0,false],
+    ["armored","request","linkAfter","link","tiesuo","C",null,null,null,null,4,0,true],
+    ["armored","callback","linkAfter","link","tiesuo","C",null,null,null,null,4,0,true],
+    ["armored","request","useCardAfter","useCard","reference_fixture_use","A",null,"tiesuo",null,1,4,0,false],
+    ["armored","request","damage","damage","sha","B","A","sha","fire",1,4,1,true],
+    ["armored","request","changeHp","changeHp","damage","B",null,null,null,0,4,1,true],
+    ["armored","request","changeHujiaAfter","changeHujia","changeHp","B",null,null,null,-1,4,0,true],
+    ["armored","callback","changeHp","changeHp","damage","B",null,null,null,0,4,0,true],
+    ["armored","request","linkBefore","link","_lianhuan4","B",null,null,null,null,4,0,true],
+    ["armored","request","linkAfter","link","_lianhuan4","B",null,null,null,null,4,0,false],
+    ["armored","callback","linkAfter","link","_lianhuan4","B",null,null,null,null,4,0,false],
+    ["armored","callback","damage","damage","sha","B","A","sha","fire",1,4,0,false],
+    ["armored","request","damageSource","damage","sha","B","A","sha","fire",1,4,0,false],
+    ["armored","callback","damageSource","damage","sha","B","A","sha","fire",1,4,0,false],
+    ["armored","request","damageEnd","damage","sha","B","A","sha","fire",1,4,0,false],
+    ["armored","callback","damageEnd","damage","sha","B","A","sha","fire",1,4,0,false],
+    ["armored","request","damageAfter","damage","sha","B","A","sha","fire",1,4,0,false],
+    ["armored","callback","damageAfter","damage","sha","B","A","sha","fire",1,4,0,false],
+    ["armored","request","damage","damage","_lianhuan","C","A","sha","fire",1,4,0,true],
+    ["armored","request","changeHp","changeHp","damage","C",null,null,null,-1,3,0,true],
+    ["armored","callback","changeHp","changeHp","damage","C",null,null,null,-1,3,0,true],
+    ["armored","request","linkBefore","link","_lianhuan4","C",null,null,null,null,3,0,true],
+    ["armored","request","linkAfter","link","_lianhuan4","C",null,null,null,null,3,0,false],
+    ["armored","callback","linkAfter","link","_lianhuan4","C",null,null,null,null,3,0,false],
+    ["armored","callback","damage","damage","_lianhuan","C","A","sha","fire",1,3,0,false],
+    ["armored","request","damageSource","damage","_lianhuan","C","A","sha","fire",1,3,0,false],
+    ["armored","callback","damageSource","damage","_lianhuan","C","A","sha","fire",1,3,0,false],
+    ["armored","request","damageEnd","damage","_lianhuan","C","A","sha","fire",1,3,0,false],
+    ["armored","callback","damageEnd","damage","_lianhuan","C","A","sha","fire",1,3,0,false],
+    ["armored","request","damageAfter","damage","_lianhuan","C","A","sha","fire",1,3,0,false],
+    ["armored","callback","damageAfter","damage","_lianhuan","C","A","sha","fire",1,3,0,false],
+    ["armored","request","useCardAfter","useCard","reference_fixture_use","A",null,"sha",null,0,4,0,false],
+    ["recheck","request","linkBefore","link","tiesuo","B",null,null,null,null,4,0,false],
+    ["recheck","request","linkAfter","link","tiesuo","B",null,null,null,null,4,0,true],
+    ["recheck","callback","linkAfter","link","tiesuo","B",null,null,null,null,4,0,true],
+    ["recheck","request","linkBefore","link","tiesuo","C",null,null,null,null,4,0,false],
+    ["recheck","request","linkAfter","link","tiesuo","C",null,null,null,null,4,0,true],
+    ["recheck","callback","linkAfter","link","tiesuo","C",null,null,null,null,4,0,true],
+    ["recheck","request","useCardAfter","useCard","reference_fixture_use","A",null,"tiesuo",null,1,4,0,false],
+    ["recheck","request","damage","damage","sha","B","A","sha","fire",1,4,0,true],
+    ["recheck","request","changeHp","changeHp","damage","B",null,null,null,-1,3,0,true],
+    ["recheck","callback","changeHp","changeHp","damage","B",null,null,null,-1,3,0,true],
+    ["recheck","request","linkBefore","link","_lianhuan4","B",null,null,null,null,3,0,true],
+    ["recheck","request","linkAfter","link","_lianhuan4","B",null,null,null,null,3,0,false],
+    ["recheck","callback","linkAfter","link","_lianhuan4","B",null,null,null,null,3,0,false],
+    ["recheck","callback","damage","damage","sha","B","A","sha","fire",1,3,0,false],
+    ["recheck","request","damageSource","damage","sha","B","A","sha","fire",1,3,0,false],
+    ["recheck","callback","damageSource","damage","sha","B","A","sha","fire",1,3,0,false],
+    ["recheck","request","damageEnd","damage","sha","B","A","sha","fire",1,3,0,false],
+    ["recheck","callback","damageEnd","damage","sha","B","A","sha","fire",1,3,0,false],
+    ["recheck","request","damageAfter","damage","sha","B","A","sha","fire",1,3,0,false],
+    ["recheck","callback","damageAfter","damage","sha","B","A","sha","fire",1,3,0,false],
+    ["recheck","request","damage","damage","_lianhuan","C","A","sha","fire",1,4,0,true],
+    ["recheck","request","changeHp","changeHp","damage","C",null,null,null,-1,3,0,true],
+    ["recheck","callback","changeHp","changeHp","damage","C",null,null,null,-1,3,0,true],
+    ["recheck","request","linkBefore","link","_lianhuan4","C",null,null,null,null,3,0,true],
+    ["recheck","request","linkAfter","link","_lianhuan4","C",null,null,null,null,3,0,false],
+    ["recheck","callback","linkAfter","link","_lianhuan4","C",null,null,null,null,3,0,false],
+    ["recheck","callback","damage","damage","_lianhuan","C","A","sha","fire",1,3,0,false],
+    ["recheck","request","damageSource","damage","_lianhuan","C","A","sha","fire",1,3,0,false],
+    ["recheck","callback","damageSource","damage","_lianhuan","C","A","sha","fire",1,3,0,false],
+    ["recheck","request","damageEnd","damage","_lianhuan","C","A","sha","fire",1,3,0,false],
+    ["recheck","callback","damageEnd","damage","_lianhuan","C","A","sha","fire",1,3,0,false],
+    ["recheck","request","linkBefore","link","reference_unlink_pending","D",null,null,null,null,4,0,true],
+    ["recheck","request","linkAfter","link","reference_unlink_pending","D",null,null,null,null,4,0,false],
+    ["recheck","callback","linkAfter","link","reference_unlink_pending","D",null,null,null,null,4,0,false],
+    ["recheck","request","damageAfter","damage","_lianhuan","C","A","sha","fire",1,3,0,false],
+    ["recheck","callback","damageAfter","damage","_lianhuan","C","A","sha","fire",1,3,0,false],
+    ["recheck","request","useCardAfter","useCard","reference_fixture_use","A",null,"sha",null,0,4,0,false]
+  ]
+}

@@ -12,6 +12,14 @@
 
 `tiesuo-recast.json` 记录直接调用上游 `Player.recast` 的两次结算。A 持有铁索和杀，牌堆顶固定一张桃。上游严格判定允许铁索重铸。默认结算将铁索弃置，A 摸到桃。第二次通过上游公开回调将另一张铁索交给 B，并让 A 获得指定的闪。两次均保持 A 的手牌数、铁索使用次数及双方横置状态。`events` 记录原版请求时机时的实体位置，`A:h` 和 `B:h` 表示所在席的手牌。`recastingLost`、`recastingGained` 的请求发生在相应子事件移动实体之前，`recast`、`recastEnd` 分别可见两次移动的结果。该场景覆盖内容调用与牌区变化，玩家点选重铸的交互仍需单独验证。
 
+`linked-damage.json` 记录同一身份局前三个连续回合。每回合的 A 是当前出牌角色，B 是相邻的 AI，C 是另一名 AI。驱动清空八席手牌和装备、重设体力与护甲并公开身份，将上游法恩授予 B。A 对 B、C 使用梅花 10 实体铁索，再对 B 使用红桃 4 实体火杀。牌堆顶两张固定的桃使法恩的摸牌可以逐张核对。前两次采样完成后，驱动结束当前出牌阶段，原版继续推进回合。
+
+- 第一回合，B 在两次横置后的 `linkAfter` 都发动法恩，B、C 各摸一张桃。火杀令两人分别从 4 降到 3 并解除横置。A 的两次伤害历史分别以 `sha`、`_lianhuan` 为父事件，均引用同一张实体火杀。
+- 第二回合，B 的 AI 接受为自己发动法恩，拒绝为 C 发动。B 的 1 点护甲吸收全部火焰伤害。B 的 `changeHp` 请求记录 `num = 0`、护甲 1。`changeHujiaAfter` 请求时护甲已降至 0，随后的 `changeHp` 技能回调也读到护甲 0。B 保持 4 体力、解除横置并传导 1 点火焰伤害，C 降至 3。解除横置仍请求 `linkAfter`，法恩只在横置时给出选择。
+- 第三回合，D 在用牌前已横置。C 受到传导伤害并进入 `damageEnd` 时，驱动技能在原版待传播名单中读到 D，调用原版 `D.link(false)`。D 保持 4 体力，受伤历史为零。
+
+`choices` 来自法恩的真实 `chooseBool` 结果。`effects` 通过原版内容执行回调记录铁索的横置变化和法恩实际摸到的牌。`events` 只收集所列相关时机，`request` 是调用 `GameEvent.trigger` 当时的状态，`callback` 是首个观察技能执行时的状态。两者之间的子事件可以改变体力、护甲和横置状态。
+
 ## 复现
 
 1. 在独立临时目录检出上述上游提交，保留 `apps/core`、`packages/fs`、`packages/jit` 和根目录的 `scripts`；可从本机 `.reference/noname` 用 `git clone --shared --sparse` 复用已有对象。通过 `git rev-parse HEAD` 确认提交。不要在项目运行时依赖该参考检出。
@@ -24,6 +32,7 @@
    node scripts/reference-trace.mjs --scenario trigger-order-cancel --check tests/reference/trigger-order-cancel.json
    node scripts/reference-trace.mjs --scenario damage-callback-cancel --check tests/reference/damage-callback-cancel.json
    node scripts/reference-trace.mjs --scenario tiesuo-recast --check tests/reference/tiesuo-recast.json
+   node scripts/reference-trace.mjs --scenario linked-damage --check tests/reference/linked-damage.json
    ```
 
-运行器在隔离浏览器内核对八个共同上游源文件的 LF 归一化 SHA-256，重铸场景还校验 `card/extra.js`。随后执行场景并逐项比较事件和结果。整个检出的版本由第 1 步确认。`--write <path>` 用于重新采集，默认将结果写至标准输出。
+运行器在隔离浏览器内核对八个共同上游源文件的 LF 归一化 SHA-256。重铸和连环伤害场景还校验 `card/extra.js`，连环伤害另校验 `character/yijiang/skill.js`。随后执行场景并逐项比较事件和结果。整个检出的版本由第 1 步确认。`--write <path>` 用于重新采集，默认将结果写至标准输出。

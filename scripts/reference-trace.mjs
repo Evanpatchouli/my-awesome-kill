@@ -3,6 +3,7 @@ import { createRequire } from 'node:module';
 import { readFile, writeFile } from 'node:fs/promises';
 import { installTriggerOrderScenario } from './reference-trigger-order-cancel.mjs';
 import { installReferenceRecast } from './reference-recast.mjs';
+import { checkReferenceLinkedDamage, installReferenceLinkedDamage } from './reference-linked-damage.mjs';
 
 // This is an optional oracle runner. It needs a running, separate upstream dev
 // server and Playwright; neither is a runtime dependency of the game.
@@ -31,6 +32,7 @@ const descriptions = new Map([
   ['sha-no-shan', 'ordinary physical sha against an adjacent AI target with no shan'],
   ['trigger-order-cancel', 'damage trigger ordering, cost, and cancellation for physical sha'],
   ['tiesuo-recast', 'default and custom loss and gain when recasting a physical tiesuo'],
+  ['linked-damage', 'tiesuo, faen, armor, and fire sha propagation across three turns'],
   ['damage-callback-cancel', 'damage callback cancellation after HP change for physical sha'],
 ]);
 let scenario = 'sha-no-shan';
@@ -43,7 +45,9 @@ if (!descriptions.has(scenario)) throw new Error(`Unknown scenario: ${scenario}`
 if (argv.length && (argv.length !== 2 || !['--check', '--write'].includes(argv[0]))) {
   throw new Error('Usage: node scripts/reference-trace.mjs [--scenario name] [--check|--write path]');
 }
-if (scenario === 'tiesuo-recast') sourceHashes['/card/extra.js'] = '8a73678a49b4fc413d6dc0d506733e594fae619d91dc8013cd441a6cd107c35d';
+const isRecast = scenario === 'tiesuo-recast';
+if (isRecast || scenario === 'linked-damage') sourceHashes['/card/extra.js'] = '8a73678a49b4fc413d6dc0d506733e594fae619d91dc8013cd441a6cd107c35d';
+if (scenario === 'linked-damage') sourceHashes['/character/yijiang/skill.js'] = '5b0eb965a8428535bf3cd7d369c261b8ad95cccbeac8d8c817cad3490643a54f';
 
 const browser = await chromium.launch({ headless: true, executablePath });
 const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
@@ -68,8 +72,10 @@ try {
 
   if (scenario === 'trigger-order-cancel') {
     await context.addInitScript({ content: `window.__installTriggerOrderScenario = ${installTriggerOrderScenario.toString()};` });
-  } else if (scenario === 'tiesuo-recast') {
+  } else if (isRecast) {
     await context.addInitScript(installReferenceRecast);
+  } else if (scenario === 'linked-damage') {
+    await context.addInitScript(installReferenceLinkedDamage);
   }
 
   const page = await context.newPage();
@@ -132,6 +138,17 @@ try {
           window.__referenceStages.push('phaseUseBegin: arranging scenario');
           const target = actor.next === game.me ? actor.previous : actor.next;
           if (!target || target === game.me || target === actor) throw new Error('No adjacent AI target');
+          if (scenario === 'linked-damage') {
+            const result = await window.__runReferenceLinkedDamage({ lib, game, ui, get, _status, actor, target });
+            if (result) {
+              window.__referenceResult = result;
+              game.pause();
+            } else {
+              trigger.finish();
+              window.__referenceUseDone = false;
+            }
+            return;
+          }
           if (scenario === 'tiesuo-recast') {
             window.__referenceResult = await window.__runReferenceRecast({ lib, game, ui, get, actor, target });
             game.pause();
@@ -271,6 +288,7 @@ try {
   const captured = await page.evaluate(() => ({ value: window.__referenceResult, error: window.__referenceError }));
   if (captured.error) throw new Error(captured.error);
   assert.deepEqual(errors, [], 'Upstream page errors occurred');
+  if (scenario === 'linked-damage') checkReferenceLinkedDamage(captured.value);
   if (scenario === 'sha-no-shan') assert.deepEqual(captured.value.final, {
     targetHp: 3, cardPosition: 'd', inActorHand: false, inDiscard: true, useCount: 1, targetAlive: true,
   });
@@ -280,7 +298,7 @@ try {
     ]);
     assert.equal(captured.value.final.targetHp, 3);
   }
-  if (scenario === 'tiesuo-recast') {
+  if (isRecast) {
     const { setup, afterDefault, overrideSetup, callbacks, afterOverride } = captured.value;
     assert.equal(setup.material.strict, true);
     assert.equal(setup.control.strict, false);
@@ -305,7 +323,12 @@ try {
     scenario: descriptions.get(scenario),
     ...captured.value,
   };
+  if (argv[0] === '--check') {
+    const expected = JSON.parse(await readFile(argv[1], 'utf8'));
+    assert.deepEqual(result, expected, 'Reference trace does not match the golden file');
+  }
 } finally {
+  await context.close();
   await browser.close();
 }
 
@@ -317,8 +340,6 @@ function formatResult(value) {
 }
 
 if (argv[0] === '--check') {
-  const expected = JSON.parse(await readFile(argv[1], 'utf8'));
-  assert.deepEqual(result, expected, 'Reference trace does not match the golden file');
   console.log(`Reference trace matches ${argv[1]}`);
 } else if (argv[0] === '--write') {
   await writeFile(argv[1], formatResult(result));
