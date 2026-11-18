@@ -91,6 +91,14 @@
 - C 在自己的额外回合中再追加 F，F 排在已经等待的 D、E 后。C、D、E、F 全部处理完后才请求 A 的 `phaseOver` 并推进自然席。
 - E 死亡后队列仍持有其额外回合。该事件带 `forceDie` 和 `includeOut`，更新全局、个人回合号和当前席，处理回合首尾时机。E 的六个阶段均未开始，也没有请求 `phaseCancelled`。自然循环随后走到死席 E 时只请求 `phaseOver`，继续到 F 自然回合。
 
+`ordered-move.json` 在八席离线身份局的自然回合中分别授予真实观星和恂恂，并固定五张可区分的牌堆顶实体 `c0` 至 `c4`。测试席旁观；夹具设定 AI 的技能发动偏好及 `processAI` 排列，选择结果、技能正文、调度和实体移动由原版执行。记录的时机是请求，不代表每个时机均有技能回调。
+
+- 观星准备阶段展示五张：子 `chooseToMove` 在 `After` 返回上 `[c2,c0]`、下 `[c4,c1,c3]`；父 `chooseToGuanxing` 原地反转顶行后返回 `[c0,c2]`，实际牌堆顶仍是 `[c2,c0]`，牌堆底为 `[c4,c1,c3]`。该席随后自然摸到 `c2,c0`。选择开始和父事件结束时，旁观席的 `isKnownBy` 与同实体可见卡牌检查均为 false；父事件结束后观星席成为五张牌的知情者。
+- 恂恂在真实 `phaseDrawBegin1` 从四张牌中选出上 `[c2,c0]`、下 `[c3,c1]`，归堆后自然摸到前两张。夹具调用原版 `filterMove` 和 `filterOk` 探测约束，前两张可移入下行，第三张被拒绝。下行恰两张时可以确认，布局由离线 AI 提交。
+- 另一次观星在子 `chooseToMoveBegin` 由诊断技能显式调用 `cancel()`。子事件以 `Cancelled` 结束，父 `chooseToGuanxing` 返回 `bool: true` 和两个空行。其 `After` 时五张仍在处理区，之后 `orderingDiscard` 把五张弃置。独立的非强制选择使用 AI `processAI` 返回空值，由原版产生 `bool: false`，正常请求 `End`、`After`，两张牌留在手中。
+
+人类交互、在线同步、任意扩展过滤器和 JavaScript 环境隔离需要另行验收。
+
 ## 复现
 
 `hp-cancel.json` 在八席身份局用红桃 4 火杀对两名横置角色验证体力子事件。B 有 1 点护甲，伤害为 2。取消 `changeHpBefore` 保留 B 的 4 点体力、护甲和横置状态，伤害历史仍记录 A 对 B 的 2 点伤害。取消 `changeHpEnd` 时 B 已降到 3 点体力、消耗护甲并解除横置，之后 C 受到 2 点传导伤害。两次取消都触发 `changeHpCancelled`，父伤害的 `damage`、`damageSource`、`damageEnd`、`damageAfter` 继续执行。76 条记录同时包含时机请求、实际回调、实体伤害历史是否已存在及当时的护甲吸收值。
@@ -119,9 +127,10 @@
    node scripts/reference-trace.mjs --scenario phase-queue --check tests/reference/phase-queue.json
    node scripts/reference-trace.mjs --scenario judgment-zones --check tests/reference/judgment-zones.json
    node scripts/reference-trace.mjs --scenario counter-payment --check tests/reference/counter-payment.json
+   node scripts/reference-trace.mjs --scenario ordered-move --check tests/reference/ordered-move.json
    node scripts/reference-trace.mjs --scenario zhongyi-expansion --check tests/reference/zhongyi-expansion.json
    node scripts/reference-trace.mjs --scenario zhongyi-boundaries --check tests/reference/zhongyi-boundaries.json
    node scripts/reference-trace.mjs --scenario zhongyi-transit-death --check tests/reference/zhongyi-transit-death.json
    ```
 
-运行器在隔离浏览器内核对八个共同上游源文件的 LF 归一化 SHA-256。重铸、批量给牌死亡、连环伤害和巧说目标场景还校验 `card/extra.js`，重铸知情状态、批量给牌死亡、拼点和额外忠义场景另核对 `element/card.js`，连环伤害、巧说拼点和巧说目标另校验 `character/yijiang/skill.js`，忠义和巧说目标另校验 `character/standard/skill.js`。多人拼点另外校验鼓舌和胆烈所在的两个技能包、牌区查询和事件步骤编译器。忠义边界同时核对牌区和知情查询、出牌选择及标记弹层涉及的源文件。忠义中转死亡和批量给牌死亡核对牌区查询和负责中断事件步骤的编译器源文件。阶段调度另外校验当先和放权所在的两个技能包、牌区查询和事件步骤编译器。随后执行场景并逐项比较事件和结果。整个检出的版本由第 1 步确认。`--write <path>` 用于重新采集，默认将结果写至标准输出。
+运行器在隔离浏览器内核对八个共同上游源文件的 LF 归一化 SHA-256。重铸、批量给牌死亡、连环伤害和巧说目标场景还校验 `card/extra.js`，重铸知情状态、批量给牌死亡、拼点和额外忠义场景另核对 `element/card.js`，连环伤害、巧说拼点和巧说目标另校验 `character/yijiang/skill.js`，忠义和巧说目标另校验 `character/standard/skill.js`。有序移动场景另核对标准与界限突破技能包、牌实体及牌区查询。多人拼点另外校验鼓舌和胆烈所在的两个技能包、牌区查询和事件步骤编译器。忠义边界同时核对牌区和知情查询、出牌选择及标记弹层涉及的源文件。忠义中转死亡和批量给牌死亡核对牌区查询和负责中断事件步骤的编译器源文件。阶段调度另外校验当先和放权所在的两个技能包、牌区查询和事件步骤编译器。随后执行场景并逐项比较事件和结果。整个检出的版本由第 1 步确认。`--write <path>` 用于重新采集，默认将结果写至标准输出。

@@ -19,6 +19,7 @@ import { checkPhaseScheduling, installPhaseScheduling } from './reference-phase-
 import { checkPhaseQueue, installPhaseQueue } from './reference-phase-queue.mjs';
 import { checkJudgmentZones, installJudgmentZones } from './reference-judgment-zones.mjs';
 import { checkCounterPayment, installCounterPayment } from './reference-counter-payment.mjs';
+import { checkOrderedMove, installOrderedMove } from './reference-ordered-move.mjs';
 
 // This is an optional oracle runner. It needs a running, separate upstream dev
 // server and Playwright; neither is a runtime dependency of the game.
@@ -63,6 +64,7 @@ const descriptions = new Map([
   ['phase-queue', 'insertPhase queue ordering, a nested append, and a queued player who dies'],
   ['judgment-zones', 'delayed-card and judgment-card zones across ordinary and cancelled judgments'],
   ['counter-payment', 'physical wuxie moved or blocked around selection and payment for a delayed card'],
+  ['ordered-move', 'natural guanxing and xunxun ordered choices, privacy, and cancellation'],
   ['damage-callback-cancel', 'damage callback cancellation after HP change for physical sha'],
   ['hp-cancel', 'cancelling changeHpBefore and changeHpEnd during a linked armored fire sha'],
 ]);
@@ -78,12 +80,16 @@ if (argv.length && (argv.length !== 2 || !['--check', '--write'].includes(argv[0
 }
 const isRecast = scenario === 'tiesuo-recast' || scenario === 'recast-callbacks';
 const isBatchRecast = scenario === 'recast-batch' || scenario === 'recast-batch-boundaries';
-if (['zhongyi-expansion', 'zhongyi-boundaries', 'zhongyi-transit-death', 'qiaoshui-targets', 'judgment-zones'].includes(scenario)) {
+if (['zhongyi-expansion', 'zhongyi-boundaries', 'zhongyi-transit-death', 'qiaoshui-targets', 'judgment-zones', 'ordered-move'].includes(scenario)) {
   sourceHashes['/character/standard/skill.js'] = 'ee769399395b93f3d8293cd5b880b8e708864329bd0d79a0b4f0d8bd6f855a9e';
+}
+if (scenario === 'ordered-move') {
+  sourceHashes['/character/refresh/skill.js'] = '655952b182a855e6c2886c9a217eb928357c16bc8b0c83fd1d7127651da0ba39';
+  sourceHashes['/noname/library/element/card.js'] = '5d3a07fadafa1c5661ec197edb8c71f613b3db1129933fdf7d8aa311f5811f8d';
 }
 if (isRecast || isBatchRecast || ['batch-give-death', 'linked-damage', 'qiaoshui-targets'].includes(scenario)) sourceHashes['/card/extra.js'] = '8a73678a49b4fc413d6dc0d506733e594fae619d91dc8013cd441a6cd107c35d';
 if (isBatchRecast || ['batch-give-death', 'recast-callbacks', 'compare', 'compare-boundaries', 'compare-multiple', 'zhongyi-boundaries', 'zhongyi-transit-death'].includes(scenario)) sourceHashes['/noname/library/element/card.js'] = '5d3a07fadafa1c5661ec197edb8c71f613b3db1129933fdf7d8aa311f5811f8d';
-if (isBatchRecast || ['batch-give-death', 'zhongyi-boundaries', 'zhongyi-transit-death', 'phase-scheduling', 'phase-queue', 'compare-multiple', 'counter-payment'].includes(scenario)) {
+if (isBatchRecast || ['batch-give-death', 'zhongyi-boundaries', 'zhongyi-transit-death', 'phase-scheduling', 'phase-queue', 'compare-multiple', 'counter-payment', 'ordered-move'].includes(scenario)) {
   sourceHashes['/noname/get/index.js'] = '8515ed7242d2638720180507a778cb273d8f33743eac12c5237d2f50e805823d';
 }
 if (['batch-give-death', 'zhongyi-transit-death', 'phase-scheduling', 'phase-queue', 'compare-multiple'].includes(scenario)) {
@@ -152,6 +158,8 @@ try {
     await context.addInitScript(installZhongyiTransitDeath);
   } else if (scenario === 'phase-scheduling') {
     await context.addInitScript(installPhaseScheduling);
+  } else if (scenario === 'ordered-move') {
+    await context.addInitScript(installOrderedMove);
   } else if (scenario === 'phase-queue') {
     await context.addInitScript(installPhaseQueue);
   } else if (scenario === 'judgment-zones') {
@@ -377,6 +385,7 @@ try {
     if (scenario === 'compare') await window.__installReferenceCompare({ lib, game, ui, get, _status });
     else if (scenario === 'qiaoshui-targets') await window.__installQiaoshuiTargets({ lib, game, ui, get, _status });
     else if (scenario === 'phase-scheduling') await window.__installPhaseScheduling({ lib, game, ui, get, _status });
+    else if (scenario === 'ordered-move') await window.__installOrderedMove({ lib, game, ui, get, _status });
     else if (scenario === 'phase-queue') window.__installPhaseQueue({ lib, game, ui, _status });
     else fixtures.push('reference_fixture_use');
     for (const skill of fixtures) {
@@ -415,6 +424,7 @@ try {
   if (scenario === 'zhongyi-boundaries') checkZhongyiBoundaries(captured.value);
   if (scenario === 'zhongyi-transit-death') checkZhongyiTransitDeath(captured.value);
   if (scenario === 'phase-scheduling') checkPhaseScheduling(captured.value);
+  if (scenario === 'ordered-move') checkOrderedMove(captured.value);
   if (scenario === 'phase-queue') checkPhaseQueue(captured.value);
   if (scenario === 'judgment-zones') checkJudgmentZones(captured.value);
   if (scenario === 'counter-payment') checkCounterPayment(captured.value);

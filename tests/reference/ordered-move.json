@@ -1,0 +1,785 @@
+{
+  "schema": "noname-reference-trace-v1",
+  "referenceCommit": "c73270948d72949aa80009536b9fd5400767d091",
+  "mode": "identity",
+  "scenario": "natural guanxing and xunxun ordered choices, privacy, and cancellation",
+  "players": 8,
+  "online": false,
+  "trials": [
+    {
+      "name": "guanxing",
+      "submission": "offline processAI",
+      "cards": [
+        [
+          "sha",
+          "spade",
+          3
+        ],
+        [
+          "shan",
+          "heart",
+          4
+        ],
+        [
+          "tao",
+          "diamond",
+          5
+        ],
+        [
+          "jiu",
+          "club",
+          6
+        ],
+        [
+          "wuxie",
+          "spade",
+          7
+        ]
+      ],
+      "initialPile": {
+        "top": [
+          "c0",
+          "c1",
+          "c2",
+          "c3",
+          "c4"
+        ],
+        "bottom": [
+          null,
+          null,
+          null
+        ]
+      },
+      "choiceStart": {
+        "parent": "chooseToGuanxing",
+        "forced": false,
+        "mine": false,
+        "list": [
+          [
+            "牌堆顶",
+            [
+              "c0",
+              "c1",
+              "c2",
+              "c3",
+              "c4"
+            ]
+          ],
+          [
+            "牌堆底",
+            []
+          ]
+        ],
+        "privacy": {
+          "knownToObserver": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "knownToActor": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "visibleToObserver": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "observerIsActor": false
+        }
+      },
+      "choiceResult": {
+        "bool": true,
+        "moved": [
+          [
+            "c2",
+            "c0"
+          ],
+          [
+            "c4",
+            "c1",
+            "c3"
+          ]
+        ]
+      },
+      "choiceEndPrivacy": {
+        "knownToObserver": [
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "knownToActor": [
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "visibleToObserver": [
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "observerIsActor": false
+      },
+      "parentResult": {
+        "bool": true,
+        "moved": [
+          [
+            "c0",
+            "c2"
+          ],
+          [
+            "c4",
+            "c1",
+            "c3"
+          ]
+        ],
+        "pile": {
+          "top": [
+            "c2",
+            "c0",
+            null,
+            null,
+            null
+          ],
+          "bottom": [
+            "c4",
+            "c1",
+            "c3"
+          ]
+        },
+        "privacy": {
+          "knownToObserver": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "knownToActor": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "visibleToObserver": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "observerIsActor": false
+        }
+      },
+      "afterDraw": {
+        "hand": [
+          "c2",
+          "c0"
+        ],
+        "positions": [
+          "h",
+          "c",
+          "h",
+          "c",
+          "c"
+        ],
+        "pile": {
+          "top": [
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "bottom": [
+            "c4",
+            "c1",
+            "c3"
+          ]
+        },
+        "privacy": {
+          "knownToObserver": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "knownToActor": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "visibleToObserver": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "observerIsActor": false
+        }
+      }
+    },
+    {
+      "name": "xunxun",
+      "submission": "offline processAI",
+      "cards": [
+        [
+          "sha",
+          "spade",
+          3
+        ],
+        [
+          "shan",
+          "heart",
+          4
+        ],
+        [
+          "tao",
+          "diamond",
+          5
+        ],
+        [
+          "jiu",
+          "club",
+          6
+        ],
+        [
+          "wuxie",
+          "spade",
+          7
+        ]
+      ],
+      "initialPile": {
+        "top": [
+          "c0",
+          "c1",
+          "c2",
+          "c3",
+          "c4"
+        ],
+        "bottom": [
+          null,
+          null,
+          null
+        ]
+      },
+      "choiceStart": {
+        "parent": "xunxun",
+        "forced": true,
+        "mine": false,
+        "list": [
+          [
+            "牌堆顶",
+            [
+              "c0",
+              "c1",
+              "c2",
+              "c3"
+            ]
+          ],
+          [
+            "牌堆底",
+            []
+          ]
+        ],
+        "privacy": {
+          "knownToObserver": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "knownToActor": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "visibleToObserver": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "observerIsActor": false
+        }
+      },
+      "probes": [
+        {
+          "operation": "confirm",
+          "count": 0,
+          "allowed": false
+        },
+        {
+          "operation": "move",
+          "card": "c3",
+          "count": 0,
+          "allowed": true
+        },
+        {
+          "operation": "confirm",
+          "count": 1,
+          "allowed": false
+        },
+        {
+          "operation": "move",
+          "card": "c1",
+          "count": 1,
+          "allowed": true
+        },
+        {
+          "operation": "confirm",
+          "count": 2,
+          "allowed": true
+        },
+        {
+          "operation": "move",
+          "card": "c2",
+          "count": 2,
+          "allowed": false
+        },
+        {
+          "operation": "confirm",
+          "count": 2,
+          "allowed": true
+        }
+      ],
+      "choiceResult": {
+        "bool": true,
+        "moved": [
+          [
+            "c2",
+            "c0"
+          ],
+          [
+            "c3",
+            "c1"
+          ]
+        ]
+      },
+      "choiceEndPrivacy": {
+        "knownToObserver": [
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "knownToActor": [
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "visibleToObserver": [
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "observerIsActor": false
+      },
+      "skillPile": {
+        "top": [
+          "c2",
+          "c0",
+          "c4",
+          null,
+          null
+        ],
+        "bottom": [
+          null,
+          "c3",
+          "c1"
+        ]
+      },
+      "afterDraw": {
+        "hand": [
+          "c2",
+          "c0"
+        ],
+        "positions": [
+          "h",
+          "c",
+          "h",
+          "c",
+          "c"
+        ],
+        "pile": {
+          "top": [
+            "c4",
+            null,
+            null,
+            null,
+            null
+          ],
+          "bottom": [
+            null,
+            "c3",
+            "c1"
+          ]
+        },
+        "privacy": {
+          "knownToObserver": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "knownToActor": [
+            true,
+            false,
+            true,
+            false,
+            false
+          ],
+          "visibleToObserver": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "observerIsActor": false
+        }
+      }
+    },
+    {
+      "name": "guanxing-cancel",
+      "submission": "event.cancel at chooseToMoveBegin",
+      "cards": [
+        [
+          "sha",
+          "spade",
+          3
+        ],
+        [
+          "shan",
+          "heart",
+          4
+        ],
+        [
+          "tao",
+          "diamond",
+          5
+        ],
+        [
+          "jiu",
+          "club",
+          6
+        ],
+        [
+          "wuxie",
+          "spade",
+          7
+        ]
+      ],
+      "initialPile": {
+        "top": [
+          "c0",
+          "c1",
+          "c2",
+          "c3",
+          "c4"
+        ],
+        "bottom": [
+          null,
+          null,
+          null
+        ]
+      },
+      "choiceStart": {
+        "parent": "chooseToGuanxing",
+        "forced": false,
+        "mine": false,
+        "list": [
+          [
+            "牌堆顶",
+            [
+              "c0",
+              "c1",
+              "c2",
+              "c3",
+              "c4"
+            ]
+          ],
+          [
+            "牌堆底",
+            []
+          ]
+        ],
+        "privacy": {
+          "knownToObserver": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "knownToActor": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "visibleToObserver": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "observerIsActor": false
+        }
+      },
+      "parentResult": {
+        "bool": true,
+        "moved": [
+          [],
+          []
+        ],
+        "pile": {
+          "top": [
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "bottom": [
+            null,
+            null,
+            null
+          ]
+        },
+        "privacy": {
+          "knownToObserver": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "knownToActor": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "visibleToObserver": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "observerIsActor": false
+        }
+      },
+      "afterDraw": {
+        "hand": [],
+        "positions": [
+          "d",
+          "d",
+          "d",
+          "d",
+          "d"
+        ],
+        "pile": {
+          "top": [
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "bottom": [
+            null,
+            null,
+            null
+          ]
+        },
+        "privacy": {
+          "knownToObserver": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "knownToActor": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "visibleToObserver": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "observerIsActor": false
+        }
+      }
+    }
+  ],
+  "falseChoice": {
+    "submission": "offline processAI returns null",
+    "forced": false,
+    "mine": false,
+    "events": [
+      [
+        "chooseToMoveBefore",
+        "reference_order_finish",
+        null
+      ],
+      [
+        "chooseToMoveBegin",
+        "reference_order_finish",
+        null
+      ],
+      [
+        "chooseToMoveEnd",
+        "reference_order_finish",
+        false
+      ],
+      [
+        "chooseToMoveAfter",
+        "reference_order_finish",
+        false
+      ]
+    ],
+    "bool": false,
+    "cancelled": false,
+    "positions": [
+      "h",
+      "h"
+    ],
+    "inHand": [
+      true,
+      true
+    ]
+  },
+  "eventColumns": [
+    "sample",
+    "timing",
+    "event",
+    "parent",
+    "bool",
+    "moved",
+    "positions"
+  ],
+  "events": [
+    ["guanxing","phaseZhunbeiBefore","phaseZhunbei","phase",null,null,["c","c","c","c","c"]],
+    ["guanxing","phaseZhunbeiBegin","phaseZhunbei","phase",null,null,["c","c","c","c","c"]],
+    ["guanxing","guanxingBefore","guanxing","trigger",null,null,["c","c","c","c","c"]],
+    ["guanxing","guanxingBegin","guanxing","trigger",null,null,["c","c","c","c","c"]],
+    ["guanxing","chooseToGuanxingBefore","chooseToGuanxing","guanxing",null,null,["c","c","c","c","c"]],
+    ["guanxing","chooseToGuanxingBegin","chooseToGuanxing","guanxing",null,null,["c","c","c","c","c"]],
+    ["guanxing","cardsGotoOrderingBefore","cardsGotoOrdering","chooseToGuanxing",null,null,[null,null,null,null,null]],
+    ["guanxing","cardsGotoOrderingBegin","cardsGotoOrdering","chooseToGuanxing",null,null,[null,null,null,null,null]],
+    ["guanxing","cardsGotoOrderingEnd","cardsGotoOrdering","chooseToGuanxing",null,null,["o","o","o","o","o"]],
+    ["guanxing","cardsGotoOrderingAfter","cardsGotoOrdering","chooseToGuanxing",null,null,["o","o","o","o","o"]],
+    ["guanxing","chooseToMoveBefore","chooseToMove","chooseToGuanxing",null,null,["o","o","o","o","o"]],
+    ["guanxing","chooseToMoveBegin","chooseToMove","chooseToGuanxing",null,null,["o","o","o","o","o"]],
+    ["guanxing","chooseToMoveEnd","chooseToMove","chooseToGuanxing",true,[["c2","c0"],["c4","c1","c3"]],["o","o","o","o","o"]],
+    ["guanxing","chooseToMoveAfter","chooseToMove","chooseToGuanxing",true,[["c2","c0"],["c4","c1","c3"]],["o","o","o","o","o"]],
+    ["guanxing","cardsGotoPileBefore","cardsGotoPile","chooseToGuanxing",null,null,["o","o","o","o","o"]],
+    ["guanxing","cardsGotoPileBegin","cardsGotoPile","chooseToGuanxing",null,null,["o","o","o","o","o"]],
+    ["guanxing","cardsGotoPileEnd","cardsGotoPile","chooseToGuanxing",null,null,["c","c","c","c","c"]],
+    ["guanxing","cardsGotoPileAfter","cardsGotoPile","chooseToGuanxing",null,null,["c","c","c","c","c"]],
+    ["guanxing","chooseToGuanxingEnd","chooseToGuanxing","guanxing",true,[["c0","c2"],["c4","c1","c3"]],["c","c","c","c","c"]],
+    ["guanxing","chooseToGuanxingAfter","chooseToGuanxing","guanxing",true,[["c0","c2"],["c4","c1","c3"]],["c","c","c","c","c"]],
+    ["guanxing","guanxingEnd","guanxing","trigger",null,null,["c","c","c","c","c"]],
+    ["guanxing","guanxingAfter","guanxing","trigger",null,null,["c","c","c","c","c"]],
+    ["guanxing","phaseZhunbeiEnd","phaseZhunbei","phase",null,null,["c","c","c","c","c"]],
+    ["guanxing","phaseZhunbeiAfter","phaseZhunbei","phase",null,null,["c","c","c","c","c"]],
+    ["guanxing","phaseDrawBefore","phaseDraw","phase",null,null,["c","c","c","c","c"]],
+    ["guanxing","phaseDrawBegin","phaseDraw","phase",null,null,["c","c","c","c","c"]],
+    ["guanxing","phaseDrawBegin1","phaseDraw","phase",null,null,["c","c","c","c","c"]],
+    ["guanxing","phaseDrawEnd","phaseDraw","phase",null,null,["h","c","h","c","c"]],
+    ["guanxing","phaseDrawAfter","phaseDraw","phase",null,null,["h","c","h","c","c"]],
+    ["xunxun","phaseZhunbeiBefore","phaseZhunbei","phase",null,null,["c","c","c","c","c"]],
+    ["xunxun","phaseZhunbeiBegin","phaseZhunbei","phase",null,null,["c","c","c","c","c"]],
+    ["xunxun","phaseZhunbeiEnd","phaseZhunbei","phase",null,null,["c","c","c","c","c"]],
+    ["xunxun","phaseZhunbeiAfter","phaseZhunbei","phase",null,null,["c","c","c","c","c"]],
+    ["xunxun","phaseDrawBefore","phaseDraw","phase",null,null,["c","c","c","c","c"]],
+    ["xunxun","phaseDrawBegin","phaseDraw","phase",null,null,["c","c","c","c","c"]],
+    ["xunxun","phaseDrawBegin1","phaseDraw","phase",null,null,["c","c","c","c","c"]],
+    ["xunxun","xunxunBefore","xunxun","trigger",null,null,["c","c","c","c","c"]],
+    ["xunxun","xunxunBegin","xunxun","trigger",null,null,["c","c","c","c","c"]],
+    ["xunxun","cardsGotoOrderingBefore","cardsGotoOrdering","xunxun",null,null,["c","c","c","c","c"]],
+    ["xunxun","cardsGotoOrderingBegin","cardsGotoOrdering","xunxun",null,null,["c","c","c","c","c"]],
+    ["xunxun","cardsGotoOrderingEnd","cardsGotoOrdering","xunxun",null,null,["o","o","o","o","c"]],
+    ["xunxun","cardsGotoOrderingAfter","cardsGotoOrdering","xunxun",null,null,["o","o","o","o","c"]],
+    ["xunxun","chooseToMoveBefore","chooseToMove","xunxun",null,null,["o","o","o","o","c"]],
+    ["xunxun","chooseToMoveBegin","chooseToMove","xunxun",null,null,["o","o","o","o","c"]],
+    ["xunxun","chooseToMoveEnd","chooseToMove","xunxun",true,[["c2","c0"],["c3","c1"]],["o","o","o","o","c"]],
+    ["xunxun","chooseToMoveAfter","chooseToMove","xunxun",true,[["c2","c0"],["c3","c1"]],["o","o","o","o","c"]],
+    ["xunxun","cardsGotoPileBefore","cardsGotoPile","xunxun",null,null,["o","o","o","o","c"]],
+    ["xunxun","cardsGotoPileBegin","cardsGotoPile","xunxun",null,null,["o","o","o","o","c"]],
+    ["xunxun","cardsGotoPileEnd","cardsGotoPile","xunxun",null,null,["c","c","c","c","c"]],
+    ["xunxun","cardsGotoPileAfter","cardsGotoPile","xunxun",null,null,["c","c","c","c","c"]],
+    ["xunxun","xunxunEnd","xunxun","trigger",null,null,["c","c","c","c","c"]],
+    ["xunxun","xunxunAfter","xunxun","trigger",null,null,["c","c","c","c","c"]],
+    ["xunxun","phaseDrawEnd","phaseDraw","phase",null,null,["h","c","h","c","c"]],
+    ["xunxun","phaseDrawAfter","phaseDraw","phase",null,null,["h","c","h","c","c"]],
+    ["guanxing-cancel","phaseZhunbeiBefore","phaseZhunbei","phase",null,null,["c","c","c","c","c"]],
+    ["guanxing-cancel","phaseZhunbeiBegin","phaseZhunbei","phase",null,null,["c","c","c","c","c"]],
+    ["guanxing-cancel","guanxingBefore","guanxing","trigger",null,null,["c","c","c","c","c"]],
+    ["guanxing-cancel","guanxingBegin","guanxing","trigger",null,null,["c","c","c","c","c"]],
+    ["guanxing-cancel","chooseToGuanxingBefore","chooseToGuanxing","guanxing",null,null,["c","c","c","c","c"]],
+    ["guanxing-cancel","chooseToGuanxingBegin","chooseToGuanxing","guanxing",null,null,["c","c","c","c","c"]],
+    ["guanxing-cancel","cardsGotoOrderingBefore","cardsGotoOrdering","chooseToGuanxing",null,null,[null,null,null,null,null]],
+    ["guanxing-cancel","cardsGotoOrderingBegin","cardsGotoOrdering","chooseToGuanxing",null,null,[null,null,null,null,null]],
+    ["guanxing-cancel","cardsGotoOrderingEnd","cardsGotoOrdering","chooseToGuanxing",null,null,["o","o","o","o","o"]],
+    ["guanxing-cancel","cardsGotoOrderingAfter","cardsGotoOrdering","chooseToGuanxing",null,null,["o","o","o","o","o"]],
+    ["guanxing-cancel","chooseToMoveBefore","chooseToMove","chooseToGuanxing",null,null,["o","o","o","o","o"]],
+    ["guanxing-cancel","chooseToMoveBegin","chooseToMove","chooseToGuanxing",null,null,["o","o","o","o","o"]],
+    ["guanxing-cancel","chooseToMoveCancelled","chooseToMove","chooseToGuanxing",null,null,["o","o","o","o","o"]],
+    ["guanxing-cancel","chooseToGuanxingEnd","chooseToGuanxing","guanxing",true,[[],[]],["o","o","o","o","o"]],
+    ["guanxing-cancel","chooseToGuanxingAfter","chooseToGuanxing","guanxing",true,[[],[]],["o","o","o","o","o"]],
+    ["guanxing-cancel","cardsDiscardBefore","cardsDiscard","orderingDiscard",null,null,["o","o","o","o","o"]],
+    ["guanxing-cancel","cardsDiscardBegin","cardsDiscard","orderingDiscard",null,null,["o","o","o","o","o"]],
+    ["guanxing-cancel","cardsDiscardEnd","cardsDiscard","orderingDiscard",null,null,["d","d","d","d","d"]],
+    ["guanxing-cancel","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,null,["d","d","d","d","d"]],
+    ["guanxing-cancel","guanxingEnd","guanxing","trigger",null,null,["d","d","d","d","d"]],
+    ["guanxing-cancel","guanxingAfter","guanxing","trigger",null,null,["d","d","d","d","d"]],
+    ["guanxing-cancel","phaseZhunbeiEnd","phaseZhunbei","phase",null,null,["d","d","d","d","d"]],
+    ["guanxing-cancel","phaseZhunbeiAfter","phaseZhunbei","phase",null,null,["d","d","d","d","d"]],
+    ["guanxing-cancel","phaseDrawBefore","phaseDraw","phase",null,null,["d","d","d","d","d"]],
+    ["guanxing-cancel","phaseDrawBegin","phaseDraw","phase",null,null,["d","d","d","d","d"]],
+    ["guanxing-cancel","phaseDrawBegin1","phaseDraw","phase",null,null,["d","d","d","d","d"]],
+    ["guanxing-cancel","phaseDrawEnd","phaseDraw","phase",null,null,["d","d","d","d","d"]],
+    ["guanxing-cancel","phaseDrawAfter","phaseDraw","phase",null,null,["d","d","d","d","d"]]
+  ]
+}
