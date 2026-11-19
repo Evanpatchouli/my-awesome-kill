@@ -67,6 +67,16 @@ export interface Branch {
   minTargets: number
   maxTargets: number
 }
+export interface MoveStep {
+  card: number
+  row: number
+  index: number
+}
+export interface MoveChoiceView {
+  prompt: string
+  rows: { label: string; cards: number[]; min: number; max: number }[]
+  allowDecline: boolean
+}
 export type Action =
   | { type: 'endPlay' }
   | { type: 'playCard'; card: number; targets: number[] }
@@ -74,6 +84,7 @@ export type Action =
   | { type: 'choose'; event: number; card: number | null }
   | { type: 'discard'; event: number; cards: number[] }
   | { type: 'select'; event: number; branch: number; cards: number[]; targets: number[] }
+  | { type: 'moveCards'; event: number; moves: MoveStep[] | null }
   | { type: 'playVirtual'; kind: string; cards: number[]; targets: number[] }
   | { type: 'useSkill'; skill: string; cards: number[]; targets: number[] }
   | { type: 'activateSkill'; registration: number; cards: number[]; targets: number[] }
@@ -110,6 +121,7 @@ export interface Choice {
   counter?: { cardKind: string; source: number | null; target: number; negated: boolean } | null
   compare?: CompareParticipants
   compareGroup?: CompareGroup
+  moveCards?: MoveChoiceView
 }
 interface EventRecord {
   id: number

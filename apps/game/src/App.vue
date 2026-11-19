@@ -149,6 +149,7 @@ onUnmounted(() => {
         v-else-if="route.path === '/battle' && game.view"
         :view="game.view"
         :locked="game.locked"
+        :error="game.error"
         :log="game.log"
         :feedback="game.feedback"
         :save-error="game.saveError"
@@ -218,7 +219,7 @@ onUnmounted(() => {
         </div>
       </section>
     </template>
-    <p v-if="game.error && route.path === '/battle'" role="alert" class="game-error">
+    <p v-if="game.error && route.path === '/battle' && !game.view?.choice?.moveCards" role="alert" class="game-error">
       {{ game.error }}
     </p>
   </main>

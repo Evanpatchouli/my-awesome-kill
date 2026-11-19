@@ -311,32 +311,50 @@ try {
   await page.locator('.classic-options button').filter({ hasText: '观星' }).click()
   await page.locator('.classic-control-row button').filter({ hasText: '确认' }).click()
   await page.clock.runFor(1000)
-  await page.locator('.classic-options button').filter({ hasText: '牌堆顶' }).click()
-  assert.ok(
-    (await page.locator('.classic-pool button').count()) >= 2,
-    'private preview is visible to its owner',
-  )
-  assert.equal(
-    await page.locator('.classic-revealed').count(),
-    0,
-    'private preview is not shown as public cards',
-  )
-  await shot('private-choice')
-  await page.locator('.classic-pool button').first().click()
-  await page.locator('.classic-control-row button').filter({ hasText: '确认' }).click()
-  await page.clock.runFor(1000)
-  const bottom = page.locator('.classic-options button').filter({ hasText: '牌堆底' })
-  if (await bottom.count()) {
-    await bottom.click()
-    for (const button of await page.locator('.classic-pool button').all()) await button.click()
-    await page.locator('.classic-control-row button').filter({ hasText: '确认' }).click()
-    await page.clock.runFor(1000)
+  const arrangement = page.getByRole('dialog', { name: '观星' })
+  await arrangement.waitFor()
+  const topRow = arrangement.locator('[data-row="0"]')
+  const bottomRow = arrangement.locator('[data-row="1"]')
+  const rowCards = (row) => row.locator('button[data-card-id]')
+  const ids = async (row) => rowCards(row).evaluateAll((cards) => cards.map((card) => Number(card.dataset.cardId)))
+  const initialPreview = await ids(topRow)
+  assert.ok(initialPreview.length >= 2, 'the acting seat sees the private preview')
+  assert.equal(await page.locator('.classic-revealed').count(), 0)
+  const sendToBottom = async () => {
+    await rowCards(topRow).first().click()
+    await bottomRow.getByRole('button', { name: '移动到牌堆底', exact: true }).click()
   }
-  assert.notEqual(
-    await board.getAttribute('data-choice-kind'),
-    'content',
-    'private ordering completes',
-  )
+  await sendToBottom()
+  assert.deepEqual(await ids(bottomRow), initialPreview.slice(0, 1))
+  await arrangement.getByRole('button', { name: '撤销移动', exact: true }).click()
+  assert.deepEqual(await ids(topRow), initialPreview)
+  // Undo preserves the selected card, so move it to the bottom once more.
+  await bottomRow.getByRole('button', { name: '移动到牌堆底', exact: true }).click()
+  if (await rowCards(topRow).count() > 1) {
+    const before = await ids(topRow)
+    await rowCards(topRow).last().click()
+    await topRow.getByRole('combobox', { name: '牌堆顶插入位置' }).selectOption('0')
+    await topRow.getByRole('button', { name: '移动到牌堆顶', exact: true }).click()
+    assert.deepEqual(await ids(topRow), [before.at(-1), ...before.slice(0, -1)])
+  }
+  const expectedDraw = (await ids(topRow)).slice(0, 2)
+  assert.ok(expectedDraw.length > 0)
+  await shot('private-choice')
+  await page.setViewportSize({ width: 640, height: 272 })
+  const confirmOrder = arrangement.getByRole('button', { name: '确认', exact: true })
+  const confirmBox = await confirmOrder.boundingBox()
+  assert.ok(confirmBox && confirmBox.x >= 0 && confirmBox.y >= 0 &&
+    confirmBox.x + confirmBox.width <= 640 && confirmBox.y + confirmBox.height <= 272)
+  for (const row of [topRow, bottomRow]) {
+    const first = await rowCards(row).first().boundingBox()
+    assert.ok(first && first.y >= 0 && first.y + first.height < confirmBox.y)
+  }
+  await shot('private-choice-short-landscape')
+  await confirmOrder.click()
+  await page.clock.runFor(1000)
+  assert.equal(await arrangement.count(), 0, 'the private ordering completes')
+  for (const id of expectedDraw) assert.ok(await page.locator(`[data-hand] [data-card-id="${id}"]`).count())
+  await page.setViewportSize({ width: 844, height: 390 })
   await page.getByRole('button', { name: '返回', exact: true }).click()
   await page.waitForURL('**/classic')
   await page.getByRole('button', { name: '开始对局' }).click()

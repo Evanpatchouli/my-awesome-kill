@@ -5,6 +5,7 @@ import CardFace from './CardFace.vue'
 import ClassicCompare from './ClassicCompare.vue'
 import HealthMeter from './HealthMeter.vue'
 import ClassicSeatZones from './ClassicSeatZones.vue'
+import MoveChoice from './MoveChoice.vue'
 import { heroPortrait } from './battleArt'
 import {
   counterPrompt,
@@ -17,7 +18,7 @@ import {
   sides,
   skillName,
 } from './classicProtocol'
-import type { Action, Branch, Entity, SeatView, TableView } from './classicProtocol'
+import type { Action, Branch, Entity, MoveStep, SeatView, TableView } from './classicProtocol'
 import type { FeedbackEvent } from './battleMotion'
 import './classicBattle.css'
 
@@ -27,6 +28,7 @@ const props = defineProps<{
   log: string[]
   feedback: { revision: number; events: FeedbackEvent[] }
   saveError: boolean
+  error: string
 }>()
 const emit = defineEmits<{
   act: [action: Action, version: number]
@@ -42,7 +44,7 @@ const selectedMode = ref<'card' | 'virtual' | 'skill' | 'active' | 'choice' | nu
 const selectedPlay = ref<number | null>(null)
 const me = computed(() => props.view.seats.find((seat) => seat.id === props.view.humanSeat))
 const others = computed(() => props.view.seats.filter((seat) => seat.id !== props.view.humanSeat))
-const active = computed(
+const inputReady = computed(
   () =>
     !props.locked &&
     props.view.winner === null &&
@@ -54,6 +56,11 @@ const resolving = computed(() => props.view.resolving.map((card) => faceOf(props
 const selectedHand = computed(() => hand.value.find((card) => card.id === selectedCard.value))
 const choice = computed(() =>
   props.view.choice?.seat === props.view.humanSeat ? props.view.choice : null,
+)
+const moveChoice = computed(() => choice.value?.moveCards)
+const active = computed(() => inputReady.value && !moveChoice.value)
+const moveChoiceCards = computed(() =>
+  (props.view.privateChoiceCards ?? []).map((card) => faceOf(props.view, card)),
 )
 const cardActions = computed(() =>
   props.view.actions.filter(
@@ -285,6 +292,11 @@ function confirm() {
 function recast() {
   if (active.value && selectedRecast.value) emit('act', selectedRecast.value, props.view.version)
 }
+function confirmMove(moves: MoveStep[] | null) {
+  if (inputReady.value && choice.value?.moveCards) {
+    emit('act', { type: 'moveCards', event: choice.value.event, moves }, props.view.version)
+  }
+}
 function pass() {
   if (
     active.value &&
@@ -323,7 +335,8 @@ function canPickCard(id: number) {
     :data-revision="view.version"
     :data-waiting-for="view.waitingFor"
     :data-phase="view.turn?.phase"
-    :data-choice-kind="choice?.kind"
+    :data-choice-kind="moveChoice ? 'move' : choice?.kind"
+    :inert="!!moveChoice"
     :data-result="view.winner ?? (view.drawn ? 'draw' : null)"
     data-battle-table
   >
@@ -577,4 +590,15 @@ function canPickCard(id: number) {
       </div>
     </div>
   </section>
+  <Teleport to="body">
+    <MoveChoice
+      v-if="moveChoice"
+      :key="choice?.event"
+      :request="moveChoice"
+      :cards="moveChoiceCards"
+      :disabled="!inputReady"
+      :error="error"
+      @confirm="confirmMove"
+    />
+  </Teleport>
 </template>
