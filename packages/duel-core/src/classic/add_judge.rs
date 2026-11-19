@@ -1,5 +1,5 @@
 use crate::scheduler::Outcome;
-use crate::{Card, CardId, CardKind, EventKind, Game, Program, Resolution, SeatId, Zone};
+use crate::{Card, CardId, CardKind, EventKind, Game, Program, Resolution, SeatId};
 
 #[derive(Clone, Copy)]
 enum Stage {
@@ -61,28 +61,23 @@ impl DelayedPlacement {
 }
 
 impl Game {
-    fn find_held_judge_material(&self, id: CardId) -> Option<(SeatId, Zone, Card)> {
-        self.seats.iter().find_map(|player| {
-            [Zone::Hand, Zone::Equipment, Zone::Judgment]
-                .into_iter()
-                .find_map(|zone| {
-                    player
-                        .zone(zone)
-                        .iter()
-                        .find(|card| card.id == id)
-                        .map(|&card| (player.id, zone, card))
-                })
-        })
-    }
-
     pub(crate) fn add_judge_material(&self, id: CardId) -> Option<Card> {
-        self.find_held_judge_material(id)
+        self.held_card_location(id)
             .map(|(_, _, card)| card)
-            .or_else(|| self.resolving.iter().find(|card| card.id == id).copied())
+            .or_else(|| {
+                self.resolving
+                    .iter()
+                    .chain(&self.transferring)
+                    .chain(&self.discard)
+                    .chain(self.classic.iter().flat_map(|table| &table.deck))
+                    .find(|card| card.id == id)
+                    .copied()
+            })
     }
 
     pub(crate) fn resolve_delayed_placement(&mut self, placement: DelayedPlacement) {
         if self.resolving.contains(&placement.material)
+            && self.is_in(placement.target)
             && self.can_add_judge(placement.target, placement.kind)
         {
             self.scheduler.next(Program::AddJudge(Flow::new(
@@ -92,16 +87,6 @@ impl Game {
             )));
         }
         self.finish();
-    }
-
-    fn take_loose_judge_material(&mut self, card: Card) -> Option<Card> {
-        if self.resolving.contains(&card) {
-            return Some(self.take_resolving(card.id));
-        }
-        [&mut self.transferring, &mut self.discard]
-            .into_iter()
-            .find(|pile| pile.contains(&card))
-            .map(|pile| Self::remove_card(pile, card.id))
     }
 
     pub(crate) fn resolve_add_judge(&mut self, mut flow: Flow, child: Option<Outcome<Resolution>>) {
@@ -124,9 +109,7 @@ impl Game {
                         continue;
                     }
                     flow.stage = AfterLoss;
-                    if let Some((owner, zone, card)) =
-                        self.find_held_judge_material(flow.material.id)
-                    {
+                    if let Some((owner, zone, card)) = self.held_card_location(flow.material.id) {
                         self.known_to_all.insert(card.id);
                         self.scheduler
                             .next(self.lose_to_judge_special(owner, zone, card));
@@ -138,7 +121,7 @@ impl Game {
                 AfterLoss => {
                     // canAddJudge was the caller's check. The addJudge body can
                     // place into an area disabled while that child was pending.
-                    if let Some(card) = self.take_loose_judge_material(flow.material) {
+                    if let Some(card) = self.take_unowned_card(flow.material) {
                         self.put_in_judgment(flow.seat, card, flow.kind);
                     }
                     flow.stage = End;

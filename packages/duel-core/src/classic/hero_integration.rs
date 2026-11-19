@@ -14,10 +14,22 @@ pub(crate) enum Cleanup {
         cards: Vec<Card>,
     },
     Cards {
-        owner: EventId,
         cards: Vec<Card>,
-        moved: bool,
+        stage: DiscardStage,
     },
+    MoveToDiscard(Card),
+}
+
+#[derive(Clone, Copy)]
+pub(crate) enum DiscardStage {
+    Before,
+    Begin,
+    Apply,
+    End,
+    After,
+    Finish,
+    Cancel,
+    FinishCancelled,
 }
 
 impl Cleanup {
@@ -31,6 +43,7 @@ impl Cleanup {
             Self::Cards { cards, .. } => EventKind::CardsDiscard {
                 amount: cards.len(),
             },
+            Self::MoveToDiscard(card) => EventKind::Discard { card: *card },
         }
     }
 }
@@ -145,7 +158,11 @@ impl Game {
         }
     }
 
-    pub(crate) fn resolve_judgment_cleanup(&mut self, cleanup: Cleanup) {
+    pub(crate) fn resolve_judgment_cleanup(
+        &mut self,
+        cleanup: Cleanup,
+        child: Option<Outcome<Resolution>>,
+    ) {
         match cleanup {
             Cleanup::Place {
                 owner,
@@ -167,49 +184,74 @@ impl Game {
                 if !cards.is_empty() {
                     self.scheduler
                         .next(Program::JudgmentCleanup(Cleanup::Cards {
-                            owner,
                             cards,
-                            moved: false,
+                            stage: DiscardStage::Before,
                         }));
                 }
                 self.finish();
             }
-            Cleanup::Cards {
-                owner,
-                cards,
-                moved: false,
-            } => {
-                let cards: Vec<_> = cards
-                    .into_iter()
-                    .filter(|card| {
-                        self.resolving.contains(card)
-                            && self.ordering_owners.get(&card.id) == Some(&owner)
-                    })
-                    .collect();
-                for &card in &cards {
-                    self.next(EventKind::Discard { card });
-                }
-                self.scheduler
-                    .replace_current(Program::JudgmentCleanup(Cleanup::Cards {
-                        owner,
-                        cards,
-                        moved: true,
-                    }));
-            }
-            Cleanup::Cards {
-                cards, moved: true, ..
-            } => {
-                if !cards.is_empty() {
-                    self.queue_timing(
-                        "cardsDiscardAfter",
-                        None,
-                        None,
-                        None,
-                        cards.len() as u16,
-                        &cards,
-                    );
+            Cleanup::MoveToDiscard(card) => {
+                let physical = if let Some((seat, zone, _)) = self.held_card_location(card.id) {
+                    Some(self.take_card(seat, zone, card.id))
+                } else {
+                    self.take_unowned_card(card)
+                };
+                if let Some(physical) = physical {
+                    self.discard.push(physical);
                 }
                 self.finish();
+            }
+            Cleanup::Cards { cards, stage } => {
+                self.resolve_ordering_cards_discard(cards, stage, child)
+            }
+        }
+    }
+
+    fn resolve_ordering_cards_discard(
+        &mut self,
+        cards: Vec<Card>,
+        mut stage: DiscardStage,
+        child: Option<Outcome<Resolution>>,
+    ) {
+        use DiscardStage::*;
+        if matches!(child, Some(Outcome::Cancelled)) && !matches!(stage, FinishCancelled) {
+            stage = Cancel;
+        }
+        loop {
+            let (timing, next) = match stage {
+                Before => ("cardsDiscardBefore", Begin),
+                Begin => ("cardsDiscardBegin", Apply),
+                Apply => {
+                    // orderingDiscard selected its list before this event was created.
+                    // cardsDiscard acts on those same entities, even after a Before hook moved one.
+                    for &card in &cards {
+                        self.scheduler
+                            .next(Program::JudgmentCleanup(Cleanup::MoveToDiscard(card)));
+                    }
+                    self.scheduler
+                        .replace_current(Program::JudgmentCleanup(Cleanup::Cards {
+                            cards,
+                            stage: End,
+                        }));
+                    return;
+                }
+                End => ("cardsDiscardEnd", After),
+                After => ("cardsDiscardAfter", Finish),
+                Cancel => ("cardsDiscardCancelled", FinishCancelled),
+                Finish => {
+                    self.finish();
+                    return;
+                }
+                FinishCancelled => {
+                    self.scheduler.end(Outcome::Cancelled);
+                    return;
+                }
+            };
+            stage = next;
+            if self.queue_timing(timing, None, None, None, cards.len() as u16, &cards) {
+                self.scheduler
+                    .replace_current(Program::JudgmentCleanup(Cleanup::Cards { cards, stage }));
+                return;
             }
         }
     }

@@ -1,4 +1,7 @@
-use crate::{CardId, Game, SeatId};
+use crate::{Card, CardId, Game, SeatId, Zone};
+
+pub(crate) const HELD_ZONES: [Zone; 4] =
+    [Zone::Hand, Zone::Equipment, Zone::Judgment, Zone::Expansion];
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum CardZone {
@@ -20,6 +23,33 @@ pub struct CardLocation {
 }
 
 impl Game {
+    pub(crate) fn held_card_location(&self, id: CardId) -> Option<(SeatId, Zone, Card)> {
+        self.seats.iter().find_map(|player| {
+            HELD_ZONES.into_iter().find_map(|zone| {
+                player
+                    .zone(zone)
+                    .iter()
+                    .find(|card| card.id == id)
+                    .map(|&card| (player.id, zone, card))
+            })
+        })
+    }
+
+    pub(crate) fn take_unowned_card(&mut self, card: Card) -> Option<Card> {
+        if self.resolving.contains(&card) {
+            return Some(self.take_resolving(card.id));
+        }
+        [&mut self.transferring, &mut self.discard]
+            .into_iter()
+            .find(|pile| pile.contains(&card))
+            .map(|pile| Self::remove_card(pile, card.id))
+            .or_else(|| {
+                let deck = &mut self.classic.as_mut()?.deck;
+                deck.contains(&card)
+                    .then(|| Self::remove_card(deck, card.id))
+            })
+    }
+
     /// A hidden hand loss obscures old knowledge of the remaining cards.
     pub(crate) fn obscure_remaining_hand(&mut self, owner: SeatId) {
         if !self.known_to_all.is_empty() || !self.known_to_seats.is_empty() {
@@ -37,20 +67,16 @@ impl Game {
 
     /// Locate an actual physical card for trusted rules. Seat views handle disclosure separately.
     pub fn card_location(&self, id: CardId) -> Option<CardLocation> {
-        for seat in &self.seats {
-            for (zone, cards) in [
-                (CardZone::Hand, &seat.hand),
-                (CardZone::Equipment, &seat.equipment),
-                (CardZone::Judgment, &seat.judges),
-                (CardZone::Expansion, &seat.expansions),
-            ] {
-                if cards.iter().any(|card| card.id == id) {
-                    return Some(CardLocation {
-                        zone: Some(zone),
-                        owner: Some(seat.id),
-                    });
-                }
-            }
+        if let Some((owner, zone, _)) = self.held_card_location(id) {
+            return Some(CardLocation {
+                zone: Some(match zone {
+                    Zone::Hand => CardZone::Hand,
+                    Zone::Equipment => CardZone::Equipment,
+                    Zone::Judgment => CardZone::Judgment,
+                    Zone::Expansion => CardZone::Expansion,
+                }),
+                owner: Some(owner),
+            });
         }
         let owner = self.judging_owner(id);
         let zone = [

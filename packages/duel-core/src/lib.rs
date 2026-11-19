@@ -243,6 +243,10 @@ enum Program {
         cards: Vec<(Zone, Card)>,
         paid: bool,
     },
+    AnnounceUseCost {
+        seat: SeatId,
+        card: Card,
+    },
     Discarded(Card),
 }
 
@@ -342,6 +346,10 @@ impl Program {
             Self::UseCosts { seat, cards, .. } => EventKind::Lose {
                 seat: *seat,
                 amount: cards.len(),
+            },
+            Self::AnnounceUseCost { seat, card } => EventKind::UseCost {
+                seat: *seat,
+                card: *card,
             },
             Self::Discarded(card) => EventKind::Discard { card: *card },
         }
@@ -1291,7 +1299,9 @@ impl Game {
                 return self.resolve_delayed_placement(placement)
             }
             Program::Judgment(judgment) => return self.resolve_judgment(judgment, child),
-            Program::JudgmentCleanup(cleanup) => return self.resolve_judgment_cleanup(cleanup),
+            Program::JudgmentCleanup(cleanup) => {
+                return self.resolve_judgment_cleanup(cleanup, child)
+            }
             Program::CardDamage(damage) => return self.resolve_card_damage(event, damage, child),
             Program::DiscardGroup { seat, cards } => {
                 return self.resolve_discard_group(seat, cards)
@@ -1299,6 +1309,7 @@ impl Game {
             Program::UseCosts { seat, cards, paid } => {
                 return self.resolve_use_costs(seat, cards, paid)
             }
+            Program::AnnounceUseCost { .. } => return self.finish(),
             Program::Discarded(_) => return self.finish(),
             Program::BasicUse(flow) => return self.resolve_basic_use(flow, child),
             program => program,

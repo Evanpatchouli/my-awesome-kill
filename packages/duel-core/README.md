@@ -84,6 +84,10 @@
 
 判定区可通过 `TriggerContext::disable_judge` 和 `enable_judge` 废除或恢复。废除在弃置原判定牌前立刻改变 `is_judge_disabled`，等到这一批弃置结束才显示公开占位。取消弃置或内层失牌会留下实体和原来的判定身份，后续再次废除可重新弃置。恢复只改变区域状态。普通乐不思蜀、国色以及闪电选择落点时共用 `can_add_judge`。[判定区轨迹](../../tests/reference/judge-area.json)
 
+普通用牌付款后在进入置入子事件前检查判定区。可信内容可直接调用 `TriggerContext::add_judge(seat, material, kind)`，置入单张实体并指定有效牌名。在其 Before/Begin 时机废除目标区域，已经创建的置入仍会完成。直接使用手牌作材料时按当时的持有者失牌，内层取消会保留手牌并公开该实体。原事件会分别处理手牌、装备、判定、扩展、牌堆、弃牌堆、公开处理区和特殊区中的实体；公开置入记录不会提前暴露暗手牌的编号。[置入与截获](../../tests/reference/judge-interruptions.json)
+
+用牌支付的失牌被取消时，后续用牌时机照常结算，仍在手里的材料保持原有知情。目标在置入前废区时，牌在 `useCardAfter` 仍属处理区，此后由这次用牌的 `orderingDiscard` 选取要清理的实体。`cardsDiscardBefore` 取消会保留这张处理区牌；如果该时机内先将已选定的牌交给某个角色，随后的 `cardsDiscard` 会将同一实体从手牌移至弃牌堆。[真实支付及收尾](../../tests/reference/judge-payment.json)
+
 ### 休整与离场
 
 规则可用 `TriggerContext::rest(seat, RestClock { unit, count })` 令一席休整，用 `rest_end(seat, hp)` 使其返场。休整者仍然存活，按物理座次排列，`Game::is_in` 为假。普通用牌、距离和应答使用仍参与对局的座位。公开座位的 `out` 与 `rest` 分别表示离场和可见的倒计时标记。可信规则可用 `Game::rest_clock` 读实际计数。

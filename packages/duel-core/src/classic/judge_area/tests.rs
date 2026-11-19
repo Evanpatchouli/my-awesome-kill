@@ -516,3 +516,5 @@ fn real_lebu_use_is_rejected_when_disabled_then_lands_after_restore() {
 }
 
 mod placement;
+
+mod payment;

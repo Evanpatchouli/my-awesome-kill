@@ -837,6 +837,23 @@ impl Game {
         id: CardId,
     ) -> Result<Program, RuleError> {
         self.check_movement_seat(seat)?;
+        if pile == CardZone::Ordering {
+            let owner = self
+                .ordering_owners
+                .get(&id)
+                .copied()
+                .ok_or(RuleError::InvalidCard)?;
+            if self.private_ordering.contains(&owner) || self.compares.hidden(id) {
+                return Err(RuleError::InvalidCard);
+            }
+            let card = self
+                .resolving
+                .iter()
+                .find(|card| card.id == id)
+                .copied()
+                .ok_or(RuleError::InvalidCard)?;
+            return Ok(self.gain_judgment_program(seat, card, owner));
+        }
         let cards = match pile {
             CardZone::DrawPile => RecastState(self).draw_pile(),
             CardZone::DiscardPile => &self.discard,
@@ -1219,7 +1236,7 @@ impl Game {
                     } = &mut movement.kind
                     {
                         let owner = self.seat(seat).expect("material holder");
-                        if let Some(current) = [Zone::Hand, Zone::Equipment, Zone::Judgment]
+                        if let Some(current) = crate::location::HELD_ZONES
                             .into_iter()
                             .find(|&current| owner.zone(current).contains(card))
                         {

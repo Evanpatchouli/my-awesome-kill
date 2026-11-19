@@ -1,4 +1,5 @@
 use super::*;
+use crate::location::HELD_ZONES;
 
 /// Cards physically lost by a single batch lose event.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -26,7 +27,7 @@ enum BatchKind {
     JudgeDiscard,
     Lose {
         destination: BatchDestination,
-        judgment_only: bool,
+        from_judgment_discard: bool,
     },
     Draw {
         amount: u16,
@@ -266,7 +267,14 @@ impl Game {
                     }
                 }
                 Move => {
-                    if !self.is_in(seat) {
+                    let forced_judgment_loss = matches!(
+                        movement.kind,
+                        BatchKind::Lose {
+                            from_judgment_discard: true,
+                            ..
+                        }
+                    ) && !self.is_out(seat);
+                    if !self.is_in(seat) && !forced_judgment_loss {
                         if matches!(movement.kind, BatchKind::JudgeDiscard) {
                             movement.stage = End;
                             continue;
@@ -279,17 +287,21 @@ impl Game {
                             seat,
                             BatchKind::Lose {
                                 destination: BatchDestination::Discard,
-                                judgment_only: false,
+                                from_judgment_discard: false,
                             },
                             movement.cards.clone(),
                         )),
                         BatchKind::JudgeDiscard => {
-                            let judges = &self.seat(seat).expect("judgment holder").judges;
+                            let holder = self.seat(seat).expect("judgment holder");
                             let cards = movement
                                 .cards
                                 .iter()
                                 .copied()
-                                .filter(|card| judges.contains(card))
+                                .filter(|card| {
+                                    HELD_ZONES
+                                        .into_iter()
+                                        .any(|zone| holder.zone(zone).contains(card))
+                                })
                                 .collect::<Vec<_>>();
                             if cards.is_empty() {
                                 movement.stage = Discarded;
@@ -299,7 +311,7 @@ impl Game {
                                 seat,
                                 BatchKind::Lose {
                                     destination: BatchDestination::Discard,
-                                    judgment_only: true,
+                                    from_judgment_discard: true,
                                 },
                                 Arc::from(cards),
                             ))
@@ -324,13 +336,13 @@ impl Game {
                             from,
                             BatchKind::Lose {
                                 destination: BatchDestination::Transfer { to: seat, visible },
-                                judgment_only: false,
+                                from_judgment_discard: false,
                             },
                             movement.cards.clone(),
                         )),
                         BatchKind::Lose {
                             destination,
-                            judgment_only,
+                            from_judgment_discard,
                         } => {
                             if matches!(destination, BatchDestination::Transfer { to, .. } if !self.is_in(to))
                             {
@@ -340,8 +352,10 @@ impl Game {
                             let mut hidden_hand = false;
                             for &card in movement.cards.iter() {
                                 let zone = self.seat(seat).ok().and_then(|s| {
-                                    if judgment_only {
-                                        s.judges.contains(&card).then_some(Zone::Judgment)
+                                    if from_judgment_discard {
+                                        HELD_ZONES
+                                            .into_iter()
+                                            .find(|&zone| s.zone(zone).contains(&card))
                                     } else if s.hand.contains(&card) {
                                         Some(Zone::Hand)
                                     } else if s.equipment.contains(&card) {

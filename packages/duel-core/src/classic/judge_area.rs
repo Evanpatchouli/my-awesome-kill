@@ -55,7 +55,7 @@ impl Game {
     pub fn can_add_judge(&self, seat: SeatId, kind: CardKind) -> bool {
         kind.card_type() == CardType::Delay
             && self.seat(seat).is_ok_and(|player| {
-                player.is_in()
+                !player.out
                     && !player.judge_disabled
                     && !player
                         .judges

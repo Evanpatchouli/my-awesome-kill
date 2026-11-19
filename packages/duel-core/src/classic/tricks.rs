@@ -27,12 +27,19 @@ pub(crate) struct Trick {
 #[derive(Clone)]
 enum TrickStage {
     AfterUse,
+    UseBefore,
+    UseBegin,
     Start,
     AfterCosts,
+    DelayCard2,
     AfterUseCard2,
     TargetStart,
     TargetTimings { layer: usize, index: usize },
     BeginEffects,
+    UseEnd,
+    UseAfter,
+    UseCancelled,
+    UseCancelledFinish,
     BorrowedRequest,
     BorrowedPrepare(usize),
     BorrowedVictim(usize),
@@ -46,6 +53,10 @@ enum TrickStage {
 }
 
 impl Trick {
+    fn is_delayed_use(&self) -> bool {
+        !self.judgment && matches!(self.kind, CardKind::Lebu | CardKind::Shandian)
+    }
+
     #[cfg(test)]
     pub(crate) fn judgment_effect_name(&self) -> Option<&'static str> {
         match (&self.stage, self.kind) {
@@ -143,7 +154,7 @@ impl Game {
             Wugu | Taoyuan => vec![living],
             Nanman | Wanjian => vec![others],
             Wuzhong => vec![vec![seat]],
-            Shandian if self.can_add_judge(seat, Shandian) => vec![vec![seat]],
+            Shandian if self.is_in(seat) && self.can_add_judge(seat, Shandian) => vec![vec![seat]],
             Shandian => vec![],
             Juedou => others
                 .into_iter()
@@ -213,7 +224,11 @@ impl Game {
                             targets
                         },
                         target_index: 0,
-                        stage: TrickStage::Start,
+                        stage: if matches!(card.kind, Lebu | Shandian) {
+                            TrickStage::UseBefore
+                        } else {
+                            TrickStage::Start
+                        },
                         pool: Vec::new(),
                         judgment: false,
                     }),
@@ -316,20 +331,33 @@ impl Game {
     ) {
         use CardKind::*;
         use TrickStage::*;
-        if matches!(flow.stage, AfterCosts) && matches!(flow.kind, Lebu | Shandian) {
-            for card in &flow.costs {
-                if self.resolving.contains(card) {
-                    self.ordering_owners.entry(card.id).or_insert(event.id);
-                }
+        let delayed = flow.is_delayed_use();
+        if delayed
+            && matches!(child, Some(Outcome::Cancelled))
+            && matches!(
+                flow.stage,
+                UseBegin | Start | DelayCard2 | AfterUseCard2 | TargetStart | UseAfter | AfterUse
+            )
+        {
+            flow.stage = UseCancelled;
+        } else if delayed
+            && matches!(
+                flow.stage,
+                Start
+                    | AfterCosts
+                    | DelayCard2
+                    | AfterUseCard2
+                    | TargetStart
+                    | TargetTimings { .. }
+                    | BeginEffects
+            )
+            && (!self.is_in(flow.seat) || self.match_result().is_some())
+        {
+            if matches!(flow.stage, AfterCosts) {
+                self.finish_delayed_payment(event, &flow, child.as_ref());
             }
-            self.scheduler.after(Program::JudgmentCleanup(
-                super::hero_integration::Cleanup::Ordering {
-                    owner: event.id,
-                    cards: flow.costs.clone(),
-                },
-            ));
-        }
-        if self.match_result().is_some() {
+            flow.stage = UseEnd;
+        } else if !delayed && self.match_result().is_some() {
             for card in flow.pool {
                 self.scheduler
                     .next(Program::event(EventKind::Discard { card }));
@@ -345,9 +373,20 @@ impl Game {
                     self.finish();
                 }
             }
+            UseBefore => self.queue_delayed_use_timing(flow, "useCardBefore", UseBegin),
+            UseBegin => self.queue_delayed_use_timing(flow, "useCardBegin", Start),
             Start => {
-                self.queue_use_costs(flow.seat, &flow.costs);
-                if !matches!(flow.kind, Lebu | Shandian) {
+                if delayed {
+                    let card = flow.costs[0];
+                    if let Some((holder, zone, card)) = self.held_card_location(card.id) {
+                        self.scheduler
+                            .next(self.use_loss_to_ordering(holder, zone, card, event.id));
+                    } else if let Some(card) = self.take_unowned_card(card) {
+                        self.resolving.push(card);
+                        self.ordering_owners.insert(card.id, event.id);
+                    }
+                } else {
+                    self.queue_use_costs(flow.seat, &flow.costs);
                     for card in &flow.costs {
                         self.scheduler
                             .after(Program::event(EventKind::Discard { card: *card }));
@@ -357,6 +396,16 @@ impl Game {
                 self.scheduler.replace_current(Program::Trick(flow));
             }
             AfterCosts => {
+                if delayed {
+                    self.finish_delayed_payment(event, &flow, child.as_ref());
+                    self.queue_delayed_use_timing(flow, "useCard1", DelayCard2);
+                    return;
+                }
+                flow.stage = AfterUseCard2;
+                self.scheduler.replace_current(Program::Trick(flow.clone()));
+                self.queue_use_card2(flow.seat, flow.kind, &flow.costs);
+            }
+            DelayCard2 => {
                 flow.stage = AfterUseCard2;
                 self.scheduler.replace_current(Program::Trick(flow.clone()));
                 self.queue_use_card2(flow.seat, flow.kind, &flow.costs);
@@ -366,13 +415,15 @@ impl Game {
                     self.scheduler.end(Outcome::Cancelled);
                     return;
                 }
-                if !matches!(flow.kind, Lebu | Shandian) {
-                    self.queue_hero_moment(super::skills::HeroMoment::UseTrick {
-                        seat: flow.seat,
-                        kind: flow.kind,
-                        cards: flow.costs.clone(),
-                    });
+                if delayed {
+                    self.queue_delayed_use_timing(flow, "useCard", TargetStart);
+                    return;
                 }
+                self.queue_hero_moment(super::skills::HeroMoment::UseTrick {
+                    seat: flow.seat,
+                    kind: flow.kind,
+                    cards: flow.costs.clone(),
+                });
                 flow.stage = TargetStart;
                 self.scheduler.replace_current(Program::Trick(flow));
             }
@@ -428,7 +479,8 @@ impl Game {
                                 kind: flow.kind,
                             }));
                     }
-                    self.finish();
+                    flow.stage = UseEnd;
+                    self.scheduler.replace_current(Program::Trick(flow));
                     return;
                 }
                 if flow.kind == Wugu {
@@ -451,6 +503,12 @@ impl Game {
                     };
                 self.scheduler.replace_current(Program::Trick(flow));
             }
+            UseEnd => self.queue_delayed_use_timing(flow, "useCardEnd", UseAfter),
+            UseAfter => self.queue_delayed_use_timing(flow, "useCardAfter", AfterUse),
+            UseCancelled => {
+                self.queue_delayed_use_timing(flow, "useCardCancelled", UseCancelledFinish)
+            }
+            UseCancelledFinish => self.scheduler.end(Outcome::Cancelled),
             Counter => {
                 if flow.target_index >= flow.targets.len() {
                     for card in flow.pool.drain(..) {
@@ -887,6 +945,42 @@ impl Game {
                 }
                 self.finish();
             }
+        }
+    }
+
+    fn queue_delayed_use_timing(
+        &mut self,
+        mut flow: Trick,
+        timing: &'static str,
+        next: TrickStage,
+    ) {
+        self.queue_timing(timing, Some(flow.seat), None, None, 0, &flow.costs);
+        flow.stage = next;
+        self.scheduler.replace_current(Program::Trick(flow));
+    }
+
+    fn finish_delayed_payment(
+        &mut self,
+        event: EventRef,
+        flow: &Trick,
+        child: Option<&Outcome<Resolution>>,
+    ) {
+        let material = flow.costs[0];
+        let paid = self.ordering_owners.get(&material.id) == Some(&event.id)
+            || matches!(child, Some(Outcome::Finished(Resolution::RecastMove { card: Some(card), .. })) if *card == material);
+        if paid {
+            if flow.card.is_none() {
+                self.scheduler.next_cleanup(Program::AnnounceUseCost {
+                    seat: flow.seat,
+                    card: material,
+                });
+            }
+            self.scheduler.after(Program::JudgmentCleanup(
+                super::hero_integration::Cleanup::Ordering {
+                    owner: event.id,
+                    cards: flow.costs.clone(),
+                },
+            ));
         }
     }
 
