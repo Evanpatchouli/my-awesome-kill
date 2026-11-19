@@ -76,6 +76,44 @@ pub fn classic_judge_area_fixture(
         .map_err(|err| JsError::new(&format!("{err:?}")))?;
     game.register_active_skill(ActiveSkillRegistration {
         owner: seat,
+        skill: "fixture_gain_judge_material".into(),
+        limited: false,
+        choice: Arc::new(|game, _| {
+            let targets: Vec<_> = game
+                .living_seats()
+                .iter()
+                .copied()
+                .filter(|&id| {
+                    game.is_in(id)
+                        && game
+                            .judgments(id)
+                            .any(|j| j.is_virtual() && j.is_attached())
+                })
+                .collect();
+            (!targets.is_empty()).then(|| ChoiceBranch {
+                targets,
+                min_targets: 1,
+                max_targets: 1,
+                ..choice(0, "取回判定材料")
+            })
+        }),
+        effect: Arc::new(|ctx, _, selected| {
+            if let Some(&id) = selected.and_then(|s| s.targets.first()) {
+                let material = ctx
+                    .game()
+                    .judgments(id)
+                    .find(|j| j.is_virtual() && j.is_attached())
+                    .map(|j| j.material.id);
+                if let Some(card) = material {
+                    let _ = ctx.gain_owned_card(id, id, card);
+                }
+            }
+            TriggerStep::Done
+        }),
+    })
+    .map_err(|err| JsError::new(&format!("{err:?}")))?;
+    game.register_active_skill(ActiveSkillRegistration {
+        owner: seat,
         skill: "fixture_sword_lebu".into(),
         limited: false,
         choice: Arc::new(|game, owner| {

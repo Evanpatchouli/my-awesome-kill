@@ -115,6 +115,7 @@ export interface SeatView {
   detachedEquipment?: string[]
   judges: Entity[]
   judgeAssignments: Entity[]
+  logicalJudges?: { kind: string; material?: number }[]
 }
 export interface Choice {
   kind: 'shan' | 'save' | 'discard' | 'content'

@@ -28,9 +28,16 @@ const state = computed(() =>
 const equipped = computed(() =>
   props.equipment.map((card) => `${labels[slot(card.kind)!] ?? '装备'} ${printedFace(card)}`).join(' · '),
 )
+const judgmentCards = computed(() => {
+  if (!props.seat.logicalJudges?.length) return props.judges.map(printedFace)
+  return props.seat.logicalJudges.map(entry => {
+    const attached = props.judges.find(card => card.id === entry.material)
+    return attached ? printedFace({ ...attached, name: cardName(entry.kind) }) : cardName(entry.kind)
+  })
+})
 const judgment = computed(() => [
   ...(props.seat.judgeDisabledMarker ? ['已废除'] : []),
-  ...props.judges.map(printedFace),
+  ...judgmentCards.value,
 ].join(' · '))
 const known = computed(() => props.knownHand?.map(printedFace).join(' · '))
 </script>
@@ -46,7 +53,7 @@ const known = computed(() => props.knownHand?.map(printedFace).join(' · '))
     <div :data-judge-area="seat.id" :title="judgment || '无判定牌'">
       <span>判定</span> {{ seat.judgeDisabledMarker ? '已废除' : judgment || '—' }}
       <template v-if="seat.judgeDisabledMarker">
-        <div v-for="card in judges" :key="card.id" class="retained-judge">{{ printedFace(card) }}</div>
+        <div v-for="(label, index) in judgmentCards" :key="index" class="retained-judge">{{ label }}</div>
       </template>
     </div>
     <div v-if="known" :title="known"><span>已知手牌</span> {{ known }}</div>

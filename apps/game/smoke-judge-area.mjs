@@ -119,8 +119,27 @@ try {
   assert.equal(state.discard.filter(c => c.id === sword.id).length, 1)
   assert.match(await page.locator(`[data-equipment-effect="${swordSeat}"]`).innerText(), /青釭剑/)
   if (evidence) await page.screenshot({ path: path.join(evidence, 'registered-sword.png') })
+  const wrapperSeat = 3
+  await submit('用青釭剑放置乐不思蜀', wrapperSeat)
+  const wrapped = (await view()).seats[wrapperSeat].judges[0].id
+  await submit('取回判定材料', wrapperSeat)
+  state = await view()
+  assert.deepEqual(state.seats[wrapperSeat].judges, [])
+  assert.deepEqual(state.seats[wrapperSeat].logicalJudges, [{ kind: 'lebu' }])
+  const own = await page.evaluate(id => JSON.parse(window.judgeTable.view(id)), wrapperSeat)
+  assert.ok(own.seats[wrapperSeat].hand.some(card => card.id === wrapped))
+  assert.match(await page.locator(`[data-judge-area="${wrapperSeat}"]`).innerText(), /乐不思蜀/)
+  assert.ok(!state.activePlays.find(p => p.skill === 'fixture_sword_lebu').branch.targets.includes(wrapperSeat))
+  if (evidence) await page.screenshot({ path: path.join(evidence, 'registered-judgment.png') })
+  await submit('废除判定区', wrapperSeat)
+  await button('允许弃置').click()
+  await button('确认').click()
+  await page.clock.runFor(1000)
+  state = await view()
+  assert.deepEqual(state.seats[wrapperSeat].logicalJudges ?? [], [])
+  assert.equal(state.discard.filter(c => c.id === wrapped).length, 1)
   assert.deepEqual(errors, [])
-  console.log(JSON.stringify({ seed: 317, target: id, discarded: 28, newMaterial: 40, detachedSword: sword.id, evidence }))
+  console.log(JSON.stringify({ seed: 317, target: id, discarded: 28, newMaterial: 40, detachedSword: sword.id, judgmentMaterial: wrapped, evidence }))
 } finally {
   await browser.close()
 }
