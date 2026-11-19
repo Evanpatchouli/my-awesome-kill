@@ -1,22 +1,39 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { factions, generals, generalById } from './classicProtocol'
+import { factions, generals, type GeneralDefinition } from './classicProtocol'
 import { heroPortrait } from './battleArt'
 
 const hero = defineModel<string>('hero', { required: true })
 const count = defineModel<number>('count', { required: true })
-defineProps<{ busy: boolean; error: string }>()
-const emit = defineEmits<{ start: [] }>()
+const props = defineProps<{
+  busy: boolean
+  error: string
+  customGenerals: GeneralDefinition[]
+  importStatus: string
+  importError: string
+}>()
+const emit = defineEmits<{ start: []; import: [file: File]; clearImport: [] }>()
 const faction = ref('')
-const roster = computed(() => generals.filter((g) => !faction.value || g.faction === faction.value))
-const selected = computed(() => generalById.get(hero.value)!)
+const catalog = computed(() => {
+  const byId = new Map<string, GeneralDefinition>(generals.map((item) => [item.id, item]))
+  for (const item of props.customGenerals) byId.set(item.id, item)
+  return [...byId.values()]
+})
+const roster = computed(() => catalog.value.filter((g) => !faction.value || g.faction === faction.value))
+const selected = computed(() => catalog.value.find((item) => item.id === hero.value) ?? generals[0]!)
+function chooseFile(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (file) emit('import', file)
+  input.value = ''
+}
 </script>
 <template>
   <section class="pick-page">
     <header class="pick-heading">
       <div>
         <h1>选择你的武将</h1>
-        <p>标准版 · {{ generals.length }} 将</p>
+        <p>标准版 · {{ generals.length }} 将<span v-if="customGenerals.length"> · 自定义 {{ customGenerals.length }} 将</span></p>
       </div>
       <label
         >身份局人数
@@ -25,6 +42,13 @@ const selected = computed(() => generalById.get(hero.value)!)
         </select></label
       >
     </header>
+    <div class="pick-import">
+      <label>导入本地 JSON <input type="file" accept=".json,application/json" @change="chooseFile" /></label>
+      <button v-if="importStatus || importError" type="button" @click="emit('clearImport')">清除</button>
+      <span v-if="importStatus" role="status">{{ importStatus }}</span>
+      <span v-if="importError" role="alert">{{ importError }}</span>
+      <slot />
+    </div>
     <div class="pick-layout">
       <div class="pick-roster">
         <nav aria-label="筛选势力">
@@ -37,7 +61,7 @@ const selected = computed(() => generalById.get(hero.value)!)
             {{ label }}
           </button>
         </nav>
-        <div class="pick-grid" aria-label="标准武将">
+        <div class="pick-grid" aria-label="可选武将">
           <button
             v-for="item in roster"
             :key="item.id"
@@ -45,14 +69,14 @@ const selected = computed(() => generalById.get(hero.value)!)
             :aria-pressed="hero === item.id"
             @click="hero = item.id"
           >
-            <img :src="heroPortrait(item.id)" alt="" loading="lazy" /><span>{{ item.name }}</span>
+            <img v-if="heroPortrait(item.id)" :src="heroPortrait(item.id)" alt="" loading="lazy" /><span>{{ item.name }}</span>
           </button>
         </div>
       </div>
       <aside class="pick-detail">
-        <img :src="heroPortrait(hero)" :alt="selected.name + '立绘'" />
+        <img v-if="heroPortrait(selected.id)" :src="heroPortrait(selected.id)" :alt="selected.name + '立绘'" />
         <div class="pick-description">
-          <p>{{ factions[selected.faction] }} · {{ selected.maxHp }} 体力</p>
+          <p>{{ factions[selected.faction] ?? selected.faction }} · {{ selected.maxHp }} 体力</p>
           <h2>{{ selected.name }}</h2>
           <p v-for="skill in selected.skills" :key="skill.id">
             <b>{{ skill.name }}</b
@@ -100,6 +124,14 @@ const selected = computed(() => generalById.get(hero.value)!)
   padding: 5px;
   background: #f3e6d2;
   border: 1px solid #b5a289;
+}
+.pick-import {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 14px;
 }
 .pick-layout {
   display: grid;

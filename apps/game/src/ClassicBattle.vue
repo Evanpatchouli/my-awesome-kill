@@ -15,7 +15,7 @@ import {
   counterPrompt,
   faceOf,
   factions,
-  generalById,
+  generalDefinition,
   phases,
   printedFace,
   roles,
@@ -34,6 +34,7 @@ const props = defineProps<{
   feedback: { revision: number; events: FeedbackEvent[] }
   saveError: boolean
   error: string
+  readonly?: boolean
 }>()
 const emit = defineEmits<{
   act: [action: Action, version: number]
@@ -93,7 +94,7 @@ const privateBid = computed(() => !!(choice.value?.compare || choice.value?.comp
 type SkillMode = 'choice' | 'virtual' | 'skill' | 'active'
 type SkillOption = { mode: SkillMode; index: number; label: string; skill: string }
 const skillStack = computed(() => {
-  const roster = generalById.get(me.value?.hero ?? '')?.skills ?? []
+  const roster = generalDefinition(props.view, me.value?.hero ?? '')?.skills ?? []
   const byLabel = (label: string) => roster.find(({ name }) =>
     label === name || label.startsWith(name + '：') ||
     label.startsWith('发动' + name) || label.startsWith('发动【' + name + '】'),
@@ -226,6 +227,7 @@ const prompt = computed(() => {
   if (props.view.drawn) return '牌堆耗尽，本局平局'
   if (props.view.winner) return `${sides[props.view.winner]}获胜`
   if (props.view.roundSuspended) return '所有角色均已离场，等待下一轮'
+  if (props.readonly) return '录像回放'
   if (props.view.waitingFor === props.view.humanSeat && props.locked) return '正在结算…'
   if (!active.value)
     return `${seatName(props.view, props.view.waitingFor ?? props.view.activeSeat)}正在思考`
@@ -427,7 +429,7 @@ function canPickCard(id: number) {
     :data-waiting-for="view.waitingFor"
     :data-phase="view.turn?.phase"
     :data-choice-kind="moveChoice ? 'move' : choice?.kind"
-    :inert="!!moveChoice"
+    :inert="!!moveChoice && !readonly"
     :data-result="view.winner ?? (view.drawn ? 'draw' : null)"
     data-battle-table
   >
@@ -451,7 +453,7 @@ function canPickCard(id: number) {
         <ol>
           <li v-for="seat in view.seats" :key="seat.id">
             {{ seatName(view, seat.id) }}：{{
-              generalById.get(seat.hero)?.skills.map((skill) => `${skill.name}：${skill.description}`).join(' ')
+              generalDefinition(view, seat.hero)?.skills.map((skill) => `${skill.name}：${skill.description}`).join(' ')
             }}
           </li>
         </ol>
@@ -479,7 +481,7 @@ function canPickCard(id: number) {
           :aria-pressed="selectedTargets.includes(seat.id)"
           @click="chooseSeat(seat.id)"
         >
-          <img :src="heroPortrait(seat.hero)" :alt="`${seatName(view, seat.id)}立绘`" />
+          <img v-if="heroPortrait(seat.hero)" :src="heroPortrait(seat.hero)" :alt="`${seatName(view, seat.id)}立绘`" />
           <span class="seat-identity">{{
             seat.alive
               ? seat.role
@@ -489,7 +491,7 @@ function canPickCard(id: number) {
           }}</span>
           <span class="seat-name">{{ seatName(view, seat.id) }}</span>
           <span class="seat-faction"
-            >{{ factions[generalById.get(seat.hero)?.faction ?? ''] ?? '' }} · 手牌
+            >{{ factions[generalDefinition(view, seat.hero)?.faction ?? ''] ?? '' }} · 手牌
             {{ seat.handCount }}</span
           >
           <HealthMeter :hp="seat.hp" :max-hp="seat.maxHp" />
@@ -539,9 +541,10 @@ function canPickCard(id: number) {
       <div v-if="saveError" class="classic-save-error">
         战绩保存失败 <button @click="emit('retrySave')">重试</button>
       </div>
-      <button v-if="view.winner || view.drawn" class="primary-button" @click="emit('restart')">
+      <button v-if="!readonly && (view.winner || view.drawn)" class="primary-button" @click="emit('restart')">
         再来一局
       </button>
+      <slot />
     </div>
     <div class="classic-bottom">
       <ClassicSelfEquipment
@@ -615,7 +618,7 @@ function canPickCard(id: number) {
           :aria-pressed="selectedTargets.includes(me.id)"
           @click="chooseSeat(me.id)"
         >
-          <img :src="heroPortrait(me.hero)" :alt="`${seatName(view, me.id)}立绘`" />
+          <img v-if="heroPortrait(me.hero)" :src="heroPortrait(me.hero)" :alt="`${seatName(view, me.id)}立绘`" />
           <span class="self-identity">{{ me.role ? roles[me.role] : '身份未知' }}</span>
           <span class="self-name">{{ seatName(view, me.id) }}</span>
           <HealthMeter :hp="me.hp" :max-hp="me.maxHp" />
@@ -772,7 +775,7 @@ function canPickCard(id: number) {
   </section>
   <Teleport to="body">
     <MoveChoice
-      v-if="moveChoice"
+      v-if="moveChoice && !readonly"
       :key="choice?.event"
       :request="moveChoice"
       :cards="moveChoiceCards"

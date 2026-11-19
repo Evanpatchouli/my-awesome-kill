@@ -5,7 +5,15 @@ import roster from '../../../packages/duel-core/data/standard-2008-generals.json
 import deck from '../../../packages/duel-core/data/standard-deck.json'
 
 export const generals = roster
+export type GeneralDefinition = typeof generals[number]
 export const generalById = new Map(roster.map((g) => [g.id, g]))
+export interface ContentPreview {
+  generals: GeneralDefinition[]
+  cards: { id: string; name: string; description: string }[]
+}
+export function generalDefinition(view: TableView, id: string) {
+  return generalById.get(id) ?? view.content?.generals.find((general) => general.id === id)
+}
 const skillTitles = new Map(
   roster.flatMap((hero) => hero.skills.map((skill) => [skill.id, skill.name] as const)),
 )
@@ -158,6 +166,7 @@ interface EventRecord {
   delta?: number
 }
 export interface TableView {
+  content?: ContentPreview
   mountCombined?: boolean
   roundSuspended?: boolean
   groupUpdates?: GroupAnnouncement[]
@@ -187,26 +196,27 @@ export interface TableView {
   cardNatures?: Record<number, DamageNature>
 }
 const definition = (kind: string) => (kind === 'tiesuo' ? tiesuo : definitions[kind])
-export function cardName(kind: string, nature?: DamageNature) {
+export function cardName(kind: string, nature?: DamageNature, content?: ContentPreview) {
   if (kind === 'sha' && nature) return nature === 'fire' ? '火杀' : '雷杀'
-  return definition(kind)?.name ?? kind
+  return definition(kind)?.name ?? content?.cards.find((card) => card.id === kind)?.name ?? kind
 }
 export function faceOf(view: TableView, card: Entity): TableCard {
   const printed = view.cardFaces?.find((face) => face.id === card.id) ?? deck[card.id]
   const nature = card.kind === 'sha' ? view.cardNatures?.[card.id] : undefined
+  const content = view.content?.cards.find((entry) => entry.id === card.kind)
   return {
     ...card,
-    name: cardName(card.kind, nature),
+    name: content?.name ?? cardName(card.kind, nature),
     suit: printed?.suit as Card['suit'] | undefined,
     rank: printed?.rank,
     description: nature
       ? `对攻击范围内的一名对手使用。若其未打出闪，造成1点${damageNames[nature]}伤害。`
-      : definition(card.kind)?.description ?? '',
+      : content?.description ?? definition(card.kind)?.description ?? '',
   }
 }
 export function seatName(view: TableView, id: number | undefined) {
   const seat = view.seats.find((s) => s.id === id)
-  return seat ? (generalById.get(seat.hero)?.name ?? seat.hero) : '牌堆'
+  return seat ? (generalDefinition(view, seat.hero)?.name ?? seat.hero) : '牌堆'
 }
 const suits = { spade: '♠', heart: '♥', club: '♣', diamond: '♦' }
 export function printedFace(card: TableCard) {
@@ -331,7 +341,7 @@ export function visualEvents(view: TableView): FeedbackEvent[] {
 export function counterPrompt(view: TableView): string | undefined {
   const info = view.choice?.counter
   if (!info) return
-  const effect = `【${cardName(info.cardKind)}】对${seatName(view, info.target)}的效果`
+  const effect = `【${cardName(info.cardKind, undefined, view.content)}】对${seatName(view, info.target)}的效果`
   return info.negated
     ? `${effect}已被抵消，是否使用无懈可击恢复？`
     : `是否使用无懈可击抵消${effect}？`
@@ -373,5 +383,8 @@ export function describeEvent(view: TableView, e: EventRecord): string | undefin
   if (e.type === 'gainMaxHp' || e.type === 'loseMaxHp') return `${who}体力上限 ${e.before} → ${e.after}`
   if (e.type === 'death') return `${seatName(view, e.target)}阵亡${e.role ? ' · ' + roles[e.role] : ''}`
   if (e.type === 'draw') return `${who}摸了${e.amount}张牌`
-  if (e.type === 'skill' && e.skill) return `${who}发动【${skillName(e.skill)}】`
+  if (e.type === 'skill' && e.skill) {
+    const skill = view.content?.generals.flatMap((general) => general.skills).find((entry) => entry.id === e.skill)
+    return `${who}发动【${skill?.name ?? skillName(e.skill)}】`
+  }
 }

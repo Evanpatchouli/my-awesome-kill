@@ -1,14 +1,15 @@
 import { ref, shallowRef } from 'vue'
 import { defineStore } from 'pinia'
-import type { Duel } from './generated/duel/duel.js'
+import type { Duel, RecordedDuel } from './generated/duel/duel.js'
 import { saveMatch, type MatchRecord as RecordToSave } from './persistence'
 import {
   describeEvent,
   sides,
-  generalById,
+  generalDefinition,
   visualEvents,
   type Action,
   type TableView,
+  type ContentPreview,
 } from './classicProtocol'
 import { settleDelay, type FeedbackEvent } from './battleMotion'
 
@@ -27,7 +28,7 @@ function loadEngine() {
 }
 
 export const useGame = defineStore('game', () => {
-  let match: Duel | undefined
+  let match: Duel | RecordedDuel | undefined
   let generation = 0
   let timer: ReturnType<typeof setTimeout> | undefined
   let matchId = ''
@@ -121,7 +122,7 @@ export const useGame = defineStore('game', () => {
         id: matchId,
         finishedAt: new Date().toISOString(),
         winner: current.winner ? sides[current.winner] : '平局',
-        summary: `${current.drawn ? '平' : victory ? '胜' : '负'} · ${generalById.get(me.hero)?.name} · ${current.seats.length}人身份局 · 第 ${current.turn?.number ?? 1} 回合`,
+        summary: `${current.drawn ? '平' : victory ? '胜' : '负'} · ${generalDefinition(current, me.hero)?.name ?? me.hero} · ${current.seats.length}人身份局 · 第 ${current.turn?.number ?? 1} 回合`,
       })
       persistQueue()
       void retrySave()
@@ -157,16 +158,48 @@ export const useGame = defineStore('game', () => {
       }
     }, delay)
   }
-  async function start(hero: string, count: number) {
+  async function inspectContent(raw: string): Promise<ContentPreview> {
+    const { Duel } = await loadEngine()
+    return JSON.parse(Duel.inspectContent(raw)) as ContentPreview
+  }
+
+  function exportContentReplay() {
+    if (match && 'log' in match && (view.value?.winner || view.value?.drawn))
+      return match.log()
+  }
+
+  async function inspectReplay(raw: string) {
+    const parsed = JSON.parse(raw) as { setup?: { kind?: string; human?: number }; commands?: unknown[] }
+    if (parsed.setup?.kind !== 'seededContent' || parsed.setup.human !== 0 || !Array.isArray(parsed.commands))
+      throw new Error('请选择随心杀导出的内容包录像。')
+    if (parsed.commands.length > 10_000) throw new Error('录像超过 10,000 步。')
+    const { RecordedDuel } = await loadEngine()
+    const at = (step: number): TableView => {
+      const replay = RecordedDuel.replayAt(raw, step)
+      try {
+        return JSON.parse(replay.view(0)) as TableView
+      } finally {
+        replay.free()
+      }
+    }
+    const end = at(parsed.commands.length)
+    if (!end.winner && !end.drawn) throw new Error('录像没有完整的终局。')
+    return { at, total: parsed.commands.length }
+  }
+
+  async function start(hero: string, count: number, content?: string) {
     if (busy.value || locked.value) return false
     stop()
     const token = generation
     error.value = ''
     busy.value = true
     try {
-      const { Duel } = await loadEngine()
+      const { Duel, RecordedDuel } = await loadEngine()
       if (token !== generation) return false
-      match = Duel.classic(Math.floor(Math.random() * 0x7fffffff), 0, hero, count)
+      const seed = Math.floor(Math.random() * 0x7fffffff)
+      match = content === undefined
+        ? Duel.classic(seed, 0, hero, count)
+        : RecordedDuel.classicWithContent(seed, 0, hero, count, content)
       matchId =
         globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`
       recorded = false
@@ -211,6 +244,9 @@ export const useGame = defineStore('game', () => {
     pendingRecords,
     retrySave,
     start,
+    inspectContent,
+    exportContentReplay,
+    inspectReplay,
     act,
     leave: stop,
   }

@@ -88,7 +88,7 @@ onBeforeUnmount(() => effects?.revert())
     >
       <template v-if="'cards' in event">
         <img
-          v-for="card in event.cards.slice(0, 4)"
+          v-for="card in event.cards.filter(card => cardImage(card.kind)).slice(0, 4)"
           :key="card.id"
           :src="cardImage(card.kind)"
           alt=""

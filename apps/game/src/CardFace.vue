@@ -13,5 +13,5 @@ function rankLabel(rank: number) {
     >{{ rankLabel(card.rank) }}{{ suits[card.suit] }}</span
   >
   <strong aria-hidden="true">{{ card.name }}</strong>
-  <img class="card-art" :src="cardImage(card.kind)" alt="" />
+  <img v-if="cardImage(card.kind)" class="card-art" :src="cardImage(card.kind)" alt="" />
 </template>

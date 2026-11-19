@@ -8,6 +8,7 @@ import { useGame } from './game'
 
 import { listMatches } from './persistence'
 import { heroPortrait } from './battleArt'
+import { describeEvent, generalById, type GeneralDefinition, type TableView } from './classicProtocol'
 const zhangfei = heroPortrait('zhangfei')
 const huangyueying = heroPortrait('huangyueying')
 
@@ -16,6 +17,100 @@ const router = useRouter()
 const game = useGame()
 const hero = ref('zhangfei')
 const count = ref(8)
+const content = ref<string>()
+const customGenerals = ref<GeneralDefinition[]>([])
+const importStatus = ref('')
+const importError = ref('')
+const importPending = ref(false)
+const replay = ref<Awaited<ReturnType<typeof game.inspectReplay>>>()
+const replayView = ref<TableView>()
+const replayLog = computed(() => {
+  const snapshot = replayView.value
+  return snapshot?.events.flatMap((event) => describeEvent(snapshot, event) ?? []) ?? []
+})
+const replayStep = ref(0)
+const replayError = ref('')
+const replayLoading = ref(false)
+let replayVersion = 0
+function closeReplay() {
+  replayVersion++
+  replay.value = undefined
+  replayView.value = undefined
+  replayError.value = ''
+  replayLoading.value = false
+}
+async function openReplay(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  input.value = ''
+  if (!file) return
+  closeReplay()
+  const version = replayVersion
+  replayLoading.value = true
+  try {
+    if (file.size > 2 * 1024 * 1024) throw new Error('录像文件不能超过 2 MiB。')
+    const source = await game.inspectReplay(await file.text())
+    if (version !== replayVersion) return
+    replayView.value = source.at(0)
+    replay.value = source
+    replayStep.value = 0
+  } catch (error) {
+    if (version === replayVersion) replayError.value = String(error)
+  } finally {
+    if (version === replayVersion) replayLoading.value = false
+  }
+}
+function seekReplay(event: Event) {
+  if (!replay.value) return
+  const step = Number((event.target as HTMLInputElement).value)
+  replayView.value = replay.value.at(step)
+  replayStep.value = step
+}
+function downloadReplay() {
+  const raw = game.exportContentReplay()
+  if (!raw) return
+  const url = URL.createObjectURL(new Blob([raw], { type: 'application/json' }))
+  const link = document.createElement('a')
+  link.href = url
+  link.download = '随心杀-内容包录像.json'
+  link.click()
+  setTimeout(() => URL.revokeObjectURL(url), 1000)
+}
+let importVersion = 0
+function clearImport() {
+  importVersion++
+  if (!generalById.has(hero.value)) hero.value = 'zhangfei'
+  content.value = undefined
+  customGenerals.value = []
+  importStatus.value = ''
+  importError.value = ''
+  importPending.value = false
+}
+async function importContent(file: File) {
+  clearImport()
+  const version = importVersion
+  if (file.size > 128 * 1024) {
+    importError.value = '文件不能超过 128 KiB。'
+    return
+  }
+  importStatus.value = '正在检查导入内容…'
+  importPending.value = true
+  try {
+    const raw = await file.text()
+    if (version !== importVersion) return
+    const catalog = await game.inspectContent(raw)
+    if (version !== importVersion) return
+    content.value = raw
+    customGenerals.value = catalog.generals
+    importStatus.value = `已导入：${file.name} · ${catalog.cards.length} 牌种 / ${catalog.generals.length} 将`
+  } catch (error) {
+    if (version !== importVersion) return
+    importStatus.value = ''
+    importError.value = error instanceof Error ? error.message : '导入失败，请检查 JSON 文件。'
+  } finally {
+    if (version === importVersion) importPending.value = false
+  }
+}
 const reduced = ref(localStorage.getItem('mak-reduced-motion') === 'true')
 const records = ref<Awaited<ReturnType<typeof listMatches>>>([])
 const screen = ref<HTMLElement | null>(null)
@@ -35,7 +130,7 @@ async function retryHistory() {
   }
 }
 async function begin() {
-  if (await game.start(hero.value, count.value)) void router.push('/battle')
+  if (await game.start(hero.value, count.value, content.value)) void router.push('/battle')
 }
 watch(
   reduced,
@@ -48,6 +143,7 @@ watch(
 watch(
   () => route.path,
   async (path, old) => {
+    if (path !== '/classic') closeReplay()
     if (
       (old === '/battle' && path !== '/battle') ||
       (old === '/classic' && game.busy && path !== '/battle')
@@ -79,6 +175,7 @@ onMounted(() => {
   if (route.path === '/battle' && !game.view) void router.replace('/classic')
 })
 onUnmounted(() => {
+  importVersion++
   game.leave()
   if (screen.value) gsap.killTweensOf(screen.value)
 })
@@ -137,14 +234,32 @@ onUnmounted(() => {
           </div>
         </button>
       </section>
+      <section v-else-if="route.path === '/classic' && replayView && replay" class="content-replay">
+        <div class="replay-bar">
+          <button type="button" @click="closeReplay">退出回放</button>
+          <label>录像进度 {{ replayStep }} / {{ replay.total }}
+            <input type="range" :value="replayStep" min="0" :max="replay.total" @change="seekReplay" />
+          </label>
+        </div>
+        <ClassicBattle :view="replayView" :locked="true" :log="replayLog" :feedback="{ revision: 0, events: [] }"
+          :save-error="false" error="" readonly />
+      </section>
       <ClassicSelection
         v-else-if="route.path === '/classic'"
         v-model:hero="hero"
         v-model:count="count"
-        :busy="game.busy"
+        :busy="game.busy || importPending"
         :error="game.error"
+        :custom-generals="customGenerals"
+        :import-status="importStatus"
+        :import-error="importError"
+        @import="importContent"
+        @clear-import="clearImport"
         @start="begin"
-      />
+      >
+        <label>打开内容包录像 <input type="file" accept=".json,application/json" :disabled="replayLoading" @change="openReplay" /></label>
+        <span v-if="replayError" role="alert">{{ replayError }}</span>
+      </ClassicSelection>
       <ClassicBattle
         v-else-if="route.path === '/battle' && game.view"
         :view="game.view"
@@ -156,7 +271,11 @@ onUnmounted(() => {
         @act="game.act"
         @restart="begin"
         @retry-save="game.retrySave"
-      />
+      >
+        <button v-if="content && (game.view.winner || game.view.drawn)" type="button" class="primary-button" @click="downloadReplay">
+          导出内容包录像
+        </button>
+      </ClassicBattle>
       <section v-else-if="route.path === '/profile'" class="page-content simple-page">
         <div class="section-heading">
           <div>
