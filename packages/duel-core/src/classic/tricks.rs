@@ -1,4 +1,5 @@
 use super::add_judge::{self, DelayedPlacement};
+use super::judge_registry::Judgment;
 use super::PlannedUse;
 use crate::scheduler::{EventRef, Outcome};
 use crate::{
@@ -48,7 +49,7 @@ enum TrickStage {
     Effect,
     Response { actor: SeatId },
     Duel { actor: SeatId, remaining: u8 },
-    Select,
+    Select(Vec<Judgment>),
     ApplyJudgment(Option<Card>),
 }
 
@@ -178,7 +179,9 @@ impl Game {
                             || (!self.has_skill(seat, "undist")
                                 && !self.has_skill(*target, "undist")
                                 && self.distance(seat, *target) == Ok(1)))
-                        && (!p.hand.is_empty() || !p.equipment.is_empty() || !p.judges.is_empty())
+                        && (!p.hand.is_empty()
+                            || !p.equipment.is_empty()
+                            || self.judgments(*target).next().is_some())
                 })
                 .map(|target| vec![target])
                 .collect(),
@@ -616,7 +619,7 @@ impl Game {
                             min_targets: 0,
                             max_targets: 0,
                         };
-                        flow.stage = Select;
+                        flow.stage = Select(Vec::new());
                         self.scheduler.replace_current(Program::Trick(flow));
                         self.scheduler.next(Program::Choose(ChoiceRequest {
                             seat: target,
@@ -657,12 +660,32 @@ impl Game {
                                 max_targets: 0,
                             });
                         }
+                        let judgments = self.judgments(target).collect::<Vec<_>>();
+                        branches.extend(judgments.iter().enumerate().filter_map(
+                            |(index, entry)| {
+                                let name = match entry.kind {
+                                    Lebu => "乐不思蜀",
+                                    Shandian => "闪电",
+                                    _ => return None,
+                                };
+                                (!entry.is_attached()).then(|| ChoiceBranch {
+                                    id: 2 + u32::try_from(index).expect("judgment selection index"),
+                                    label: name.into(),
+                                    cards: vec![],
+                                    min_cards: 0,
+                                    max_cards: 0,
+                                    targets: vec![],
+                                    min_targets: 0,
+                                    max_targets: 0,
+                                })
+                            },
+                        ));
                         if branches.is_empty() {
                             self.advance_trick(flow);
                             return;
                         }
                         let seat = flow.seat;
-                        flow.stage = Select;
+                        flow.stage = Select(judgments);
                         self.scheduler.replace_current(Program::Trick(flow));
                         self.scheduler.next(Program::Choose(ChoiceRequest {
                             seat,
@@ -698,7 +721,7 @@ impl Game {
                                 max_targets: 0,
                             });
                         }
-                        flow.stage = Select;
+                        flow.stage = Select(Vec::new());
                         self.scheduler.replace_current(Program::Trick(flow));
                         self.scheduler.next(Program::Choose(ChoiceRequest {
                             seat: target,
@@ -764,7 +787,7 @@ impl Game {
                     self.advance_trick(flow);
                 }
             }
-            Select => {
+            Select(ref judgments) => {
                 let Some(Outcome::Finished(Resolution::Selected(selection))) = child else {
                     self.advance_trick(flow);
                     return;
@@ -783,6 +806,25 @@ impl Game {
                     }
                     Shunshou | Guohe => {
                         if !self.is_in(flow.seat) {
+                            self.advance_trick(flow);
+                            return;
+                        }
+                        let judgment = match selection.branch {
+                            0 => None,
+                            1 => judgments.iter().find(|entry| {
+                                entry.is_attached() && entry.material.id == selection.cards[0]
+                            }),
+                            branch => judgments.get((branch - 2) as usize),
+                        };
+                        if let Some(&entry) = judgment.filter(|entry| entry.is_virtual()) {
+                            if self.contains_judgment(target, entry) {
+                                let program = if flow.kind == Shunshou {
+                                    self.gain_registered_judgment_program(target, flow.seat, entry)
+                                } else {
+                                    self.judgment_discard_program(target, vec![entry])
+                                };
+                                self.scheduler.next(program);
+                            }
                             self.advance_trick(flow);
                             return;
                         }
@@ -852,7 +894,7 @@ impl Game {
                         return;
                     }
                     let branches = self.sha_use_branches(holder, &[victim]);
-                    flow.stage = Select;
+                    flow.stage = Select(Vec::new());
                     self.scheduler.replace_current(Program::Trick(flow));
                     self.scheduler.next(Program::Choose(ChoiceRequest {
                         seat: holder,

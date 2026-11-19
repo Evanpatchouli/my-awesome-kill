@@ -52,6 +52,7 @@ use classic::elemental::{self, CardDamage};
 pub use classic::elemental::{DamageNature, DamageRecord};
 use classic::equipment;
 use classic::hero_integration::Judgment;
+pub use classic::judge_registry::{Judgment as JudgmentEntry, JudgmentKey};
 pub use classic::max_hp::{MaxHpChange, MaxHpKind, MaxHpMetrics};
 pub use classic::phases::PhaseInfo;
 pub use classic::pile_order::PileOrderResult;
@@ -475,7 +476,7 @@ pub struct Game {
     version: u32,
     resolving: Vec<Card>,
     discard: Vec<Card>,
-    judgment_overrides: HashMap<CardId, CardKind>,
+    judgment_registry: classic::judge_registry::Registry,
     decision: Option<Decision>,
     scheduler: Scheduler<Program, Resolution>,
     events: Vec<GameEvent>,
@@ -552,7 +553,7 @@ impl Game {
             version: 0,
             resolving: Vec::new(),
             discard: Vec::new(),
-            judgment_overrides: HashMap::new(),
+            judgment_registry: classic::judge_registry::Registry::default(),
             decision: None,
             scheduler: Scheduler::new(),
             events: Vec::new(),
@@ -784,15 +785,8 @@ impl Game {
                     judges: seat.judges.clone(),
                     judge_disabled: seat.judge_disabled,
                     judge_disabled_marker: seat.judge_disabled_marker,
-                    judge_assignments: seat
-                        .judges
-                        .iter()
-                        .filter_map(|card| {
-                            self.judgment_overrides
-                                .get(&card.id)
-                                .map(|&kind| JudgmentAssignment { id: card.id, kind })
-                        })
-                        .collect(),
+                    judge_assignments: self.judgment_assignments(seat.id),
+                    logical_judges: self.logical_judgment_view(seat.id),
                 }
             })
             .collect::<Vec<_>>();
@@ -1571,7 +1565,7 @@ impl Game {
             self.known_to_seats.remove(&id);
         }
         if matches!(zone, Zone::Judgment) {
-            self.judgment_overrides.remove(&id);
+            self.judgment_registry.material_left(seat, id);
         }
         if matches!(zone, Zone::Expansion) {
             self.expansion_tags.remove(&id);
@@ -1587,20 +1581,6 @@ impl Game {
 
     fn put_in_hand(&mut self, seat: SeatId, card: Card) {
         self.seat_mut(seat).hand.push(card);
-    }
-
-    fn judgment_kind(&self, card: Card) -> CardKind {
-        self.judgment_overrides
-            .get(&card.id)
-            .copied()
-            .unwrap_or(card.kind)
-    }
-
-    fn put_in_judgment(&mut self, seat: SeatId, card: Card, kind: CardKind) {
-        if kind != card.kind {
-            self.judgment_overrides.insert(card.id, kind);
-        }
-        self.seat_mut(seat).judges.push(card);
     }
 
     fn move_to_resolving(&mut self, seat: SeatId, id: CardId) {

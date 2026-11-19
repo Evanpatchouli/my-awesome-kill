@@ -229,6 +229,17 @@ pub struct SeatView {
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub judge_disabled_marker: bool,
     pub judge_assignments: Vec<JudgmentAssignment>,
+    /// Ordered public entries when physical cards alone do not describe the judgment area.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub logical_judges: Vec<JudgmentEntryView>,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct JudgmentEntryView {
+    pub kind: CardKind,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub material: Option<CardId>,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]

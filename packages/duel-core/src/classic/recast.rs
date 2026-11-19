@@ -1,3 +1,4 @@
+use super::judge_registry::Judgment;
 use crate::scheduler::{EventRef, Outcome};
 #[cfg(test)]
 use crate::TriggerEvent;
@@ -331,6 +332,7 @@ pub(crate) struct Movement {
     committed: Option<Card>,
     allow_intercepted: bool,
     follow_holder_zone: bool,
+    judgment: Option<Judgment>,
 }
 
 #[derive(Clone, Copy)]
@@ -361,6 +363,10 @@ enum LossDestination {
 enum GainOrigin {
     Compare(EventId),
     Judgment(EventId),
+    JudgmentEntry {
+        seat: SeatId,
+        entry: Judgment,
+    },
     Created,
     Hand {
         seat: SeatId,
@@ -406,6 +412,7 @@ impl Movement {
             committed: None,
             allow_intercepted: false,
             follow_holder_zone: false,
+            judgment: None,
         }
     }
 
@@ -417,7 +424,7 @@ impl Movement {
                 ..
             } => Some(seat),
             MoveKind::Gain {
-                origin: GainOrigin::Expansion { seat },
+                origin: GainOrigin::Expansion { seat } | GainOrigin::JudgmentEntry { seat, .. },
                 ..
             } => Some(seat),
             _ => None,
@@ -458,6 +465,7 @@ impl Movement {
                         GainOrigin::DrawPile
                             | GainOrigin::Compare(_)
                             | GainOrigin::Judgment(_)
+                            | GainOrigin::JudgmentEntry { .. }
                             | GainOrigin::Hand { public: true, .. }
                             | GainOrigin::Expansion { .. }
                             | GainOrigin::PublicOwned { .. }
@@ -510,6 +518,21 @@ impl Movement {
 }
 
 impl Game {
+    pub(crate) fn gain_registered_judgment_program(
+        &self,
+        from: SeatId,
+        to: SeatId,
+        entry: Judgment,
+    ) -> Program {
+        Program::Recast(Flow::Movement(Movement::new(
+            to,
+            MoveKind::Gain {
+                card: entry.material,
+                origin: GainOrigin::JudgmentEntry { seat: from, entry },
+            },
+        )))
+    }
+
     /// Committed loss records from the movement flow, including empty successful losses.
     pub fn loss_history(&self) -> &[LossRecord] {
         &self.loss_history
@@ -540,9 +563,19 @@ impl Game {
         &self,
         owner: EventId,
         seat: SeatId,
-        card: Card,
+        entry: Judgment,
     ) -> Program {
-        self.lose_to_ordering(seat, Zone::Judgment, card, owner)
+        let mut movement = Movement::new(
+            seat,
+            MoveKind::Lose {
+                card: entry.material,
+                zone: Zone::Judgment,
+                destination: LossDestination::Ordering(owner),
+            },
+        );
+        movement.judgment = Some(entry);
+        movement.allow_intercepted = entry.is_virtual();
+        Program::Recast(Flow::Movement(movement))
     }
 
     pub(crate) fn lose_to_judge_special(&self, seat: SeatId, zone: Zone, card: Card) -> Program {
@@ -558,6 +591,7 @@ impl Game {
         movement.follow_holder_zone = true;
         Program::Recast(Flow::Movement(movement))
     }
+
     pub(crate) fn equip_replacement_loss_program(
         &self,
         seat: SeatId,
@@ -574,22 +608,6 @@ impl Game {
         );
         movement.follow_holder_zone = true;
         Program::Recast(Flow::Movement(movement))
-    }
-    pub(crate) fn lose_to_ordering(
-        &self,
-        seat: SeatId,
-        zone: Zone,
-        card: Card,
-        owner: EventId,
-    ) -> Program {
-        Program::Recast(Flow::Movement(Movement::new(
-            seat,
-            MoveKind::Lose {
-                card,
-                zone,
-                destination: LossDestination::Ordering(owner),
-            },
-        )))
     }
     pub(crate) fn use_loss_to_ordering(
         &self,
@@ -1343,7 +1361,7 @@ impl Game {
                             }
                             self.known_to_all.insert(card.id);
                             if zone == Zone::Judgment
-                                && self.judgment_overrides.contains_key(&card.id)
+                                && self.is_virtual_judgment_material(from, card.id)
                             {
                                 // A raw material gain does not dispatch a loss for the virtual judgment.
                                 let material = self.take_card(from, zone, card.id);
@@ -1366,42 +1384,68 @@ impl Game {
                                 Some(loss)
                             }
                         }
+                        Gain {
+                            card,
+                            origin: GainOrigin::JudgmentEntry { seat: from, entry },
+                        } if self.contains_judgment(from, entry) => {
+                            let mut loss = Movement::new(
+                                from,
+                                Lose {
+                                    card,
+                                    zone: Zone::Judgment,
+                                    destination: LossDestination::JudgeSpecial,
+                                },
+                            );
+                            loss.judgment = Some(entry);
+                            loss.allow_intercepted = true;
+                            Some(loss)
+                        }
                         Lose {
                             card,
                             zone,
                             destination,
-                        } if self.seat(seat).is_ok_and(|s| match zone {
-                            Zone::Hand => s.hand.contains(&card),
-                            Zone::Equipment => s.equipment.contains(&card),
-                            Zone::Judgment => s.judges.contains(&card),
-                            Zone::Expansion => s.expansions.contains(&card),
-                        }) && !matches!(destination, LossDestination::Transfer { to, .. } if !self.is_in(to)) =>
+                        } if (movement.judgment.is_some()
+                            || self.seat(seat).is_ok_and(|s| match zone {
+                                Zone::Hand => s.hand.contains(&card),
+                                Zone::Equipment => s.equipment.contains(&card),
+                                Zone::Judgment => s.judges.contains(&card),
+                                Zone::Expansion => s.expansions.contains(&card),
+                            }))
+                            && !matches!(destination, LossDestination::Transfer { to, .. } if !self.is_in(to)) =>
                         {
-                            let taken = self.take_card(seat, zone, card.id);
-                            if matches!(zone, Zone::Hand)
-                                && matches!(
-                                    destination,
-                                    LossDestination::Transfer { visible: false, .. }
-                                )
-                            {
-                                self.obscure_remaining_hand(seat);
+                            let taken = if let Some(entry) = movement.judgment {
+                                self.take_judgment(seat, entry)
+                            } else {
+                                Some(self.take_card(seat, zone, card.id))
+                            };
+                            if let Some(taken) = taken {
+                                if matches!(zone, Zone::Hand)
+                                    && matches!(
+                                        destination,
+                                        LossDestination::Transfer { visible: false, .. }
+                                    )
+                                {
+                                    self.obscure_remaining_hand(seat);
+                                }
+                                match destination {
+                                    LossDestination::Discard => self.discard.push(taken),
+                                    LossDestination::JudgeSpecial => {
+                                        self.known_to_all.insert(taken.id);
+                                        self.transferring.push(taken);
+                                    }
+                                    LossDestination::Ordering(owner) => {
+                                        self.resolving.push(taken);
+                                        self.ordering_owners.insert(taken.id, owner);
+                                    }
+                                    LossDestination::Transfer { .. } => {
+                                        self.transferring.push(taken)
+                                    }
+                                    LossDestination::Compare(comparison) => {
+                                        self.place_compare_bid(comparison, seat, taken);
+                                    }
+                                }
+                                movement.committed = Some(taken);
                             }
-                            match destination {
-                                LossDestination::Discard => self.discard.push(taken),
-                                LossDestination::JudgeSpecial => {
-                                    self.known_to_all.insert(taken.id);
-                                    self.transferring.push(taken);
-                                }
-                                LossDestination::Ordering(owner) => {
-                                    self.resolving.push(taken);
-                                    self.ordering_owners.insert(taken.id, owner);
-                                }
-                                LossDestination::Transfer { .. } => self.transferring.push(taken),
-                                LossDestination::Compare(comparison) => {
-                                    self.place_compare_bid(comparison, seat, taken);
-                                }
-                            }
-                            movement.committed = Some(taken);
                             None
                         }
                         Gain {
@@ -1489,6 +1533,21 @@ impl Game {
                     }
                 }
                 ChildMoved => {
+                    if let Gain {
+                        card,
+                        origin: GainOrigin::JudgmentEntry { .. },
+                    } = movement.kind
+                    {
+                        let moved = matches!(child, Some(Outcome::Finished(Resolution::RecastMove { card: Some(actual), .. })) if actual == card);
+                        if moved && self.is_in(seat) && self.transferring.contains(&card) {
+                            let taken = Self::remove_card(&mut self.transferring, card.id);
+                            self.put_in_hand(seat, taken);
+                            self.known_to_all.insert(taken.id);
+                            movement.committed = Some(taken);
+                        }
+                        movement.stage = End;
+                        continue;
+                    }
                     if let Gain {
                         card,
                         origin: GainOrigin::PublicOwned { .. },

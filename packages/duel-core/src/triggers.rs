@@ -1,7 +1,7 @@
 use crate::scheduler::Outcome;
 use crate::{
-    Card, CardId, CardZone, ChoiceBranch, ChoiceRequest, EventId, Game, Program, Resolution,
-    RuleError, SeatId, Zone,
+    Card, CardId, CardZone, ChoiceBranch, ChoiceRequest, EventId, Game, JudgmentKey, Program,
+    Resolution, RuleError, SeatId, Zone,
 };
 use std::collections::{HashSet, VecDeque};
 use std::sync::Arc;
@@ -277,6 +277,20 @@ impl TriggerContext<'_> {
     /// Restore the seat's ability to receive delayed tricks.
     pub fn enable_judge(&mut self, seat: SeatId) -> Result<(), RuleError> {
         self.queue_judge_area(seat, false)
+    }
+
+    /// Discard the current judgment selected by its trusted key. A virtual judgment
+    /// follows its original material if that card has already moved to another zone.
+    pub fn discard_judgment(&mut self, seat: SeatId, key: JudgmentKey) -> Result<(), RuleError> {
+        if !self.game.seat(seat)?.is_in() {
+            return Err(RuleError::InactiveSeat { seat });
+        }
+        if self.game.judgment_entry(seat, key).is_none() {
+            return Err(RuleError::InvalidCard);
+        }
+        self.operations
+            .push_back(TriggerOperation::DiscardJudgment { seat, key });
+        Ok(())
     }
 
     /// Place a physical card in a judgment area with the given delayed-trick identity.
@@ -813,6 +827,7 @@ impl TriggerContext<'_> {
                 | TriggerOperation::Revive { .. }
                 | TriggerOperation::Rest(_)
                 | TriggerOperation::JudgeArea(_)
+                | TriggerOperation::DiscardJudgment { .. }
                 | TriggerOperation::AddJudge(_)
                 | TriggerOperation::CompareMany { .. }
                 | TriggerOperation::VirtualSha { .. }
@@ -864,6 +879,10 @@ impl TriggerContext<'_> {
 enum TriggerOperation {
     Rest(crate::classic::rest::Flow),
     JudgeArea(crate::classic::judge_area::Flow),
+    DiscardJudgment {
+        seat: SeatId,
+        key: JudgmentKey,
+    },
     AddJudge(crate::classic::add_judge::Flow),
     MaxHp {
         seat: SeatId,
@@ -1380,6 +1399,12 @@ impl Game {
                 TriggerOperation::Revive { seat, hp } => self.revive_program(seat, hp),
                 TriggerOperation::Rest(flow) => Program::Rest(flow),
                 TriggerOperation::JudgeArea(flow) => Program::JudgeArea(flow),
+                TriggerOperation::DiscardJudgment { seat, key } => {
+                    let Some(entry) = self.judgment_entry(seat, key) else {
+                        continue;
+                    };
+                    self.judgment_discard_program(seat, vec![entry])
+                }
                 TriggerOperation::AddJudge(flow) => Program::AddJudge(flow),
                 TriggerOperation::MaxHp {
                     seat,

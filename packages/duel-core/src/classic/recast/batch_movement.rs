@@ -1,5 +1,4 @@
 use super::*;
-use crate::location::HELD_ZONES;
 
 /// Cards physically lost by a single batch lose event.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -16,7 +15,8 @@ pub(crate) struct BatchMovement {
     kind: BatchKind,
     stage: MoveStage,
     cards: Arc<[Card]>,
-    virtual_judgment_materials: Arc<[CardId]>,
+    judgment_discard_targets: Arc<[JudgmentDiscardTarget]>,
+    force_dead: bool,
     committed: Vec<Card>,
     losses: Vec<(Zone, Card)>,
     stranded: bool,
@@ -48,13 +48,29 @@ enum BatchDestination {
     Transfer { to: SeatId, visible: bool },
 }
 
+#[derive(Clone, Copy)]
+enum JudgmentDiscardTarget {
+    Judgment(Judgment),
+    Held(Card),
+}
+
+impl JudgmentDiscardTarget {
+    fn material(self) -> Card {
+        match self {
+            Self::Judgment(entry) => entry.material,
+            Self::Held(card) => card,
+        }
+    }
+}
+
 impl BatchMovement {
     fn new(seat: SeatId, kind: BatchKind, cards: Arc<[Card]>) -> Self {
         Self {
             seat,
             kind,
             cards,
-            virtual_judgment_materials: Arc::from([]),
+            judgment_discard_targets: Arc::from([]),
+            force_dead: false,
             stage: MoveStage::Before,
             committed: Vec::new(),
             losses: Vec::new(),
@@ -175,17 +191,38 @@ impl BatchMovement {
 }
 
 impl Game {
-    pub(crate) fn judge_discard_program(&self, seat: SeatId, cards: Vec<Card>) -> Program {
-        let virtual_materials = cards
+    pub(crate) fn judgment_discard_program(&self, seat: SeatId, entries: Vec<Judgment>) -> Program {
+        self.judgment_discard(seat, entries, Vec::new(), false)
+    }
+
+    pub(crate) fn death_judgment_discard_program(
+        &self,
+        seat: SeatId,
+        entries: Vec<Judgment>,
+        held: Vec<Card>,
+    ) -> Program {
+        self.judgment_discard(seat, entries, held, true)
+    }
+
+    fn judgment_discard(
+        &self,
+        seat: SeatId,
+        entries: Vec<Judgment>,
+        held: Vec<Card>,
+        force_dead: bool,
+    ) -> Program {
+        let targets = held
+            .into_iter()
+            .map(JudgmentDiscardTarget::Held)
+            .chain(entries.into_iter().map(JudgmentDiscardTarget::Judgment))
+            .collect::<Vec<_>>();
+        let cards = targets
             .iter()
-            .filter_map(|card| {
-                self.judgment_overrides
-                    .contains_key(&card.id)
-                    .then_some(card.id)
-            })
+            .map(|target| target.material())
             .collect::<Vec<_>>();
         let mut discard = BatchMovement::new(seat, BatchKind::JudgeDiscard, Arc::from(cards));
-        discard.virtual_judgment_materials = Arc::from(virtual_materials);
+        discard.judgment_discard_targets = Arc::from(targets);
+        discard.force_dead = force_dead;
         Program::Recast(Flow::BatchMovement(discard))
     }
 
@@ -260,22 +297,7 @@ impl Game {
                     };
                     if matches!(stage, After)
                         && matches!(movement.kind, BatchKind::Lose { .. })
-                        && self.queue_hero_losses(
-                            seat,
-                            movement
-                                .losses
-                                .iter()
-                                .map(|&(zone, card)| {
-                                    let zone =
-                                        if movement.virtual_judgment_materials.contains(&card.id) {
-                                            Zone::Judgment
-                                        } else {
-                                            zone
-                                        };
-                                    (zone, card)
-                                })
-                                .collect(),
-                        )
+                        && self.queue_hero_losses(seat, movement.losses.clone())
                     {
                         true
                     } else {
@@ -297,7 +319,10 @@ impl Game {
                             ..
                         }
                     ) && !self.is_out(seat);
-                    if !self.is_in(seat) && !forced_judgment_loss {
+                    if !self.is_in(seat)
+                        && !forced_judgment_loss
+                        && !(movement.force_dead && !self.is_alive(seat))
+                    {
                         if matches!(movement.kind, BatchKind::JudgeDiscard) {
                             movement.stage = End;
                             continue;
@@ -315,21 +340,27 @@ impl Game {
                             movement.cards.clone(),
                         )),
                         BatchKind::JudgeDiscard => {
-                            let holder = self.seat(seat).expect("judgment holder");
-                            let cards = movement
-                                .cards
+                            let targets = movement
+                                .judgment_discard_targets
                                 .iter()
                                 .copied()
-                                .filter(|card| {
-                                    HELD_ZONES
-                                        .into_iter()
-                                        .any(|zone| holder.zone(zone).contains(card))
+                                .filter(|&target| match target {
+                                    JudgmentDiscardTarget::Judgment(entry) => {
+                                        self.can_discard_judgment_snapshot(seat, entry)
+                                    }
+                                    JudgmentDiscardTarget::Held(card) => self
+                                        .held_card_location(card.id)
+                                        .is_some_and(|(owner, _, _)| owner == seat),
                                 })
                                 .collect::<Vec<_>>();
-                            if cards.is_empty() {
+                            if targets.is_empty() {
                                 movement.stage = Discarded;
                                 continue;
                             }
+                            let cards = targets
+                                .iter()
+                                .map(|target| target.material())
+                                .collect::<Vec<_>>();
                             let mut loss = BatchMovement::new(
                                 seat,
                                 BatchKind::Lose {
@@ -338,8 +369,7 @@ impl Game {
                                 },
                                 Arc::from(cards),
                             );
-                            loss.virtual_judgment_materials =
-                                movement.virtual_judgment_materials.clone();
+                            loss.judgment_discard_targets = Arc::from(targets);
                             Some(loss)
                         }
                         BatchKind::Draw { amount, .. } => {
@@ -375,14 +405,41 @@ impl Game {
                                 movement.stage = Cancel(MoveCancellation::InvalidMovement);
                                 continue;
                             }
+                            if from_judgment_discard {
+                                for &target in movement.judgment_discard_targets.iter() {
+                                    let taken = match target {
+                                        JudgmentDiscardTarget::Judgment(entry) => {
+                                            self.take_judgment_for_discard(seat, entry)
+                                        }
+                                        JudgmentDiscardTarget::Held(card) => self
+                                            .held_card_location(card.id)
+                                            .and_then(|(owner, zone, _)| {
+                                                (owner == seat).then(|| {
+                                                    (zone, self.take_card(seat, zone, card.id))
+                                                })
+                                            }),
+                                    };
+                                    if let Some((zone, taken)) = taken {
+                                        self.discard.push(taken);
+                                        if !movement.committed.contains(&taken) {
+                                            movement.committed.push(taken);
+                                            movement.losses.push((zone, taken));
+                                        }
+                                    }
+                                }
+                                self.loss_history.push(LossRecord {
+                                    event: event.id,
+                                    seat,
+                                    stockcards: movement.cards.to_vec(),
+                                    cards: movement.losses.clone(),
+                                });
+                                movement.stage = End;
+                                continue;
+                            }
                             let mut hidden_hand = false;
                             for &card in movement.cards.iter() {
                                 let zone = self.seat(seat).ok().and_then(|s| {
-                                    if from_judgment_discard {
-                                        HELD_ZONES
-                                            .into_iter()
-                                            .find(|&zone| s.zone(zone).contains(&card))
-                                    } else if s.hand.contains(&card) {
+                                    if s.hand.contains(&card) {
                                         Some(Zone::Hand)
                                     } else if s.equipment.contains(&card) {
                                         Some(Zone::Equipment)
@@ -392,13 +449,6 @@ impl Game {
                                 });
                                 if let Some(zone) = zone {
                                     let taken = self.take_card(seat, zone, card.id);
-                                    if zone == Zone::Equipment
-                                        && movement.virtual_judgment_materials.contains(&card.id)
-                                    {
-                                        // The selected judgment wrapper loses its material. This does not remove
-                                        // the distinct equipment registration created after the wrapper was selected.
-                                        self.seat_mut(seat).detached_equipment.push(taken);
-                                    }
                                     if matches!(
                                         destination,
                                         BatchDestination::Transfer { visible: false, .. }

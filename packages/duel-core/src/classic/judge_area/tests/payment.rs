@@ -1009,6 +1009,10 @@ fn ordinary_equipment_transfer_replacement_and_death_remove_registrations() {
 #[test]
 fn detached_qinggang_changes_real_bagua_response_without_becoming_a_cost() {
     use crate::ChoiceKind;
+    let reference: Value = serde_json::from_str(include_str!(
+        "../../../../../../tests/reference/virtual-equip-combat.json"
+    ))
+    .unwrap();
     for detached in [false, true] {
         let mut game = table();
         let sha = card(210, CardKind::Sha);
@@ -1140,18 +1144,50 @@ fn detached_qinggang_changes_real_bagua_response_without_becoming_a_cost() {
         }
         assert_eq!(game.seat(1).unwrap().equipment, [bagua]);
         assert_eq!(game.discard.iter().filter(|&&card| card == sha).count(), 1);
+        let trial = if detached {
+            "bagua-orphan"
+        } else {
+            "bagua-control"
+        };
+        let expected = &reference["trials"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|r| r["name"] == trial)
+            .unwrap()["after"];
+        for (field, actual) in [
+            ("targetHp", json!(game.health(1).unwrap().0)),
+            (
+                "attackerPhysical",
+                json!(game.seat(0).unwrap().equipment.len()),
+            ),
+            (
+                "attackerVirtual",
+                json!(!game
+                    .equipment_registrations(0, CardKind::Qinggang)
+                    .is_empty()),
+            ),
+            ("qinggang", json!(game.has_skill(0, "qinggang_skill"))),
+            (
+                "red",
+                json!(if game.discard.contains(&red_judgment) {
+                    "d"
+                } else {
+                    "c"
+                }),
+            ),
+        ] {
+            assert_eq!(actual, expected[field], "{trial}: {field}");
+        }
         if detached {
             assert!(game.discard.contains(&sword));
-            for trick in [dismantle] {
-                let options = game.trick_uses(game.seat(2).unwrap(), trick).unwrap();
-                assert!(
-                    options
-                        .iter()
-                        .all(|option| option.targets.first() != Some(&0)),
-                    "{:?}: detached weapon cannot be dismantled",
-                    trick.kind
-                );
-            }
+            let options = game.trick_uses(game.seat(2).unwrap(), dismantle).unwrap();
+            assert!(
+                options
+                    .iter()
+                    .all(|option| option.targets.first() != Some(&0)),
+                "the discarded sword is not an owned card for Dismantle"
+            );
         }
     }
 }

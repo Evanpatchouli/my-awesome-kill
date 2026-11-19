@@ -54,14 +54,10 @@ impl Game {
     /// Check the area itself. Card-specific targeting restrictions also apply to use.
     pub fn can_add_judge(&self, seat: SeatId, kind: CardKind) -> bool {
         kind.card_type() == CardType::Delay
-            && self.seat(seat).is_ok_and(|player| {
-                !player.out
-                    && !player.judge_disabled
-                    && !player
-                        .judges
-                        .iter()
-                        .any(|&card| self.judgment_kind(card) == kind)
-            })
+            && self
+                .seat(seat)
+                .is_ok_and(|player| !player.out && !player.judge_disabled)
+            && !self.judgments(seat).any(|entry| entry.kind == kind)
     }
 
     pub(crate) fn resolve_judge_area(
@@ -88,12 +84,12 @@ impl Game {
                     }
                     let player = self.seat_mut(flow.seat);
                     if flow.disable {
-                        let cards = player.judges.iter().rev().copied().collect::<Vec<_>>();
                         player.judge_disabled = true;
                         flow.stage = Publish;
-                        if !cards.is_empty() {
+                        let entries = self.judgments(flow.seat).rev().collect::<Vec<_>>();
+                        if !entries.is_empty() {
                             self.scheduler
-                                .next(self.judge_discard_program(flow.seat, cards));
+                                .next(self.judgment_discard_program(flow.seat, entries));
                             self.scheduler.replace_current(Program::JudgeArea(flow));
                             return;
                         }

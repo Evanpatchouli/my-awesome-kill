@@ -88,6 +88,10 @@
 
 用牌支付的失牌被取消时，后续用牌时机照常结算，仍在手里的材料保持原有知情。目标在置入前废区时，牌在 `useCardAfter` 仍属处理区，此后由这次用牌的 `orderingDiscard` 选取要清理的实体。`cardsDiscardBefore` 取消会保留这张处理区牌；如果该时机内先将已选定的牌交给某个角色，随后的 `cardsDiscard` 会将同一实体从手牌移至弃牌堆。[真实支付及收尾](../../tests/reference/judge-payment.json)
 
+`Game::judgments(seat)` 供可信规则读取当前的判定对象。每个对象有独立的 key、有效牌名与材料标识。按原实体执行获得时，材料可以已在手牌中，原判定区仍保有虚拟的乐不思蜀。选中判定对象执行弃置、获得或阶段判定时，规则会按这个 key 追踪材料。座位投影在需要时通过 `logicalJudges` 给出有序的公开牌名，已分离的包装不附带材料编号。原 `judges` 继续表示实际区域。[包装与原料](../../tests/reference/virtual-judge-probe.json) · [拆取与死亡清理](../../tests/reference/virtual-judge-tricks.json)
+
+装备登记也可以比实体在装备区停留得更久。从判定材料临时装上的青釭剑被外层弃置后，实体只有一张且已在弃牌堆，原武器登记仍占槽并影响射程。`equipment_registrations` 可按槽查询登记；各席看到的 `detachedEquipment` 只包含对应牌种。借刀可以指定这名持刀人，收取武器的步骤仍核对真实可获得的装备。普通真实换装和失装按各自的失牌事件撤销登记。[两种先后顺序](../../tests/reference/virtual-equip-discard-first.json) · [黑杀、八卦与借刀](../../tests/reference/virtual-equip-combat.json)
+
 ### 休整与离场
 
 规则可用 `TriggerContext::rest(seat, RestClock { unit, count })` 令一席休整，用 `rest_end(seat, hp)` 使其返场。休整者仍然存活，按物理座次排列，`Game::is_in` 为假。普通用牌、距离和应答使用仍参与对局的座位。公开座位的 `out` 与 `rest` 分别表示离场和可见的倒计时标记。可信规则可用 `Game::rest_clock` 读实际计数。

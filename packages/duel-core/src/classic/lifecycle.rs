@@ -142,6 +142,14 @@ impl Game {
     }
 
     fn queue_zone_discards(&mut self, seat: SeatId, zones: &[Zone]) {
+        let virtual_judgments = if zones.contains(&Zone::Judgment) {
+            self.judgments(seat)
+                .rev()
+                .filter(|entry| entry.is_virtual())
+                .collect::<Vec<_>>()
+        } else {
+            Vec::new()
+        };
         let player = self
             .seats
             .iter()
@@ -157,10 +165,23 @@ impl Game {
                     Zone::Judgment => &player.judges,
                     Zone::Expansion => &player.expansions,
                 };
-                cards.iter().copied().map(move |card| (zone, card))
+                let virtual_judgments = &virtual_judgments;
+                cards.iter().copied().filter_map(move |card| {
+                    (zone != Zone::Judgment
+                        || !virtual_judgments
+                            .iter()
+                            .any(|entry| entry.is_attached() && entry.material == card))
+                    .then_some((zone, card))
+                })
             })
-            .collect();
-        self.queue_discard_batch(seat, cards);
+            .collect::<Vec<_>>();
+        if virtual_judgments.is_empty() {
+            self.queue_discard_batch(seat, cards);
+        } else {
+            let held = cards.into_iter().map(|(_, card)| card).collect();
+            self.scheduler
+                .next(self.death_judgment_discard_program(seat, virtual_judgments, held));
+        }
     }
 
     fn resolve_draw(&mut self, seat: SeatId, amount: u16) {
