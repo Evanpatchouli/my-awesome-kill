@@ -29,6 +29,10 @@
 
 运行 `cargo test --release --locked --manifest-path packages/duel-core/Cargo.toml --lib benchmark_seeded_eight_player_games -- --ignored --nocapture`。游戏使用真实 Rust 规则，按固定种子跑完一局后验牌区守恒；进程启动、浏览器动画和 I/O 不算作结算耗时。[Rust 核心说明](../../packages/duel-core/README.md)记录测量方法和详细结果。
 
+### 命令回放
+
+`pnpm engine:test` 包含指定牌桌的私有响应与完整种子对局的 Rust 回放，以及发布 WASM 的逐命令前缀恢复。运行 Vite 开发入口后执行 `node apps/game/smoke-replay.mjs`。脚本从正常选将开八人局，用发布模块的录制工厂接受玩家和 AI 决定，然后在全新的浏览器上下文比较全部八席与旁观者的视图。种子 317 的样例包含初始局面、私有弃牌及三次电脑决策，共六个检查点。过期命令被拒绝后日志和各视图保持原值。
+
 ### 重铸的真实 WebAssembly 交互
 
 在项目根目录构建带测试内容的独立绑定，随后用普通 Vite 开发入口运行烟测。示例中的第二套绑定放在临时目录，正常发行版保持默认 Cargo features。

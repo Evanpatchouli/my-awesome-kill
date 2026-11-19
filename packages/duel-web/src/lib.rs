@@ -2,6 +2,9 @@
 use duel_core::{Command, Game, GameSetup, SeatId};
 use wasm_bindgen::prelude::*;
 
+mod replay;
+pub use replay::RecordedDuel;
+
 #[cfg(feature = "qa-compare")]
 mod qa_compare;
 #[cfg(feature = "qa-elemental")]

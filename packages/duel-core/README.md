@@ -72,6 +72,12 @@
 
 `TriggerContext::recast_batch` 接受技能授权的一组有序手牌或装备。两次工厂各接收同一组原始材料。失牌使用一个包装和一个底层事件，`Game::loss_record` 记录原选择及按实际来源移走的牌。包装取消时没有底层失牌记录；所有材料先被移走时，底层仍记录一次实际牌列表为空的失牌。默认通过一次摸牌和一次暗获按原选择数量补牌；工厂也可明获指定的有序实体。牌桌公告展示材料，手牌知情仍按移动事件结算。暗给的原持有席知道实际交出的实体，其他席只看到原本公开的装备或明确公开的转交。[批量对照](../../tests/reference/recast-batch.json) · [包装取消与全部截获](../../tests/reference/recast-batch-boundaries.json)
 
+### 命令录制与回放
+
+`RecordedGame` 从 `ReplaySetup::Prescribed` 的初始牌桌或 `ReplaySetup::Seeded` 的种子、玩家席、武将及席数建局。通过该实例提交的人类命令和电脑决策，在原有版本与规则校验通过后进入 `ReplayLog`。日志包含私有选择，供可信宿主保存。各席和旁观者继续从 `Game::view` 读取自己的投影。
+
+`ReplayLog::restore_at(n)` 使用相同规则从头执行前 n 条命令。`restore()` 执行整份记录。损坏的记录会报告首个失败命令的下标，索引从零起。扩展内容以 `with_factory` 和 `restore_with` 传递同一内容版本标识，每局独立安装注册和初始状态。索引技能依注册顺序采样。在 WASM 中，宿主用 `RecordedDuel` 建局，调用 `log()` 取记录，调用 `RecordedDuel.replayAt` 恢复内置规则牌桌。
+
 ### 有序实体分区
 
 `TriggerStep::MoveCards` 使用 `MoveChoiceRequest` 定义候选实体及初始分区。选择席的 `moveCards` 视图包含各行、牌面和行容量。提交按顺序发送实体、目标行及插入位置，索引指从原行取走后的目标位置。引擎依次校验移动和最终分区，非法提交保留版本和待选状态。AI 的计划通过同一校验。

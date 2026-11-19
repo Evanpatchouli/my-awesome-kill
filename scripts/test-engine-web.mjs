@@ -1,7 +1,7 @@
 // Exercise the shipped WASM interface, including a rejected command and private response.
 import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
-import init, { Duel } from '../apps/game/src/generated/duel/duel.js'
+import init, { Duel, RecordedDuel } from '../apps/game/src/generated/duel/duel.js'
 
 const binary = await readFile(
   new URL('../apps/game/src/generated/duel/duel_bg.wasm', import.meta.url),
@@ -45,6 +45,46 @@ for (const dodge of [true, false]) {
 console.log(
   'WASM conformance passed: three seats, private response, stale version, damage/dodge, card cleanup.',
 )
+
+const setup = { kind: 'seeded', seed: 317, human: 0, hero: 'guanyu', seats: 8 }
+const recorded = new RecordedDuel(JSON.stringify(setup))
+try {
+  const snapshots = []
+  const views = (game) => [undefined, 0, 1, 7].map((seat) => JSON.parse(game.view(seat)))
+  const save = () => snapshots.push(views(recorded))
+  save()
+  const submit = (version, action) => recorded.submit(JSON.stringify({ version, seat: 0, action }))
+  submit(0, { type: 'endPlay' })
+  save()
+  const pending = snapshots.at(-1)[1].choice
+  assert.equal(pending.kind, 'discard')
+  const discard = { type: 'discard', event: pending.event, cards: pending.cards.slice(0, pending.min) }
+  assert.throws(() => submit(0, discard))
+  assert.equal(JSON.parse(recorded.log()).commands.length, 1)
+  submit(1, discard)
+  save()
+  while (recorded.bot()) save()
+  const log = recorded.log()
+  const parsed = JSON.parse(log)
+  assert.ok(parsed.commands.some((command) => command.seat !== 0))
+  assert.equal(parsed.commands.length, snapshots.length - 1)
+  for (const [index, expected] of snapshots.entries()) {
+    const restored = RecordedDuel.replayAt(log, index)
+    try {
+      assert.deepEqual(views(restored), expected)
+      assert.equal(Object.hasOwn(expected[0], 'commands'), false)
+    } finally {
+      restored.free()
+    }
+  }
+  const damaged = structuredClone(parsed)
+  damaged.commands[1].version = 100
+  assert.throws(() => RecordedDuel.replayAt(JSON.stringify(damaged), 2), /replay command 1/)
+  assert.throws(() => RecordedDuel.replayAt(log, snapshots.length), /exceeds/)
+  console.log(`WASM replay passed for ${parsed.commands.length} accepted player and bot commands across four views.`)
+} finally {
+  recorded.free()
+}
 
 // Reduce the real upstream trace to the shared milestones implemented by this slice.
 // The full upstream hook log remains in the golden file for later migrations.

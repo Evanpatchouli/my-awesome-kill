@@ -22,6 +22,8 @@ pub use move_choice::{
     MoveBot, MoveChoiceRequest, MoveChoiceView, MoveConfirmFilter, MoveFilter, MoveResult, MoveRow,
     MoveRowView, MoveStep,
 };
+mod replay;
+pub use replay::{RecordedGame, ReplayError, ReplayLog, ReplaySetup};
 #[cfg(any(test, feature = "content-phase-skills"))]
 pub mod phase_content;
 mod protocol;
@@ -38,7 +40,7 @@ pub use triggers::{
     TriggerOrder, TriggerRegistration, TriggerRole, TriggerSelection, TriggerStep,
 };
 
-use std::collections::{HashMap, HashSet};
+use std::collections::{BTreeMap, HashMap, HashSet};
 
 use classic::elemental::{self, CardDamage};
 pub use classic::elemental::{DamageNature, DamageRecord};
@@ -373,7 +375,7 @@ pub struct Game {
     ordering_owners: HashMap<CardId, EventId>,
     private_ordering: HashSet<EventId>,
     marks: marks::State,
-    indexed_triggers: HashMap<TriggerId, triggers::TriggerIndex>,
+    indexed_triggers: BTreeMap<TriggerId, triggers::TriggerIndex>,
     turns: classic::turns::State,
     phase_state: classic::phases::State,
     active_skills: active_skill::State,
@@ -444,7 +446,7 @@ impl Game {
             ordering_owners: HashMap::new(),
             private_ordering: HashSet::new(),
             marks: marks::State::default(),
-            indexed_triggers: HashMap::new(),
+            indexed_triggers: BTreeMap::new(),
             turns: classic::turns::State::default(),
             phase_state: classic::phases::State::default(),
             active_skills: active_skill::State::default(),
