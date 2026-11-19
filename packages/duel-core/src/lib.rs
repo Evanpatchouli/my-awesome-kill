@@ -18,6 +18,8 @@ pub mod mingdian;
 mod move_choice;
 #[cfg(test)]
 mod move_choice_tests;
+#[cfg(any(test, feature = "content-xunxun"))]
+pub mod xunxun;
 pub use move_choice::{
     MoveBot, MoveChoiceRequest, MoveChoiceView, MoveConfirmFilter, MoveFilter, MoveResult, MoveRow,
     MoveRowView, MoveStep,

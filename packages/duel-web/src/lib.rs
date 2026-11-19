@@ -19,6 +19,8 @@ mod qa_phase_skills;
 mod qa_qiaoshui;
 #[cfg(feature = "qa-recast")]
 mod qa_recast;
+#[cfg(feature = "qa-xunxun")]
+mod qa_xunxun;
 #[cfg(feature = "qa-zhongyi")]
 mod qa_zhongyi;
 

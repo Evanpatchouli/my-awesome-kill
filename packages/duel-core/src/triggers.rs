@@ -122,8 +122,52 @@ pub struct TriggerContext<'a> {
     last_group: Option<EventId>,
     last_move: Option<&'a crate::MoveResult>,
     operations: VecDeque<TriggerOperation>,
+    preview_started: bool,
 }
 impl TriggerContext<'_> {
+    pub fn preview_pile(&mut self, seat: SeatId, count: u16) -> Result<(), RuleError> {
+        if !self.game.seat(seat)?.alive {
+            return Err(RuleError::InactiveSeat { seat });
+        }
+        if self.game.classic.is_none()
+            || self.preview_started
+            || self
+                .operations
+                .iter()
+                .any(|op| matches!(op, TriggerOperation::PreviewPile { .. }))
+        {
+            return Err(RuleError::InvalidSelection);
+        }
+        self.operations
+            .push_back(TriggerOperation::PreviewPile { seat, count });
+        Ok(())
+    }
+    pub fn preview_cards(&self) -> Vec<Card> {
+        self.game
+            .preview_pile_cards(self.game.scheduler.current_id())
+    }
+    pub fn return_pile_rows(
+        &mut self,
+        seat: SeatId,
+        top: &[Card],
+        bottom: &[Card],
+    ) -> Result<(), RuleError> {
+        if !self.game.seat(seat)?.alive {
+            return Err(RuleError::InactiveSeat { seat });
+        }
+        let owned = self.preview_cards();
+        let mut claimed = self.claimed_cards();
+        for card in top.iter().chain(bottom) {
+            if !owned.contains(card) || !claimed.insert(card.id) {
+                return Err(RuleError::InvalidSelection);
+            }
+        }
+        self.operations.push_back(TriggerOperation::ReturnPile {
+            seat,
+            rows: [top.to_vec(), bottom.to_vec()],
+        });
+        Ok(())
+    }
     pub fn move_result(&self) -> Option<&crate::MoveResult> {
         self.last_move
     }
@@ -562,7 +606,11 @@ impl TriggerContext<'_> {
                 | TriggerOperation::GainExpansion { card, .. } => {
                     claimed.insert(card.id);
                 }
-                TriggerOperation::Death { .. }
+                TriggerOperation::ReturnPile { rows, .. } => {
+                    claimed.extend(rows.iter().flatten().map(|card| card.id))
+                }
+                TriggerOperation::PreviewPile { .. }
+                | TriggerOperation::Death { .. }
                 | TriggerOperation::CompareMany { .. }
                 | TriggerOperation::VirtualSha { .. }
                 | TriggerOperation::Emit(_)
@@ -608,6 +656,14 @@ impl TriggerContext<'_> {
 
 #[derive(Clone)]
 enum TriggerOperation {
+    PreviewPile {
+        seat: SeatId,
+        count: u16,
+    },
+    ReturnPile {
+        seat: SeatId,
+        rows: [Vec<Card>; 2],
+    },
     Death {
         target: SeatId,
         source: Option<SeatId>,
@@ -693,6 +749,7 @@ pub(crate) struct Registered {
     pair_callback: Option<SeatId>,
     last_group: Option<EventId>,
     last_move: Option<crate::MoveResult>,
+    preview_started: bool,
     active_skill: bool,
     last_compare: Option<crate::CompareResult>,
     pub id: TriggerId,
@@ -759,6 +816,7 @@ impl Registered {
             pair_callback: None,
             last_group: None,
             last_move: None,
+            preview_started: false,
             id,
             owner,
             event,
@@ -994,6 +1052,7 @@ impl Game {
             last_group: flow.last_group,
             last_move: flow.last_move.as_ref(),
             operations: VecDeque::new(),
+            preview_started: flow.preview_started,
         };
         let then = (flow.effect)(&mut context, stage, selected.as_ref());
         let operations = context.operations;
@@ -1023,6 +1082,19 @@ impl Game {
                     | TriggerOperation::GainPublicPile { .. }
             );
             let program = match operation {
+                TriggerOperation::PreviewPile { seat, count } => {
+                    flow.preview_started = true;
+                    let Some(program) =
+                        self.preview_pile_program(self.scheduler.current_id(), seat, count)
+                    else {
+                        self.finish();
+                        return;
+                    };
+                    program
+                }
+                TriggerOperation::ReturnPile { seat, rows } => {
+                    self.return_pile_program(self.scheduler.current_id(), seat, rows)
+                }
                 TriggerOperation::Death { target, source } => {
                     let Some(role) = self
                         .seat(target)

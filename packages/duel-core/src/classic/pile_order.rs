@@ -40,23 +40,29 @@ enum MoveStage {
     CancelFinish,
 }
 #[derive(Clone, Copy)]
+enum OrderingSource {
+    Reserved,
+    Deck,
+}
+
+#[derive(Clone, Copy)]
 enum MoveKind {
-    Ordering,
-    Pile,
+    Ordering(OrderingSource),
+    Pile { mark_known: bool },
     Discard,
 }
 
 impl MoveKind {
     fn hook(self, stage: MoveStage) -> &'static str {
         let timings = match self {
-            Self::Ordering => [
+            Self::Ordering(_) => [
                 "cardsGotoOrderingBefore",
                 "cardsGotoOrderingBegin",
                 "cardsGotoOrderingEnd",
                 "cardsGotoOrderingAfter",
                 "cardsGotoOrderingCancelled",
             ],
-            Self::Pile => [
+            Self::Pile { .. } => [
                 "cardsGotoPileBefore",
                 "cardsGotoPileBegin",
                 "cardsGotoPileEnd",
@@ -122,11 +128,11 @@ impl Flow {
             Self::Movement(m) => {
                 let amount = m.rows.iter().map(Vec::len).sum();
                 match m.kind {
-                    MoveKind::Ordering => EventKind::CardsGotoOrdering {
+                    MoveKind::Ordering(_) => EventKind::CardsGotoOrdering {
                         seat: m.seat,
                         amount,
                     },
-                    MoveKind::Pile => EventKind::CardsGotoPile {
+                    MoveKind::Pile { .. } => EventKind::CardsGotoPile {
                         seat: m.seat,
                         amount,
                     },
@@ -173,6 +179,46 @@ impl Game {
             rows,
             moved: false,
         }))
+    }
+    pub(crate) fn preview_pile_program(
+        &mut self,
+        owner: EventId,
+        seat: SeatId,
+        count: u16,
+    ) -> Option<Program> {
+        let cards = self.draw_from_piles(usize::from(count))?;
+        self.classic
+            .as_mut()
+            .unwrap()
+            .deck
+            .extend(cards.iter().rev().copied());
+        self.scheduler.after(Program::PileOrder(Flow::Cleanup {
+            owner,
+            seat,
+            cards: cards.clone(),
+            after_discard: false,
+        }));
+        Some(self.pile_order_movement(
+            owner,
+            seat,
+            MoveKind::Ordering(OrderingSource::Deck),
+            [cards, vec![]],
+        ))
+    }
+    pub(crate) fn preview_pile_cards(&self, owner: EventId) -> Vec<Card> {
+        self.resolving
+            .iter()
+            .copied()
+            .filter(|&card| self.pile_order_owned(owner, card))
+            .collect()
+    }
+    pub(crate) fn return_pile_program(
+        &self,
+        owner: EventId,
+        seat: SeatId,
+        rows: [Vec<Card>; 2],
+    ) -> Program {
+        self.pile_order_movement(owner, seat, MoveKind::Pile { mark_known: false }, rows)
     }
     pub(crate) fn resolve_pile_order(
         &mut self,
@@ -277,8 +323,12 @@ impl Game {
                 root.stage = Ordered;
                 self.scheduler
                     .replace_current(Program::PileOrder(Flow::Root(root)));
-                let movement =
-                    self.pile_order_movement(event.id, seat, MoveKind::Ordering, [cards, vec![]]);
+                let movement = self.pile_order_movement(
+                    event.id,
+                    seat,
+                    MoveKind::Ordering(OrderingSource::Reserved),
+                    [cards, vec![]],
+                );
                 self.scheduler.next(movement);
             }
             Ordered => {
@@ -349,7 +399,12 @@ impl Game {
                 if let Some(rows) = rows.filter(|rows| rows.len() == 2) {
                     let mut iter = rows.into_iter();
                     let rows = [iter.next().unwrap(), iter.next().unwrap()];
-                    let movement = self.pile_order_movement(event.id, seat, MoveKind::Pile, rows);
+                    let movement = self.pile_order_movement(
+                        event.id,
+                        seat,
+                        MoveKind::Pile { mark_known: true },
+                        rows,
+                    );
                     root.stage = Piled;
                     self.scheduler
                         .replace_current(Program::PileOrder(Flow::Root(root)));
@@ -385,7 +440,7 @@ impl Game {
     fn resolve_pile_order_movement(&mut self, mut m: Movement, child: Option<Outcome<Resolution>>) {
         use MoveStage::*;
         if matches!(child, Some(Outcome::Cancelled)) && m.stage != CancelFinish {
-            if matches!(m.kind, MoveKind::Ordering) && !m.moved {
+            if matches!(m.kind, MoveKind::Ordering(OrderingSource::Reserved)) && !m.moved {
                 for card in m.rows[0].iter().rev() {
                     if let Some(index) = self.reserved_draws.iter().position(|c| c.id == card.id) {
                         let card = self.reserved_draws.remove(index);
@@ -411,19 +466,28 @@ impl Game {
             }
             Move => {
                 match m.kind {
-                    MoveKind::Ordering => {
+                    MoveKind::Ordering(_) => {
                         for card in &m.rows[0] {
-                            if let Some(index) =
-                                self.reserved_draws.iter().position(|c| c.id == card.id)
-                            {
-                                let card = self.reserved_draws.remove(index);
+                            let taken = match m.kind {
+                                MoveKind::Ordering(OrderingSource::Reserved) => self
+                                    .reserved_draws
+                                    .iter()
+                                    .position(|c| c == card)
+                                    .map(|i| self.reserved_draws.remove(i)),
+                                MoveKind::Ordering(OrderingSource::Deck) => {
+                                    let deck = &mut self.classic.as_mut().unwrap().deck;
+                                    deck.iter().position(|c| c == card).map(|i| deck.remove(i))
+                                }
+                                _ => unreachable!(),
+                            };
+                            if let Some(card) = taken {
                                 self.resolving.push(card);
                                 self.ordering_owners.insert(card.id, m.owner);
                             }
                         }
                         self.private_ordering.insert(m.owner);
                     }
-                    MoveKind::Pile | MoveKind::Discard => {
+                    MoveKind::Pile { .. } | MoveKind::Discard => {
                         for row in &mut m.rows {
                             row.retain(|&card| self.pile_order_owned(m.owner, card));
                             for card in row.iter() {
@@ -431,9 +495,11 @@ impl Game {
                             }
                         }
                         match m.kind {
-                            MoveKind::Pile => {
-                                for card in m.rows.iter().flatten() {
-                                    self.mark_known_to(card.id, m.seat);
+                            MoveKind::Pile { .. } => {
+                                if matches!(m.kind, MoveKind::Pile { mark_known: true }) {
+                                    for card in m.rows.iter().flatten() {
+                                        self.mark_known_to(card.id, m.seat);
+                                    }
                                 }
                                 let deck = &mut self.classic.as_mut().unwrap().deck;
                                 deck.extend(m.rows[0].iter().rev().copied());
@@ -452,7 +518,7 @@ impl Game {
                     .replace_current(Program::PileOrder(Flow::Movement(m)));
             }
             Finish | CancelFinish => {
-                if matches!(m.kind, MoveKind::Pile) && m.moved {
+                if matches!(m.kind, MoveKind::Pile { .. }) && m.moved {
                     let mut top = m.rows[0].clone();
                     top.reverse();
                     self.scheduler
