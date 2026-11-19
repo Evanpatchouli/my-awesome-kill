@@ -80,7 +80,7 @@
 
 `RecordedGame` 从 `ReplaySetup::Prescribed` 的初始牌桌或 `ReplaySetup::Seeded` 的种子、玩家席、武将及席数建局。通过该实例提交的人类命令和电脑决策，在原有版本与规则校验通过后进入 `ReplayLog`。日志包含私有选择，供可信宿主保存。各席和旁观者继续从 `Game::view` 读取自己的投影。
 
-`ReplayLog::restore_at(n)` 使用相同规则从头执行前 n 条命令。`restore()` 执行整份记录。损坏的记录会报告首个失败命令的下标，索引从零起。扩展内容以 `with_factory` 和 `restore_with` 传递同一内容版本标识，每局独立安装注册和初始状态。索引技能依注册顺序采样。在 WASM 中，宿主用 `RecordedDuel` 建局，调用 `log()` 取记录，调用 `RecordedDuel.replayAt` 恢复内置规则牌桌。
+`ReplayLog::restore_at(n)` 使用相同规则从头执行前 n 条命令。`restore()` 执行整份记录。损坏的记录会报告首个失败命令的下标，索引从零起。扩展内容以 `with_factory` 和 `restore_with` 传递同一内容版本标识，每局独立安装注册和初始状态。查询和输入校验可以多次执行，扩展应把影响后续结算的状态修改放到已接受命令的事件处理中。索引技能依注册顺序采样。在 WASM 中，宿主用 `RecordedDuel` 建局，调用 `log()` 取记录，调用 `RecordedDuel.replayAt` 恢复内置规则牌桌。
 
 ### 有序实体分区
 
