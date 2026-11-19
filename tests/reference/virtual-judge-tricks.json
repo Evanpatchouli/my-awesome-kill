@@ -1,0 +1,667 @@
+{
+  "schema": "noname-reference-trace-v1",
+  "referenceCommit": "c73270948d72949aa80009536b9fd5400767d091",
+  "mode": "identity",
+  "scenario": "ordinary trick selection and death cleanup of separated judgment materials",
+  "columns": [
+    "trial",
+    "kind",
+    "timing",
+    "event",
+    "parent",
+    "player",
+    "source",
+    "selected",
+    "finished",
+    "cancelled",
+    "state"
+  ],
+  "events": [
+    ["guohe:B","request","useCardBefore","useCard","reference_fixture_use","A",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"A:h"}],
+    ["guohe:B","callback","useCardBefore","useCard","reference_fixture_use","A",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"A:h"}],
+    ["guohe:B","request","useCardBegin","useCard","reference_fixture_use","A",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"A:h"}],
+    ["guohe:B","callback","useCardBegin","useCard","reference_fixture_use","A",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"A:h"}],
+    ["guohe:B","request","loseBefore","lose","useCard","A",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"A:h"}],
+    ["guohe:B","callback","loseBefore","lose","useCard","A",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"A:h"}],
+    ["guohe:B","request","loseBegin","lose","useCard","A",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"A:h"}],
+    ["guohe:B","callback","loseBegin","lose","useCard","A",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"A:h"}],
+    ["guohe:B","request","loseEnd","lose","useCard","A",null,null,true,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["guohe:B","callback","loseEnd","lose","useCard","A",null,null,true,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["guohe:B","request","loseAfter","lose","useCard","A",null,null,true,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["guohe:B","callback","loseAfter","lose","useCard","A",null,null,true,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["guohe:B","request","useCard","useCard","reference_fixture_use","A",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["guohe:B","callback","useCard","useCard","reference_fixture_use","A",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["guohe:B","request","discardPlayerCardBefore","discardPlayerCard","guohe","A",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["guohe:B","callback","discardPlayerCardBefore","discardPlayerCard","guohe","A",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["guohe:B","request","discardPlayerCardBegin","discardPlayerCard","guohe","A",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["guohe:B","callback","discardPlayerCardBegin","discardPlayerCard","guohe","A",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["guohe:B","request","discardBefore","discard","discardPlayerCard","B",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["guohe:B","callback","discardBefore","discard","discardPlayerCard","B",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["guohe:B","request","discardBegin","discard","discardPlayerCard","B",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["guohe:B","callback","discardBegin","discard","discardPlayerCard","B",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["guohe:B","request","loseBefore","lose","discard","B",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["guohe:B","callback","loseBefore","lose","discard","B",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["guohe:B","request","loseBegin","lose","discard","B",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["guohe:B","callback","loseBegin","lose","discard","B",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["guohe:B","request","loseEnd","lose","discard","B",null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:B","callback","loseEnd","lose","discard","B",null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:B","request","loseAfter","lose","discard","B",null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:B","callback","loseAfter","lose","discard","B",null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:B","request","discard","discard","discardPlayerCard","B",null,null,false,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:B","callback","discard","discard","discardPlayerCard","B",null,null,false,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:B","request","discardEnd","discard","discardPlayerCard","B",null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:B","callback","discardEnd","discard","discardPlayerCard","B",null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:B","request","discardAfter","discard","discardPlayerCard","B",null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:B","callback","discardAfter","discard","discardPlayerCard","B",null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:B","request","discardPlayerCardEnd","discardPlayerCard","guohe","A",null,[{"name":"lebu","position":null,"isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"d","isMaterial":true}]}],true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:B","callback","discardPlayerCardEnd","discardPlayerCard","guohe","A",null,[{"name":"lebu","position":null,"isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"d","isMaterial":true}]}],true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:B","request","discardPlayerCardAfter","discardPlayerCard","guohe","A",null,[{"name":"lebu","position":null,"isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"d","isMaterial":true}]}],true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:B","callback","discardPlayerCardAfter","discardPlayerCard","guohe","A",null,[{"name":"lebu","position":null,"isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"d","isMaterial":true}]}],true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:B","request","useCardEnd","useCard","reference_fixture_use","A",null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:B","callback","useCardEnd","useCard","reference_fixture_use","A",null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:B","request","useCardAfter","useCard","reference_fixture_use","A",null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:B","callback","useCardAfter","useCard","reference_fixture_use","A",null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:B","request","cardsDiscardBefore","cardsDiscard","orderingDiscard",null,null,null,false,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:B","callback","cardsDiscardBefore","cardsDiscard","orderingDiscard",null,null,null,false,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:B","request","cardsDiscardBegin","cardsDiscard","orderingDiscard",null,null,null,false,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:B","callback","cardsDiscardBegin","cardsDiscard","orderingDiscard",null,null,null,false,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:B","request","cardsDiscardEnd","cardsDiscard","orderingDiscard",null,null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"d"}],
+    ["guohe:B","callback","cardsDiscardEnd","cardsDiscard","orderingDiscard",null,null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"d"}],
+    ["guohe:B","request","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"d"}],
+    ["guohe:B","callback","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"d"}],
+    ["guohe:C","request","useCardBefore","useCard","reference_fixture_use","A",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"A:h"}],
+    ["guohe:C","callback","useCardBefore","useCard","reference_fixture_use","A",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"A:h"}],
+    ["guohe:C","request","useCardBegin","useCard","reference_fixture_use","A",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"A:h"}],
+    ["guohe:C","callback","useCardBegin","useCard","reference_fixture_use","A",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"A:h"}],
+    ["guohe:C","request","loseBefore","lose","useCard","A",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"A:h"}],
+    ["guohe:C","callback","loseBefore","lose","useCard","A",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"A:h"}],
+    ["guohe:C","request","loseBegin","lose","useCard","A",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"A:h"}],
+    ["guohe:C","callback","loseBegin","lose","useCard","A",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"A:h"}],
+    ["guohe:C","request","loseEnd","lose","useCard","A",null,null,true,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["guohe:C","callback","loseEnd","lose","useCard","A",null,null,true,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["guohe:C","request","loseAfter","lose","useCard","A",null,null,true,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["guohe:C","callback","loseAfter","lose","useCard","A",null,null,true,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["guohe:C","request","useCard","useCard","reference_fixture_use","A",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["guohe:C","callback","useCard","useCard","reference_fixture_use","A",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["guohe:C","request","discardPlayerCardBefore","discardPlayerCard","guohe","A",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["guohe:C","callback","discardPlayerCardBefore","discardPlayerCard","guohe","A",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["guohe:C","request","discardPlayerCardBegin","discardPlayerCard","guohe","A",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["guohe:C","callback","discardPlayerCardBegin","discardPlayerCard","guohe","A",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["guohe:C","request","discardBefore","discard","discardPlayerCard","B",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["guohe:C","callback","discardBefore","discard","discardPlayerCard","B",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["guohe:C","request","discardBegin","discard","discardPlayerCard","B",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["guohe:C","callback","discardBegin","discard","discardPlayerCard","B",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["guohe:C","request","loseBefore","lose","discard","B",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["guohe:C","callback","loseBefore","lose","discard","B",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["guohe:C","request","loseBegin","lose","discard","B",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["guohe:C","callback","loseBegin","lose","discard","B",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["guohe:C","request","loseEnd","lose","discard","B",null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:C","callback","loseEnd","lose","discard","B",null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:C","request","loseAfter","lose","discard","B",null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:C","callback","loseAfter","lose","discard","B",null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:C","request","discard","discard","discardPlayerCard","B",null,null,false,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:C","callback","discard","discard","discardPlayerCard","B",null,null,false,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:C","request","discardEnd","discard","discardPlayerCard","B",null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:C","callback","discardEnd","discard","discardPlayerCard","B",null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:C","request","discardAfter","discard","discardPlayerCard","B",null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:C","callback","discardAfter","discard","discardPlayerCard","B",null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:C","request","discardPlayerCardEnd","discardPlayerCard","guohe","A",null,[{"name":"lebu","position":null,"isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"d","isMaterial":true}]}],true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:C","callback","discardPlayerCardEnd","discardPlayerCard","guohe","A",null,[{"name":"lebu","position":null,"isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"d","isMaterial":true}]}],true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:C","request","discardPlayerCardAfter","discardPlayerCard","guohe","A",null,[{"name":"lebu","position":null,"isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"d","isMaterial":true}]}],true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:C","callback","discardPlayerCardAfter","discardPlayerCard","guohe","A",null,[{"name":"lebu","position":null,"isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"d","isMaterial":true}]}],true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:C","request","useCardEnd","useCard","reference_fixture_use","A",null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:C","callback","useCardEnd","useCard","reference_fixture_use","A",null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:C","request","useCardAfter","useCard","reference_fixture_use","A",null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:C","callback","useCardAfter","useCard","reference_fixture_use","A",null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:C","request","cardsDiscardBefore","cardsDiscard","orderingDiscard",null,null,null,false,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:C","callback","cardsDiscardBefore","cardsDiscard","orderingDiscard",null,null,null,false,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:C","request","cardsDiscardBegin","cardsDiscard","orderingDiscard",null,null,null,false,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:C","callback","cardsDiscardBegin","cardsDiscard","orderingDiscard",null,null,null,false,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"o"}],
+    ["guohe:C","request","cardsDiscardEnd","cardsDiscard","orderingDiscard",null,null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"d"}],
+    ["guohe:C","callback","cardsDiscardEnd","cardsDiscard","orderingDiscard",null,null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"d"}],
+    ["guohe:C","request","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"d"}],
+    ["guohe:C","callback","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":true,"trick":"d"}],
+    ["shunshou:B","request","useCardBefore","useCard","reference_fixture_use","A",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"A:h"}],
+    ["shunshou:B","callback","useCardBefore","useCard","reference_fixture_use","A",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"A:h"}],
+    ["shunshou:B","request","useCardBegin","useCard","reference_fixture_use","A",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"A:h"}],
+    ["shunshou:B","callback","useCardBegin","useCard","reference_fixture_use","A",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"A:h"}],
+    ["shunshou:B","request","loseBefore","lose","useCard","A",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"A:h"}],
+    ["shunshou:B","callback","loseBefore","lose","useCard","A",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"A:h"}],
+    ["shunshou:B","request","loseBegin","lose","useCard","A",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"A:h"}],
+    ["shunshou:B","callback","loseBegin","lose","useCard","A",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"A:h"}],
+    ["shunshou:B","request","loseEnd","lose","useCard","A",null,null,true,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:B","callback","loseEnd","lose","useCard","A",null,null,true,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:B","request","loseAfter","lose","useCard","A",null,null,true,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:B","callback","loseAfter","lose","useCard","A",null,null,true,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:B","request","useCard","useCard","reference_fixture_use","A",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:B","callback","useCard","useCard","reference_fixture_use","A",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:B","request","gainPlayerCardBefore","gainPlayerCard","shunshou","A",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:B","callback","gainPlayerCardBefore","gainPlayerCard","shunshou","A",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:B","request","gainPlayerCardBegin","gainPlayerCard","shunshou","A",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:B","callback","gainPlayerCardBegin","gainPlayerCard","shunshou","A",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:B","request","gainBefore","gain","gainPlayerCard","A","B",null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:B","callback","gainBefore","gain","gainPlayerCard","A","B",null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:B","request","gainBegin","gain","gainPlayerCard","A","B",null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:B","callback","gainBegin","gain","gainPlayerCard","A","B",null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:B","request","loseBefore","lose","gain","B",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:B","callback","loseBefore","lose","gain","B",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:B","request","loseBegin","lose","gain","B",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:B","callback","loseBegin","lose","gain","B",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:B","request","loseEnd","lose","gain","B",null,null,true,false,{"material":"s","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:B","callback","loseEnd","lose","gain","B",null,null,true,false,{"material":"s","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:B","request","loseAfter","lose","gain","B",null,null,true,false,{"material":"s","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:B","callback","loseAfter","lose","gain","B",null,null,true,false,{"material":"s","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:B","request","gainEnd","gain","gainPlayerCard","A","B",null,true,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:B","callback","gainEnd","gain","gainPlayerCard","A","B",null,true,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:B","request","gainAfter","gain","gainPlayerCard","A","B",null,true,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:B","callback","gainAfter","gain","gainPlayerCard","A","B",null,true,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:B","request","gainPlayerCardEnd","gainPlayerCard","shunshou","A",null,[{"name":"lebu","position":null,"isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"A:h","isMaterial":true}]}],true,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:B","callback","gainPlayerCardEnd","gainPlayerCard","shunshou","A",null,[{"name":"lebu","position":null,"isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"A:h","isMaterial":true}]}],true,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:B","request","gainPlayerCardAfter","gainPlayerCard","shunshou","A",null,[{"name":"lebu","position":null,"isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"A:h","isMaterial":true}]}],true,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:B","callback","gainPlayerCardAfter","gainPlayerCard","shunshou","A",null,[{"name":"lebu","position":null,"isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"A:h","isMaterial":true}]}],true,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:B","request","useCardEnd","useCard","reference_fixture_use","A",null,null,true,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:B","callback","useCardEnd","useCard","reference_fixture_use","A",null,null,true,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:B","request","useCardAfter","useCard","reference_fixture_use","A",null,null,true,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:B","callback","useCardAfter","useCard","reference_fixture_use","A",null,null,true,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:B","request","cardsDiscardBefore","cardsDiscard","orderingDiscard",null,null,null,false,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:B","callback","cardsDiscardBefore","cardsDiscard","orderingDiscard",null,null,null,false,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:B","request","cardsDiscardBegin","cardsDiscard","orderingDiscard",null,null,null,false,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:B","callback","cardsDiscardBegin","cardsDiscard","orderingDiscard",null,null,null,false,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:B","request","cardsDiscardEnd","cardsDiscard","orderingDiscard",null,null,null,true,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"d"}],
+    ["shunshou:B","callback","cardsDiscardEnd","cardsDiscard","orderingDiscard",null,null,null,true,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"d"}],
+    ["shunshou:B","request","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,null,null,true,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"d"}],
+    ["shunshou:B","callback","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,null,null,true,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"d"}],
+    ["shunshou:C","request","useCardBefore","useCard","reference_fixture_use","A",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"A:h"}],
+    ["shunshou:C","callback","useCardBefore","useCard","reference_fixture_use","A",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"A:h"}],
+    ["shunshou:C","request","useCardBegin","useCard","reference_fixture_use","A",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"A:h"}],
+    ["shunshou:C","callback","useCardBegin","useCard","reference_fixture_use","A",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"A:h"}],
+    ["shunshou:C","request","loseBefore","lose","useCard","A",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"A:h"}],
+    ["shunshou:C","callback","loseBefore","lose","useCard","A",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"A:h"}],
+    ["shunshou:C","request","loseBegin","lose","useCard","A",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"A:h"}],
+    ["shunshou:C","callback","loseBegin","lose","useCard","A",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"A:h"}],
+    ["shunshou:C","request","loseEnd","lose","useCard","A",null,null,true,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:C","callback","loseEnd","lose","useCard","A",null,null,true,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:C","request","loseAfter","lose","useCard","A",null,null,true,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:C","callback","loseAfter","lose","useCard","A",null,null,true,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:C","request","useCard","useCard","reference_fixture_use","A",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:C","callback","useCard","useCard","reference_fixture_use","A",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:C","request","gainPlayerCardBefore","gainPlayerCard","shunshou","A",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:C","callback","gainPlayerCardBefore","gainPlayerCard","shunshou","A",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:C","request","gainPlayerCardBegin","gainPlayerCard","shunshou","A",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:C","callback","gainPlayerCardBegin","gainPlayerCard","shunshou","A",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:C","request","gainBefore","gain","gainPlayerCard","A","B",null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:C","callback","gainBefore","gain","gainPlayerCard","A","B",null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:C","request","gainBegin","gain","gainPlayerCard","A","B",null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:C","callback","gainBegin","gain","gainPlayerCard","A","B",null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:C","request","loseBefore","lose","gain","B",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:C","callback","loseBefore","lose","gain","B",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:C","request","loseBegin","lose","gain","B",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:C","callback","loseBegin","lose","gain","B",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:C","request","loseEnd","lose","gain","B",null,null,true,false,{"material":"s","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:C","callback","loseEnd","lose","gain","B",null,null,true,false,{"material":"s","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:C","request","loseAfter","lose","gain","B",null,null,true,false,{"material":"s","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:C","callback","loseAfter","lose","gain","B",null,null,true,false,{"material":"s","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:C","request","gainEnd","gain","gainPlayerCard","A","B",null,true,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:C","callback","gainEnd","gain","gainPlayerCard","A","B",null,true,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:C","request","gainAfter","gain","gainPlayerCard","A","B",null,true,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:C","callback","gainAfter","gain","gainPlayerCard","A","B",null,true,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:C","request","gainPlayerCardEnd","gainPlayerCard","shunshou","A",null,[{"name":"lebu","position":null,"isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"A:h","isMaterial":true}]}],true,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:C","callback","gainPlayerCardEnd","gainPlayerCard","shunshou","A",null,[{"name":"lebu","position":null,"isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"A:h","isMaterial":true}]}],true,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:C","request","gainPlayerCardAfter","gainPlayerCard","shunshou","A",null,[{"name":"lebu","position":null,"isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"A:h","isMaterial":true}]}],true,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:C","callback","gainPlayerCardAfter","gainPlayerCard","shunshou","A",null,[{"name":"lebu","position":null,"isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"A:h","isMaterial":true}]}],true,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:C","request","useCardEnd","useCard","reference_fixture_use","A",null,null,true,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:C","callback","useCardEnd","useCard","reference_fixture_use","A",null,null,true,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:C","request","useCardAfter","useCard","reference_fixture_use","A",null,null,true,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:C","callback","useCardAfter","useCard","reference_fixture_use","A",null,null,true,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:C","request","cardsDiscardBefore","cardsDiscard","orderingDiscard",null,null,null,false,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:C","callback","cardsDiscardBefore","cardsDiscard","orderingDiscard",null,null,null,false,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:C","request","cardsDiscardBegin","cardsDiscard","orderingDiscard",null,null,null,false,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:C","callback","cardsDiscardBegin","cardsDiscard","orderingDiscard",null,null,null,false,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"o"}],
+    ["shunshou:C","request","cardsDiscardEnd","cardsDiscard","orderingDiscard",null,null,null,true,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"d"}],
+    ["shunshou:C","callback","cardsDiscardEnd","cardsDiscard","orderingDiscard",null,null,null,true,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"d"}],
+    ["shunshou:C","request","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,null,null,true,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"d"}],
+    ["shunshou:C","callback","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,null,null,true,false,{"material":"A:h","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":true,"materialInDiscard":false,"aliveB":true,"trick":"d"}],
+    ["death:B","request","dieBefore","die","reference_fixture_use","B",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":null}],
+    ["death:B","callback","dieBefore","die","reference_fixture_use","B",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":null}],
+    ["death:B","request","dieBegin","die","reference_fixture_use","B",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":null}],
+    ["death:B","callback","dieBegin","die","reference_fixture_use","B",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":null}],
+    ["death:B","request","die","die","reference_fixture_use","B",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":false,"trick":null}],
+    ["death:B","callback","die","die","reference_fixture_use","B",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":false,"trick":null}],
+    ["death:B","request","discardBefore","discard","die","B",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":false,"trick":null}],
+    ["death:B","callback","discardBefore","discard","die","B",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":false,"trick":null}],
+    ["death:B","request","discardBegin","discard","die","B",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":false,"trick":null}],
+    ["death:B","callback","discardBegin","discard","die","B",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":false,"trick":null}],
+    ["death:B","request","loseBefore","lose","discard","B",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":false,"trick":null}],
+    ["death:B","callback","loseBefore","lose","discard","B",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":false,"trick":null}],
+    ["death:B","request","loseBegin","lose","discard","B",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":false,"trick":null}],
+    ["death:B","callback","loseBegin","lose","discard","B",null,null,false,false,{"material":"B:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"handB":true,"handC":false,"handA":false,"materialInDiscard":false,"aliveB":false,"trick":null}],
+    ["death:B","request","loseEnd","lose","discard","B",null,null,true,false,{"material":"d","known":[false,false,false],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":false,"trick":null}],
+    ["death:B","callback","loseEnd","lose","discard","B",null,null,true,false,{"material":"d","known":[false,false,false],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":false,"trick":null}],
+    ["death:B","request","loseAfter","lose","discard","B",null,null,true,false,{"material":"d","known":[false,false,false],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":false,"trick":null}],
+    ["death:B","callback","loseAfter","lose","discard","B",null,null,true,false,{"material":"d","known":[false,false,false],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":false,"trick":null}],
+    ["death:B","request","discard","discard","die","B",null,null,false,false,{"material":"d","known":[false,false,false],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":false,"trick":null}],
+    ["death:B","callback","discard","discard","die","B",null,null,false,false,{"material":"d","known":[false,false,false],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":false,"trick":null}],
+    ["death:B","request","discardEnd","discard","die","B",null,null,true,false,{"material":"d","known":[false,false,false],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":false,"trick":null}],
+    ["death:B","callback","discardEnd","discard","die","B",null,null,true,false,{"material":"d","known":[false,false,false],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":false,"trick":null}],
+    ["death:B","request","discardAfter","discard","die","B",null,null,true,false,{"material":"d","known":[false,false,false],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":false,"trick":null}],
+    ["death:B","callback","discardAfter","discard","die","B",null,null,true,false,{"material":"d","known":[false,false,false],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":false,"trick":null}],
+    ["death:B","request","dieEnd","die","reference_fixture_use","B",null,null,true,false,{"material":"d","known":[false,false,false],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":false,"trick":null}],
+    ["death:B","callback","dieEnd","die","reference_fixture_use","B",null,null,true,false,{"material":"d","known":[false,false,false],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":false,"trick":null}],
+    ["death:B","request","dieAfter","die","reference_fixture_use","B",null,null,true,false,{"material":"d","known":[false,false,false],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":false,"trick":null}],
+    ["death:B","callback","dieAfter","die","reference_fixture_use","B",null,null,true,false,{"material":"d","known":[false,false,false],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":false,"trick":null}],
+    ["death:C","request","dieBefore","die","reference_fixture_use","B",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":null}],
+    ["death:C","callback","dieBefore","die","reference_fixture_use","B",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":null}],
+    ["death:C","request","dieBegin","die","reference_fixture_use","B",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":null}],
+    ["death:C","callback","dieBegin","die","reference_fixture_use","B",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":true,"trick":null}],
+    ["death:C","request","die","die","reference_fixture_use","B",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":false,"trick":null}],
+    ["death:C","callback","die","die","reference_fixture_use","B",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":false,"trick":null}],
+    ["death:C","request","discardBefore","discard","die","B",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":false,"trick":null}],
+    ["death:C","callback","discardBefore","discard","die","B",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":false,"trick":null}],
+    ["death:C","request","discardBegin","discard","die","B",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":false,"trick":null}],
+    ["death:C","callback","discardBegin","discard","die","B",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":false,"trick":null}],
+    ["death:C","request","loseBefore","lose","discard","B",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":false,"trick":null}],
+    ["death:C","callback","loseBefore","lose","discard","B",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":false,"trick":null}],
+    ["death:C","request","loseBegin","lose","discard","B",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":false,"trick":null}],
+    ["death:C","callback","loseBegin","lose","discard","B",null,null,false,false,{"material":"C:h","known":[true,true,true],"virtual":[{"name":"lebu","position":"h","isViewAsCard":false,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"raw":[{"name":"lebu","position":"B:j","isViewAsCard":true,"isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"handB":false,"handC":true,"handA":false,"materialInDiscard":false,"aliveB":false,"trick":null}],
+    ["death:C","request","loseEnd","lose","discard","B",null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":false,"trick":null}],
+    ["death:C","callback","loseEnd","lose","discard","B",null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":false,"trick":null}],
+    ["death:C","request","loseAfter","lose","discard","B",null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":false,"trick":null}],
+    ["death:C","callback","loseAfter","lose","discard","B",null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":false,"trick":null}],
+    ["death:C","request","discard","discard","die","B",null,null,false,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":false,"trick":null}],
+    ["death:C","callback","discard","discard","die","B",null,null,false,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":false,"trick":null}],
+    ["death:C","request","discardEnd","discard","die","B",null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":false,"trick":null}],
+    ["death:C","callback","discardEnd","discard","die","B",null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":false,"trick":null}],
+    ["death:C","request","discardAfter","discard","die","B",null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":false,"trick":null}],
+    ["death:C","callback","discardAfter","discard","die","B",null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":false,"trick":null}],
+    ["death:C","request","dieEnd","die","reference_fixture_use","B",null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":false,"trick":null}],
+    ["death:C","callback","dieEnd","die","reference_fixture_use","B",null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":false,"trick":null}],
+    ["death:C","request","dieAfter","die","reference_fixture_use","B",null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":false,"trick":null}],
+    ["death:C","callback","dieAfter","die","reference_fixture_use","B",null,null,true,false,{"material":"d","known":[true,true,true],"virtual":[],"raw":[],"handB":false,"handC":false,"handA":false,"materialInDiscard":true,"aliveB":false,"trick":null}]
+  ],
+  "trials": [
+    {
+      "name": "guohe:B",
+      "canUse": true,
+      "before": {
+        "material": "B:h",
+        "known": [
+          true,
+          true,
+          true
+        ],
+        "virtual": [
+          {
+            "name": "lebu",
+            "position": "h",
+            "isViewAsCard": false,
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "B:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "raw": [
+          {
+            "name": "lebu",
+            "position": "B:j",
+            "isViewAsCard": true,
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "B:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "handB": true,
+        "handC": false,
+        "handA": false,
+        "materialInDiscard": false,
+        "aliveB": true,
+        "trick": "A:h"
+      },
+      "after": {
+        "material": "d",
+        "known": [
+          true,
+          true,
+          true
+        ],
+        "virtual": [],
+        "raw": [],
+        "handB": false,
+        "handC": false,
+        "handA": false,
+        "materialInDiscard": true,
+        "aliveB": true,
+        "trick": "d"
+      }
+    },
+    {
+      "name": "guohe:C",
+      "canUse": true,
+      "before": {
+        "material": "C:h",
+        "known": [
+          true,
+          true,
+          true
+        ],
+        "virtual": [
+          {
+            "name": "lebu",
+            "position": "h",
+            "isViewAsCard": false,
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "C:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "raw": [
+          {
+            "name": "lebu",
+            "position": "B:j",
+            "isViewAsCard": true,
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "C:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "handB": false,
+        "handC": true,
+        "handA": false,
+        "materialInDiscard": false,
+        "aliveB": true,
+        "trick": "A:h"
+      },
+      "after": {
+        "material": "d",
+        "known": [
+          true,
+          true,
+          true
+        ],
+        "virtual": [],
+        "raw": [],
+        "handB": false,
+        "handC": false,
+        "handA": false,
+        "materialInDiscard": true,
+        "aliveB": true,
+        "trick": "d"
+      }
+    },
+    {
+      "name": "shunshou:B",
+      "canUse": true,
+      "before": {
+        "material": "B:h",
+        "known": [
+          true,
+          true,
+          true
+        ],
+        "virtual": [
+          {
+            "name": "lebu",
+            "position": "h",
+            "isViewAsCard": false,
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "B:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "raw": [
+          {
+            "name": "lebu",
+            "position": "B:j",
+            "isViewAsCard": true,
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "B:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "handB": true,
+        "handC": false,
+        "handA": false,
+        "materialInDiscard": false,
+        "aliveB": true,
+        "trick": "A:h"
+      },
+      "after": {
+        "material": "A:h",
+        "known": [
+          true,
+          true,
+          true
+        ],
+        "virtual": [],
+        "raw": [],
+        "handB": false,
+        "handC": false,
+        "handA": true,
+        "materialInDiscard": false,
+        "aliveB": true,
+        "trick": "d"
+      }
+    },
+    {
+      "name": "shunshou:C",
+      "canUse": true,
+      "before": {
+        "material": "C:h",
+        "known": [
+          true,
+          true,
+          true
+        ],
+        "virtual": [
+          {
+            "name": "lebu",
+            "position": "h",
+            "isViewAsCard": false,
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "C:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "raw": [
+          {
+            "name": "lebu",
+            "position": "B:j",
+            "isViewAsCard": true,
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "C:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "handB": false,
+        "handC": true,
+        "handA": false,
+        "materialInDiscard": false,
+        "aliveB": true,
+        "trick": "A:h"
+      },
+      "after": {
+        "material": "A:h",
+        "known": [
+          true,
+          true,
+          true
+        ],
+        "virtual": [],
+        "raw": [],
+        "handB": false,
+        "handC": false,
+        "handA": true,
+        "materialInDiscard": false,
+        "aliveB": true,
+        "trick": "d"
+      }
+    },
+    {
+      "name": "death:B",
+      "canUse": null,
+      "before": {
+        "material": "B:h",
+        "known": [
+          true,
+          true,
+          true
+        ],
+        "virtual": [
+          {
+            "name": "lebu",
+            "position": "h",
+            "isViewAsCard": false,
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "B:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "raw": [
+          {
+            "name": "lebu",
+            "position": "B:j",
+            "isViewAsCard": true,
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "B:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "handB": true,
+        "handC": false,
+        "handA": false,
+        "materialInDiscard": false,
+        "aliveB": true,
+        "trick": null
+      },
+      "after": {
+        "material": "d",
+        "known": [
+          false,
+          false,
+          false
+        ],
+        "virtual": [],
+        "raw": [],
+        "handB": false,
+        "handC": false,
+        "handA": false,
+        "materialInDiscard": true,
+        "aliveB": false,
+        "trick": null
+      }
+    },
+    {
+      "name": "death:C",
+      "canUse": null,
+      "before": {
+        "material": "C:h",
+        "known": [
+          true,
+          true,
+          true
+        ],
+        "virtual": [
+          {
+            "name": "lebu",
+            "position": "h",
+            "isViewAsCard": false,
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "C:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "raw": [
+          {
+            "name": "lebu",
+            "position": "B:j",
+            "isViewAsCard": true,
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "C:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "handB": false,
+        "handC": true,
+        "handA": false,
+        "materialInDiscard": false,
+        "aliveB": true,
+        "trick": null
+      },
+      "after": {
+        "material": "d",
+        "known": [
+          true,
+          true,
+          true
+        ],
+        "virtual": [],
+        "raw": [],
+        "handB": false,
+        "handC": false,
+        "handA": false,
+        "materialInDiscard": true,
+        "aliveB": false,
+        "trick": null
+      }
+    }
+  ]
+}

@@ -23,6 +23,7 @@ import { checkEquipSlots, installEquipSlots } from './reference-equip-slots.mjs'
 import { checkVirtualEquipProbe, installVirtualEquipProbe } from './reference-virtual-equip-probe.mjs';
 import { checkVirtualEquipCombat, installVirtualEquipCombat } from './reference-virtual-equip-combat.mjs';
 import { checkVirtualJudgeProbe, installVirtualJudgeProbe } from './reference-virtual-judge-probe.mjs';
+import { checkVirtualJudgeTricks, installVirtualJudgeTricks } from './reference-virtual-judge-tricks.mjs';
 import { checkReferenceExpansion, installReferenceExpansion } from './reference-expansion.mjs';
 import { checkZhongyiBoundaries, installZhongyiBoundaries } from './reference-zhongyi-boundaries.mjs';
 import { checkZhongyiTransitDeath, installZhongyiTransitDeath } from './reference-zhongyi-transit-death.mjs';
@@ -90,6 +91,7 @@ const descriptions = new Map([
   ['virtual-equip-lose-first', 'virtual judgment material equipped during loss then discard'],
   ['virtual-equip-combat', 'black attack against armor with and without an orphaned weapon'],
   ['virtual-judge-probe', 'virtual judgment wrappers separated from their materials and equipment visibility'],
+  ['virtual-judge-tricks', 'ordinary trick selection and death cleanup of separated judgment materials'],
 ]);
 let scenario = 'sha-no-shan';
 const scenarioIndex = argv.indexOf('--scenario');
@@ -194,6 +196,8 @@ try {
     await context.addInitScript(installEquipSlots);
   } else if (scenario === 'virtual-equip-combat') {
     await context.addInitScript(installVirtualEquipCombat);
+  } else if (scenario === 'virtual-judge-tricks') {
+    await context.addInitScript(installVirtualJudgeTricks);
   } else if (scenario === 'virtual-judge-probe') {
     await context.addInitScript(installVirtualJudgeProbe);
   } else if (scenario.startsWith('virtual-equip-')) {
@@ -331,6 +335,11 @@ try {
           }
           if (scenario === 'virtual-judge-probe') {
             window.__referenceResult = await window.__runVirtualJudgeProbe({ lib, game, ui, get, _status, actor });
+            game.pause();
+            return;
+          }
+          if (scenario === 'virtual-judge-tricks') {
+            window.__referenceResult = await window.__runVirtualJudgeTricks({ lib, game, ui, get, _status, actor });
             game.pause();
             return;
           }
@@ -524,6 +533,7 @@ try {
   if (scenario === 'judge-payment') checkJudgePayment(captured.value);
   if (scenario === 'equip-slots') checkEquipSlots(captured.value);
   if (scenario === 'virtual-judge-probe') checkVirtualJudgeProbe(captured.value);
+  else if (scenario === 'virtual-judge-tricks') checkVirtualJudgeTricks(captured.value);
   else if (scenario === 'virtual-equip-combat') checkVirtualEquipCombat(captured.value);
   else if (scenario.startsWith('virtual-equip-')) checkVirtualEquipProbe(captured.value);
   if (scenario === 'compare') checkReferenceCompare(captured.value);

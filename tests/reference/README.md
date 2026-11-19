@@ -141,6 +141,7 @@
    node scripts/reference-trace.mjs --scenario virtual-equip-lose-first --check tests/reference/virtual-equip-lose-first.json
    node scripts/reference-trace.mjs --scenario virtual-equip-combat --check tests/reference/virtual-equip-combat.json
    node scripts/reference-trace.mjs --scenario virtual-judge-probe --check tests/reference/virtual-judge-probe.json
+   node scripts/reference-trace.mjs --scenario virtual-judge-tricks --check tests/reference/virtual-judge-tricks.json
    node scripts/reference-trace.mjs --scenario tiesuo-recast --check tests/reference/tiesuo-recast.json
    node scripts/reference-trace.mjs --scenario recast-callbacks --check tests/reference/recast-callbacks.json
    node scripts/reference-trace.mjs --scenario recast-batch --check tests/reference/recast-batch.json
