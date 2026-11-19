@@ -141,7 +141,9 @@ impl Game {
             }
             Wugu | Taoyuan => vec![living],
             Nanman | Wanjian => vec![others],
-            Wuzhong | Shandian => vec![vec![seat]],
+            Wuzhong => vec![vec![seat]],
+            Shandian if self.can_add_judge(seat, Shandian) => vec![vec![seat]],
+            Shandian => vec![],
             Juedou => others
                 .into_iter()
                 .filter(|target| self.hero_allows_target(*target, Juedou))
@@ -150,13 +152,7 @@ impl Game {
             Lebu => others
                 .into_iter()
                 .filter(|target| {
-                    self.hero_allows_target(*target, Lebu)
-                        && !self
-                            .seat(*target)
-                            .expect("living target")
-                            .judges
-                            .iter()
-                            .any(|c| self.judgment_kind(*c) == Lebu)
+                    self.hero_allows_target(*target, Lebu) && self.can_add_judge(*target, Lebu)
                 })
                 .map(|target| vec![target])
                 .collect(),
@@ -195,13 +191,6 @@ impl Game {
             target_lists
                 .into_iter()
                 .filter(|targets| !targets.is_empty())
-                .filter(|_targets| {
-                    card.kind != Shandian
-                        || !player
-                            .judges
-                            .iter()
-                            .any(|c| self.judgment_kind(*c) == Shandian)
-                })
                 .map(|targets| PlannedUse {
                     targets: targets.clone(),
                     program: Program::Trick(Trick {
@@ -289,18 +278,14 @@ impl Game {
 
 impl Game {
     fn pass_lightning(&mut self, target: SeatId, material: Card) {
+        let skips_other_seats = self.has_skill(target, "undist");
         let next = self
             .in_order_from(target)
             .into_iter()
-            .filter(|&id| id != target)
-            .find(|id| {
-                !self
-                    .seat(*id)
-                    .expect("living seat")
-                    .judges
-                    .iter()
-                    .any(|card| self.judgment_kind(*card) == CardKind::Shandian)
-            });
+            .skip(1)
+            .filter(|&seat| !skips_other_seats && !self.has_skill(seat, "undist"))
+            .chain(std::iter::once(target))
+            .find(|&seat| self.can_add_judge(seat, CardKind::Shandian));
         if let Some(next) = next.filter(|_| self.resolving.contains(&material)) {
             let card = self.take_resolving(material.id);
             self.put_in_judgment(next, card, CardKind::Shandian);
@@ -383,10 +368,9 @@ impl Game {
                 self.scheduler.replace_current(Program::Trick(flow));
             }
             TargetStart => {
-                if matches!(flow.kind, Lebu | Shandian)
-                    || !CardTargetTiming::ALL
-                        .iter()
-                        .any(|timing| self.wants_timing(timing.name()))
+                if !CardTargetTiming::ALL
+                    .iter()
+                    .any(|timing| self.wants_timing(timing.name()))
                 {
                     flow.stage = BeginEffects;
                 } else {
@@ -426,18 +410,20 @@ impl Game {
             BeginEffects => {
                 self.sort_card_targets(&mut flow.targets);
                 if matches!(flow.kind, Lebu | Shandian) {
-                    let Some(&target) = flow.targets.first().filter(|&&seat| self.is_in(seat))
-                    else {
-                        for card in &flow.costs {
-                            self.scheduler
-                                .after(Program::event(EventKind::Discard { card: *card }));
-                        }
-                        self.finish();
-                        return;
-                    };
                     let material = flow.costs[0];
-                    let card = self.take_resolving(material.id);
-                    self.put_in_judgment(target, card, flow.kind);
+                    if self.resolving.contains(&material) {
+                        if let Some(&target) = flow
+                            .targets
+                            .first()
+                            .filter(|&&seat| self.can_add_judge(seat, flow.kind))
+                        {
+                            let card = self.take_resolving(material.id);
+                            self.put_in_judgment(target, card, flow.kind);
+                        } else {
+                            self.scheduler
+                                .after(Program::event(EventKind::Discard { card: material }));
+                        }
+                    }
                     self.finish();
                     return;
                 }

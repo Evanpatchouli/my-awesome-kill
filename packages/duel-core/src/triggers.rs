@@ -79,7 +79,9 @@ impl TriggerEvent {
         match game.event_kind(self.subject)? {
             Damage { .. } | LoseHp { .. } | Draw { .. } => Some(i64::from(self.amount)),
             GainMaxHp { num, .. } | LoseMaxHp { num, .. } => Some(i64::from(num)),
-            Lose { .. } | LoseToDiscardpile { .. } | ActivateSkill { .. } => Some(0),
+            Lose { .. } | LoseToDiscardpile { .. } | DiscardGroup { .. } | ActivateSkill { .. } => {
+                Some(0)
+            }
             Turn { .. } if self.timing == "roundStart" => Some(0),
             _ => self.delta,
         }
@@ -264,6 +266,24 @@ impl TriggerContext<'_> {
             .push_back(TriggerOperation::Rest(crate::classic::rest::Flow::end(
                 seat, hp,
             )));
+        Ok(())
+    }
+
+    /// Abolish the seat's judgment area, then attempt to discard its current delayed tricks.
+    pub fn disable_judge(&mut self, seat: SeatId) -> Result<(), RuleError> {
+        self.queue_judge_area(seat, true)
+    }
+
+    /// Restore the seat's ability to receive delayed tricks.
+    pub fn enable_judge(&mut self, seat: SeatId) -> Result<(), RuleError> {
+        self.queue_judge_area(seat, false)
+    }
+
+    fn queue_judge_area(&mut self, seat: SeatId, disable: bool) -> Result<(), RuleError> {
+        self.game.seat(seat)?;
+        self.operations.push_back(TriggerOperation::JudgeArea(
+            crate::classic::judge_area::Flow::new(seat, Some(self.owner), disable),
+        ));
         Ok(())
     }
 
@@ -736,6 +756,7 @@ impl TriggerContext<'_> {
                 | TriggerOperation::Death { .. }
                 | TriggerOperation::Revive { .. }
                 | TriggerOperation::Rest(_)
+                | TriggerOperation::JudgeArea(_)
                 | TriggerOperation::CompareMany { .. }
                 | TriggerOperation::VirtualSha { .. }
                 | TriggerOperation::Emit(_)
@@ -785,6 +806,7 @@ impl TriggerContext<'_> {
 #[derive(Clone)]
 enum TriggerOperation {
     Rest(crate::classic::rest::Flow),
+    JudgeArea(crate::classic::judge_area::Flow),
     MaxHp {
         seat: SeatId,
         source: Option<SeatId>,
@@ -1286,6 +1308,7 @@ impl Game {
                 }
                 TriggerOperation::Revive { seat, hp } => self.revive_program(seat, hp),
                 TriggerOperation::Rest(flow) => Program::Rest(flow),
+                TriggerOperation::JudgeArea(flow) => Program::JudgeArea(flow),
                 TriggerOperation::MaxHp {
                     seat,
                     source,

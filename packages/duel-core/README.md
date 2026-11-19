@@ -80,6 +80,10 @@
 
 死亡主时机之前，来源的 `turn_kills` 已增加且身份模式已公布死者身份。此时同步复活会保留其手牌、装备、显示标记及临时技能，反贼的死亡仍会在 `dieEnd` 前触发一次摸三张。完整死亡隐藏标记，规则仍可通过 `skill_mark_count` 读取计数。需要删除计数的临时技能可以在移除回调中调用 `clear_mark`。[八席复活与死亡奖惩](../../tests/reference/revival.json)
 
+### 废除与恢复判定区
+
+判定区可通过 `TriggerContext::disable_judge` 和 `enable_judge` 废除或恢复。废除在弃置原判定牌前立刻改变 `is_judge_disabled`，等到这一批弃置结束才显示公开占位。取消弃置或内层失牌会留下实体和原来的判定身份，后续再次废除可重新弃置。恢复只改变区域状态。普通乐不思蜀、国色以及闪电选择落点时共用 `can_add_judge`。[判定区轨迹](../../tests/reference/judge-area.json)
+
 ### 休整与离场
 
 规则可用 `TriggerContext::rest(seat, RestClock { unit, count })` 令一席休整，用 `rest_end(seat, hp)` 使其返场。休整者仍然存活，按物理座次排列，`Game::is_in` 为假。普通用牌、距离和应答使用仍参与对局的座位。公开座位的 `out` 与 `rest` 分别表示离场和可见的倒计时标记。可信规则可用 `Game::rest_clock` 读实际计数。

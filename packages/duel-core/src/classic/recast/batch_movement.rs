@@ -23,11 +23,21 @@ pub(crate) struct BatchMovement {
 #[derive(Clone, Copy)]
 enum BatchKind {
     Discard,
-    Lose { destination: BatchDestination },
-    Draw { amount: u16, reason: DrawReason },
+    JudgeDiscard,
+    Lose {
+        destination: BatchDestination,
+        judgment_only: bool,
+    },
+    Draw {
+        amount: u16,
+        reason: DrawReason,
+    },
     GainPile(CardZone),
     GainDrawn,
-    GainGive { from: SeatId, visible: bool },
+    GainGive {
+        from: SeatId,
+        visible: bool,
+    },
 }
 
 #[derive(Clone, Copy)]
@@ -76,6 +86,7 @@ impl BatchMovement {
         );
         match self.kind {
             BatchKind::Discard => EventKind::LoseToDiscardpile { seat, amount },
+            BatchKind::JudgeDiscard => EventKind::DiscardGroup { seat, amount },
             BatchKind::Lose { .. } => EventKind::Lose {
                 seat,
                 amount: if finished {
@@ -120,6 +131,13 @@ impl BatchMovement {
                 "loseToDiscardpileAfter",
                 "loseToDiscardpileCancelled",
             ],
+            BatchKind::JudgeDiscard => [
+                "discardBefore",
+                "discardBegin",
+                "discardEnd",
+                "discardAfter",
+                "discardCancelled",
+            ],
             BatchKind::Lose { .. } => [
                 "loseBefore",
                 "loseBegin",
@@ -154,6 +172,14 @@ impl BatchMovement {
 }
 
 impl Game {
+    pub(crate) fn judge_discard_program(&self, seat: SeatId, cards: Vec<Card>) -> Program {
+        Program::Recast(Flow::BatchMovement(BatchMovement::new(
+            seat,
+            BatchKind::JudgeDiscard,
+            Arc::from(cards),
+        )))
+    }
+
     fn batch_remove_transfer(&mut self, card: Card) -> Option<Card> {
         self.transferring
             .iter()
@@ -241,6 +267,10 @@ impl Game {
                 }
                 Move => {
                     if !self.is_in(seat) {
+                        if matches!(movement.kind, BatchKind::JudgeDiscard) {
+                            movement.stage = End;
+                            continue;
+                        }
                         movement.stage = Cancel(MoveCancellation::InvalidMovement);
                         continue;
                     }
@@ -249,9 +279,31 @@ impl Game {
                             seat,
                             BatchKind::Lose {
                                 destination: BatchDestination::Discard,
+                                judgment_only: false,
                             },
                             movement.cards.clone(),
                         )),
+                        BatchKind::JudgeDiscard => {
+                            let judges = &self.seat(seat).expect("judgment holder").judges;
+                            let cards = movement
+                                .cards
+                                .iter()
+                                .copied()
+                                .filter(|card| judges.contains(card))
+                                .collect::<Vec<_>>();
+                            if cards.is_empty() {
+                                movement.stage = Discarded;
+                                continue;
+                            }
+                            Some(BatchMovement::new(
+                                seat,
+                                BatchKind::Lose {
+                                    destination: BatchDestination::Discard,
+                                    judgment_only: true,
+                                },
+                                Arc::from(cards),
+                            ))
+                        }
                         BatchKind::Draw { amount, .. } => {
                             match self.draw_from_piles(amount as usize) {
                                 Some(cards) => {
@@ -272,10 +324,14 @@ impl Game {
                             from,
                             BatchKind::Lose {
                                 destination: BatchDestination::Transfer { to: seat, visible },
+                                judgment_only: false,
                             },
                             movement.cards.clone(),
                         )),
-                        BatchKind::Lose { destination } => {
+                        BatchKind::Lose {
+                            destination,
+                            judgment_only,
+                        } => {
                             if matches!(destination, BatchDestination::Transfer { to, .. } if !self.is_in(to))
                             {
                                 movement.stage = Cancel(MoveCancellation::InvalidMovement);
@@ -284,7 +340,9 @@ impl Game {
                             let mut hidden_hand = false;
                             for &card in movement.cards.iter() {
                                 let zone = self.seat(seat).ok().and_then(|s| {
-                                    if s.hand.contains(&card) {
+                                    if judgment_only {
+                                        s.judges.contains(&card).then_some(Zone::Judgment)
+                                    } else if s.hand.contains(&card) {
                                         Some(Zone::Hand)
                                     } else if s.equipment.contains(&card) {
                                         Some(Zone::Equipment)
@@ -397,17 +455,22 @@ impl Game {
                     } else {
                         movement.committed = cards;
                     }
-                    movement.stage = if matches!(movement.kind, BatchKind::Discard) {
-                        Discarded
-                    } else {
-                        End
-                    };
+                    movement.stage =
+                        if matches!(movement.kind, BatchKind::Discard | BatchKind::JudgeDiscard) {
+                            Discarded
+                        } else {
+                            End
+                        };
                     false
                 }
                 Discarded => {
                     movement.stage = End;
                     self.queue_timing(
-                        "loseToDiscardpile",
+                        if matches!(movement.kind, BatchKind::JudgeDiscard) {
+                            "discard"
+                        } else {
+                            "loseToDiscardpile"
+                        },
                         Some(seat),
                         None,
                         None,

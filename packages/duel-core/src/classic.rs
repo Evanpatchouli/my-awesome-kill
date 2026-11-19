@@ -7,6 +7,7 @@ pub(crate) mod equipment;
 mod equipment_tests;
 pub(crate) mod expansion;
 pub(crate) mod hero_integration;
+pub(crate) mod judge_area;
 mod lifecycle;
 pub(crate) mod max_hp;
 pub(crate) mod multi_compare;
@@ -153,6 +154,8 @@ impl Game {
                     hand: Vec::new(),
                     equipment: Vec::new(),
                     judges: Vec::new(),
+                    judge_disabled: false,
+                    judge_disabled_marker: false,
                     expansions: Vec::new(),
                 }
             })

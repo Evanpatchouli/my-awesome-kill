@@ -220,6 +220,11 @@ pub struct SeatView {
     pub known_hand: Vec<Card>,
     pub equipment: Vec<Card>,
     pub judges: Vec<Card>,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub judge_disabled: bool,
+    /// The disable operation publishes its marker after the discard child has settled.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub judge_disabled_marker: bool,
     pub judge_assignments: Vec<JudgmentAssignment>,
 }
 
@@ -487,6 +492,14 @@ pub enum EventKind {
     CardsGotoPile {
         seat: SeatId,
         amount: usize,
+    },
+    DisableJudge {
+        seat: SeatId,
+        source: Option<SeatId>,
+    },
+    EnableJudge {
+        seat: SeatId,
+        source: Option<SeatId>,
     },
     Link {
         seat: SeatId,

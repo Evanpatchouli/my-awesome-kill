@@ -228,6 +228,7 @@ enum Program {
     Hero(HeroFlow),
     Dispatch(classic::skills::Dispatch),
     Registered(triggers::Registered),
+    JudgeArea(classic::judge_area::Flow),
     Judgment(Judgment),
     JudgmentCleanup(classic::hero_integration::Cleanup),
     CardDamage(CardDamage),
@@ -324,6 +325,7 @@ impl Program {
             Self::Hero(flow) => flow.kind(),
             Self::Dispatch(flow) => flow.kind(),
             Self::Registered(flow) => flow.kind(),
+            Self::JudgeArea(flow) => flow.kind(),
             Self::Judgment(judgment) => EventKind::Judge {
                 seat: judgment.seat,
             },
@@ -366,6 +368,8 @@ struct Seat {
     hand: Vec<Card>,
     equipment: Vec<Card>,
     judges: Vec<Card>,
+    judge_disabled: bool,
+    judge_disabled_marker: bool,
     expansions: Vec<Card>,
 }
 
@@ -414,6 +418,8 @@ impl From<SeatSetup> for Seat {
             hand: setup.hand,
             equipment: Vec::new(),
             judges: Vec::new(),
+            judge_disabled: false,
+            judge_disabled_marker: false,
             expansions: Vec::new(),
         }
     }
@@ -742,6 +748,8 @@ impl Game {
                         .collect(),
                     equipment: seat.equipment.clone(),
                     judges: seat.judges.clone(),
+                    judge_disabled: seat.judge_disabled,
+                    judge_disabled_marker: seat.judge_disabled_marker,
                     judge_assignments: seat
                         .judges
                         .iter()
@@ -1262,6 +1270,7 @@ impl Game {
             Program::CounterChoice { request, context } => {
                 return self.resolve_selection(event, request, Some(context), answer)
             }
+            Program::JudgeArea(flow) => return self.resolve_judge_area(flow, child),
             Program::Judgment(judgment) => return self.resolve_judgment(judgment, child),
             Program::JudgmentCleanup(cleanup) => return self.resolve_judgment_cleanup(cleanup),
             Program::CardDamage(damage) => return self.resolve_card_damage(event, damage, child),
