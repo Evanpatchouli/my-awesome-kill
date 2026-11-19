@@ -43,20 +43,25 @@ const judgment = computed(() => [
   ...judgmentCards.value,
 ].join(' · '))
 const known = computed(() => props.knownHand?.map(printedFace).join(' · '))
+const visible = computed(() => Boolean(
+  state.value || (!props.hideEquipment && equipped.value) || judgment.value || known.value
+  || props.seat.equipmentDisabledMarkers?.length || props.seat.detachedEquipment?.length
+  || props.seat.marks?.length || props.seat.limitedSpent?.length || props.expansions?.length,
+))
 </script>
 <template>
-  <div class="classic-zones" :aria-label="label + '的场上信息'">
+  <div v-show="visible" class="classic-zones" :aria-label="label + '的场上信息'">
     <div v-if="state" class="classic-seat-state" :data-rest-seat="seat.rest ? seat.id : undefined" :aria-label="label + '的状态'" :title="state">
       {{ state }}
     </div>
-    <div v-if="!hideEquipment" :title="equipped || '无装备'"><span>装备</span> {{ equipped || '—' }}</div>
+    <div v-if="!hideEquipment" v-show="equipped" :title="equipped || '无装备'"><span>装备</span> {{ equipped || '—' }}</div>
     <div v-if="seat.equipmentDisabledMarkers?.length" :data-disabled-equipment="seat.id" title="已废除的装备栏">
       <span>废栏</span> {{ seat.equipmentDisabledMarkers.map(slot => mountCombined && slot === 'defenseHorse' ? '坐骑栏' : slotLabels[slot]).join(' · ') }}
     </div>
     <div v-if="seat.detachedEquipment?.length" :data-equipment-effect="seat.id" title="实体已经离开，装备效果仍然生效">
       <span>生效</span> {{ seat.detachedEquipment.map(kind => cardName(kind)).join(' · ') }}
     </div>
-    <div :data-judge-area="seat.id" :title="judgment || '无判定牌'">
+    <div v-show="judgment" :data-judge-area="seat.id" :title="judgment || '无判定牌'">
       <span>判定</span> {{ seat.judgeDisabledMarker ? '已废除' : judgment || '—' }}
       <template v-if="seat.judgeDisabledMarker">
         <div v-for="(label, index) in judgmentCards" :key="index" class="retained-judge">{{ label }}</div>

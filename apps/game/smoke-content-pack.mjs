@@ -106,10 +106,19 @@ RecordedDuel.classicWithContent = (...args) => (window.contentTable = createCont
   await page.getByLabel('打开内容包录像').setInputFiles({ name: 'replay.json', mimeType: 'application/json', buffer: recording })
   await button('退出回放').waitFor()
   assert.match(await board.locator('.classic-self').innerText(), /云游客/)
+  await page.setViewportSize({ width: 640, height: 272 })
+  async function assertReplayPromptInView() {
+    const prompt = await board.locator('.classic-center h1').boundingBox()
+    const dock = await board.locator('.classic-bottom').boundingBox()
+    assert.ok(prompt && dock && prompt.y >= 0 && prompt.y + prompt.height <= dock.y,
+      'short landscape replay prompt is visible above the dock')
+  }
+  await assertReplayPromptInView()
   const progress = page.getByRole('slider')
   await progress.fill(String(log.commands.length))
   await progress.dispatchEvent('change')
   assert.ok(await board.getAttribute('data-result'))
+  await assertReplayPromptInView()
   assert.deepEqual(errors, [])
   console.log(`Content import, play, export and replay passed (${log.commands.length} commands).`)
 } finally {

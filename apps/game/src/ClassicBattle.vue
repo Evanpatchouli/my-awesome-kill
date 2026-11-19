@@ -490,27 +490,45 @@ function canPickCard(id: number) {
 <template>
   <section
     class="classic-board"
-    :class="{ 'classic-board-eight': view.seats.length === 8 }"
+    :style="{ '--opponents': others.length }"
+    :data-seats="view.seats.length"
+    :data-crowded="others.length > 5 ? '' : undefined"
     :data-revision="view.version"
     :data-waiting-for="view.waitingFor"
     :data-phase="view.turn?.phase"
+    :data-input-ready="inputReady ? '' : undefined"
     :data-choice-kind="moveChoice ? 'move' : choice?.kind"
     :data-result="view.winner ?? (view.drawn ? 'draw' : null)"
     data-battle-table
   >
     <BattleEffects :view="feedback" />
-    <div class="classic-topline">
-      <span>第 {{ view.turn?.round ?? 1 }} 轮 · 第 {{ view.turn?.number ?? 1 }} 回合<span v-if="view.turnReason" data-turn-reason> · {{ skillName(view.turnReason) }}额外回合</span></span>
-      <span
-        >{{ phases[view.turn?.phase ?? ''] ?? view.turn?.phase }}<span v-if="view.phaseReason" data-phase-reason> · {{ skillName(view.phaseReason) }}额外阶段</span> ·
-        {{ seatName(view, view.activeSeat) }}</span
-      >
-      <span>牌堆 {{ view.deckCount }} · 弃牌 {{ view.discard.length }}</span>
+    <header class="classic-topline">
+      <slot name="exit" />
+      <div class="classic-round">
+        <strong>第 {{ view.turn?.round ?? 1 }} 轮</strong>
+        <span>第 {{ view.turn?.number ?? 1 }} 回合</span>
+        <span v-if="view.turnReason" class="turn-reason" data-turn-reason>{{ skillName(view.turnReason) }}额外回合</span>
+      </div>
+      <div class="classic-phase" :aria-label="`${seatName(view, view.activeSeat)} · ${phases[view.turn?.phase ?? ''] ?? ''}`">
+        <span class="classic-phase-actor">{{ seatName(view, view.activeSeat) }}</span>
+        <ol aria-label="回合阶段">
+          <li v-for="(label, key) in phases" :key="key" :aria-current="view.turn?.phase === key ? 'step' : undefined">{{ label }}</li>
+        </ol>
+        <span v-if="view.phaseReason" data-phase-reason>{{ skillName(view.phaseReason) }}额外阶段</span>
+      </div>
+      <span class="classic-deck" data-draw-anchor>
+        <svg viewBox="0 0 20 20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.2">
+          <path d="m3 7 8-4 6 3-8 4-6-3Zm0 3 6 3 8-4M3 13l6 3 8-4" />
+        </svg>
+        <span>牌堆 <b>{{ view.deckCount }}</b></span>
+        <span>弃牌 <b>{{ view.discard.length }}</b></span>
+      </span>
       <details class="classic-log">
         <summary>对局记录</summary>
-        <ol>
+        <ol v-if="log.length">
           <li v-for="(line, i) in [...log].reverse()" :key="i">{{ line }}</li>
         </ol>
+        <p v-else>暂无记录</p>
       </details>
       <ClassicCompare :view="view" />
       <details class="classic-roster-skills">
@@ -523,7 +541,7 @@ function canPickCard(id: number) {
           </li>
         </ol>
       </details>
-    </div>
+    </header>
     <div class="classic-opponents" aria-label="其他角色">
       <div
         v-for="seat in others"
@@ -532,14 +550,17 @@ function canPickCard(id: number) {
         :class="{
           dead: !seat.alive,
           current: seat.id === view.activeSeat,
+          responding: seat.id === view.waitingFor && seat.id !== view.activeSeat,
           targetable: possibleTargets.has(seat.id),
           chosen: selectedTargets.includes(seat.id),
         }"
         :data-seat="seat.id"
-        :data-position="view.seats.length === 8 ? relativeSeat(seat.id) : undefined"
+        :data-position="relativeSeat(seat.id)"
+        :data-faction="generalDefinition(view, seat.hero)?.faction"
       >
         <button
           class="seat-select"
+          :title="seatName(view, seat.id)"
           :disabled="
             !active || (!possibleTargets.has(seat.id) && !selectedTargets.includes(seat.id))
           "
@@ -547,19 +568,16 @@ function canPickCard(id: number) {
           @click="chooseSeat(seat.id)"
         >
           <img v-if="heroPortrait(seat.hero)" :src="heroPortrait(seat.hero)" :alt="`${seatName(view, seat.id)}立绘`" />
-          <span class="seat-identity">{{
-            seat.alive
-              ? seat.role
-                ? roles[seat.role]
-                : '身份未知'
-              : `阵亡 · ${seat.role ? roles[seat.role] : '身份未知'}`
-          }}</span>
-          <span class="seat-name">{{ seatName(view, seat.id) }}</span>
-          <span class="seat-faction"
-            >{{ factions[generalDefinition(view, seat.hero)?.faction ?? ''] ?? '' }} · 手牌
-            {{ seat.handCount }}</span
-          >
-          <HealthMeter :hp="seat.hp" :max-hp="seat.maxHp" />
+          <span class="classic-seat-badges">
+            <span class="seat-faction">{{ factions[generalDefinition(view, seat.hero)?.faction ?? ''] ?? '' }}</span>
+            <span class="seat-identity" :data-role="seat.role">{{ seat.role ? roles[seat.role] : '身份未知' }}</span>
+          </span>
+          <span v-if="!seat.alive || seat.hp <= 0" class="classic-seat-stamp">{{ seat.alive ? '濒死' : '阵亡' }}</span>
+          <span class="classic-seat-nameplate">
+            <span class="seat-name">{{ seatName(view, seat.id) }}</span>
+            <span class="classic-hand-count" :aria-label="`手牌 ${seat.handCount}`">{{ seat.handCount }}</span>
+            <HealthMeter :hp="seat.hp" :max-hp="seat.maxHp" />
+          </span>
           <span v-if="selectedTargets.includes(seat.id)" class="target-number">{{
             targetOrder.indexOf(seat.id) + 1
           }}</span>
@@ -576,24 +594,15 @@ function canPickCard(id: number) {
         />
       </div>
     </div>
-    <div class="classic-action-area" :class="{ 'is-centered': centerChoice || resolving.length > 0 }">
+    <div class="classic-action-area" :class="{ 'has-move': moveChoice, 'has-result': view.winner || view.drawn }">
       <div
         class="classic-center"
         :class="{
           'has-choice': centerChoice,
-          'has-preview': selectedPreview && !centerChoice,
           'has-move': moveChoice,
           'has-resolving': resolving.length > 0,
         }"
       >
-        <p v-if="!centerChoice && !choice && !resolving.length" class="classic-turn">
-          {{
-            view.turn?.seat === view.humanSeat
-              ? '你的回合'
-              : `${seatName(view, view.turn?.seat)}的回合`
-          }}
-          · {{ phases[view.turn?.phase ?? ''] ?? view.turn?.phase }}
-        </p>
         <section
           class="classic-center-surface"
           :data-card-choice="centerChoice ? '' : undefined"
@@ -610,7 +619,6 @@ function canPickCard(id: number) {
             @confirm="confirmMove"
           />
           <template v-else>
-            <h1 aria-live="polite">{{ prompt }}</h1>
             <div v-if="resolving.length || randomHandCount || pool.length" class="classic-pool">
               <div v-if="resolving.length" class="classic-resolving" role="group" aria-label="已打出的牌">
                 <div
@@ -670,15 +678,17 @@ function canPickCard(id: number) {
                 </button>
               </div>
             </div>
+            <h1 aria-live="polite"><span>{{ prompt }}</span></h1>
           </template>
         </section>
-        <div v-if="saveError" class="classic-save-error">
+        <p v-if="error && !moveChoice" role="alert" class="classic-save-error game-error">{{ error }}</p>
+        <div v-if="saveError" class="classic-save-error" role="alert">
           战绩保存失败 <button @click="emit('retrySave')">重试</button>
         </div>
-        <button v-if="!readonly && (view.winner || view.drawn)" class="primary-button" @click="emit('restart')">
-          再来一局
-        </button>
-        <slot />
+        <div v-if="!readonly && (view.winner || view.drawn)" class="classic-result-actions">
+          <button type="button" @click="emit('restart')">再来一局</button>
+          <slot />
+        </div>
       </div>
       <div ref="handControls" class="classic-hand-toolbar">
         <div v-if="selectedPreview && !centerChoice" class="classic-card-rule" data-hand-rule>
@@ -711,7 +721,7 @@ function canPickCard(id: number) {
               {{ seatName(view, target) }}
             </button>
           </div>
-          <div v-if="showCancel || handResponse || view.actions.some(a => a.type === 'endPlay') || showConfirm" class="classic-control-row">
+          <div v-if="view.waitingFor === view.humanSeat && (showCancel || handResponse || view.actions.some(a => a.type === 'endPlay') || showConfirm)" class="classic-control-row">
             <span v-if="selectionProgress" class="classic-choice-progress" aria-live="polite">
               {{ selectionProgress }}
             </span>
@@ -837,18 +847,32 @@ function canPickCard(id: number) {
         v-if="me"
         class="classic-self"
         :data-seat="me.id"
-        :class="{ targetable: possibleTargets.has(me.id), chosen: selectedTargets.includes(me.id) }"
+        :data-faction="generalDefinition(view, me.hero)?.faction"
+        :class="{
+          current: me.id === view.activeSeat,
+          responding: me.id === view.waitingFor && me.id !== view.activeSeat,
+          dead: !me.alive,
+          targetable: possibleTargets.has(me.id),
+          chosen: selectedTargets.includes(me.id),
+        }"
       >
         <button
           class="self-select"
+          :title="seatName(view, me.id)"
           :disabled="!active || (!possibleTargets.has(me.id) && !selectedTargets.includes(me.id))"
           :aria-pressed="selectedTargets.includes(me.id)"
           @click="chooseSeat(me.id)"
         >
           <img v-if="heroPortrait(me.hero)" :src="heroPortrait(me.hero)" :alt="`${seatName(view, me.id)}立绘`" />
-          <span class="self-identity">{{ me.role ? roles[me.role] : '身份未知' }}</span>
-          <span class="self-name">{{ seatName(view, me.id) }}</span>
-          <HealthMeter :hp="me.hp" :max-hp="me.maxHp" />
+          <span class="classic-seat-badges">
+            <span class="seat-faction">{{ factions[generalDefinition(view, me.hero)?.faction ?? ''] ?? '' }}</span>
+            <span class="self-identity" :data-role="me.role">{{ me.role ? roles[me.role] : '身份未知' }}</span>
+          </span>
+          <span v-if="!me.alive || me.hp <= 0" class="classic-seat-stamp">{{ me.alive ? '濒死' : '阵亡' }}</span>
+          <span class="classic-seat-nameplate">
+            <span class="self-name">{{ seatName(view, me.id) }}</span>
+            <HealthMeter :hp="me.hp" :max-hp="me.maxHp" />
+          </span>
           <span v-if="selectedTargets.includes(me.id)" class="target-number">{{
             targetOrder.indexOf(me.id) + 1
           }}</span>

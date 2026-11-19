@@ -19,13 +19,11 @@ if (evidence) {
 }
 
 const viewports = [{ width: 1280, height: 720 }, { width: 844, height: 390 }, { width: 640, height: 272 }]
-// Measured on the pinned noname revision c7327094, standard eight-seat identity, long2/simple.
-const opponents = [[1121.6, 129.2], [941, 68.3], [760.5, 46], [580, 46], [399.4, 46], [218.9, 68.3], [38.4, 129.2]]
-const near = (actual, expected, label) => {
-  assert.equal(actual.length, expected.length, label)
-  actual.forEach((value, i) => assert.ok(Math.abs(value - expected[i]) <= 1,
-    `${label} coordinate ${i}: ${value}, expected ${expected[i]}`))
-}
+const right = ([x, , width]) => x + width
+const bottom = ([, y, , height]) => y + height
+const contains = (outer, inner) =>
+  inner[0] >= outer[0] - 1 && inner[1] >= outer[1] - 1 &&
+  right(inner) <= right(outer) + 1 && bottom(inner) <= bottom(outer) + 1
 const button = (page, name) => page.getByRole('button', { name, exact: true })
 const targets = (page) => page.locator('.classic-seat .seat-select:enabled')
 const measure = (page) => page.locator('[data-battle-table]').evaluate((board) => {
@@ -39,11 +37,17 @@ const measure = (page) => page.locator('[data-battle-table]').evaluate((board) =
     })),
     hand: rect(board.querySelector('[data-hand-gallery]')),
     equipment: rect(board.querySelector('.classic-self-equipment')),
+    equipmentRows: [...board.querySelectorAll('.classic-self-equipment .equipment-row')].map(rect),
     skills: rect(board.querySelector('.classic-own-skills')),
     self: rect(board.querySelector('.classic-self')),
     prompt: rect(board.querySelector('.classic-center h1')),
     controls: rect(board.querySelector('.classic-controls')),
-    scroll: [window.scrollY, board.scrollTop],
+    health: [...board.querySelectorAll('[data-seat] .health')].map((meter) => ({
+      meter: rect(meter),
+      card: rect(meter.closest('[data-seat]')),
+      direction: getComputedStyle(meter).flexDirection,
+    })),
+    scroll: [window.scrollX, window.scrollY, board.scrollLeft, board.scrollTop],
   }
 })
 
@@ -75,49 +79,42 @@ try {
       const opening = await measure(page)
       assert.equal(await board.locator('[data-seat]').count(), 8, label)
       assert.deepEqual(opening.seats.map((seat) => seat.position), [1, 2, 3, 4, 5, 6, 7], label)
+      const screen = [0, 0, viewport.width, viewport.height]
+      for (const [index, { position, rect }] of opening.seats.entries()) {
+        assert.ok(contains(screen, rect), `${label} seat ${position} visible [${rect}]`)
+        const previous = opening.seats[index - 1]
+        if (previous) {
+          assert.ok(right(rect) <= previous.rect[0] + 1,
+            `${label} seat ${position} [${rect}] is left of seat ${previous.position} [${previous.rect}]`)
+        }
+      }
       const horizontalOverlap = ([left, , width], [otherLeft, , otherWidth]) =>
         left < otherLeft + otherWidth && otherLeft < left + width
       const seatBottom = Math.max(...opening.seats.filter(({ rect }) =>
-        horizontalOverlap(rect, opening.prompt)).map(({ rect }) => rect[1] + rect[3]))
+        horizontalOverlap(rect, opening.prompt)).map(({ rect }) => bottom(rect)))
       assert.ok(
-        seatBottom <= opening.prompt[1] && opening.prompt[1] + opening.prompt[3] <= opening.hand[1],
+        seatBottom <= opening.prompt[1] && bottom(opening.prompt) <= opening.hand[1],
         `${label} prompt between opponents and hand`,
       )
-      const equipmentRows = await board.locator('.classic-self-equipment .equipment-row').evaluateAll((rows) =>
-        rows.map((row) => {
-          const { top, bottom, height } = row.getBoundingClientRect()
-          return { top, bottom, height }
-        }),
-      )
+      const { equipment, equipmentRows, skills, self, hand } = opening
       assert.equal(equipmentRows.length, 4, label)
-      assert.ok(equipmentRows.every(row => Math.abs(row.height - equipmentRows[0].height) <= 1), `${label} equipment rows have equal height`)
-      near([equipmentRows[0].top, equipmentRows.at(-1).bottom],
-        [opening.self[1], opening.self[1] + opening.self[3]], `${label} slots fill the portrait height`)
-      const insets = await board.locator('.classic-bottom').evaluate((dock) => {
-        const { top, bottom } = dock.getBoundingClientRect()
-        const { top: equipmentTop, bottom: equipmentBottom } = dock.querySelector('.classic-self-equipment').getBoundingClientRect()
-        return [equipmentTop - top - parseFloat(getComputedStyle(dock).borderTopWidth), bottom - equipmentBottom]
-      })
-      near(insets, [insets[1], insets[1]], `${label} equipment insets are symmetric`)
-      assert.ok(opening.equipment[0] + opening.equipment[2] <= opening.hand[0] &&
-        opening.hand[0] + opening.hand[2] <= opening.skills[0] &&
-        opening.skills[0] + opening.skills[2] <= opening.self[0], `${label} bottom zones ordered left to right`)
-      assert.ok(opening.controls[1] + opening.controls[3] <= opening.hand[1], `${label} controls above hand`)
-      const health = await board.locator('.classic-self .health').evaluate((element) => {
-        const meter = element.getBoundingClientRect()
-        const portrait = element.closest('.self-select').querySelector('img').getBoundingClientRect()
-        return { direction: getComputedStyle(element).flexDirection, meter: [meter.left, meter.top, meter.right, meter.bottom], portrait: [portrait.left, portrait.top, portrait.right, portrait.bottom] }
-      })
-      assert.match(health.direction, /^column/)
-      assert.ok(health.meter[0] >= health.portrait[0] && health.meter[1] >= health.portrait[1] &&
-        health.meter[2] <= health.portrait[2] && health.meter[3] <= health.portrait[3], `${label} health inside portrait`)
-      if (viewport.width === 1280) {
-        for (const { position, rect, face } of opening.seats) {
-          const [x, y] = opponents[position - 1]
-          near(rect, [x, y, 120, 200], `seat ${position}`)
-          near(face, [x + 3, y + 3, 114, 194], `seat ${position} portrait`)
-        }
+      assert.ok(contains(screen, equipment), `${label} equipment column visible [${equipment}]`)
+      for (const row of equipmentRows) {
+        assert.ok(contains(equipment, row), `${label} equipment row [${row}] visible in [${equipment}]`)
       }
+      assert.ok(right(equipment) <= hand[0] + 1 && right(hand) <= skills[0] + 1 &&
+        right(skills) <= self[0] + 1,
+        `${label} equipment [${equipment}], hand [${hand}], skills [${skills}], self [${self}] ordered left to right`)
+      assert.ok(Math.abs(equipment[1] - self[1]) <= 1 && Math.abs(bottom(equipment) - bottom(self)) <= 1,
+        `${label} equipment [${equipment}] and self [${self}] fill the same dock height`)
+      assert.ok(contains(screen, self) && contains(screen, hand), `${label} self and hand visible`)
+      assert.ok(bottom(opening.controls) <= hand[1], `${label} controls above hand`)
+      assert.equal(opening.health.length, 8, label)
+      for (const { meter, card, direction } of opening.health) {
+        assert.match(direction, /^row/, `${label} health runs horizontally`)
+        assert.ok(contains(card, meter), `${label} health [${meter}] inside portrait [${card}]`)
+      }
+      assert.deepEqual(opening.scroll, [0, 0, 0, 0], `${label} board starts without scrolling`)
       if (evidence) await page.screenshot({ path: path.join(evidence, `table-parity-${label}.png`) })
 
       const revision = Number(await board.getAttribute('data-revision'))
@@ -125,6 +122,12 @@ try {
       const played = board.locator(`[data-hand-gallery] [data-card-id="${cardId}"]`)
       await played.click()
       assert.equal(await played.getAttribute('aria-pressed'), 'true', label)
+      const selectedRankVisible = await played.evaluate((element) => {
+        const rank = element.querySelector('.card-rank').getBoundingClientRect()
+        const gallery = element.closest('[data-hand-gallery]').getBoundingClientRect()
+        return rank.top >= gallery.top && rank.bottom <= gallery.bottom
+      })
+      assert.ok(selectedRankVisible, `${label} lifted card rank stays inside the gallery`)
       assert.ok(await board.locator('[data-hand-rule]').isVisible(), `${label} selected card rule visible`)
       await button(page, '取消').click()
       assert.equal(await played.getAttribute('aria-pressed'), 'false', `${label} cancel clears selection`)

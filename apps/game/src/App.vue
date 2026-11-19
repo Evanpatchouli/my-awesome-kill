@@ -163,12 +163,13 @@ watch(
     await nextTick()
     if (path === '/battle') window.scrollTo(0, 0)
     if (screen.value) gsap.killTweensOf(screen.value)
-    if (!reduced.value && screen.value)
+    if (!reduced.value && screen.value && path !== '/battle')
       gsap.fromTo(
         screen.value,
         { opacity: 0, y: 10 },
         { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' },
       )
+    else if (screen.value) gsap.set(screen.value, { clearProps: 'opacity,transform' })
   },
 )
 onMounted(() => {
@@ -214,7 +215,7 @@ onUnmounted(() => {
       </div>
     </template>
     <template v-else>
-      <header class="page-header">
+      <header v-if="route.path !== '/battle' && !(route.path === '/classic' && replayView && replay)" class="page-header">
         <button class="back-button" aria-label="返回" @click="back"></button>
       </header>
       <section v-if="route.path === '/modes'" class="page-content modes-page">
@@ -272,7 +273,15 @@ onUnmounted(() => {
         @restart="begin"
         @retry-save="game.retrySave"
       >
-        <button v-if="content && (game.view.winner || game.view.drawn)" type="button" class="primary-button" @click="downloadReplay">
+        <template #exit>
+          <button type="button" class="classic-exit" aria-label="返回" @click="back">
+            <svg viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M15.5 10H4.5m5-5-5 5 5 5" fill="none" stroke="currentColor" stroke-width="1.5" />
+            </svg>
+            <span>返回</span>
+          </button>
+        </template>
+        <button v-if="content && (game.view.winner || game.view.drawn)" type="button" class="secondary" @click="downloadReplay">
           导出内容包录像
         </button>
       </ClassicBattle>
@@ -338,8 +347,5 @@ onUnmounted(() => {
         </div>
       </section>
     </template>
-    <p v-if="game.error && route.path === '/battle' && !game.view?.choice?.moveCards" role="alert" class="game-error">
-      {{ game.error }}
-    </p>
   </main>
 </template>

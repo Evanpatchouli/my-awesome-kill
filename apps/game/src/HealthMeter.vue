@@ -10,12 +10,12 @@ const condition = computed(() => {
 })
 </script>
 <template>
-  <p class="health" :class="condition" :aria-label="`体力 ${hp} / ${maxHp}`">
+  <span class="health" :class="condition" role="img" :aria-label="`体力 ${hp} / ${maxHp}`">
     <span v-if="numeric" class="health-count">{{ hp }} / {{ maxHp }}</span>
     <template v-else>
       <span v-for="n in maxHp" :key="n" class="health-point" :class="{ lost: n > hp }" aria-hidden="true"></span>
     </template>
-  </p>
+  </span>
 </template>
 <style scoped>
 .health .health-count { color: inherit; font-size: 0.8em; font-variant-numeric: tabular-nums; letter-spacing: 0; white-space: nowrap; }

@@ -106,6 +106,7 @@ onBeforeUnmount(() => clearTimeout(timer))
   font: inherit;
   text-shadow: inherit;
 }
+.compare-toggle:hover { color: var(--battle-selected); }
 .compare-panel {
   position: absolute;
   inset: calc(100% + 4px) 0 auto auto;
@@ -114,12 +115,12 @@ onBeforeUnmount(() => clearTimeout(timer))
   max-height: 65dvh;
   overflow: auto;
   padding: 8px 12px;
-  color: #38271c;
+  color: var(--battle-paper);
   text-align: center;
   text-shadow: none;
-  background: #f1e5cf;
-  border: 1px solid #a88966;
-  box-shadow: 0 3px 9px #291d1540;
+  background: linear-gradient(#1b231fe0, #1b231fe0), var(--battle-lacquer) center / 540px;
+  border: 1px solid var(--battle-copper);
+  box-shadow: 0 8px 22px #1118159c;
 }
 .compare-panel h2 {
   margin: 0 0 5px;
