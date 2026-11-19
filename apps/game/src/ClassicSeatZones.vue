@@ -40,7 +40,12 @@ const known = computed(() => props.knownHand?.map(printedFace).join(' · '))
       {{ state }}
     </div>
     <div :title="equipped || '无装备'"><span>装备</span> {{ equipped || '—' }}</div>
-    <div :data-judge-area="seat.id" :title="judgment || '无判定牌'"><span>判定</span> {{ judgment || '—' }}</div>
+    <div :data-judge-area="seat.id" :title="judgment || '无判定牌'">
+      <span>判定</span> {{ seat.judgeDisabledMarker ? '已废除' : judgment || '—' }}
+      <template v-if="seat.judgeDisabledMarker">
+        <div v-for="card in judges" :key="card.id" class="retained-judge">{{ printedFace(card) }}</div>
+      </template>
+    </div>
     <div v-if="known" :title="known"><span>已知手牌</span> {{ known }}</div>
     <div v-for="mark in seat.marks ?? []" :key="`${mark.skill}-${mark.source}`" class="classic-seat-mark" :data-mark="mark.skill">
       {{ skillName(mark.skill) }} ×{{ mark.count }}<template v-if="mark.source != null"> · 来源 {{ seatNames[mark.source] }}</template>
