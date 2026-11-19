@@ -234,6 +234,7 @@ enum Program {
     Dispatch(classic::skills::Dispatch),
     Registered(triggers::Registered),
     JudgeArea(classic::judge_area::Flow),
+    EquipArea(classic::equipment::AreaFlow),
     AddJudge(classic::add_judge::Flow),
     DelayedPlacement(classic::add_judge::DelayedPlacement),
     Judgment(Judgment),
@@ -337,6 +338,7 @@ impl Program {
             Self::Dispatch(flow) => flow.kind(),
             Self::Registered(flow) => flow.kind(),
             Self::JudgeArea(flow) => flow.kind(),
+            Self::EquipArea(flow) => flow.kind(),
             Self::AddJudge(flow) => flow.kind(),
             Self::DelayedPlacement(placement) => placement.kind(),
             Self::Judgment(judgment) => EventKind::Judge {
@@ -386,6 +388,9 @@ struct Seat {
     equipment: Vec<Card>,
     detached_equipment: Vec<Card>,
     judges: Vec<Card>,
+    equipment_expanded: [usize; 5],
+    equipment_disabled: [usize; 5],
+    equipment_markers: [usize; 5],
     judge_disabled: bool,
     judge_disabled_marker: bool,
     expansions: Vec<Card>,
@@ -437,6 +442,9 @@ impl From<SeatSetup> for Seat {
             equipment: Vec::new(),
             detached_equipment: Vec::new(),
             judges: Vec::new(),
+            equipment_expanded: [0; 5],
+            equipment_disabled: [0; 5],
+            equipment_markers: [0; 5],
             judge_disabled: false,
             judge_disabled_marker: false,
             expansions: Vec::new(),
@@ -783,6 +791,7 @@ impl Game {
                         .map(|card| card.kind)
                         .collect(),
                     judges: seat.judges.clone(),
+                    equipment_disabled_markers: equipment::markers(seat),
                     judge_disabled: seat.judge_disabled,
                     judge_disabled_marker: seat.judge_disabled_marker,
                     judge_assignments: self.judgment_assignments(seat.id),
@@ -1320,6 +1329,7 @@ impl Game {
                 return self.resolve_selection(event, request, Some(context), answer)
             }
             Program::JudgeArea(flow) => return self.resolve_judge_area(flow, child),
+            Program::EquipArea(flow) => return self.resolve_equip_area(flow, child),
             Program::AddJudge(flow) => return self.resolve_add_judge(flow, child),
             Program::DelayedPlacement(placement) => {
                 return self.resolve_delayed_placement(placement)

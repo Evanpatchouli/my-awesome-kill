@@ -590,3 +590,758 @@ fn replace_equip_resolves_live_material_and_rechecks_the_slot_after_cancellation
         }
     }
 }
+
+#[test]
+fn equipment_slots_disable_and_restore_through_real_skill_actions() {
+    use crate::EquipmentSlot;
+
+    let mut game = scene(
+        &[
+            Role::Lord,
+            Role::Loyalist,
+            Role::Loyalist,
+            Role::Rebel,
+            Role::Loyalist,
+            Role::Rebel,
+            Role::Loyalist,
+            Role::Rebel,
+        ],
+        0,
+    );
+    let weapon = card(201, CardKind::Zhuge);
+    let armor = card(202, CardKind::Bagua);
+    let horse = card(203, CardKind::Dilu);
+    let spare = card(204, CardKind::Qinggang);
+    let tracked = [weapon, armor, horse, spare];
+    game.seat_mut(1).equipment = vec![weapon, armor, horse];
+    game.seat_mut(1).hand = vec![spare];
+
+    let register = |game: &mut Game, disable| {
+        game.register_active_skill(ActiveSkillRegistration {
+            owner: 0,
+            skill: if disable {
+                "disable_weapon"
+            } else {
+                "enable_weapon"
+            }
+            .into(),
+            limited: false,
+            choice: Arc::new(|_, _| {
+                Some(ChoiceBranch {
+                    id: 0,
+                    label: "fixture".into(),
+                    cards: vec![],
+                    min_cards: 0,
+                    max_cards: 0,
+                    targets: vec![],
+                    min_targets: 0,
+                    max_targets: 0,
+                })
+            }),
+            effect: Arc::new(move |ctx, _, _| {
+                if disable {
+                    ctx.disable_equip(1, vec![EquipmentSlot::Weapon]).unwrap();
+                } else {
+                    ctx.enable_equip(1, vec![EquipmentSlot::Weapon]).unwrap();
+                }
+                TriggerStep::Done
+            }),
+        })
+        .unwrap()
+    };
+    let disable = register(&mut game, true);
+    let enable = register(&mut game, false);
+    play_phase(&mut game);
+    let slots = [
+        EquipmentSlot::Weapon,
+        EquipmentSlot::Armor,
+        EquipmentSlot::DefenseHorse,
+        EquipmentSlot::AttackHorse,
+        EquipmentSlot::Treasure,
+    ];
+    let state = |game: &Game| {
+        slots
+            .iter()
+            .map(|&slot| {
+                let state = game.equipment_slot_state(1, slot);
+                (state.enabled, state.empty, state.equipable, state.disabled)
+            })
+            .collect::<Vec<_>>()
+    };
+    assert_eq!(
+        state(&game),
+        [
+            (1, 0, 1, 0),
+            (1, 0, 1, 0),
+            (1, 0, 1, 0),
+            (1, 1, 1, 0),
+            (1, 1, 1, 0)
+        ]
+    );
+    let submit = |game: &mut Game, registration| {
+        game.submit(Command {
+            version: game.version,
+            seat: 0,
+            action: Action::ActivateSkill {
+                registration,
+                cards: vec![],
+                targets: vec![],
+            },
+        })
+        .unwrap();
+    };
+    let assert_cards = |game: &Game, discarded| {
+        assert_eq!(
+            game.seat(1).unwrap().equipment,
+            if discarded {
+                vec![armor, horse]
+            } else {
+                vec![weapon, armor, horse]
+            }
+        );
+        assert_eq!(game.seat(1).unwrap().hand, [spare]);
+        assert_eq!(
+            game.discard.iter().filter(|&&card| card == weapon).count(),
+            usize::from(discarded)
+        );
+        for card in tracked {
+            let count = game
+                .seats
+                .iter()
+                .map(|seat| {
+                    seat.hand
+                        .iter()
+                        .chain(&seat.equipment)
+                        .chain(&seat.judges)
+                        .filter(|&&candidate| candidate == card)
+                        .count()
+                })
+                .sum::<usize>()
+                + game
+                    .discard
+                    .iter()
+                    .filter(|&&candidate| candidate == card)
+                    .count();
+            assert_eq!(
+                count, 1,
+                "physical card must have exactly one location: {card:?}"
+            );
+        }
+    };
+    assert_cards(&game, false);
+    submit(&mut game, disable);
+    assert_eq!(
+        state(&game),
+        [
+            (0, 0, 0, 1),
+            (1, 0, 1, 0),
+            (1, 0, 1, 0),
+            (1, 1, 1, 0),
+            (1, 1, 1, 0)
+        ]
+    );
+    assert_cards(&game, true);
+    assert!(game
+        .equipment_uses(game.seat(1).unwrap(), spare)
+        .is_some_and(|uses| uses.is_empty()));
+    submit(&mut game, disable);
+    assert_eq!(state(&game)[0], (0, 0, 0, 1));
+    assert_cards(&game, true);
+    submit(&mut game, enable);
+    assert_eq!(
+        state(&game),
+        [
+            (1, 1, 1, 0),
+            (1, 0, 1, 0),
+            (1, 0, 1, 0),
+            (1, 1, 1, 0),
+            (1, 1, 1, 0)
+        ]
+    );
+    assert_cards(&game, true);
+}
+
+#[test]
+fn cancelled_equipment_slot_losses_keep_cards_and_public_markers() {
+    use crate::EquipmentSlot;
+    use serde_json::{json, Value};
+
+    let golden: Value =
+        serde_json::from_str(include_str!("../../../../tests/reference/equip-slots.json")).unwrap();
+    let timings = [
+        "disableEquipBefore",
+        "disableEquipBegin",
+        "disableEquipEnd",
+        "disableEquipAfter",
+        "loseToDiscardpileBefore",
+        "loseToDiscardpileBegin",
+        "loseToDiscardpile",
+        "loseToDiscardpileEnd",
+        "loseToDiscardpileAfter",
+        "loseToDiscardpileCancelled",
+        "loseBefore",
+        "loseBegin",
+        "loseEnd",
+        "loseAfter",
+        "loseCancelled",
+    ];
+    for cancel_timing in ["loseToDiscardpileBefore", "loseBefore"] {
+        let mut game = scene(
+            &[
+                Role::Lord,
+                Role::Loyalist,
+                Role::Loyalist,
+                Role::Rebel,
+                Role::Loyalist,
+                Role::Rebel,
+                Role::Loyalist,
+                Role::Rebel,
+            ],
+            0,
+        );
+        let weapon = card(211, CardKind::Zhuge);
+        let armor = card(212, CardKind::Bagua);
+        let horse = card(213, CardKind::Dilu);
+        let spare = card(214, CardKind::Qinggang);
+        let tracked = [weapon, armor, horse, spare];
+        game.seat_mut(1).equipment = vec![weapon, armor, horse];
+        game.seat_mut(1).hand = vec![spare];
+        let register = |game: &mut Game, disable| {
+            game.register_active_skill(ActiveSkillRegistration {
+                owner: 0,
+                skill: if disable {
+                    "cancel_disable"
+                } else {
+                    "cancel_enable"
+                }
+                .into(),
+                limited: false,
+                choice: Arc::new(|_, _| {
+                    Some(ChoiceBranch {
+                        id: 0,
+                        label: "fixture".into(),
+                        cards: vec![],
+                        min_cards: 0,
+                        max_cards: 0,
+                        targets: vec![],
+                        min_targets: 0,
+                        max_targets: 0,
+                    })
+                }),
+                effect: Arc::new(move |ctx, _, _| {
+                    if disable {
+                        ctx.disable_equip(1, vec![EquipmentSlot::Armor]).unwrap();
+                    } else {
+                        ctx.enable_equip(1, vec![EquipmentSlot::Armor]).unwrap();
+                    }
+                    TriggerStep::Done
+                }),
+            })
+            .unwrap()
+        };
+        let disable = register(&mut game, true);
+        let enable = register(&mut game, false);
+        play_phase(&mut game);
+        let rows = Arc::new(Mutex::new(Vec::new()));
+        let seen = rows.clone();
+        game.timing_observer = Some(Arc::new(move |game, e| {
+            if !timings.contains(&e.timing.as_str()) {
+                return;
+            }
+            let name = |kind| match kind {
+                EventKind::DisableEquip { .. } => "disableEquip",
+                EventKind::LoseToDiscardpile { .. } => "loseToDiscardpile",
+                EventKind::Lose { .. } => "lose",
+                EventKind::ActivateSkill { .. } | EventKind::ActiveSkillEffect { .. } => {
+                    "reference_fixture_use"
+                }
+                _ => "other",
+            };
+            let seat = |seat: Option<SeatId>| seat.map(|s| ((b'A' + s as u8) as char).to_string());
+            seen.lock().unwrap().push(json!([
+                e.timing,
+                name(game.event_kind(e.subject).unwrap()),
+                e.parent.and_then(|p| game.event_kind(p)).map(name),
+                seat(e.player),
+                seat(e.source),
+                e.cards
+                    .iter()
+                    .map(|&c| {
+                        assert_eq!(c, armor);
+                        "armor"
+                    })
+                    .collect::<Vec<_>>()
+            ]));
+        }));
+        game.register_trigger(TriggerRegistration {
+            owner: 0,
+            skill: "cancel_equipment_loss".into(),
+            timing: cancel_timing.into(),
+            role: TriggerRole::Global,
+            order: TriggerOrder::First,
+            priority: 0,
+            label: None,
+            silent: true,
+            filter: Arc::new(|_, _, _| true),
+            effect: Arc::new(move |ctx, _, _| {
+                let game = ctx.game();
+                assert_eq!(
+                    game.equipment_slot_state(1, EquipmentSlot::Armor).disabled,
+                    1
+                );
+                assert_eq!(game.seat(1).unwrap().equipment, [weapon, armor, horse]);
+                assert_eq!(game.equipment_registrations(1, CardKind::Bagua), [armor]);
+                for viewer in (0..8).map(Some).chain(std::iter::once(None)) {
+                    assert_eq!(
+                        game.view(viewer).unwrap().seats[1].equipment_disabled_markers,
+                        [EquipmentSlot::Armor]
+                    );
+                }
+                TriggerStep::CancelSubject
+            }),
+        })
+        .unwrap();
+        let submit = |game: &mut Game, registration| {
+            game.submit(Command {
+                version: game.version,
+                seat: 0,
+                action: Action::ActivateSkill {
+                    registration,
+                    cards: vec![],
+                    targets: vec![],
+                },
+            })
+            .unwrap()
+        };
+        let check_cards = |game: &Game, disabled| {
+            assert_eq!(game.seat(1).unwrap().equipment, [weapon, armor, horse]);
+            assert_eq!(game.seat(1).unwrap().hand, [spare]);
+            assert_eq!(game.equipment_registrations(1, CardKind::Bagua), [armor]);
+            assert_eq!(
+                game.equipment_slot_state(1, EquipmentSlot::Armor).disabled,
+                usize::from(disabled)
+            );
+            for viewer in (0..8).map(Some).chain(std::iter::once(None)) {
+                let view = game.view(viewer).unwrap();
+                assert_eq!(
+                    view.seats[1].equipment_disabled_markers,
+                    if disabled {
+                        vec![EquipmentSlot::Armor]
+                    } else {
+                        vec![]
+                    }
+                );
+                assert_eq!(view.seats[1].equipment, [weapon, armor, horse]);
+            }
+            for card in tracked {
+                let count = game
+                    .seats
+                    .iter()
+                    .map(|seat| {
+                        seat.hand
+                            .iter()
+                            .chain(&seat.equipment)
+                            .chain(&seat.judges)
+                            .filter(|&&candidate| candidate == card)
+                            .count()
+                    })
+                    .sum::<usize>()
+                    + game
+                        .discard
+                        .iter()
+                        .filter(|&&candidate| candidate == card)
+                        .count();
+                assert_eq!(
+                    count, 1,
+                    "physical card must have exactly one location: {card:?}"
+                );
+            }
+        };
+        submit(&mut game, disable);
+        check_cards(&game, true);
+        assert!(game.events.iter().any(|e| matches!(
+            e.kind,
+            EventKind::DisableEquip { seat: 1, .. }
+        ) && e.status == EventStatus::Finished));
+        let trial = format!("cancel:{cancel_timing}");
+        let expected: Vec<Value> = golden["events"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter(|r| r[0] == trial && r[1] == "request")
+            .map(|r| json!([r[2], r[3], r[4], r[5], r[6], r[8]]))
+            .collect();
+        assert_eq!(*rows.lock().unwrap(), expected, "{trial}");
+        submit(&mut game, disable);
+        check_cards(&game, true);
+        assert_eq!(
+            game.events
+                .iter()
+                .filter(|e| matches!(e.kind, EventKind::LoseToDiscardpile { .. })
+                    && e.status == EventStatus::Started)
+                .count(),
+            0
+        );
+        submit(&mut game, enable);
+        check_cards(&game, false);
+        assert_eq!(
+            game.equipment_slot_state(1, EquipmentSlot::Armor).enabled,
+            1
+        );
+    }
+}
+
+#[test]
+fn equipment_slot_empty_actions_emit_no_slot_events() {
+    use crate::EquipmentSlot;
+
+    let mut game = scene(
+        &[
+            Role::Lord,
+            Role::Loyalist,
+            Role::Loyalist,
+            Role::Rebel,
+            Role::Loyalist,
+            Role::Rebel,
+            Role::Loyalist,
+            Role::Rebel,
+        ],
+        0,
+    );
+    let armor = card(221, CardKind::Bagua);
+    game.seat_mut(1).equipment.push(armor);
+    let register = |game: &mut Game, disable| {
+        game.register_active_skill(ActiveSkillRegistration {
+            owner: 0,
+            skill: if disable {
+                "empty_disable"
+            } else {
+                "empty_enable"
+            }
+            .into(),
+            limited: false,
+            choice: Arc::new(|_, _| {
+                Some(ChoiceBranch {
+                    id: 0,
+                    label: "fixture".into(),
+                    cards: vec![],
+                    min_cards: 0,
+                    max_cards: 0,
+                    targets: vec![],
+                    min_targets: 0,
+                    max_targets: 0,
+                })
+            }),
+            effect: Arc::new(move |ctx, _, _| {
+                if disable {
+                    ctx.disable_equip(1, vec![]).unwrap();
+                } else {
+                    ctx.enable_equip(1, vec![]).unwrap();
+                }
+                TriggerStep::Done
+            }),
+        })
+        .unwrap()
+    };
+    let disable = register(&mut game, true);
+    let enable = register(&mut game, false);
+    play_phase(&mut game);
+    let slots = [
+        EquipmentSlot::Weapon,
+        EquipmentSlot::Armor,
+        EquipmentSlot::DefenseHorse,
+        EquipmentSlot::AttackHorse,
+        EquipmentSlot::Treasure,
+    ];
+    let before: Vec<_> = slots
+        .iter()
+        .map(|&slot| game.equipment_slot_state(1, slot))
+        .collect();
+    for action in [disable, enable] {
+        game.submit(Command {
+            version: game.version,
+            seat: 0,
+            action: Action::ActivateSkill {
+                registration: action,
+                cards: vec![],
+                targets: vec![],
+            },
+        })
+        .unwrap();
+        assert!(!game.events.iter().any(|event| matches!(
+            event.kind,
+            EventKind::DisableEquip { .. }
+                | EventKind::EnableEquip { .. }
+                | EventKind::LoseToDiscardpile { .. }
+                | EventKind::Lose { .. }
+        )));
+        assert_eq!(
+            slots
+                .iter()
+                .map(|&slot| game.equipment_slot_state(1, slot))
+                .collect::<Vec<_>>(),
+            before
+        );
+        assert_eq!(game.seat(1).unwrap().equipment, [armor]);
+        assert!(game.view(None).unwrap().seats[1]
+            .equipment_disabled_markers
+            .is_empty());
+    }
+}
+
+#[test]
+fn equipment_slot_timing_snapshots_keep_original_arguments() {
+    use crate::EquipmentSlot::{Armor, Weapon};
+    for disable in [true, false] {
+        for cancel in [true, false] {
+            let mut game = scene(
+                &[
+                    Role::Lord,
+                    Role::Loyalist,
+                    Role::Loyalist,
+                    Role::Rebel,
+                    Role::Loyalist,
+                    Role::Rebel,
+                    Role::Loyalist,
+                    Role::Rebel,
+                ],
+                0,
+            );
+            let prefix = if disable {
+                "disableEquip"
+            } else {
+                "enableEquip"
+            };
+            game.timing_observer = Some(Arc::new(|game, event| {
+                if !matches!(
+                    game.event_kind(event.subject),
+                    Some(EventKind::DisableEquip { .. } | EventKind::EnableEquip { .. })
+                ) {
+                    assert!(event.equipment_slots.is_none());
+                }
+            }));
+            let snapshots = Arc::new(Mutex::new(Vec::new()));
+            for suffix in ["Before", "Begin", "End", "After", "Cancelled"] {
+                let seen = snapshots.clone();
+                game.register_trigger(TriggerRegistration {
+                    owner: 0,
+                    skill: format!("snapshot_{prefix}_{suffix}"),
+                    timing: format!("{prefix}{suffix}"),
+                    role: TriggerRole::Global,
+                    order: TriggerOrder::First,
+                    priority: 0,
+                    label: None,
+                    silent: true,
+                    filter: Arc::new(|_, _, _| true),
+                    effect: Arc::new(move |ctx, _, _| {
+                        assert_eq!(
+                            ctx.event().equipment_slots.as_deref(),
+                            Some(&[Armor, Weapon, Armor][..])
+                        );
+                        seen.lock().unwrap().push(ctx.event().clone());
+                        if cancel && suffix == "Before" {
+                            TriggerStep::CancelSubject
+                        } else {
+                            TriggerStep::Done
+                        }
+                    }),
+                })
+                .unwrap();
+            }
+            let action = game
+                .register_active_skill(ActiveSkillRegistration {
+                    owner: 0,
+                    skill: "slot_snapshot_action".into(),
+                    limited: false,
+                    choice: Arc::new(|_, _| {
+                        Some(ChoiceBranch {
+                            id: 0,
+                            label: "fixture".into(),
+                            cards: vec![],
+                            min_cards: 0,
+                            max_cards: 0,
+                            targets: vec![],
+                            min_targets: 0,
+                            max_targets: 0,
+                        })
+                    }),
+                    effect: Arc::new(move |ctx, _, _| {
+                        if disable {
+                            ctx.disable_equip(1, vec![Armor, Weapon, Armor]).unwrap();
+                        } else {
+                            ctx.enable_equip(1, vec![Armor, Weapon, Armor]).unwrap();
+                        }
+                        TriggerStep::Done
+                    }),
+                })
+                .unwrap();
+            play_phase(&mut game);
+            game.submit(Command {
+                version: game.version,
+                seat: 0,
+                action: Action::ActivateSkill {
+                    registration: action,
+                    cards: vec![],
+                    targets: vec![],
+                },
+            })
+            .unwrap();
+            let saved = snapshots.lock().unwrap();
+            let expected: &[&str] = if cancel {
+                &["Before", "Cancelled"]
+            } else {
+                &["Before", "Begin", "End", "After"]
+            };
+            assert_eq!(
+                saved
+                    .iter()
+                    .map(|event| event.timing.as_str())
+                    .collect::<Vec<_>>(),
+                expected
+                    .iter()
+                    .map(|suffix| format!("{prefix}{suffix}"))
+                    .collect::<Vec<_>>()
+            );
+            for snapshot in saved.iter() {
+                assert_eq!(
+                    snapshot.equipment_slots.as_deref(),
+                    Some(&[Armor, Weapon, Armor][..])
+                );
+            }
+        }
+    }
+}
+
+#[test]
+fn equipment_slot_discard_rechecks_relocated_materials() {
+    use crate::EquipmentSlot;
+    use std::sync::atomic::{AtomicBool, Ordering};
+    for scenario in [
+        "expansion",
+        "outer_transfer",
+        "inner_transfer",
+        "virtual_judgment",
+    ] {
+        let mut game = scene(
+            &[
+                Role::Lord,
+                Role::Loyalist,
+                Role::Loyalist,
+                Role::Rebel,
+                Role::Loyalist,
+                Role::Rebel,
+                Role::Loyalist,
+                Role::Rebel,
+            ],
+            0,
+        );
+        let armor = card(231, CardKind::Bagua);
+        game.seat_mut(1).equipment.push(armor);
+        let action = game
+            .register_active_skill(ActiveSkillRegistration {
+                owner: 0,
+                skill: "relocate_armor".into(),
+                limited: false,
+                choice: Arc::new(|_, _| {
+                    Some(ChoiceBranch {
+                        id: 0,
+                        label: "fixture".into(),
+                        cards: vec![],
+                        min_cards: 0,
+                        max_cards: 0,
+                        targets: vec![],
+                        min_targets: 0,
+                        max_targets: 0,
+                    })
+                }),
+                effect: Arc::new(|ctx, _, _| {
+                    ctx.disable_equip(1, vec![EquipmentSlot::Armor]).unwrap();
+                    TriggerStep::Done
+                }),
+            })
+            .unwrap();
+        let once = Arc::new(AtomicBool::new(false));
+        game.register_trigger(TriggerRegistration {
+            owner: 0,
+            skill: "move_armor".into(),
+            timing: if scenario == "inner_transfer" {
+                "loseBefore"
+            } else {
+                "loseToDiscardpileBefore"
+            }
+            .into(),
+            role: TriggerRole::Global,
+            order: TriggerOrder::First,
+            priority: 0,
+            label: None,
+            silent: true,
+            filter: Arc::new(move |_, _, _| !once.swap(true, Ordering::SeqCst)),
+            effect: Arc::new(move |ctx, _, _| {
+                if scenario == "expansion" {
+                    ctx.add_to_expansion(1, armor.id, "relocated").unwrap();
+                } else if scenario == "virtual_judgment" {
+                    ctx.add_judge(1, armor.id, CardKind::Lebu).unwrap();
+                } else {
+                    ctx.gain_owned_card(1, 2, armor.id).unwrap();
+                }
+                TriggerStep::Done
+            }),
+        })
+        .unwrap();
+        let observed = Arc::new(Mutex::new(Vec::new()));
+        let seen = observed.clone();
+        game.timing_observer = Some(Arc::new(move |game, event| {
+            if event.timing == "loseBefore"
+                && event
+                    .parent
+                    .and_then(|id| game.event_kind(id))
+                    .is_some_and(|kind| matches!(kind, EventKind::LoseToDiscardpile { .. }))
+            {
+                seen.lock().unwrap().push(event.cards.clone());
+            }
+        }));
+        play_phase(&mut game);
+        game.submit(Command {
+            version: game.version,
+            seat: 0,
+            action: Action::ActivateSkill {
+                registration: action,
+                cards: vec![],
+                targets: vec![],
+            },
+        })
+        .unwrap();
+        let losses = observed.lock().unwrap();
+        if scenario == "outer_transfer" || scenario == "virtual_judgment" {
+            assert!(losses.is_empty());
+        } else {
+            assert_eq!(*losses, vec![vec![armor]]);
+        }
+        if scenario == "expansion" {
+            assert!(game.discard.contains(&armor));
+            assert!(!game.expansion_tags.contains_key(&armor.id));
+            assert!(
+                game.loss_history
+                    .iter()
+                    .any(|loss| loss.stockcards == [armor]
+                        && loss.cards == [(Zone::Expansion, armor)])
+            );
+        } else if scenario == "virtual_judgment" {
+            assert_eq!(game.seat(1).unwrap().judges, [armor]);
+            assert!(game.is_virtual_judgment_material(1, armor.id));
+            assert!(game
+                .judgments(1)
+                .any(|entry| entry.material == armor && entry.kind == CardKind::Lebu));
+            assert!(!game.discard.contains(&armor));
+        } else {
+            assert!(game.seat(2).unwrap().hand.contains(&armor));
+            assert!(!game.discard.contains(&armor));
+            if scenario == "inner_transfer" {
+                assert!(game
+                    .loss_history
+                    .iter()
+                    .any(|loss| loss.stockcards == [armor] && loss.cards.is_empty()));
+            }
+        }
+    }
+}

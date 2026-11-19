@@ -186,6 +186,7 @@ impl Probe {
                 target: None,
                 amount: 1,
                 cards: vec![card],
+                equipment_slots: None,
             },
         );
     }

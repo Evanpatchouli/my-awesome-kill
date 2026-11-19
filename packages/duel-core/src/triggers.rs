@@ -65,6 +65,8 @@ pub struct TriggerEvent {
     pub target: Option<SeatId>,
     pub amount: u16,
     pub cards: Vec<Card>,
+    /// Original slot arguments for equipment-area events, including repetitions.
+    pub equipment_slots: Option<Arc<[crate::EquipmentSlot]>>,
     pub card_kind: Option<crate::CardKind>,
     pub nature: Option<crate::DamageNature>,
     /// Signed change on changeHp and changeHujia subjects.
@@ -311,6 +313,38 @@ impl TriggerContext<'_> {
             .ok_or(RuleError::InvalidCard)?;
         self.operations.push_back(TriggerOperation::AddJudge(
             crate::classic::add_judge::Flow::new(seat, card, kind),
+        ));
+        Ok(())
+    }
+
+    pub fn disable_equip(
+        &mut self,
+        seat: SeatId,
+        slots: Vec<crate::EquipmentSlot>,
+    ) -> Result<(), RuleError> {
+        self.queue_equip_area(seat, slots, true)
+    }
+
+    pub fn enable_equip(
+        &mut self,
+        seat: SeatId,
+        slots: Vec<crate::EquipmentSlot>,
+    ) -> Result<(), RuleError> {
+        self.queue_equip_area(seat, slots, false)
+    }
+
+    fn queue_equip_area(
+        &mut self,
+        seat: SeatId,
+        slots: Vec<crate::EquipmentSlot>,
+        disable: bool,
+    ) -> Result<(), RuleError> {
+        if slots.is_empty() {
+            return Ok(());
+        }
+        self.game.seat(seat)?;
+        self.operations.push_back(TriggerOperation::EquipArea(
+            crate::classic::equipment::AreaFlow::new(seat, Some(self.owner), slots, disable),
         ));
         Ok(())
     }
@@ -827,6 +861,7 @@ impl TriggerContext<'_> {
                 | TriggerOperation::Revive { .. }
                 | TriggerOperation::Rest(_)
                 | TriggerOperation::JudgeArea(_)
+                | TriggerOperation::EquipArea(_)
                 | TriggerOperation::DiscardJudgment { .. }
                 | TriggerOperation::AddJudge(_)
                 | TriggerOperation::CompareMany { .. }
@@ -879,6 +914,7 @@ impl TriggerContext<'_> {
 enum TriggerOperation {
     Rest(crate::classic::rest::Flow),
     JudgeArea(crate::classic::judge_area::Flow),
+    EquipArea(crate::classic::equipment::AreaFlow),
     DiscardJudgment {
         seat: SeatId,
         key: JudgmentKey,
@@ -1240,6 +1276,10 @@ impl Game {
             target,
             amount,
             cards: cards.to_vec(),
+            equipment_slots: match frame {
+                Some((_, Program::EquipArea(flow))) => Some(Arc::from(flow.slots())),
+                _ => None,
+            },
             card_kind,
             nature,
             delta: None,
@@ -1399,6 +1439,7 @@ impl Game {
                 TriggerOperation::Revive { seat, hp } => self.revive_program(seat, hp),
                 TriggerOperation::Rest(flow) => Program::Rest(flow),
                 TriggerOperation::JudgeArea(flow) => Program::JudgeArea(flow),
+                TriggerOperation::EquipArea(flow) => Program::EquipArea(flow),
                 TriggerOperation::DiscardJudgment { seat, key } => {
                     let Some(entry) = self.judgment_entry(seat, key) else {
                         continue;

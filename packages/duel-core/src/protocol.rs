@@ -188,6 +188,25 @@ pub struct GameView {
     pub events: Vec<GameEvent>,
 }
 
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Ord, PartialOrd, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub enum EquipmentSlot {
+    Weapon,
+    Armor,
+    DefenseHorse,
+    AttackHorse,
+    Treasure,
+}
+
+#[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct EquipmentSlotState {
+    pub enabled: usize,
+    pub empty: usize,
+    pub equipable: usize,
+    pub disabled: usize,
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SeatView {
@@ -222,6 +241,8 @@ pub struct SeatView {
     /// Effective equipment whose material is outside the physical equipment area.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub detached_equipment: Vec<CardKind>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub equipment_disabled_markers: Vec<EquipmentSlot>,
     pub judges: Vec<Card>,
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub judge_disabled: bool,
@@ -506,6 +527,14 @@ pub enum EventKind {
     CardsGotoPile {
         seat: SeatId,
         amount: usize,
+    },
+    DisableEquip {
+        seat: SeatId,
+        source: Option<SeatId>,
+    },
+    EnableEquip {
+        seat: SeatId,
+        source: Option<SeatId>,
     },
     DisableJudge {
         seat: SeatId,

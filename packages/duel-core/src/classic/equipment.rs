@@ -6,17 +6,11 @@ use crate::classic::PlannedUse;
 use crate::scheduler::{EventRef, Outcome};
 use crate::CounterContext;
 use crate::{
-    Card, CardId, CardKind, ChoiceBranch, ChoiceRequest, EventKind, Game, Program, Resolution,
-    RuleError, Seat, SeatId, VirtualPlay, Zone,
+    Card, CardId, CardKind, ChoiceBranch, ChoiceRequest, EquipmentSlot, EquipmentSlotState,
+    EventKind, Game, Program, Resolution, RuleError, Seat, SeatId, VirtualPlay, Zone,
 };
 
-#[derive(Clone, Copy, PartialEq, Eq)]
-pub(crate) enum Slot {
-    Weapon,
-    Armor,
-    AttackHorse,
-    DefenseHorse,
-}
+pub(crate) type Slot = EquipmentSlot;
 
 fn slot(kind: CardKind) -> Option<Slot> {
     use CardKind::*;
@@ -226,6 +220,9 @@ impl Game {
     pub(crate) fn equipment_uses(&self, player: &Seat, card: Card) -> Option<Vec<PlannedUse>> {
         slot(card.kind)?;
         let seat = player.id;
+        if !self.can_equip(seat, card.kind, true) {
+            return Some(vec![]);
+        }
         Some(vec![PlannedUse {
             targets: vec![seat],
             program: Program::Equipment(Flow::Equip {
@@ -381,9 +378,7 @@ impl Game {
                 }
             }
             EquipStep::Install => {
-                let occupied = self.seat(seat).is_ok_and(|player| {
-                    slot(card.kind).is_some_and(|wanted| has_slot(player, wanted, None))
-                });
+                let occupied = !self.can_equip(seat, card.kind, false);
                 let available = if direct {
                     self.transferring.contains(&card)
                 } else {
@@ -452,7 +447,10 @@ impl Game {
                 Before => ("replaceEquipBefore", Begin),
                 Begin => ("replaceEquipBegin", Select),
                 Select => {
-                    if self.is_in(replacement.seat) {
+                    if self.is_in(replacement.seat)
+                        && self.can_equip(replacement.seat, replacement.incoming.kind, true)
+                        && !self.can_equip(replacement.seat, replacement.incoming.kind, false)
+                    {
                         let player = self
                             .seat(replacement.seat)
                             .expect("the equipping seat exists");
@@ -740,5 +738,198 @@ impl Game {
 
     fn continue_equipment(&mut self, program: Flow) {
         self.scheduler.replace_current(Program::Equipment(program));
+    }
+}
+
+const SLOTS: [EquipmentSlot; 5] = [
+    EquipmentSlot::Weapon,
+    EquipmentSlot::Armor,
+    EquipmentSlot::DefenseHorse,
+    EquipmentSlot::AttackHorse,
+    EquipmentSlot::Treasure,
+];
+fn slot_index(slot: EquipmentSlot) -> usize {
+    SLOTS.iter().position(|&s| s == slot).unwrap()
+}
+pub(crate) fn markers(seat: &Seat) -> Vec<EquipmentSlot> {
+    SLOTS
+        .iter()
+        .flat_map(|&slot| std::iter::repeat(slot).take(seat.equipment_markers[slot_index(slot)]))
+        .collect()
+}
+
+#[derive(Clone, Copy)]
+enum AreaStage {
+    Before,
+    Begin,
+    Apply,
+    End,
+    After,
+    Finish,
+    Cancel,
+    FinishCancelled,
+}
+#[derive(Clone)]
+pub(crate) struct AreaFlow {
+    seat: SeatId,
+    source: Option<SeatId>,
+    slots: Vec<EquipmentSlot>,
+    cards: Vec<Card>,
+    disable: bool,
+    stage: AreaStage,
+}
+impl AreaFlow {
+    pub(crate) fn slots(&self) -> &[EquipmentSlot] {
+        &self.slots
+    }
+    pub(crate) fn new(
+        seat: SeatId,
+        source: Option<SeatId>,
+        slots: Vec<EquipmentSlot>,
+        disable: bool,
+    ) -> Self {
+        Self {
+            seat,
+            source,
+            slots,
+            cards: Vec::new(),
+            disable,
+            stage: AreaStage::Before,
+        }
+    }
+    pub(crate) fn kind(&self) -> EventKind {
+        if self.disable {
+            EventKind::DisableEquip {
+                seat: self.seat,
+                source: self.source,
+            }
+        } else {
+            EventKind::EnableEquip {
+                seat: self.seat,
+                source: self.source,
+            }
+        }
+    }
+}
+impl Game {
+    pub fn equipment_slot_state(&self, seat: SeatId, slot: EquipmentSlot) -> EquipmentSlotState {
+        let Ok(player) = self.seat(seat) else {
+            return EquipmentSlotState::default();
+        };
+        let i = slot_index(slot);
+        let enabled =
+            (1 + player.equipment_expanded[i]).saturating_sub(player.equipment_disabled[i]);
+        let registered = player
+            .registered_equipment()
+            .filter(|card| self::slot(card.kind) == Some(slot))
+            .count();
+        EquipmentSlotState {
+            enabled,
+            empty: enabled.saturating_sub(registered),
+            equipable: enabled,
+            disabled: player.equipment_disabled[i],
+        }
+    }
+    pub fn can_equip(&self, seat: SeatId, kind: CardKind, replace: bool) -> bool {
+        let Some(slot) = slot(kind) else { return false };
+        if !self.is_in(seat) {
+            return false;
+        }
+        let state = self.equipment_slot_state(seat, slot);
+        if replace {
+            state.equipable > 0
+        } else {
+            state.empty > 0
+        }
+    }
+    pub(crate) fn resolve_equip_area(
+        &mut self,
+        mut flow: AreaFlow,
+        child: Option<Outcome<Resolution>>,
+    ) {
+        use AreaStage::*;
+        if matches!(child, Some(Outcome::Cancelled)) && !matches!(flow.stage, End | FinishCancelled)
+        {
+            flow.stage = Cancel;
+        }
+        loop {
+            let (disable, enable, next) = match flow.stage {
+                Before => ("disableEquipBefore", "enableEquipBefore", Begin),
+                Begin => ("disableEquipBegin", "enableEquipBegin", Apply),
+                Apply => {
+                    if !self.is_in(flow.seat) {
+                        flow.stage = End;
+                        continue;
+                    }
+                    let mut changed = Vec::new();
+                    for &slot in &flow.slots {
+                        let i = slot_index(slot);
+                        let player = self.seat_mut(flow.seat);
+                        if flow.disable
+                            && player.equipment_disabled[i] < 1 + player.equipment_expanded[i]
+                        {
+                            player.equipment_disabled[i] += 1;
+                            player.equipment_markers[i] += 1;
+                            changed.push(slot);
+                        } else if !flow.disable && player.equipment_disabled[i] > 0 {
+                            player.equipment_disabled[i] -= 1;
+                            player.equipment_markers[i] =
+                                player.equipment_markers[i].saturating_sub(1);
+                        }
+                    }
+                    flow.stage = End;
+                    if flow.disable && !changed.is_empty() {
+                        let cards: Vec<_> = self
+                            .seat(flow.seat)
+                            .unwrap()
+                            .equipment
+                            .iter()
+                            .copied()
+                            .filter(|card| slot(card.kind).is_some_and(|s| changed.contains(&s)))
+                            .collect();
+                        if !cards.is_empty() {
+                            flow.cards = cards.clone();
+                            use super::recast::{
+                                batch_movement::BatchMovement, Flow as RecastFlow,
+                            };
+                            self.scheduler
+                                .next(Program::Recast(RecastFlow::BatchMovement(
+                                    BatchMovement::equipment_discard(flow.seat, cards.into()),
+                                )));
+                            self.scheduler.replace_current(Program::EquipArea(flow));
+                            return;
+                        }
+                    }
+                    continue;
+                }
+                End => ("disableEquipEnd", "enableEquipEnd", After),
+                After => ("disableEquipAfter", "enableEquipAfter", Finish),
+                Cancel => (
+                    "disableEquipCancelled",
+                    "enableEquipCancelled",
+                    FinishCancelled,
+                ),
+                Finish => {
+                    self.finish();
+                    return;
+                }
+                FinishCancelled => {
+                    self.scheduler.end(Outcome::Cancelled);
+                    return;
+                }
+            };
+            flow.stage = next;
+            if self.queue_timing(
+                if flow.disable { disable } else { enable },
+                Some(flow.seat),
+                flow.source,
+                None,
+                0,
+                &flow.cards,
+            ) {
+                self.scheduler.replace_current(Program::EquipArea(flow));
+                return;
+            }
+        }
     }
 }

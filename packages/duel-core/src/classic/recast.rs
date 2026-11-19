@@ -8,7 +8,7 @@ use crate::{
 };
 use std::sync::Arc;
 
-mod batch_movement;
+pub(crate) mod batch_movement;
 use batch_movement::BatchMovement;
 pub use batch_movement::LossRecord;
 

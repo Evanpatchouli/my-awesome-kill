@@ -1407,6 +1407,7 @@ mod dispatch_regressions {
             target: None,
             amount: 0,
             cards: vec![],
+            equipment_slots: None,
         };
         game.scheduler
             .start(Program::Dispatch(game.dispatch_for_timing(event)));
