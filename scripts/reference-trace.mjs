@@ -26,6 +26,7 @@ import { checkShaTargetEquipment, installShaTargetEquipment } from './reference-
 import { checkQinggangExpiry, installQinggangExpiry } from './reference-qinggang-expiry.mjs';
 import { checkQinggangSources, installQinggangSources } from './reference-qinggang-sources.mjs';
 import { checkShaExclusion, installShaExclusion } from './reference-sha-exclusion.mjs';
+import { checkCancelDeferred, installCancelDeferred } from './reference-cancel-deferred.mjs';
 import { checkVirtualEquipProbe, installVirtualEquipProbe } from './reference-virtual-equip-probe.mjs';
 import { checkVirtualEquipCombat, installVirtualEquipCombat } from './reference-virtual-equip-combat.mjs';
 import { checkVirtualJudgeProbe, installVirtualJudgeProbe } from './reference-virtual-judge-probe.mjs';
@@ -99,6 +100,7 @@ const descriptions = new Map([
   ['qinggang-expiry', 'qinggang target mark lifecycle'],
   ['qinggang-sources', 'qinggang target skill sources and out-of-play behavior'],
   ['sha-exclusion', 'sha cancellation and target exclusion'],
+  ['cancel-deferred', 'deferred cancellation listener and index snapshots'],
   ['virtual-equip-discard-first', 'virtual judgment material equipped during discard then loss'],
   ['virtual-equip-lose-first', 'virtual judgment material equipped during loss then discard'],
   ['virtual-equip-combat', 'black attack against armor with and without an orphaned weapon'],
@@ -204,6 +206,8 @@ try {
     await context.addInitScript(installJudgeInterruptions);
   } else if (scenario === 'judge-payment') {
     await context.addInitScript(installJudgePayment);
+  } else if (scenario === 'cancel-deferred') {
+    await context.addInitScript(installCancelDeferred);
   } else if (scenario === 'sha-exclusion') {
     await context.addInitScript(installShaExclusion);
   } else if (scenario === 'qinggang-sources') {
@@ -344,6 +348,11 @@ try {
           }
           if (scenario === 'judge-payment') {
             window.__referenceResult = await window.__runJudgePayment({ lib, game, ui, get, _status, actor });
+            game.pause();
+            return;
+          }
+          if (scenario === 'cancel-deferred') {
+            window.__referenceResult = await window.__runCancelDeferred({ lib, game, ui, get, _status, actor });
             game.pause();
             return;
           }
@@ -610,6 +619,7 @@ try {
   if (scenario === 'qinggang-expiry') checkQinggangExpiry(captured.value);
   if (scenario === 'qinggang-sources') checkQinggangSources(captured.value);
   if (scenario === 'sha-exclusion') checkShaExclusion(captured.value);
+  if (scenario === 'cancel-deferred') checkCancelDeferred(captured.value);
   if (scenario === 'virtual-judge-probe') checkVirtualJudgeProbe(captured.value);
   else if (scenario === 'virtual-judge-tricks') checkVirtualJudgeTricks(captured.value);
   else if (scenario === 'virtual-equip-combat') checkVirtualEquipCombat(captured.value);

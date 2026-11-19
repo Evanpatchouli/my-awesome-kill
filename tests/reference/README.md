@@ -6,6 +6,8 @@
 
 `events` 的列名保存在 `eventColumns`。每行是对上游 `GameEvent.trigger` 的一次调用及当时状态：它记录被请求的时机，不表示一定存在或执行了对应技能。`A` 和 `B` 是被测角色，`other` 是其余角色；牌区 `h`、`o`、`d` 分别表示手牌区、处理区和弃牌堆。记录包含处理区清理前后的内部事件，便于核对顺序。
 
+`cancel-deferred.json` 以八席真实根杀取消记录 121 条请求、采样与回调和 8 个终态。取消请求时已注册但暂时 out 的监听者，在同一目标 Last 返场后仍执行；请求后新登记的监听者不执行。索引在请求时采样 2，随后改成 5 仍执行两次；移除后不执行，移除并重加后执行两次；请求时 out、随后返场也在请求时采样并执行两次。临时技能在取消请求返回前到期。FIFO 对照先用 `B.addToExpansion(牌, B, 'give')` 和标签真实放置实体；First 回调使用广义 `C.gain(牌, B, 'give')` 与 `root.cancel()` 先后排队，到期 `onremove` 使用 `B.loseToDiscardpile(B.getExpansions(tag))`。先 gain 时实体从 B 扩展区经特殊区到 C 手，随后弃牌包装运行时实体已在 C 手；先 cancel 时弃牌包装先将实体从扩展区送到弃牌堆，广义 gain 随后从弃牌堆取至 C 手。两序最终均在 C 手；该上游广义 gain 的输入和能力不等同于 Rust 的受限 `gain_expansion`。场间以真实 removeSkill 清除上场遗留技能，不注入选择或结算结果。
+
 `sha-exclusion.json` 在固定八席记录 14 个真实杀取消/排除场景、1222 条时机请求与实际回调。对 `useCard2`、`useCard`、`useCardToPlayered` 分别在 First/Normal/Last 通过原版 `cancel()` 取消根；记录事件与父 ID、finished/cancelled、实体手牌→处理区→弃牌及青釭标记。目标 First 的根取消请求在该目标 First-low 与后续 Normal/Last 回调前发出，而 Cancelled 实际回调在这些目标回调后执行并看到青釭标记。双目标分别排除 B、C、逐一排除和 `all_excluded` 均独立观察：逐一排除派发相应 `useCardToExcluded`，`all_excluded` 提前停止后续目标时机且不派发该事件。嵌套 C 对 B 的实体杀另有独立根，外层只排除 B，内层和外层另一目标均真实受伤。每个场景间以原版 `removeSkill` 清理前一场遗留的临时标记，清理不计入观察场景。
 
 `qinggang-sources.json` 记录独立技能来源与离场行为，包含 153 条时机请求/回调、28 个阶段和 22 条技能内容边界。预授无 token 的临时 `qinggang2` 时，无剑杀仍压制八卦，红判牌留在牌堆；普通 `addSkill` 与 `addAdditionalSkill` 预存来源在青釭命中并清除最后 token 后均随上游技能清理消失，对应 damage/useCardEnd hook 一并移除。预授临时技能后青釭生效时其默认到期项保持 `phaseAfter`/`phaseBeforeStart`，命中清 token 即移除；另以真实自然回合验证先经过阶段期限再被杀。目标在青釭目标时机后真实离场，返场后仍保留原杀标记；无剑角色的后续实体杀令其受伤，八卦未发动。脚本只调用真实技能与牌事件，不写 `qinggang2` 存储。
@@ -155,6 +157,7 @@
    node scripts/reference-trace.mjs --scenario qinggang-expiry --check tests/reference/qinggang-expiry.json
    node scripts/reference-trace.mjs --scenario qinggang-sources --check tests/reference/qinggang-sources.json
    node scripts/reference-trace.mjs --scenario sha-exclusion --check tests/reference/sha-exclusion.json
+   node scripts/reference-trace.mjs --scenario cancel-deferred --check tests/reference/cancel-deferred.json
    node scripts/reference-trace.mjs --scenario virtual-equip-discard-first --check tests/reference/virtual-equip-discard-first.json
    node scripts/reference-trace.mjs --scenario virtual-equip-lose-first --check tests/reference/virtual-equip-lose-first.json
    node scripts/reference-trace.mjs --scenario virtual-equip-combat --check tests/reference/virtual-equip-combat.json
