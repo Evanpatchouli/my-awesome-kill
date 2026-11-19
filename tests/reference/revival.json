@@ -661,6 +661,10 @@
       {"name":"request-dieAfter","hp":2,"maxHp":4,"alive":true,"identity":"fan","identityShown":true,"hand":[["shan","diamond",6]],"equips":[["qinggang","spade",6]],"markCount":7,"markShown":true,"tempSkill":true,"sourceHand":9,"sourceKill":1,"rewardsInHand":[["tao","heart",8],["tao","heart",9],["tao","heart",10]],"players":["A","C","E","F","G","H","B","D"],"dead":[],"ring":["A","B","C","D","E","F","G","H"],"gameOver":false},
       {"name":"after-die","hp":2,"maxHp":4,"alive":true,"identity":"fan","identityShown":true,"hand":[["shan","diamond",6]],"equips":[["qinggang","spade",6]],"markCount":7,"markShown":true,"tempSkill":true,"sourceHand":9,"sourceKill":1,"rewardsInHand":[["tao","heart",8],["tao","heart",9],["tao","heart",10]],"players":["A","C","E","F","G","H","B","D"],"dead":[],"ring":["A","B","C","D","E","F","G","H"],"gameOver":false}
     ],
+    "rewardOrder": [
+      ["drawBefore",["old0","old1","old2","old3","old4","old5"]],
+      ["drawAfter",["bonus0","bonus1","bonus2","old0","old1","old2","old3","old4","old5"]]
+    ],
     "handInDiscard": false,
     "equipmentInDiscard": false
   },

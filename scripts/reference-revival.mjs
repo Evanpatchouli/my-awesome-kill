@@ -182,6 +182,15 @@ export function installReferenceRevival() {
       await C.equip(earlyEquip);
       const rewardCards = [8, 9, 10].map(number => game.createCard2('tao', 'heart', number));
       for (const item of rewardCards.toReversed()) ui.cardPile.insertBefore(item, ui.cardPile.firstChild);
+      const sourceCards = A.getCards('h').slice();
+      const rewardOrder = [];
+      const captureRewardOrder = timing => rewardOrder.push([timing, A.getCards('h').map(item => {
+        const bonus = rewardCards.indexOf(item);
+        if (bonus !== -1) return `bonus${bonus}`;
+        const original = sourceCards.indexOf(item);
+        if (original !== -1) return `old${original}`;
+        throw new Error('Unexpected card in the reward source hand');
+      })]);
       const earlyStages = [];
       const captureEarly = name => earlyStages.push({
         name, hp: C.hp, maxHp: C.maxHp, alive: C.isAlive(), identity: C.identity,
@@ -211,14 +220,17 @@ export function installReferenceRevival() {
           captureEarly(`request-${timing}`);
         }
         if (event.player === A && event.name === 'draw' && event.getParent()?.name === 'die' &&
-          ['drawBefore', 'drawAfter'].includes(timing)) captureEarly(`request-${timing}`);
+          ['drawBefore', 'drawAfter'].includes(timing)) {
+          captureEarly(`request-${timing}`);
+          captureRewardOrder(timing);
+        }
       };
       await C.die({ source: A }).set('animate', false);
       earlyRecord = null;
       captureEarly('after-die');
       A.removeSkill(earlySkill);
       const earlyRevival = { target: label(C), targetNonLordAI: C !== game.zhu && C !== game.me,
-        stages: earlyStages, handInDiscard: ui.discardPile.contains(earlyHand),
+        stages: earlyStages, rewardOrder, handInDiscard: ui.discardPile.contains(earlyHand),
         equipmentInDiscard: ui.discardPile.contains(earlyEquip) };
 
       // Independent trials leave the original trace untouched. Observe the
@@ -382,6 +394,12 @@ export function checkReferenceRevival(result) {
   ]);
   const earlyTarget = result.earlyRevival.target, original = early[0];
   const reward = [8, 9, 10].map(number => ['tao', 'heart', number]);
+  const oldCards = Array.from({ length: original.sourceHand }, (_, index) => `old${index}`);
+  const bonusCards = reward.map((_, index) => `bonus${index}`);
+  assert.deepEqual(result.earlyRevival.rewardOrder, [
+    ['drawBefore', oldCards],
+    ['drawAfter', [...bonusCards, ...oldCards]],
+  ]);
   assert.equal(original.identityShown, false);
   for (const [index, stage] of early.entries()) {
     const dead = index === 3 || index === 4;

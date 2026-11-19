@@ -416,6 +416,8 @@ fn revival_during_die_preserves_cards_marks_and_temporary_skill_and_pays_reward(
     game.run(None);
     activate(&mut game, reorder_die);
     activate(&mut game, reorder_revive);
+    let source_before = game.seat(0).unwrap().hand.clone();
+    let reward_order = Arc::new(Mutex::new(Vec::<Value>::new()));
     let rows = Arc::new(Mutex::new(vec![early_snapshot(
         &game,
         "before-die",
@@ -425,6 +427,8 @@ fn revival_during_die_preserves_cards_marks_and_temporary_skill_and_pays_reward(
     )]));
     let r = rows.clone();
     let reward_copy = rewards.clone();
+    let before_copy = source_before.clone();
+    let order_rows = reward_order.clone();
     game.timing_observer = Some(Arc::new(move |g, e| {
         let name = match (e.timing.as_str(), e.player) {
             ("dieBefore", Some(3)) => Some("request-dieBefore"),
@@ -440,6 +444,27 @@ fn revival_during_die_preserves_cards_marks_and_temporary_skill_and_pays_reward(
             r.lock()
                 .unwrap()
                 .push(early_snapshot(g, name, hand, equip, &reward_copy));
+        }
+        if e.player == Some(0) && matches!(e.timing.as_str(), "drawBefore" | "drawAfter") {
+            let order = g
+                .seat(0)
+                .unwrap()
+                .hand
+                .iter()
+                .map(|card| {
+                    if let Some(index) = reward_copy.iter().position(|reward| reward == card) {
+                        format!("bonus{index}")
+                    } else if let Some(index) = before_copy.iter().position(|old| old == card) {
+                        format!("old{index}")
+                    } else {
+                        panic!("unexpected card in the reward source hand: {card:?}");
+                    }
+                })
+                .collect::<Vec<_>>();
+            order_rows
+                .lock()
+                .unwrap()
+                .push(json!([e.timing.as_str(), order]));
         }
     }));
     let mut revive = trigger(2, "die");
@@ -474,6 +499,19 @@ fn revival_during_die_preserves_cards_marks_and_temporary_skill_and_pays_reward(
     assert_eq!(actual.len(), 11, "observed: {actual:#?}");
     assert_eq!(actual.as_slice(), expected.as_slice());
     drop(actual);
+    assert_eq!(
+        reward_order.lock().unwrap().as_slice(),
+        reference["earlyRevival"]["rewardOrder"]
+            .as_array()
+            .unwrap()
+            .as_slice()
+    );
+    let expected_hand = rewards
+        .iter()
+        .chain(&source_before)
+        .copied()
+        .collect::<Vec<_>>();
+    assert_eq!(game.seat(0).unwrap().hand, expected_hand);
     game.submit(Command {
         version: game.version,
         seat: 0,
