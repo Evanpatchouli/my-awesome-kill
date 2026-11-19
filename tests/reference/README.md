@@ -6,6 +6,8 @@
 
 `events` 的列名保存在 `eventColumns`。每行是对上游 `GameEvent.trigger` 的一次调用及当时状态：它记录被请求的时机，不表示一定存在或执行了对应技能。`A` 和 `B` 是被测角色，`other` 是其余角色；牌区 `h`、`o`、`d` 分别表示手牌区、处理区和弃牌堆。记录包含处理区清理前后的内部事件，便于核对顺序。
 
+`sha-target-equipment.json` 在固定八席以男、女、男角色验证杀目标事件与装备技能登记，记录 92 条请求/回调及 32 条技能内容边界。真实出牌阶段用方天最后一张实体杀指定 B/C：B 的目标时机弃去青釭，C 的时机取回并装备，B 的八卦红判生效而 C 受伤；两个目标事件局部 ID 不同、直接父级为同一 useCard、均携带实体材料，无材料虚拟杀的 cards 为空。人类通过 Playwright 实际点选雌雄先执行。临时青釭先于装备时的执行顺序与装备先于临时的顺序不同；后者再授临时为 no-op。临时先加、实体仍在时移除临时后，`hasSkill` 与装备技能查询仍为真，但该次未执行青釭回调，此现象作为独立观测保留。外层青釭杀 B 的目标时机中，无剑 C 对 B 的嵌套实体杀也压制八卦，红判牌留在牌堆。目标事件 ID 仅在本次轨迹中标识事件，不是上游持久标识。
+
 `multi-weapon-combat.json` 记录八席真实装备与结算的 142 条请求/回调和 12 条装备技能执行边界。红判定八卦抵消基线黑杀；连弩和两把青釭并存后射程从 1 增至 2，同名技能只登记一次。真实出牌阶段先后使用两张杀，第一张后失去一把青釭、第二张后失去连弩，第三张仍在手中。另以真实 `arrangeTrigger` 选择贯石斧先或青龙先：前者支付两张牌使原杀命中，后者先结算追加杀、再支付两张牌使命中原杀。贯石斧先的顺序由 Playwright 实际点击真人控制的“贯石斧”选项，记录当时玩家为本机且自动模式关闭；青龙先及后续费用选择使用 AI 偏好。牌、费用与伤害均由上游事件结算；事件请求与实际回调分别记录。
 
 `combined-mounts.json` 在清场后启用上游合并坐骑栏，并在结束时恢复原设置。B 依次真实装备赤兔、绝影，扩栏后重新装备赤兔，再由 B 的真实选择事件替换为大宛；记录两类坐骑的原始 subtype、登记、实体、候选、选择和双向距离。统计数组依次对应 `3`、`4`、`equip3_4`，三种查询的结果并不总是相同。扩栏后废除 `[3,3,4]` 的样例一次弃掉两匹马，但 `countEnabledSlot(3)` 仍为 1；随后两次独立废除 `[3,4]` 使该值依次为 0、-1。恢复 `[3,4,4]` 和 `[4]` 后依次为 1、2。空席 D 扩展 `[3,4,4]` 后该值为 3。上述数字是固定上游的实测结果，不是对普通分马模式的推断。
@@ -143,6 +145,7 @@
    node scripts/reference-trace.mjs --scenario equip-slots --check tests/reference/equip-slots.json
    node scripts/reference-trace.mjs --scenario combined-mounts --check tests/reference/combined-mounts.json
    node scripts/reference-trace.mjs --scenario multi-weapon-combat --check tests/reference/multi-weapon-combat.json
+   node scripts/reference-trace.mjs --scenario sha-target-equipment --check tests/reference/sha-target-equipment.json
    node scripts/reference-trace.mjs --scenario virtual-equip-discard-first --check tests/reference/virtual-equip-discard-first.json
    node scripts/reference-trace.mjs --scenario virtual-equip-lose-first --check tests/reference/virtual-equip-lose-first.json
    node scripts/reference-trace.mjs --scenario virtual-equip-combat --check tests/reference/virtual-equip-combat.json

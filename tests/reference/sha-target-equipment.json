@@ -1,0 +1,2182 @@
+{
+  "schema": "noname-reference-trace-v1",
+  "referenceCommit": "c73270948d72949aa80009536b9fd5400767d091",
+  "mode": "identity",
+  "scenario": "sha target event identity and equipment trigger ordering",
+  "gender": [
+    "male",
+    "female",
+    "male"
+  ],
+  "events": [
+    ["multi","request","useCardToPlayered",1,"useCardToPlayered",2,"useCard","A","B",["multi-sha"],null,{"hp":[12,12],"equips":["sword","fang"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o","red":"c"}}],
+    ["multi","callback","useCardToPlayered",1,"useCardToPlayered",2,"useCard","A","B",["multi-sha"],null,{"hp":[12,12],"equips":["sword","fang"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o","red":"c"}}],
+    ["multi","request","useCardToPlayered",3,"useCardToPlayered",2,"useCard","A","C",["multi-sha"],null,{"hp":[12,12],"equips":["fang"],"sword":"d","skills":0,"hasSkill":false,"ownSkill":false,"temporary":false,"equipSkill":false,"cards":{"sword":"d","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o","red":"c"}}],
+    ["multi","callback","useCardToPlayered",3,"useCardToPlayered",2,"useCard","A","C",["multi-sha"],null,{"hp":[12,12],"equips":["fang"],"sword":"d","skills":0,"hasSkill":false,"ownSkill":false,"temporary":false,"equipSkill":false,"cards":{"sword":"d","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o","red":"c"}}],
+    ["multi","request","judgeBefore",9,"judge",6,"bagua_skill","B",null,[],null,{"hp":[12,12],"equips":["sword","fang"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o","red":"c"}}],
+    ["multi","callback","judgeBefore",9,"judge",6,"bagua_skill","B",null,[],null,{"hp":[12,12],"equips":["sword","fang"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o","red":"c"}}],
+    ["multi","request","useCardAfter",10,"useCard",8,"chooseToUse","B",null,[],null,{"hp":[12,12],"equips":["sword","fang"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o","red":"d"}}],
+    ["multi","callback","useCardAfter",10,"useCard",8,"chooseToUse","B",null,[],null,{"hp":[12,12],"equips":["sword","fang"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o","red":"d"}}],
+    ["multi","request","damageEnd",11,"damage",12,"sha","C",null,["multi-sha"],null,{"hp":[12,11],"equips":["sword","fang"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o","red":"d"}}],
+    ["multi","callback","damageEnd",11,"damage",12,"sha","C",null,["multi-sha"],null,{"hp":[12,11],"equips":["sword","fang"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o","red":"d"}}],
+    ["multi","request","useCardAfter",2,"useCard",13,"chooseToUse","A",null,["multi-sha"],null,{"hp":[12,11],"equips":["sword","fang"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o","red":"d"}}],
+    ["multi","callback","useCardAfter",2,"useCard",13,"chooseToUse","A",null,["multi-sha"],null,{"hp":[12,11],"equips":["sword","fang"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o","red":"d"}}],
+    ["virtual","request","useCardToPlayered",14,"useCardToPlayered",15,"useCard","A","B",[],null,{"hp":[12,11],"equips":["sword","fang"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"d","red":"d"}}],
+    ["virtual","callback","useCardToPlayered",14,"useCardToPlayered",15,"useCard","A","B",[],null,{"hp":[12,11],"equips":["sword","fang"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"d","red":"d"}}],
+    ["virtual","request","damageEnd",18,"damage",19,"sha","B",null,[],null,{"hp":[11,11],"equips":["sword","fang"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"d","red":"d"}}],
+    ["virtual","callback","damageEnd",18,"damage",19,"sha","B",null,[],null,{"hp":[11,11],"equips":["sword","fang"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"d","red":"d"}}],
+    ["virtual","request","useCardAfter",15,"useCard",20,"reference_fixture_use","A",null,[],null,{"hp":[11,11],"equips":["sword","fang"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"d","red":"d"}}],
+    ["virtual","callback","useCardAfter",15,"useCard",20,"reference_fixture_use","A",null,[],null,{"hp":[11,11],"equips":["sword","fang"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"d","red":"d"}}],
+    ["nested","request","useCardToPlayered",21,"useCardToPlayered",22,"useCard","A","B",["nested-outer"],null,{"hp":[12,11],"equips":["sword"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"A:e","fang":"d","armor-B":"B:e","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"o","nested-inner":"C:h","nested-red":"c"}}],
+    ["nested","callback","useCardToPlayered",21,"useCardToPlayered",22,"useCard","A","B",["nested-outer"],null,{"hp":[12,11],"equips":["sword"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"A:e","fang":"d","armor-B":"B:e","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"o","nested-inner":"C:h","nested-red":"c"}}],
+    ["nested","request","useCardToPlayered",25,"useCardToPlayered",26,"useCard","C","B",["nested-inner"],null,{"hp":[12,11],"equips":["sword"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"A:e","fang":"d","armor-B":"B:e","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"o","nested-inner":"o","nested-red":"c"}}],
+    ["nested","callback","useCardToPlayered",25,"useCardToPlayered",26,"useCard","C","B",["nested-inner"],null,{"hp":[12,11],"equips":["sword"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"A:e","fang":"d","armor-B":"B:e","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"o","nested-inner":"o","nested-red":"c"}}],
+    ["nested","request","damageEnd",27,"damage",28,"sha","B",null,["nested-inner"],null,{"hp":[11,11],"equips":["sword"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"A:e","fang":"d","armor-B":"B:e","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"o","nested-inner":"o","nested-red":"c"}}],
+    ["nested","callback","damageEnd",27,"damage",28,"sha","B",null,["nested-inner"],null,{"hp":[11,11],"equips":["sword"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"A:e","fang":"d","armor-B":"B:e","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"o","nested-inner":"o","nested-red":"c"}}],
+    ["nested","request","useCardAfter",26,"useCard",29,"reference_nested_sha_target","C",null,["nested-inner"],null,{"hp":[11,11],"equips":["sword"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"A:e","fang":"d","armor-B":"B:e","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"o","nested-inner":"o","nested-red":"c"}}],
+    ["nested","callback","useCardAfter",26,"useCard",29,"reference_nested_sha_target","C",null,["nested-inner"],null,{"hp":[11,11],"equips":["sword"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"A:e","fang":"d","armor-B":"B:e","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"o","nested-inner":"o","nested-red":"c"}}],
+    ["nested","request","damageEnd",30,"damage",31,"sha","B",null,["nested-outer"],null,{"hp":[10,11],"equips":["sword"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"A:e","fang":"d","armor-B":"B:e","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"o","nested-inner":"d","nested-red":"c"}}],
+    ["nested","callback","damageEnd",30,"damage",31,"sha","B",null,["nested-outer"],null,{"hp":[10,11],"equips":["sword"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"A:e","fang":"d","armor-B":"B:e","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"o","nested-inner":"d","nested-red":"c"}}],
+    ["nested","request","useCardAfter",22,"useCard",20,"reference_fixture_use","A",null,["nested-outer"],null,{"hp":[10,11],"equips":["sword"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"A:e","fang":"d","armor-B":"B:e","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"o","nested-inner":"d","nested-red":"c"}}],
+    ["nested","callback","useCardAfter",22,"useCard",20,"reference_fixture_use","A",null,["nested-outer"],null,{"hp":[10,11],"equips":["sword"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"A:e","fang":"d","armor-B":"B:e","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"o","nested-inner":"d","nested-red":"c"}}],
+    ["human-order","request","useCardToPlayered",32,"useCardToPlayered",33,"useCard","A","B",["human-sha"],null,{"hp":[12,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"c","twin":"A:e","order-sword":"A:e","human-sha":"o","human-cost":"B:h"}}],
+    ["human-order","callback","useCardToPlayered",32,"useCardToPlayered",33,"useCard","A","B",["human-sha"],null,{"hp":[12,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"c","twin":"A:e","order-sword":"A:e","human-sha":"o","human-cost":"B:h"}}],
+    ["human-order","request","chooseControlBegin",34,"chooseControl",35,"arrangeTrigger","A",null,[],null,{"hp":[12,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"c","twin":"A:e","order-sword":"A:e","human-sha":"o","human-cost":"B:h"}}],
+    ["human-order","callback","chooseControlBegin",34,"chooseControl",35,"arrangeTrigger","A",null,[],null,{"hp":[12,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"c","twin":"A:e","order-sword":"A:e","human-sha":"o","human-cost":"B:h"}}],
+    ["human-order","request","chooseControlAfter",34,"chooseControl",35,"arrangeTrigger","A",null,[],"雌雄双股剑",{"hp":[12,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"c","twin":"A:e","order-sword":"A:e","human-sha":"o","human-cost":"B:h"}}],
+    ["human-order","callback","chooseControlAfter",34,"chooseControl",35,"arrangeTrigger","A",null,[],"雌雄双股剑",{"hp":[12,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"c","twin":"A:e","order-sword":"A:e","human-sha":"o","human-cost":"B:h"}}],
+    ["human-order","request","damageEnd",40,"damage",41,"sha","B",null,["human-sha"],null,{"hp":[11,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"c","twin":"A:e","order-sword":"A:e","human-sha":"o","human-cost":"d"}}],
+    ["human-order","callback","damageEnd",40,"damage",41,"sha","B",null,["human-sha"],null,{"hp":[11,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"c","twin":"A:e","order-sword":"A:e","human-sha":"o","human-cost":"d"}}],
+    ["human-order","request","useCardAfter",33,"useCard",20,"reference_fixture_use","A",null,["human-sha"],null,{"hp":[11,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"c","twin":"A:e","order-sword":"A:e","human-sha":"o","human-cost":"d"}}],
+    ["human-order","callback","useCardAfter",33,"useCard",20,"reference_fixture_use","A",null,["human-sha"],null,{"hp":[11,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"c","twin":"A:e","order-sword":"A:e","human-sha":"o","human-cost":"d"}}],
+    ["temporary-removed-while-equipped","request","useCardToPlayered",42,"useCardToPlayered",43,"useCard","A","B",["temporary-removed-while-equipped-sha"],null,{"hp":[11,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"c","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"o"}}],
+    ["temporary-removed-while-equipped","callback","useCardToPlayered",42,"useCardToPlayered",43,"useCard","A","B",["temporary-removed-while-equipped-sha"],null,{"hp":[11,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"c","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"o"}}],
+    ["temporary-removed-while-equipped","request","damageEnd",46,"damage",47,"sha","B",null,["temporary-removed-while-equipped-sha"],null,{"hp":[10,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"A:h","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"o"}}],
+    ["temporary-removed-while-equipped","callback","damageEnd",46,"damage",47,"sha","B",null,["temporary-removed-while-equipped-sha"],null,{"hp":[10,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"A:h","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"o"}}],
+    ["temporary-removed-while-equipped","request","useCardAfter",43,"useCard",20,"reference_fixture_use","A",null,["temporary-removed-while-equipped-sha"],null,{"hp":[10,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"A:h","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"o"}}],
+    ["temporary-removed-while-equipped","callback","useCardAfter",43,"useCard",20,"reference_fixture_use","A",null,["temporary-removed-while-equipped-sha"],null,{"hp":[10,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"A:h","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"o"}}],
+    ["temporary-plus-equipped","request","useCardToPlayered",48,"useCardToPlayered",49,"useCard","A","B",["temporary-plus-equipped-sha"],null,{"hp":[10,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":true,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"o"}}],
+    ["temporary-plus-equipped","callback","useCardToPlayered",48,"useCardToPlayered",49,"useCard","A","B",["temporary-plus-equipped-sha"],null,{"hp":[10,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":true,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"o"}}],
+    ["temporary-plus-equipped","request","chooseControlBegin",50,"chooseControl",51,"arrangeTrigger","A",null,[],null,{"hp":[10,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":true,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"o"}}],
+    ["temporary-plus-equipped","callback","chooseControlBegin",50,"chooseControl",51,"arrangeTrigger","A",null,[],null,{"hp":[10,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":true,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"o"}}],
+    ["temporary-plus-equipped","request","chooseControlAfter",50,"chooseControl",51,"arrangeTrigger","A",null,[],"青釭剑",{"hp":[10,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":true,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"o"}}],
+    ["temporary-plus-equipped","callback","chooseControlAfter",50,"chooseControl",51,"arrangeTrigger","A",null,[],"青釭剑",{"hp":[10,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":true,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"o"}}],
+    ["temporary-plus-equipped","request","damageEnd",56,"damage",57,"sha","B",null,["temporary-plus-equipped-sha"],null,{"hp":[9,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":true,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"o"}}],
+    ["temporary-plus-equipped","callback","damageEnd",56,"damage",57,"sha","B",null,["temporary-plus-equipped-sha"],null,{"hp":[9,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":true,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"o"}}],
+    ["temporary-plus-equipped","request","useCardAfter",49,"useCard",20,"reference_fixture_use","A",null,["temporary-plus-equipped-sha"],null,{"hp":[9,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":true,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"o"}}],
+    ["temporary-plus-equipped","callback","useCardAfter",49,"useCard",20,"reference_fixture_use","A",null,["temporary-plus-equipped-sha"],null,{"hp":[9,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":true,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"o"}}],
+    ["temporary-after-discard","request","useCardToPlayered",58,"useCardToPlayered",59,"useCard","A","B",["temporary-after-discard-sha"],null,{"hp":[9,11],"equips":["twin"],"sword":"d","skills":1,"hasSkill":true,"ownSkill":false,"temporary":true,"equipSkill":false,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"d","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"d","temporary-after-discard-sha":"o"}}],
+    ["temporary-after-discard","callback","useCardToPlayered",58,"useCardToPlayered",59,"useCard","A","B",["temporary-after-discard-sha"],null,{"hp":[9,11],"equips":["twin"],"sword":"d","skills":1,"hasSkill":true,"ownSkill":false,"temporary":true,"equipSkill":false,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"d","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"d","temporary-after-discard-sha":"o"}}],
+    ["temporary-after-discard","request","chooseControlBegin",60,"chooseControl",61,"arrangeTrigger","A",null,[],null,{"hp":[9,11],"equips":["twin"],"sword":"d","skills":1,"hasSkill":true,"ownSkill":false,"temporary":true,"equipSkill":false,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"d","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"d","temporary-after-discard-sha":"o"}}],
+    ["temporary-after-discard","callback","chooseControlBegin",60,"chooseControl",61,"arrangeTrigger","A",null,[],null,{"hp":[9,11],"equips":["twin"],"sword":"d","skills":1,"hasSkill":true,"ownSkill":false,"temporary":true,"equipSkill":false,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"d","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"d","temporary-after-discard-sha":"o"}}],
+    ["temporary-after-discard","request","chooseControlAfter",60,"chooseControl",61,"arrangeTrigger","A",null,[],"青釭剑",{"hp":[9,11],"equips":["twin"],"sword":"d","skills":1,"hasSkill":true,"ownSkill":false,"temporary":true,"equipSkill":false,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"d","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"d","temporary-after-discard-sha":"o"}}],
+    ["temporary-after-discard","callback","chooseControlAfter",60,"chooseControl",61,"arrangeTrigger","A",null,[],"青釭剑",{"hp":[9,11],"equips":["twin"],"sword":"d","skills":1,"hasSkill":true,"ownSkill":false,"temporary":true,"equipSkill":false,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"d","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"d","temporary-after-discard-sha":"o"}}],
+    ["temporary-after-discard","request","damageEnd",66,"damage",67,"sha","B",null,["temporary-after-discard-sha"],null,{"hp":[8,11],"equips":["twin"],"sword":"d","skills":1,"hasSkill":true,"ownSkill":false,"temporary":true,"equipSkill":false,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"d","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"d","temporary-after-discard-sha":"o"}}],
+    ["temporary-after-discard","callback","damageEnd",66,"damage",67,"sha","B",null,["temporary-after-discard-sha"],null,{"hp":[8,11],"equips":["twin"],"sword":"d","skills":1,"hasSkill":true,"ownSkill":false,"temporary":true,"equipSkill":false,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"d","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"d","temporary-after-discard-sha":"o"}}],
+    ["temporary-after-discard","request","useCardAfter",59,"useCard",20,"reference_fixture_use","A",null,["temporary-after-discard-sha"],null,{"hp":[8,11],"equips":["twin"],"sword":"d","skills":1,"hasSkill":true,"ownSkill":false,"temporary":true,"equipSkill":false,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"d","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"d","temporary-after-discard-sha":"o"}}],
+    ["temporary-after-discard","callback","useCardAfter",59,"useCard",20,"reference_fixture_use","A",null,["temporary-after-discard-sha"],null,{"hp":[8,11],"equips":["twin"],"sword":"d","skills":1,"hasSkill":true,"ownSkill":false,"temporary":true,"equipSkill":false,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"d","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"d","temporary-after-discard-sha":"o"}}],
+    ["equipment-after-temporary","request","useCardToPlayered",68,"useCardToPlayered",69,"useCard","A","B",["equipment-after-temporary-sha"],null,{"hp":[8,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"d","temporary-after-discard-sha":"d","equipment-after-temporary-sha":"o"}}],
+    ["equipment-after-temporary","callback","useCardToPlayered",68,"useCardToPlayered",69,"useCard","A","B",["equipment-after-temporary-sha"],null,{"hp":[8,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"d","temporary-after-discard-sha":"d","equipment-after-temporary-sha":"o"}}],
+    ["equipment-after-temporary","request","chooseControlBegin",70,"chooseControl",71,"arrangeTrigger","A",null,[],null,{"hp":[8,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"d","temporary-after-discard-sha":"d","equipment-after-temporary-sha":"o"}}],
+    ["equipment-after-temporary","callback","chooseControlBegin",70,"chooseControl",71,"arrangeTrigger","A",null,[],null,{"hp":[8,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"d","temporary-after-discard-sha":"d","equipment-after-temporary-sha":"o"}}],
+    ["equipment-after-temporary","request","chooseControlAfter",70,"chooseControl",71,"arrangeTrigger","A",null,[],"雌雄双股剑",{"hp":[8,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"d","temporary-after-discard-sha":"d","equipment-after-temporary-sha":"o"}}],
+    ["equipment-after-temporary","callback","chooseControlAfter",70,"chooseControl",71,"arrangeTrigger","A",null,[],"雌雄双股剑",{"hp":[8,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"d","temporary-after-discard-sha":"d","equipment-after-temporary-sha":"o"}}],
+    ["equipment-after-temporary","request","damageEnd",76,"damage",77,"sha","B",null,["equipment-after-temporary-sha"],null,{"hp":[7,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"d","temporary-after-discard-sha":"d","equipment-after-temporary-sha":"o"}}],
+    ["equipment-after-temporary","callback","damageEnd",76,"damage",77,"sha","B",null,["equipment-after-temporary-sha"],null,{"hp":[7,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"d","temporary-after-discard-sha":"d","equipment-after-temporary-sha":"o"}}],
+    ["equipment-after-temporary","request","useCardAfter",69,"useCard",20,"reference_fixture_use","A",null,["equipment-after-temporary-sha"],null,{"hp":[7,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"d","temporary-after-discard-sha":"d","equipment-after-temporary-sha":"o"}}],
+    ["equipment-after-temporary","callback","useCardAfter",69,"useCard",20,"reference_fixture_use","A",null,["equipment-after-temporary-sha"],null,{"hp":[7,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"d","temporary-after-discard-sha":"d","equipment-after-temporary-sha":"o"}}],
+    ["equipment-then-temporary","request","useCardToPlayered",78,"useCardToPlayered",79,"useCard","A","B",["equipment-then-temporary-sha"],null,{"hp":[7,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"d","temporary-after-discard-sha":"d","equipment-after-temporary-sha":"d","equipment-then-temporary-sha":"o"}}],
+    ["equipment-then-temporary","callback","useCardToPlayered",78,"useCardToPlayered",79,"useCard","A","B",["equipment-then-temporary-sha"],null,{"hp":[7,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"d","temporary-after-discard-sha":"d","equipment-after-temporary-sha":"d","equipment-then-temporary-sha":"o"}}],
+    ["equipment-then-temporary","request","chooseControlBegin",80,"chooseControl",81,"arrangeTrigger","A",null,[],null,{"hp":[7,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"d","temporary-after-discard-sha":"d","equipment-after-temporary-sha":"d","equipment-then-temporary-sha":"o"}}],
+    ["equipment-then-temporary","callback","chooseControlBegin",80,"chooseControl",81,"arrangeTrigger","A",null,[],null,{"hp":[7,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"d","temporary-after-discard-sha":"d","equipment-after-temporary-sha":"d","equipment-then-temporary-sha":"o"}}],
+    ["equipment-then-temporary","request","chooseControlAfter",80,"chooseControl",81,"arrangeTrigger","A",null,[],"雌雄双股剑",{"hp":[7,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"d","temporary-after-discard-sha":"d","equipment-after-temporary-sha":"d","equipment-then-temporary-sha":"o"}}],
+    ["equipment-then-temporary","callback","chooseControlAfter",80,"chooseControl",81,"arrangeTrigger","A",null,[],"雌雄双股剑",{"hp":[7,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"d","temporary-after-discard-sha":"d","equipment-after-temporary-sha":"d","equipment-then-temporary-sha":"o"}}],
+    ["equipment-then-temporary","request","damageEnd",86,"damage",87,"sha","B",null,["equipment-then-temporary-sha"],null,{"hp":[6,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"d","temporary-after-discard-sha":"d","equipment-after-temporary-sha":"d","equipment-then-temporary-sha":"o"}}],
+    ["equipment-then-temporary","callback","damageEnd",86,"damage",87,"sha","B",null,["equipment-then-temporary-sha"],null,{"hp":[6,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"d","temporary-after-discard-sha":"d","equipment-after-temporary-sha":"d","equipment-then-temporary-sha":"o"}}],
+    ["equipment-then-temporary","request","useCardAfter",79,"useCard",20,"reference_fixture_use","A",null,["equipment-then-temporary-sha"],null,{"hp":[6,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"d","temporary-after-discard-sha":"d","equipment-after-temporary-sha":"d","equipment-then-temporary-sha":"o"}}],
+    ["equipment-then-temporary","callback","useCardAfter",79,"useCard",20,"reference_fixture_use","A",null,["equipment-then-temporary-sha"],null,{"hp":[6,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"d","temporary-after-discard-sha":"d","equipment-after-temporary-sha":"d","equipment-then-temporary-sha":"o"}}],
+    ["remove-temporary-with-equipment","request","useCardToPlayered",88,"useCardToPlayered",89,"useCard","A","B",["remove-temporary-with-equipment-sha"],null,{"hp":[6,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"d","temporary-after-discard-sha":"d","equipment-after-temporary-sha":"d","equipment-then-temporary-sha":"d","remove-temporary-with-equipment-sha":"o"}}],
+    ["remove-temporary-with-equipment","callback","useCardToPlayered",88,"useCardToPlayered",89,"useCard","A","B",["remove-temporary-with-equipment-sha"],null,{"hp":[6,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"d","temporary-after-discard-sha":"d","equipment-after-temporary-sha":"d","equipment-then-temporary-sha":"d","remove-temporary-with-equipment-sha":"o"}}],
+    ["remove-temporary-with-equipment","request","damageEnd",92,"damage",93,"sha","B",null,["remove-temporary-with-equipment-sha"],null,{"hp":[5,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"d","temporary-after-discard-sha":"d","equipment-after-temporary-sha":"d","equipment-then-temporary-sha":"d","remove-temporary-with-equipment-sha":"o"}}],
+    ["remove-temporary-with-equipment","callback","damageEnd",92,"damage",93,"sha","B",null,["remove-temporary-with-equipment-sha"],null,{"hp":[5,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"d","temporary-after-discard-sha":"d","equipment-after-temporary-sha":"d","equipment-then-temporary-sha":"d","remove-temporary-with-equipment-sha":"o"}}],
+    ["remove-temporary-with-equipment","request","useCardAfter",89,"useCard",20,"reference_fixture_use","A",null,["remove-temporary-with-equipment-sha"],null,{"hp":[5,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"d","temporary-after-discard-sha":"d","equipment-after-temporary-sha":"d","equipment-then-temporary-sha":"d","remove-temporary-with-equipment-sha":"o"}}],
+    ["remove-temporary-with-equipment","callback","useCardAfter",89,"useCard",20,"reference_fixture_use","A",null,["remove-temporary-with-equipment-sha"],null,{"hp":[5,11],"equips":["order-sword","twin"],"sword":"A:e","skills":1,"hasSkill":true,"ownSkill":false,"temporary":false,"equipSkill":true,"cards":{"sword":"d","fang":"d","armor-B":"d","armor-C":"d","multi-sha":"d","red":"d","nested-outer":"d","nested-inner":"d","nested-red":"d","twin":"A:e","order-sword":"A:e","human-sha":"d","human-cost":"d","temporary-removed-while-equipped-sha":"d","temporary-plus-equipped-sha":"d","temporary-after-discard-sha":"d","equipment-after-temporary-sha":"d","equipment-then-temporary-sha":"d","remove-temporary-with-equipment-sha":"o"}}]
+  ],
+  "calls": [
+    [
+      "multi",
+      "qinggang_skill",
+      "begin",
+      4,
+      5,
+      "trigger",
+      "A",
+      3,
+      "useCardToPlayered",
+      {
+        "hp": [
+          12,
+          12
+        ],
+        "equips": [
+          "sword",
+          "fang"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": false,
+        "equipSkill": true,
+        "cards": {
+          "sword": "A:e",
+          "fang": "A:e",
+          "armor-B": "B:e",
+          "armor-C": "C:e",
+          "multi-sha": "o",
+          "red": "c"
+        }
+      }
+    ],
+    [
+      "multi",
+      "qinggang_skill",
+      "end",
+      4,
+      5,
+      "trigger",
+      "A",
+      3,
+      "useCardToPlayered",
+      {
+        "hp": [
+          12,
+          12
+        ],
+        "equips": [
+          "sword",
+          "fang"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": false,
+        "equipSkill": true,
+        "cards": {
+          "sword": "A:e",
+          "fang": "A:e",
+          "armor-B": "B:e",
+          "armor-C": "C:e",
+          "multi-sha": "o",
+          "red": "c"
+        }
+      }
+    ],
+    [
+      "multi",
+      "bagua_skill",
+      "begin",
+      6,
+      7,
+      "trigger",
+      "B",
+      8,
+      "chooseToUse",
+      {
+        "hp": [
+          12,
+          12
+        ],
+        "equips": [
+          "sword",
+          "fang"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": false,
+        "equipSkill": true,
+        "cards": {
+          "sword": "A:e",
+          "fang": "A:e",
+          "armor-B": "B:e",
+          "armor-C": "C:e",
+          "multi-sha": "o",
+          "red": "c"
+        }
+      }
+    ],
+    [
+      "multi",
+      "bagua_skill",
+      "end",
+      6,
+      7,
+      "trigger",
+      "B",
+      8,
+      "chooseToUse",
+      {
+        "hp": [
+          12,
+          12
+        ],
+        "equips": [
+          "sword",
+          "fang"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": false,
+        "equipSkill": true,
+        "cards": {
+          "sword": "A:e",
+          "fang": "A:e",
+          "armor-B": "B:e",
+          "armor-C": "C:e",
+          "multi-sha": "o",
+          "red": "d"
+        }
+      }
+    ],
+    [
+      "virtual",
+      "qinggang_skill",
+      "begin",
+      16,
+      17,
+      "trigger",
+      "A",
+      14,
+      "useCardToPlayered",
+      {
+        "hp": [
+          12,
+          11
+        ],
+        "equips": [
+          "sword",
+          "fang"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": false,
+        "equipSkill": true,
+        "cards": {
+          "sword": "A:e",
+          "fang": "A:e",
+          "armor-B": "B:e",
+          "armor-C": "C:e",
+          "multi-sha": "d",
+          "red": "d"
+        }
+      }
+    ],
+    [
+      "virtual",
+      "qinggang_skill",
+      "end",
+      16,
+      17,
+      "trigger",
+      "A",
+      14,
+      "useCardToPlayered",
+      {
+        "hp": [
+          12,
+          11
+        ],
+        "equips": [
+          "sword",
+          "fang"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": false,
+        "equipSkill": true,
+        "cards": {
+          "sword": "A:e",
+          "fang": "A:e",
+          "armor-B": "B:e",
+          "armor-C": "C:e",
+          "multi-sha": "d",
+          "red": "d"
+        }
+      }
+    ],
+    [
+      "nested",
+      "qinggang_skill",
+      "begin",
+      23,
+      24,
+      "trigger",
+      "A",
+      21,
+      "useCardToPlayered",
+      {
+        "hp": [
+          12,
+          11
+        ],
+        "equips": [
+          "sword"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": false,
+        "equipSkill": true,
+        "cards": {
+          "sword": "A:e",
+          "fang": "d",
+          "armor-B": "B:e",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "o",
+          "nested-inner": "C:h",
+          "nested-red": "c"
+        }
+      }
+    ],
+    [
+      "nested",
+      "qinggang_skill",
+      "end",
+      23,
+      24,
+      "trigger",
+      "A",
+      21,
+      "useCardToPlayered",
+      {
+        "hp": [
+          12,
+          11
+        ],
+        "equips": [
+          "sword"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": false,
+        "equipSkill": true,
+        "cards": {
+          "sword": "A:e",
+          "fang": "d",
+          "armor-B": "B:e",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "o",
+          "nested-inner": "C:h",
+          "nested-red": "c"
+        }
+      }
+    ],
+    [
+      "human-order",
+      "cixiong_skill",
+      "begin",
+      36,
+      37,
+      "trigger",
+      "A",
+      32,
+      "useCardToPlayered",
+      {
+        "hp": [
+          12,
+          11
+        ],
+        "equips": [
+          "order-sword",
+          "twin"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": false,
+        "equipSkill": true,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "c",
+          "twin": "A:e",
+          "order-sword": "A:e",
+          "human-sha": "o",
+          "human-cost": "B:h"
+        }
+      }
+    ],
+    [
+      "human-order",
+      "cixiong_skill",
+      "end",
+      36,
+      37,
+      "trigger",
+      "A",
+      32,
+      "useCardToPlayered",
+      {
+        "hp": [
+          12,
+          11
+        ],
+        "equips": [
+          "order-sword",
+          "twin"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": false,
+        "equipSkill": true,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "c",
+          "twin": "A:e",
+          "order-sword": "A:e",
+          "human-sha": "o",
+          "human-cost": "d"
+        }
+      }
+    ],
+    [
+      "human-order",
+      "qinggang_skill",
+      "begin",
+      38,
+      39,
+      "trigger",
+      "A",
+      32,
+      "useCardToPlayered",
+      {
+        "hp": [
+          12,
+          11
+        ],
+        "equips": [
+          "order-sword",
+          "twin"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": false,
+        "equipSkill": true,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "c",
+          "twin": "A:e",
+          "order-sword": "A:e",
+          "human-sha": "o",
+          "human-cost": "d"
+        }
+      }
+    ],
+    [
+      "human-order",
+      "qinggang_skill",
+      "end",
+      38,
+      39,
+      "trigger",
+      "A",
+      32,
+      "useCardToPlayered",
+      {
+        "hp": [
+          12,
+          11
+        ],
+        "equips": [
+          "order-sword",
+          "twin"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": false,
+        "equipSkill": true,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "c",
+          "twin": "A:e",
+          "order-sword": "A:e",
+          "human-sha": "o",
+          "human-cost": "d"
+        }
+      }
+    ],
+    [
+      "temporary-removed-while-equipped",
+      "cixiong_skill",
+      "begin",
+      44,
+      45,
+      "trigger",
+      "A",
+      42,
+      "useCardToPlayered",
+      {
+        "hp": [
+          11,
+          11
+        ],
+        "equips": [
+          "order-sword",
+          "twin"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": false,
+        "equipSkill": true,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "c",
+          "twin": "A:e",
+          "order-sword": "A:e",
+          "human-sha": "d",
+          "human-cost": "d",
+          "temporary-removed-while-equipped-sha": "o"
+        }
+      }
+    ],
+    [
+      "temporary-removed-while-equipped",
+      "cixiong_skill",
+      "end",
+      44,
+      45,
+      "trigger",
+      "A",
+      42,
+      "useCardToPlayered",
+      {
+        "hp": [
+          11,
+          11
+        ],
+        "equips": [
+          "order-sword",
+          "twin"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": false,
+        "equipSkill": true,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "A:h",
+          "twin": "A:e",
+          "order-sword": "A:e",
+          "human-sha": "d",
+          "human-cost": "d",
+          "temporary-removed-while-equipped-sha": "o"
+        }
+      }
+    ],
+    [
+      "temporary-plus-equipped",
+      "qinggang_skill",
+      "begin",
+      52,
+      53,
+      "trigger",
+      "A",
+      48,
+      "useCardToPlayered",
+      {
+        "hp": [
+          10,
+          11
+        ],
+        "equips": [
+          "order-sword",
+          "twin"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": true,
+        "equipSkill": true,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "d",
+          "twin": "A:e",
+          "order-sword": "A:e",
+          "human-sha": "d",
+          "human-cost": "d",
+          "temporary-removed-while-equipped-sha": "d",
+          "temporary-plus-equipped-sha": "o"
+        }
+      }
+    ],
+    [
+      "temporary-plus-equipped",
+      "qinggang_skill",
+      "end",
+      52,
+      53,
+      "trigger",
+      "A",
+      48,
+      "useCardToPlayered",
+      {
+        "hp": [
+          10,
+          11
+        ],
+        "equips": [
+          "order-sword",
+          "twin"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": true,
+        "equipSkill": true,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "d",
+          "twin": "A:e",
+          "order-sword": "A:e",
+          "human-sha": "d",
+          "human-cost": "d",
+          "temporary-removed-while-equipped-sha": "d",
+          "temporary-plus-equipped-sha": "o"
+        }
+      }
+    ],
+    [
+      "temporary-plus-equipped",
+      "cixiong_skill",
+      "begin",
+      54,
+      55,
+      "trigger",
+      "A",
+      48,
+      "useCardToPlayered",
+      {
+        "hp": [
+          10,
+          11
+        ],
+        "equips": [
+          "order-sword",
+          "twin"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": true,
+        "equipSkill": true,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "d",
+          "twin": "A:e",
+          "order-sword": "A:e",
+          "human-sha": "d",
+          "human-cost": "d",
+          "temporary-removed-while-equipped-sha": "d",
+          "temporary-plus-equipped-sha": "o"
+        }
+      }
+    ],
+    [
+      "temporary-plus-equipped",
+      "cixiong_skill",
+      "end",
+      54,
+      55,
+      "trigger",
+      "A",
+      48,
+      "useCardToPlayered",
+      {
+        "hp": [
+          10,
+          11
+        ],
+        "equips": [
+          "order-sword",
+          "twin"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": true,
+        "equipSkill": true,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "d",
+          "twin": "A:e",
+          "order-sword": "A:e",
+          "human-sha": "d",
+          "human-cost": "d",
+          "temporary-removed-while-equipped-sha": "d",
+          "temporary-plus-equipped-sha": "o"
+        }
+      }
+    ],
+    [
+      "temporary-after-discard",
+      "qinggang_skill",
+      "begin",
+      62,
+      63,
+      "trigger",
+      "A",
+      58,
+      "useCardToPlayered",
+      {
+        "hp": [
+          9,
+          11
+        ],
+        "equips": [
+          "twin"
+        ],
+        "sword": "d",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": true,
+        "equipSkill": false,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "d",
+          "twin": "A:e",
+          "order-sword": "d",
+          "human-sha": "d",
+          "human-cost": "d",
+          "temporary-removed-while-equipped-sha": "d",
+          "temporary-plus-equipped-sha": "d",
+          "temporary-after-discard-sha": "o"
+        }
+      }
+    ],
+    [
+      "temporary-after-discard",
+      "qinggang_skill",
+      "end",
+      62,
+      63,
+      "trigger",
+      "A",
+      58,
+      "useCardToPlayered",
+      {
+        "hp": [
+          9,
+          11
+        ],
+        "equips": [
+          "twin"
+        ],
+        "sword": "d",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": true,
+        "equipSkill": false,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "d",
+          "twin": "A:e",
+          "order-sword": "d",
+          "human-sha": "d",
+          "human-cost": "d",
+          "temporary-removed-while-equipped-sha": "d",
+          "temporary-plus-equipped-sha": "d",
+          "temporary-after-discard-sha": "o"
+        }
+      }
+    ],
+    [
+      "temporary-after-discard",
+      "cixiong_skill",
+      "begin",
+      64,
+      65,
+      "trigger",
+      "A",
+      58,
+      "useCardToPlayered",
+      {
+        "hp": [
+          9,
+          11
+        ],
+        "equips": [
+          "twin"
+        ],
+        "sword": "d",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": true,
+        "equipSkill": false,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "d",
+          "twin": "A:e",
+          "order-sword": "d",
+          "human-sha": "d",
+          "human-cost": "d",
+          "temporary-removed-while-equipped-sha": "d",
+          "temporary-plus-equipped-sha": "d",
+          "temporary-after-discard-sha": "o"
+        }
+      }
+    ],
+    [
+      "temporary-after-discard",
+      "cixiong_skill",
+      "end",
+      64,
+      65,
+      "trigger",
+      "A",
+      58,
+      "useCardToPlayered",
+      {
+        "hp": [
+          9,
+          11
+        ],
+        "equips": [
+          "twin"
+        ],
+        "sword": "d",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": true,
+        "equipSkill": false,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "d",
+          "twin": "A:e",
+          "order-sword": "d",
+          "human-sha": "d",
+          "human-cost": "d",
+          "temporary-removed-while-equipped-sha": "d",
+          "temporary-plus-equipped-sha": "d",
+          "temporary-after-discard-sha": "o"
+        }
+      }
+    ],
+    [
+      "equipment-after-temporary",
+      "cixiong_skill",
+      "begin",
+      72,
+      73,
+      "trigger",
+      "A",
+      68,
+      "useCardToPlayered",
+      {
+        "hp": [
+          8,
+          11
+        ],
+        "equips": [
+          "order-sword",
+          "twin"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": false,
+        "equipSkill": true,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "d",
+          "twin": "A:e",
+          "order-sword": "A:e",
+          "human-sha": "d",
+          "human-cost": "d",
+          "temporary-removed-while-equipped-sha": "d",
+          "temporary-plus-equipped-sha": "d",
+          "temporary-after-discard-sha": "d",
+          "equipment-after-temporary-sha": "o"
+        }
+      }
+    ],
+    [
+      "equipment-after-temporary",
+      "cixiong_skill",
+      "end",
+      72,
+      73,
+      "trigger",
+      "A",
+      68,
+      "useCardToPlayered",
+      {
+        "hp": [
+          8,
+          11
+        ],
+        "equips": [
+          "order-sword",
+          "twin"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": false,
+        "equipSkill": true,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "d",
+          "twin": "A:e",
+          "order-sword": "A:e",
+          "human-sha": "d",
+          "human-cost": "d",
+          "temporary-removed-while-equipped-sha": "d",
+          "temporary-plus-equipped-sha": "d",
+          "temporary-after-discard-sha": "d",
+          "equipment-after-temporary-sha": "o"
+        }
+      }
+    ],
+    [
+      "equipment-after-temporary",
+      "qinggang_skill",
+      "begin",
+      74,
+      75,
+      "trigger",
+      "A",
+      68,
+      "useCardToPlayered",
+      {
+        "hp": [
+          8,
+          11
+        ],
+        "equips": [
+          "order-sword",
+          "twin"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": false,
+        "equipSkill": true,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "d",
+          "twin": "A:e",
+          "order-sword": "A:e",
+          "human-sha": "d",
+          "human-cost": "d",
+          "temporary-removed-while-equipped-sha": "d",
+          "temporary-plus-equipped-sha": "d",
+          "temporary-after-discard-sha": "d",
+          "equipment-after-temporary-sha": "o"
+        }
+      }
+    ],
+    [
+      "equipment-after-temporary",
+      "qinggang_skill",
+      "end",
+      74,
+      75,
+      "trigger",
+      "A",
+      68,
+      "useCardToPlayered",
+      {
+        "hp": [
+          8,
+          11
+        ],
+        "equips": [
+          "order-sword",
+          "twin"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": false,
+        "equipSkill": true,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "d",
+          "twin": "A:e",
+          "order-sword": "A:e",
+          "human-sha": "d",
+          "human-cost": "d",
+          "temporary-removed-while-equipped-sha": "d",
+          "temporary-plus-equipped-sha": "d",
+          "temporary-after-discard-sha": "d",
+          "equipment-after-temporary-sha": "o"
+        }
+      }
+    ],
+    [
+      "equipment-then-temporary",
+      "cixiong_skill",
+      "begin",
+      82,
+      83,
+      "trigger",
+      "A",
+      78,
+      "useCardToPlayered",
+      {
+        "hp": [
+          7,
+          11
+        ],
+        "equips": [
+          "order-sword",
+          "twin"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": false,
+        "equipSkill": true,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "d",
+          "twin": "A:e",
+          "order-sword": "A:e",
+          "human-sha": "d",
+          "human-cost": "d",
+          "temporary-removed-while-equipped-sha": "d",
+          "temporary-plus-equipped-sha": "d",
+          "temporary-after-discard-sha": "d",
+          "equipment-after-temporary-sha": "d",
+          "equipment-then-temporary-sha": "o"
+        }
+      }
+    ],
+    [
+      "equipment-then-temporary",
+      "cixiong_skill",
+      "end",
+      82,
+      83,
+      "trigger",
+      "A",
+      78,
+      "useCardToPlayered",
+      {
+        "hp": [
+          7,
+          11
+        ],
+        "equips": [
+          "order-sword",
+          "twin"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": false,
+        "equipSkill": true,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "d",
+          "twin": "A:e",
+          "order-sword": "A:e",
+          "human-sha": "d",
+          "human-cost": "d",
+          "temporary-removed-while-equipped-sha": "d",
+          "temporary-plus-equipped-sha": "d",
+          "temporary-after-discard-sha": "d",
+          "equipment-after-temporary-sha": "d",
+          "equipment-then-temporary-sha": "o"
+        }
+      }
+    ],
+    [
+      "equipment-then-temporary",
+      "qinggang_skill",
+      "begin",
+      84,
+      85,
+      "trigger",
+      "A",
+      78,
+      "useCardToPlayered",
+      {
+        "hp": [
+          7,
+          11
+        ],
+        "equips": [
+          "order-sword",
+          "twin"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": false,
+        "equipSkill": true,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "d",
+          "twin": "A:e",
+          "order-sword": "A:e",
+          "human-sha": "d",
+          "human-cost": "d",
+          "temporary-removed-while-equipped-sha": "d",
+          "temporary-plus-equipped-sha": "d",
+          "temporary-after-discard-sha": "d",
+          "equipment-after-temporary-sha": "d",
+          "equipment-then-temporary-sha": "o"
+        }
+      }
+    ],
+    [
+      "equipment-then-temporary",
+      "qinggang_skill",
+      "end",
+      84,
+      85,
+      "trigger",
+      "A",
+      78,
+      "useCardToPlayered",
+      {
+        "hp": [
+          7,
+          11
+        ],
+        "equips": [
+          "order-sword",
+          "twin"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": false,
+        "equipSkill": true,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "d",
+          "twin": "A:e",
+          "order-sword": "A:e",
+          "human-sha": "d",
+          "human-cost": "d",
+          "temporary-removed-while-equipped-sha": "d",
+          "temporary-plus-equipped-sha": "d",
+          "temporary-after-discard-sha": "d",
+          "equipment-after-temporary-sha": "d",
+          "equipment-then-temporary-sha": "o"
+        }
+      }
+    ],
+    [
+      "remove-temporary-with-equipment",
+      "cixiong_skill",
+      "begin",
+      90,
+      91,
+      "trigger",
+      "A",
+      88,
+      "useCardToPlayered",
+      {
+        "hp": [
+          6,
+          11
+        ],
+        "equips": [
+          "order-sword",
+          "twin"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": false,
+        "equipSkill": true,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "d",
+          "twin": "A:e",
+          "order-sword": "A:e",
+          "human-sha": "d",
+          "human-cost": "d",
+          "temporary-removed-while-equipped-sha": "d",
+          "temporary-plus-equipped-sha": "d",
+          "temporary-after-discard-sha": "d",
+          "equipment-after-temporary-sha": "d",
+          "equipment-then-temporary-sha": "d",
+          "remove-temporary-with-equipment-sha": "o"
+        }
+      }
+    ],
+    [
+      "remove-temporary-with-equipment",
+      "cixiong_skill",
+      "end",
+      90,
+      91,
+      "trigger",
+      "A",
+      88,
+      "useCardToPlayered",
+      {
+        "hp": [
+          6,
+          11
+        ],
+        "equips": [
+          "order-sword",
+          "twin"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": false,
+        "equipSkill": true,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "d",
+          "twin": "A:e",
+          "order-sword": "A:e",
+          "human-sha": "d",
+          "human-cost": "d",
+          "temporary-removed-while-equipped-sha": "d",
+          "temporary-plus-equipped-sha": "d",
+          "temporary-after-discard-sha": "d",
+          "equipment-after-temporary-sha": "d",
+          "equipment-then-temporary-sha": "d",
+          "remove-temporary-with-equipment-sha": "o"
+        }
+      }
+    ]
+  ],
+  "states": [
+    [
+      "multi",
+      {
+        "hp": [
+          12,
+          11
+        ],
+        "equips": [
+          "sword",
+          "fang"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": false,
+        "equipSkill": true,
+        "cards": {
+          "sword": "A:e",
+          "fang": "A:e",
+          "armor-B": "B:e",
+          "armor-C": "C:e",
+          "multi-sha": "d",
+          "red": "d"
+        }
+      }
+    ],
+    [
+      "virtual",
+      {
+        "hp": [
+          11,
+          11
+        ],
+        "equips": [
+          "sword",
+          "fang"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": false,
+        "equipSkill": true,
+        "cards": {
+          "sword": "A:e",
+          "fang": "A:e",
+          "armor-B": "B:e",
+          "armor-C": "C:e",
+          "multi-sha": "d",
+          "red": "d"
+        }
+      }
+    ],
+    [
+      "nested",
+      {
+        "hp": [
+          10,
+          11
+        ],
+        "equips": [
+          "sword"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": false,
+        "equipSkill": true,
+        "cards": {
+          "sword": "A:e",
+          "fang": "d",
+          "armor-B": "B:e",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "c"
+        }
+      }
+    ],
+    [
+      "human-order",
+      {
+        "hp": [
+          11,
+          11
+        ],
+        "equips": [
+          "order-sword",
+          "twin"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": false,
+        "equipSkill": true,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "c",
+          "twin": "A:e",
+          "order-sword": "A:e",
+          "human-sha": "d",
+          "human-cost": "d"
+        }
+      }
+    ],
+    [
+      "probe-before-remove",
+      {
+        "hp": [
+          11,
+          11
+        ],
+        "equips": [
+          "order-sword",
+          "twin"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": true,
+        "equipSkill": true,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "c",
+          "twin": "A:e",
+          "order-sword": "A:e",
+          "human-sha": "d",
+          "human-cost": "d"
+        }
+      }
+    ],
+    [
+      "probe-after-remove",
+      {
+        "hp": [
+          11,
+          11
+        ],
+        "equips": [
+          "order-sword",
+          "twin"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": false,
+        "equipSkill": true,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "c",
+          "twin": "A:e",
+          "order-sword": "A:e",
+          "human-sha": "d",
+          "human-cost": "d"
+        }
+      }
+    ],
+    [
+      "temporary-removed-while-equipped",
+      {
+        "hp": [
+          10,
+          11
+        ],
+        "equips": [
+          "order-sword",
+          "twin"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": false,
+        "equipSkill": true,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "A:h",
+          "twin": "A:e",
+          "order-sword": "A:e",
+          "human-sha": "d",
+          "human-cost": "d",
+          "temporary-removed-while-equipped-sha": "d"
+        }
+      }
+    ],
+    [
+      "temporary-before-equip",
+      {
+        "hp": [
+          10,
+          11
+        ],
+        "equips": [],
+        "sword": "d",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": true,
+        "equipSkill": false,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "d",
+          "twin": "d",
+          "order-sword": "d",
+          "human-sha": "d",
+          "human-cost": "d",
+          "temporary-removed-while-equipped-sha": "d"
+        }
+      }
+    ],
+    [
+      "temporary-with-equipment",
+      {
+        "hp": [
+          10,
+          11
+        ],
+        "equips": [
+          "order-sword",
+          "twin"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": true,
+        "equipSkill": true,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "d",
+          "twin": "A:e",
+          "order-sword": "A:e",
+          "human-sha": "d",
+          "human-cost": "d",
+          "temporary-removed-while-equipped-sha": "d"
+        }
+      }
+    ],
+    [
+      "temporary-plus-equipped",
+      {
+        "hp": [
+          9,
+          11
+        ],
+        "equips": [
+          "order-sword",
+          "twin"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": true,
+        "equipSkill": true,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "d",
+          "twin": "A:e",
+          "order-sword": "A:e",
+          "human-sha": "d",
+          "human-cost": "d",
+          "temporary-removed-while-equipped-sha": "d",
+          "temporary-plus-equipped-sha": "d"
+        }
+      }
+    ],
+    [
+      "temporary-after-discard",
+      {
+        "hp": [
+          9,
+          11
+        ],
+        "equips": [
+          "twin"
+        ],
+        "sword": "d",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": true,
+        "equipSkill": false,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "d",
+          "twin": "A:e",
+          "order-sword": "d",
+          "human-sha": "d",
+          "human-cost": "d",
+          "temporary-removed-while-equipped-sha": "d",
+          "temporary-plus-equipped-sha": "d"
+        }
+      }
+    ],
+    [
+      "temporary-after-discard",
+      {
+        "hp": [
+          8,
+          11
+        ],
+        "equips": [
+          "twin"
+        ],
+        "sword": "d",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": true,
+        "equipSkill": false,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "d",
+          "twin": "A:e",
+          "order-sword": "d",
+          "human-sha": "d",
+          "human-cost": "d",
+          "temporary-removed-while-equipped-sha": "d",
+          "temporary-plus-equipped-sha": "d",
+          "temporary-after-discard-sha": "d"
+        }
+      }
+    ],
+    [
+      "temporary-removed",
+      {
+        "hp": [
+          8,
+          11
+        ],
+        "equips": [
+          "twin"
+        ],
+        "sword": "d",
+        "skills": 0,
+        "hasSkill": false,
+        "ownSkill": false,
+        "temporary": false,
+        "equipSkill": false,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "d",
+          "twin": "A:e",
+          "order-sword": "d",
+          "human-sha": "d",
+          "human-cost": "d",
+          "temporary-removed-while-equipped-sha": "d",
+          "temporary-plus-equipped-sha": "d",
+          "temporary-after-discard-sha": "d"
+        }
+      }
+    ],
+    [
+      "equipment-after-temporary",
+      {
+        "hp": [
+          7,
+          11
+        ],
+        "equips": [
+          "order-sword",
+          "twin"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": false,
+        "equipSkill": true,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "d",
+          "twin": "A:e",
+          "order-sword": "A:e",
+          "human-sha": "d",
+          "human-cost": "d",
+          "temporary-removed-while-equipped-sha": "d",
+          "temporary-plus-equipped-sha": "d",
+          "temporary-after-discard-sha": "d",
+          "equipment-after-temporary-sha": "d"
+        }
+      }
+    ],
+    [
+      "equipment-before-temporary",
+      {
+        "hp": [
+          7,
+          11
+        ],
+        "equips": [
+          "order-sword",
+          "twin"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": false,
+        "equipSkill": true,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "d",
+          "twin": "A:e",
+          "order-sword": "A:e",
+          "human-sha": "d",
+          "human-cost": "d",
+          "temporary-removed-while-equipped-sha": "d",
+          "temporary-plus-equipped-sha": "d",
+          "temporary-after-discard-sha": "d",
+          "equipment-after-temporary-sha": "d"
+        }
+      }
+    ],
+    [
+      "equipment-then-temporary",
+      {
+        "hp": [
+          7,
+          11
+        ],
+        "equips": [
+          "order-sword",
+          "twin"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": false,
+        "equipSkill": true,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "d",
+          "twin": "A:e",
+          "order-sword": "A:e",
+          "human-sha": "d",
+          "human-cost": "d",
+          "temporary-removed-while-equipped-sha": "d",
+          "temporary-plus-equipped-sha": "d",
+          "temporary-after-discard-sha": "d",
+          "equipment-after-temporary-sha": "d"
+        }
+      }
+    ],
+    [
+      "equipment-then-temporary",
+      {
+        "hp": [
+          6,
+          11
+        ],
+        "equips": [
+          "order-sword",
+          "twin"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": false,
+        "equipSkill": true,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "d",
+          "twin": "A:e",
+          "order-sword": "A:e",
+          "human-sha": "d",
+          "human-cost": "d",
+          "temporary-removed-while-equipped-sha": "d",
+          "temporary-plus-equipped-sha": "d",
+          "temporary-after-discard-sha": "d",
+          "equipment-after-temporary-sha": "d",
+          "equipment-then-temporary-sha": "d"
+        }
+      }
+    ],
+    [
+      "remove-temporary-with-equipment",
+      {
+        "hp": [
+          6,
+          11
+        ],
+        "equips": [
+          "order-sword",
+          "twin"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": false,
+        "equipSkill": true,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "d",
+          "twin": "A:e",
+          "order-sword": "A:e",
+          "human-sha": "d",
+          "human-cost": "d",
+          "temporary-removed-while-equipped-sha": "d",
+          "temporary-plus-equipped-sha": "d",
+          "temporary-after-discard-sha": "d",
+          "equipment-after-temporary-sha": "d",
+          "equipment-then-temporary-sha": "d"
+        }
+      }
+    ],
+    [
+      "remove-temporary-with-equipment",
+      {
+        "hp": [
+          5,
+          11
+        ],
+        "equips": [
+          "order-sword",
+          "twin"
+        ],
+        "sword": "A:e",
+        "skills": 1,
+        "hasSkill": true,
+        "ownSkill": false,
+        "temporary": false,
+        "equipSkill": true,
+        "cards": {
+          "sword": "d",
+          "fang": "d",
+          "armor-B": "d",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "red": "d",
+          "nested-outer": "d",
+          "nested-inner": "d",
+          "nested-red": "d",
+          "twin": "A:e",
+          "order-sword": "A:e",
+          "human-sha": "d",
+          "human-cost": "d",
+          "temporary-removed-while-equipped-sha": "d",
+          "temporary-plus-equipped-sha": "d",
+          "temporary-after-discard-sha": "d",
+          "equipment-after-temporary-sha": "d",
+          "equipment-then-temporary-sha": "d",
+          "remove-temporary-with-equipment-sha": "d"
+        }
+      }
+    ]
+  ],
+  "controls": [
+    [
+      "human-order",
+      "arrangeTrigger",
+      [
+        "雌雄双股剑",
+        "青釭剑"
+      ],
+      true,
+      false
+    ],
+    [
+      "temporary-plus-equipped",
+      "arrangeTrigger",
+      [
+        "青釭剑",
+        "雌雄双股剑"
+      ],
+      false,
+      true
+    ],
+    [
+      "temporary-after-discard",
+      "arrangeTrigger",
+      [
+        "青釭剑",
+        "雌雄双股剑"
+      ],
+      false,
+      true
+    ],
+    [
+      "equipment-after-temporary",
+      "arrangeTrigger",
+      [
+        "雌雄双股剑",
+        "青釭剑"
+      ],
+      false,
+      true
+    ],
+    [
+      "equipment-then-temporary",
+      "arrangeTrigger",
+      [
+        "雌雄双股剑",
+        "青釭剑"
+      ],
+      false,
+      true
+    ]
+  ],
+  "humanCixiongClick": true
+}
