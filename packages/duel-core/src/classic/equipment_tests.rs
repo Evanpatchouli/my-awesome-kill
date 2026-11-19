@@ -4,9 +4,11 @@ use super::{
 };
 use crate::classic_data::{self, Role, Suit};
 use crate::{
-    Action, Card, CardFace, CardId, CardKind, ChoiceKind, Command, EventKind, EventStatus, Game,
-    Phase, Program, RuleError, SeatId,
+    Action, ActiveSkillRegistration, Card, CardFace, CardId, CardKind, ChoiceBranch, ChoiceKind,
+    Command, EventKind, EventStatus, Game, Phase, Program, RuleError, SeatId, TriggerOrder,
+    TriggerRegistration, TriggerRole, TriggerStep, Zone,
 };
+use std::sync::{Arc, Mutex};
 
 fn table() -> Game {
     scene(
@@ -316,4 +318,275 @@ fn cixiong_runs_before_the_defender_is_asked_for_shan() {
     assert_eq!(game.view(None).unwrap().discard, [card(2, CardKind::Tao)]);
     defend(&mut game, 1, Some(3));
     assert_eq!(game.view(None).unwrap().seats[1].hp, 4);
+}
+
+#[test]
+fn direct_equip_reveals_its_material_only_after_a_public_move() {
+    for cancel in [true, false] {
+        let mut game = scene(
+            &[
+                Role::Lord,
+                Role::Loyalist,
+                Role::Rebel,
+                Role::Renegade,
+                Role::Rebel,
+                Role::Loyalist,
+                Role::Rebel,
+                Role::Rebel,
+            ],
+            0,
+        );
+        let sword = card(91, CardKind::Qinggang);
+        game.seat_mut(0).hand.push(sword);
+        game.classic.as_mut().unwrap().faces.push(CardFace {
+            id: sword.id,
+            suit: Suit::Spade,
+            rank: 6,
+        });
+        let equip = game
+            .register_active_skill(ActiveSkillRegistration {
+                owner: 0,
+                skill: "equip_from_hand".into(),
+                limited: false,
+                choice: Arc::new(|_, _| {
+                    Some(ChoiceBranch {
+                        id: 0,
+                        label: "装备".into(),
+                        cards: vec![],
+                        min_cards: 0,
+                        max_cards: 0,
+                        targets: vec![],
+                        min_targets: 0,
+                        max_targets: 0,
+                    })
+                }),
+                effect: Arc::new(move |ctx, _, _| {
+                    ctx.equip_from_hand(0, sword.id).unwrap();
+                    TriggerStep::Done
+                }),
+            })
+            .unwrap();
+        let equip_event = EventKind::Equip {
+            seat: 0,
+            card: sword,
+        };
+        let hidden_event = EventKind::EquipPending { seat: 0 };
+        game.register_trigger(TriggerRegistration {
+            owner: 0,
+            skill: "inspect_equip_before".into(),
+            timing: "equipBefore".into(),
+            role: TriggerRole::Player,
+            order: TriggerOrder::First,
+            priority: 0,
+            label: None,
+            silent: true,
+            filter: Arc::new(|_, _, _| true),
+            effect: Arc::new(move |ctx, _, _| {
+                let subject = ctx.event().subject;
+                assert_eq!(ctx.game().event_kind(subject), Some(equip_event));
+                for viewer in (1..8).map(Some).chain(std::iter::once(None)) {
+                    let view = ctx.game().view(viewer).unwrap();
+                    assert_eq!(
+                        view.events
+                            .iter()
+                            .find(|event| event.id == subject)
+                            .unwrap()
+                            .kind,
+                        hidden_event
+                    );
+                    assert!(!view.card_faces.iter().any(|face| face.id == sword.id));
+                    assert!(!view.seats[0].known_hand.contains(&sword));
+                }
+                if cancel {
+                    TriggerStep::CancelSubject
+                } else {
+                    TriggerStep::Done
+                }
+            }),
+        })
+        .unwrap();
+        play_phase(&mut game);
+        game.submit(Command {
+            version: game.version,
+            seat: 0,
+            action: Action::ActivateSkill {
+                registration: equip,
+                cards: vec![],
+                targets: vec![],
+            },
+        })
+        .unwrap();
+        let owner = game.view(Some(0)).unwrap();
+        assert_eq!(
+            owner.seats[0].hand.as_ref().unwrap().contains(&sword),
+            cancel
+        );
+        assert!(owner.card_faces.iter().any(|face| face.id == sword.id));
+        let expected_status = if cancel {
+            EventStatus::Cancelled
+        } else {
+            EventStatus::Finished
+        };
+        let subject = owner
+            .events
+            .iter()
+            .find(|event| event.kind == equip_event && event.status == expected_status)
+            .unwrap()
+            .id;
+        assert!(game
+            .events
+            .iter()
+            .any(|event| event.id == subject && event.kind == equip_event));
+        for viewer in (1..8).map(Some).chain(std::iter::once(None)) {
+            let view = game.view(viewer).unwrap();
+            let expected_kind = if cancel { hidden_event } else { equip_event };
+            assert_eq!(
+                view.events
+                    .iter()
+                    .filter(|event| event.id == subject)
+                    .map(|event| (event.status, event.kind))
+                    .collect::<Vec<_>>(),
+                [
+                    (EventStatus::Started, expected_kind),
+                    (expected_status, expected_kind),
+                ]
+            );
+            assert_eq!(
+                view.card_faces.iter().any(|face| face.id == sword.id),
+                !cancel
+            );
+            assert!(!view.seats[0].known_hand.contains(&sword));
+            assert_eq!(view.seats[0].equipment.contains(&sword), !cancel);
+        }
+    }
+}
+
+#[test]
+fn replace_equip_resolves_live_material_and_rechecks_the_slot_after_cancellation() {
+    for (label, occupied, detached, interruption, installs) in [
+        ("empty", false, false, None, true),
+        (
+            "empty cancelled",
+            false,
+            false,
+            Some("replaceEquipBefore"),
+            true,
+        ),
+        (
+            "occupied cancelled",
+            true,
+            false,
+            Some("replaceEquipBefore"),
+            false,
+        ),
+        ("occupied", true, false, None, true),
+        ("detached", false, true, None, false),
+        (
+            "removed after selection",
+            true,
+            false,
+            Some("replaceEquipAfter"),
+            true,
+        ),
+    ] {
+        let mut game = table();
+        let incoming = card(90, CardKind::Qinggang);
+        let old = card(91, CardKind::Zhuge);
+        game.seat_mut(0).hand.push(incoming);
+        if occupied {
+            game.seat_mut(0).equipment.push(old);
+        }
+        if detached {
+            game.seat_mut(0).detached_equipment.push(old);
+            game.discard.push(old);
+        }
+        let seen = Arc::new(Mutex::new(Vec::new()));
+        let observed = seen.clone();
+        game.timing_observer = Some(Arc::new(move |game, event| {
+            if event.timing.starts_with("replaceEquip") {
+                assert_eq!(event.cards, [incoming]);
+                assert_eq!(event.card_kind, Some(incoming.kind));
+                assert_eq!(
+                    event.parent.and_then(|id| game.event_kind(id)),
+                    Some(EventKind::Equip {
+                        seat: 0,
+                        card: incoming
+                    })
+                );
+                observed.lock().unwrap().push(event.timing.clone());
+            }
+        }));
+        if let Some(timing) = interruption {
+            game.register_trigger(TriggerRegistration {
+                owner: 0,
+                skill: "interrupt_replace".into(),
+                timing: timing.into(),
+                role: TriggerRole::Player,
+                order: TriggerOrder::First,
+                priority: 0,
+                label: None,
+                silent: true,
+                filter: Arc::new(|_, _, _| true),
+                effect: Arc::new(move |ctx, _, _| {
+                    if timing == "replaceEquipBefore" {
+                        return TriggerStep::CancelSubject;
+                    }
+                    ctx.gain_owned_card(0, 1, old.id).unwrap();
+                    TriggerStep::Done
+                }),
+            })
+            .unwrap();
+        }
+        play_phase(&mut game);
+        play(&mut game, incoming.id, &[0]);
+        let cancelled = interruption == Some("replaceEquipBefore");
+        let expected = if cancelled {
+            vec!["replaceEquipBefore", "replaceEquipCancelled"]
+        } else {
+            vec![
+                "replaceEquipBefore",
+                "replaceEquipBegin",
+                "replaceEquipEnd",
+                "replaceEquipAfter",
+            ]
+        };
+        assert_eq!(*seen.lock().unwrap(), expected, "{label}");
+        let replacement = EventKind::ReplaceEquip {
+            seat: 0,
+            card_kind: incoming.kind,
+        };
+        assert!(
+            game.events.iter().any(|e| e.kind == replacement
+                && e.status
+                    == if cancelled {
+                        EventStatus::Cancelled
+                    } else {
+                        EventStatus::Finished
+                    }),
+            "{label}"
+        );
+        assert_eq!(
+            game.seat(0).unwrap().equipment.contains(&incoming),
+            installs,
+            "{label}"
+        );
+        assert_eq!(game.discard.contains(&incoming), !installs, "{label}");
+        if label == "occupied" {
+            assert!(game.discard.contains(&old));
+            assert!(game
+                .loss_history()
+                .iter()
+                .any(|loss| loss.cards == [(Zone::Equipment, old)]));
+        }
+        if label == "removed after selection" {
+            assert!(game.seat(1).unwrap().hand.contains(&old));
+            assert!(!game.discard.contains(&old));
+        }
+        if label == "occupied cancelled" {
+            assert!(game.seat(0).unwrap().equipment.contains(&old));
+        }
+        if detached {
+            assert_eq!(game.equipment_registrations(0, incoming.kind), [old]);
+        }
+    }
 }

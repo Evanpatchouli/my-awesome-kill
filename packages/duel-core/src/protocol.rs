@@ -616,6 +616,14 @@ pub enum EventKind {
         seat: SeatId,
         card: Card,
     },
+    EquipPending {
+        seat: SeatId,
+    },
+    #[serde(rename_all = "camelCase")]
+    ReplaceEquip {
+        seat: SeatId,
+        card_kind: CardKind,
+    },
     EquipmentEffect {
         seat: SeatId,
         target: SeatId,

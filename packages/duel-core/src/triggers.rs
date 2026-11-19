@@ -1205,6 +1205,7 @@ impl Game {
                     | crate::EventKind::Equip { card, .. }
                     | crate::EventKind::UseResponseCard { card, .. } => Some(card.kind),
                     crate::EventKind::UseVirtual { kind, .. } => Some(kind),
+                    crate::EventKind::ReplaceEquip { card_kind, .. } => Some(card_kind),
                     _ => None,
                 },
                 None,

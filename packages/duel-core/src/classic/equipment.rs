@@ -71,11 +71,32 @@ pub(crate) enum EquipStep {
     DirectBegin,
     DirectLose,
     Replace,
+    ApplyReplacement,
     Install,
     DirectEnd,
     DirectAfter,
     DirectFinish,
     DirectCancelled,
+}
+
+#[derive(Clone, Copy)]
+enum ReplacementStep {
+    Before,
+    Begin,
+    Select,
+    End,
+    After,
+    Finish,
+    Cancel,
+    FinishCancelled,
+}
+
+#[derive(Clone)]
+pub(crate) struct Replacement {
+    seat: SeatId,
+    incoming: Card,
+    selected: Option<Card>,
+    step: ReplacementStep,
 }
 
 #[derive(Clone)]
@@ -86,6 +107,7 @@ pub(crate) enum Flow {
         step: EquipStep,
         direct: bool,
     },
+    Replace(Replacement),
     Attack(attack::Attack),
     Target(attack::Target),
     Response(response::Response),
@@ -99,6 +121,10 @@ impl Flow {
             Self::Equip { seat, card, .. } => EventKind::Equip {
                 seat: *seat,
                 card: *card,
+            },
+            Self::Replace(replacement) => EventKind::ReplaceEquip {
+                seat: replacement.seat,
+                card_kind: replacement.incoming.kind,
             },
             Self::Attack(attack) => attack.event(),
             Self::Target(attack) => EventKind::ShaEffect {
@@ -188,6 +214,7 @@ impl Game {
                 step,
                 direct,
             } => self.resolve_equip(seat, card, step, direct, child),
+            Flow::Replace(replacement) => self.resolve_equip_replacement(replacement, child),
             Flow::Attack(attack) => self.resolve_attack(attack, child),
             Flow::Target(target) => self.resolve_sha_target(target, child),
             Flow::Response(response) => self.resolve_response(response, child),
@@ -328,19 +355,29 @@ impl Game {
                     self.scheduler.end(Outcome::Cancelled);
                     return;
                 }
-                let current = self.seat(seat).expect("the equipping seat exists");
-                let old = current
-                    .equipment
-                    .iter()
-                    .find(|old| slot(old.kind) == slot(card.kind))
-                    .copied();
-                self.scheduler.replace_current(program(EquipStep::Install));
-                if let Some(old) = old {
-                    self.scheduler.next(Program::DiscardFrom {
+                self.scheduler
+                    .replace_current(program(EquipStep::ApplyReplacement));
+                self.scheduler
+                    .next(Program::Equipment(Flow::Replace(Replacement {
                         seat,
-                        zone: Zone::Equipment,
-                        card: old,
-                    });
+                        incoming: card,
+                        selected: None,
+                        step: ReplacementStep::Before,
+                    })));
+            }
+            EquipStep::ApplyReplacement => {
+                self.scheduler.replace_current(program(EquipStep::Install));
+                if let Some(Outcome::Finished(Resolution::EquipReplacement {
+                    card: Some(old),
+                    ..
+                })) = child
+                {
+                    if let Some((holder, zone, material)) = self.held_card_location(old.id) {
+                        if holder == seat {
+                            self.scheduler
+                                .next(self.equip_replacement_loss_program(seat, zone, material));
+                        }
+                    }
                 }
             }
             EquipStep::Install => {
@@ -397,6 +434,63 @@ impl Game {
             }
             EquipStep::DirectFinish => self.finish(),
             EquipStep::DirectCancelled => self.scheduler.end(Outcome::Cancelled),
+        }
+    }
+
+    fn resolve_equip_replacement(
+        &mut self,
+        mut replacement: Replacement,
+        child: Option<Outcome<Resolution>>,
+    ) {
+        use ReplacementStep::*;
+        if matches!(child, Some(Outcome::Cancelled)) && !matches!(replacement.step, FinishCancelled)
+        {
+            replacement.step = Cancel;
+        }
+        loop {
+            let (timing, next) = match replacement.step {
+                Before => ("replaceEquipBefore", Begin),
+                Begin => ("replaceEquipBegin", Select),
+                Select => {
+                    if self.is_in(replacement.seat) {
+                        let player = self
+                            .seat(replacement.seat)
+                            .expect("the equipping seat exists");
+                        let wanted = slot(replacement.incoming.kind);
+                        replacement.selected = player
+                            .equipment
+                            .iter()
+                            .copied()
+                            .find(|card| slot(card.kind) == wanted);
+                    }
+                    replacement.step = End;
+                    continue;
+                }
+                End => ("replaceEquipEnd", After),
+                After => ("replaceEquipAfter", Finish),
+                Cancel => ("replaceEquipCancelled", FinishCancelled),
+                Finish | FinishCancelled => {
+                    self.scheduler
+                        .end(Outcome::Finished(Resolution::EquipReplacement {
+                            card: replacement.selected,
+                            cancelled: matches!(replacement.step, FinishCancelled),
+                        }));
+                    return;
+                }
+            };
+            replacement.step = next;
+            if self.queue_timing(
+                timing,
+                Some(replacement.seat),
+                None,
+                None,
+                1,
+                &[replacement.incoming],
+            ) {
+                self.scheduler
+                    .replace_current(Program::Equipment(Flow::Replace(replacement)));
+                return;
+            }
         }
     }
 

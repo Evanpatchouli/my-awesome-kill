@@ -84,6 +84,10 @@ enum Resolution {
     },
     Countered(bool),
     ExpansionDiscarded(Vec<Card>),
+    EquipReplacement {
+        card: Option<Card>,
+        cancelled: bool,
+    },
     CompareBid(Card),
     LockedBids(Vec<Card>),
     Compared(CompareResult),
@@ -827,7 +831,25 @@ impl Game {
             .copied()
             .filter(|card| self.is_known_by(card.id, viewer))
             .collect();
-        let mut visible = self.visible_card_ids(&seats, &private_choice_cards, &resolving);
+        let events: Vec<_> = self
+            .events
+            .iter()
+            .map(|&event| {
+                if let EventKind::Equip { seat, card } = event.kind {
+                    if !self.is_known_by(card.id, viewer)
+                        && !resolving.contains(&card)
+                        && !self.discard.contains(&card)
+                    {
+                        return GameEvent {
+                            kind: EventKind::EquipPending { seat },
+                            ..event
+                        };
+                    }
+                }
+                event
+            })
+            .collect();
+        let mut visible = self.visible_card_ids(&seats, &private_choice_cards, &resolving, &events);
         for update in &self.group_updates {
             if let GroupAnnouncement::Reveal { bids, .. } = update {
                 visible.extend(bids.iter().map(|bid| bid.card.id));
@@ -898,7 +920,7 @@ impl Game {
             private_choice_cards,
             card_faces,
             card_natures,
-            events: self.events.clone(),
+            events,
         })
     }
 
@@ -907,6 +929,7 @@ impl Game {
         seats: &[SeatView],
         private_choice_cards: &[Card],
         resolving: &[Card],
+        events: &[GameEvent],
     ) -> HashSet<CardId> {
         use EventKind::{
             Discard, Equip, Reveal, UseCost, UseResponseCard, UseSha, UseShaTargets, UseShan,
@@ -924,7 +947,7 @@ impl Game {
                 .chain(&seat.judges)
                 .chain(seat.expansions.iter().map(|item| &item.card))
         });
-        let revealed_events = self.events.iter().filter_map(|event| match event.kind {
+        let revealed_events = events.iter().filter_map(|event| match event.kind {
             UseSha { card, .. }
             | UseShaTargets { card, .. }
             | UseShan { card, .. }
@@ -942,8 +965,7 @@ impl Game {
             | Discard { card } => Some(card.id),
             _ => None,
         });
-        let compare_faces = self
-            .events
+        let compare_faces = events
             .iter()
             .filter_map(|e| match e.kind {
                 EventKind::CompareReveal { cards, .. } => Some(cards),
@@ -1236,6 +1258,9 @@ impl Game {
                             ..
                         }))
                         | Outcome::Finished(Resolution::ReviveCancelled)
+                        | Outcome::Finished(Resolution::EquipReplacement {
+                            cancelled: true, ..
+                        })
                         | Outcome::Finished(Resolution::RestCancelled)
                         | Outcome::Finished(Resolution::MovedCards(MoveResult {
                             cancelled: true,

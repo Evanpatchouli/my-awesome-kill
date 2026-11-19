@@ -330,6 +330,7 @@ pub(crate) struct Movement {
     stage: MoveStage,
     committed: Option<Card>,
     allow_intercepted: bool,
+    follow_holder_zone: bool,
 }
 
 #[derive(Clone, Copy)]
@@ -404,6 +405,7 @@ impl Movement {
             stage: MoveStage::Before,
             committed: None,
             allow_intercepted: false,
+            follow_holder_zone: false,
         }
     }
 
@@ -553,6 +555,24 @@ impl Game {
             },
         );
         movement.allow_intercepted = true;
+        movement.follow_holder_zone = true;
+        Program::Recast(Flow::Movement(movement))
+    }
+    pub(crate) fn equip_replacement_loss_program(
+        &self,
+        seat: SeatId,
+        zone: Zone,
+        card: Card,
+    ) -> Program {
+        let mut movement = Movement::new(
+            seat,
+            MoveKind::Lose {
+                card,
+                zone,
+                destination: LossDestination::Discard,
+            },
+        );
+        movement.follow_holder_zone = true;
         Program::Recast(Flow::Movement(movement))
     }
     pub(crate) fn lose_to_ordering(
@@ -1247,11 +1267,8 @@ impl Game {
                         movement.stage = Cancel(MoveCancellation::InvalidMovement);
                         continue;
                     }
-                    if let Lose {
-                        card,
-                        zone,
-                        destination: LossDestination::JudgeSpecial,
-                    } = &mut movement.kind
+                    if let (true, Lose { card, zone, .. }) =
+                        (movement.follow_holder_zone, &mut movement.kind)
                     {
                         let owner = self.seat(seat).expect("material holder");
                         if let Some(current) = crate::location::HELD_ZONES
