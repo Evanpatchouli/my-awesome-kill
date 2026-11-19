@@ -74,3 +74,9 @@ Android 的 ARM64 调试包位于 `apps/game/src-tauri/gen/android/app/build/out
 分别在 1280×720 的 Windows WebView2 和 API 36 x86_64 模拟器的 ARM64 兼容环境中离线运行。设备处于横屏，640×320 显示面板中的 WebView 边界为 (0,24)–(640,296)。两个宿主从正在运行的页面读取到同一份 WASM，SHA-256 为 `23C64D2FC44DF8109E1C9A16E9C632089AD1470E5125FD5735B7076A0DE1B9AD`。从首页选择张飞进入八席后，过河拆桥的提交令版本由 0 变为 1。返回选将后用诸葛亮发动观星，实体 28 移至底行，顶行的 86、85 随后实际进入手牌。两组牌和确认按钮均在各端可用视口内，两次验证均无 JS 异常。
 
 复用独立 Gradle 工程时，对照目标 Git 版本核验参与打包的 manifest、Kotlin Activity、资源和 Gradle 配置，再放入新编译的原生库。本次首个候选沿用了旧版 `MainActivity.kt`，虽然 WASM 和原生库哈希正确，可用视口却为 640×320。同步系统栏内边距代码后重新打包，在设备中实测为 640×272。
+
+### 休整、判定区与独立登记的离线制品
+
+`8dad11d` 的默认 WASM 为 1,431,427 字节，SHA-256 为 `D9889FE1C3E64DE16BD44014B4B950038BD5C85DCB432D96CE544A2B28E3F1F0`。Windows release EXE 为 17,375,744 字节，SHA-256 为 `27FD09784EA1576471923ED9BCB7CA16F25AF71CC6BCFBFBCBE8DCD986A17AEA`。ARM64 debug APK 为 135,263,231 字节，SHA-256 为 `CB06367339611B17B0911AD252E59624ECAC53505EC7D2391AAD9FBF9AAA7BD2`。包内 JNI 与新编译的 ARM64 库均为 `69E7778418FE368B1BAD19B32A2874AC3F375984CC4EC3AA1BDF745E726459DC`，安装包通过 v2 签名和 16 KiB 对齐验证。
+
+在开发及预览服务关闭后，Windows WebView2 与 API 36 x86_64 模拟器中的 ARM64 应用均已从运行页面离线读取到上述 WASM。Windows 视口为 1280×720，Android 横屏显示面板为 640×320，WebView 为 640×272。两端均从首页选张飞进八席，提交过河拆桥后版本由 0 变为 1。重新选诸葛亮，观星将 28 置底，86、85 随后进入手牌，两份验收均无 JavaScript 异常。Windows 首页有入场动效，坐标点击应等待按钮位置稳定，并用 `elementFromPoint` 确认命中。Android 采用模拟器的 ARM64 兼容层，本次未覆盖物理 ARM 设备。
