@@ -220,11 +220,67 @@ export function installReferenceRevival() {
       const earlyRevival = { target: label(C), targetNonLordAI: C !== game.zhu && C !== game.me,
         stages: earlyStages, handInDiscard: ui.discardPile.contains(earlyHand),
         equipmentInDiscard: ui.discardPile.contains(earlyEquip) };
+
+      // Independent trials leave the original trace untouched. Observe the
+      // event from A and from B's own ordinary and forceDie skills.
+      const revivalTimings = ['reviveBefore', 'reviveBegin', 'reviveEnd', 'reviveAfter', 'reviveCancelled'];
+      const trialObserver = 'reference_revive_trial_observer';
+      const trialCancel = 'reference_revive_trial_cancel';
+      const ownOrdinary = 'reference_revive_own_ordinary';
+      const ownForceDie = 'reference_revive_own_force_die';
+      let trialRows = null, cancelAt = null;
+      const recordTrial = (kind, timing, event) => trialRows.push([kind, timing, B.hp, B.isAlive(),
+        game.players.map(label), game.dead.map(label), !!event.finished, !!event._cancelled]);
+      lib.skill[trialObserver] = {
+        trigger: { global: revivalTimings }, firstDo: true, forced: true, silent: true, forceDie: true,
+        filter: event => !!trialRows && event.player === B,
+        async content(event, trigger) { recordTrial('callback', event.triggername, trigger); },
+      };
+      lib.skill[trialCancel] = {
+        trigger: { global: revivalTimings }, forced: true, silent: true, forceDie: true, priority: -100,
+        filter: (event, player, name) => !!trialRows && event.player === B && name === cancelAt,
+        async content(event, trigger) { trigger.cancel(); },
+      };
+      for (const [name, forceDie] of [[ownOrdinary, false], [ownForceDie, true]]) {
+        lib.skill[name] = {
+          trigger: { player: ['reviveBefore', 'reviveBegin', 'reviveEnd'] }, forced: true, silent: true, forceDie,
+          filter: event => !!trialRows && event.player === B,
+          async content(event, trigger) { recordTrial(forceDie ? 'own-force-die' : 'own-ordinary', event.triggername, trigger); },
+        };
+      }
+      for (const skill of [trialObserver, trialCancel, ownOrdinary, ownForceDie]) game.finishSkill(skill);
+      A.addSkill(trialObserver);
+      A.addSkill(trialCancel);
+      B.addSkill(ownOrdinary);
+      B.addSkill(ownForceDie);
+      const cancellationTrials = [];
+      for (const timing of revivalTimings.slice(0, 4)) {
+        if (!B.isAlive()) B.revive(2, false);
+        B.hp = B.maxHp = 4;
+        B.update();
+        await B.die().set('animate', false);
+        trialRows = [];
+        cancelAt = timing;
+        earlyRecord = (name, event) => {
+          if (event.player === B && event.name === 'revive' && revivalTimings.includes(name)) recordTrial('request', name, event);
+        };
+        const revival = B.reviveEvent(2, false);
+        await revival;
+        earlyRecord = null;
+        cancellationTrials.push({ cancelAt: timing, rows: trialRows, hp: B.hp, alive: B.isAlive(),
+          players: game.players.map(label), dead: game.dead.map(label),
+          finished: !!revival.finished, cancelled: !!revival._cancelled });
+        trialRows = null;
+      }
+      A.removeSkill(trialObserver);
+      A.removeSkill(trialCancel);
+      B.removeSkill(ownOrdinary);
+      B.removeSkill(ownForceDie);
       return { setup, directReturnedUndefined: directReturn === undefined, stages, cancelled, restored,
         eventColumns: ['trial', 'kind', 'timing', 'event', 'parent', 'num', 'eventHp', 'hp', 'maxHp',
           'alive', 'players', 'dead', 'finished', 'cancelled'], events,
         physicalCards: { handInDiscard: ui.discardPile.contains(hand), equipmentInDiscard: ui.discardPile.contains(equipment) },
-        gushe, earlyRevival };
+        gushe, earlyRevival, cancellationTrials };
     } finally {
       proto.trigger = originalTrigger;
       A.removeSkill(observer);
@@ -348,4 +404,27 @@ export function checkReferenceRevival(result) {
   }
   assert.equal(result.earlyRevival.handInDiscard, false);
   assert.equal(result.earlyRevival.equipmentInDiscard, false);
+
+  const trialTimings = [
+    ['reviveBefore', 'reviveCancelled'],
+    ['reviveBefore', 'reviveBegin', 'reviveCancelled'],
+    ['reviveBefore', 'reviveBegin', 'reviveEnd', 'reviveCancelled'],
+    ['reviveBefore', 'reviveBegin', 'reviveEnd', 'reviveAfter', 'reviveCancelled'],
+  ];
+  assert.deepEqual(result.cancellationTrials.map(trial => trial.cancelAt),
+    ['reviveBefore', 'reviveBegin', 'reviveEnd', 'reviveAfter']);
+  for (const [index, trial] of result.cancellationTrials.entries()) {
+    const alive = index >= 2;
+    for (const kind of ['request', 'callback']) {
+      assert.deepEqual(trial.rows.filter(row => row[0] === kind).map(row => row[1]), trialTimings[index]);
+    }
+    assert.deepEqual([trial.hp, trial.alive, trial.finished, trial.cancelled], [alive ? 2 : 0, alive, true, true]);
+    assert.deepEqual(trial.dead, alive ? [] : [target]);
+    assert.deepEqual(trial.players, [...original.players.filter(seat => seat !== target && seat !== earlyTarget),
+      earlyTarget, ...(alive ? [target] : [])]);
+    assert.deepEqual(trial.rows.filter(row => row[0] === 'own-force-die').map(row => row[1]),
+      [[], ['reviveBefore'], ['reviveBefore', 'reviveBegin'], ['reviveBefore', 'reviveBegin', 'reviveEnd']][index]);
+    assert.deepEqual(trial.rows.filter(row => row[0] === 'own-ordinary').map(row => row[1]),
+      index === 3 ? ['reviveEnd'] : []);
+  }
 }
