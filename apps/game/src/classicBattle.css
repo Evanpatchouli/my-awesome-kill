@@ -1,4 +1,6 @@
 .classic-board {
+  --self-height: clamp(105px, 22dvh, 164px);
+  --dock-inset: 6px;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -165,6 +167,30 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.classic-action-area {
+  display: contents;
+}
+/* Center visible table actions as a group when the arena has vertical room. */
+@media (min-height: 600px) {
+  .classic-action-area.is-centered {
+    position: absolute;
+    z-index: 3;
+    inset: calc(var(--self-height) + 2 * var(--dock-inset) + 4px) 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: safe center;
+    pointer-events: none;
+  }
+  .classic-action-area.is-centered > .classic-center {
+    flex: 0 1 auto;
+    min-height: 0;
+    justify-content: center;
+    padding-bottom: 0;
+  }
+  .classic-action-area.is-centered + .classic-bottom {
+    margin-top: auto;
+  }
+}
 .classic-center {
   flex: 1 1 0;
   min-height: 65px;
@@ -215,8 +241,6 @@
   color: #8e3b2e;
 }
 .classic-bottom {
-  --self-height: clamp(105px, 22dvh, 164px);
-  --dock-inset: 6px;
   position: relative;
   z-index: 3;
   display: grid;
@@ -490,6 +514,8 @@
 }
 @media (max-height: 500px) and (orientation: landscape) {
   .classic-board {
+    --self-height: clamp(82px, 24dvh, 115px);
+    --dock-inset: 4px;
     height: calc(100dvh - 40px);
     min-height: 0;
   }
@@ -540,8 +566,6 @@
     font-size: 11px;
   }
   .classic-bottom {
-    --self-height: clamp(82px, 24dvh, 115px);
-    --dock-inset: 4px;
     grid-template-columns: clamp(76px, 13vw, 112px) minmax(0, 1fr) auto clamp(67px, 12vw, 110px);
     gap: 4px;
     padding-inline: 6px;
@@ -729,8 +753,8 @@
   }
 }
 @media (max-height: 350px) and (orientation: landscape) {
-  .classic-bottom { --dock-inset: 3px; }
   .classic-board {
+    --dock-inset: 3px;
     height: auto;
     min-height: calc(100dvh - 40px);
   }
@@ -896,7 +920,7 @@
 .classic-board-eight .seat-select .health { bottom: 34px; }
 .classic-board-eight .seat-select .seat-name { bottom: 55px; }
 .classic-board-eight .classic-center { position: relative; z-index: 1; justify-content: end; padding-bottom: 6px; pointer-events: none; }
-.classic-board-eight .classic-center :is(button, [data-card-choice], .classic-pool, [data-move-choice]) { pointer-events: auto; }
+.classic-center :is(button, [data-card-choice], .classic-pool, [data-move-choice]) { pointer-events: auto; }
 .classic-board-eight .classic-center:is(.has-choice, .has-resolving) { z-index: 3; }
 .classic-center.has-choice .classic-center-surface { margin: 2px 0; }
 @media (max-height: 500px) and (orientation: landscape) {

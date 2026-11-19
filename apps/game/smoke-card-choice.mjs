@@ -41,6 +41,17 @@ async function assertToolbarPosition(board) {
   assert.ok(bounds.galleryBottom <= bounds.viewportBottom + 1, 'gallery is visible without scrolling')
 }
 
+async function assertCentered(board) {
+  const [table, surface, toolbar] = await Promise.all([
+    board.boundingBox(),
+    board.locator('.classic-center-surface').boundingBox(),
+    board.locator('.classic-hand-toolbar').boundingBox(),
+  ])
+  const dx = surface.x + surface.width / 2 - (table.x + table.width / 2)
+  const dy = (surface.y + toolbar.y + toolbar.height) / 2 - (table.y + table.height / 2)
+  assert.ok(Math.abs(dx) <= 1 && Math.abs(dy) <= 2, `action group offset from table center: ${dx}, ${dy}`)
+}
+
 async function assertPlayedCard(board, id, name, rank) {
   const surface = board.locator('.classic-center-surface')
   const card = surface.locator(`[data-resolving-card="${id}"]`)
@@ -91,6 +102,7 @@ try {
       const confirmBox = await confirm.boundingBox()
       assert.ok(confirmBox.y + confirmBox.height <= viewport.height, 'confirm is visible without scrolling')
       await assertToolbarPosition(board)
+      if (viewport.height === 720) await assertCentered(board)
       if (evidence) await page.screenshot({ path: path.join(evidence, `choice-${viewport.width}.png`) })
       const version = Number(await board.getAttribute('data-revision'))
       await confirm.click()
@@ -131,6 +143,7 @@ try {
         assert.equal(await board.locator('[data-card-choice]').count(), 0)
         assert.equal(await confirm.count(), 0)
         await assertToolbarPosition(board)
+        if (viewport.height === 720) await assertCentered(board)
         const before = Number(await board.getAttribute('data-revision'))
         if (response === '龙胆') {
           if (evidence) await page.screenshot({ path: path.join(evidence, `response-${viewport.width}.png`) })
@@ -143,6 +156,7 @@ try {
           assert.equal(await card.getAttribute('aria-pressed'), 'true')
           await assertPlayedCard(board, 17, '杀', '10♣')
           await assertToolbarPosition(board)
+          if (viewport.height === 720) await assertCentered(board)
           if (evidence) await page.screenshot({ path: path.join(evidence, `longdan-${viewport.width}.png`) })
           const id = await card.getAttribute('data-card-id')
           const material = gallery.locator(`[data-card-id="${id}"]`)
@@ -168,6 +182,26 @@ try {
         await page.close()
       }
     }
+  }
+
+  const desktop = await browser.newPage({ viewport: { width: 1920, height: 1009 }, locale: 'zh-CN' })
+  try {
+    await begin(desktop, 634, '张飞')
+    const board = desktop.locator('[data-battle-table]')
+    const toolbar = board.locator('.classic-hand-toolbar')
+    const pass = button(toolbar, '放弃').and(toolbar.locator('button:enabled'))
+    await pass.waitFor()
+    assert.equal(await toolbar.locator('button').count(), 1)
+    await assertPlayedCard(board, 76, '万箭齐发', 'A♥')
+    await assertToolbarPosition(board)
+    await assertCentered(board)
+    if (evidence) await desktop.screenshot({ path: path.join(evidence, 'wanjian-1920.png') })
+    const before = Number(await board.getAttribute('data-revision'))
+    await pass.click()
+    assert.ok(Number(await board.getAttribute('data-revision')) > before)
+    console.log('Wanjian with only pass centered at 1920×1009')
+  } finally {
+    await desktop.close()
   }
 
   const shortPage = await browser.newPage({ viewport: { width: 640, height: 272 }, locale: 'zh-CN' })

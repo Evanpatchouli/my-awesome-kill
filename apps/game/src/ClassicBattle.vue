@@ -576,183 +576,185 @@ function canPickCard(id: number) {
         />
       </div>
     </div>
-    <div
-      class="classic-center"
-      :class="{
-        'has-choice': centerChoice,
-        'has-preview': selectedPreview && !centerChoice,
-        'has-move': moveChoice,
-        'has-resolving': resolving.length > 0,
-      }"
-    >
-      <p v-if="!centerChoice && !choice && !resolving.length" class="classic-turn">
-        {{
-          view.turn?.seat === view.humanSeat
-            ? '你的回合'
-            : `${seatName(view, view.turn?.seat)}的回合`
-        }}
-        · {{ phases[view.turn?.phase ?? ''] ?? view.turn?.phase }}
-      </p>
-      <section
-        class="classic-center-surface"
-        :data-card-choice="centerChoice ? '' : undefined"
-        aria-label="当前操作"
+    <div class="classic-action-area" :class="{ 'is-centered': centerChoice || resolving.length > 0 }">
+      <div
+        class="classic-center"
+        :class="{
+          'has-choice': centerChoice,
+          'has-preview': selectedPreview && !centerChoice,
+          'has-move': moveChoice,
+          'has-resolving': resolving.length > 0,
+        }"
       >
-        <MoveChoice
-          v-if="moveChoice && !readonly && handControls"
-          :key="choice?.event"
-          :request="moveChoice"
-          :cards="moveChoiceCards"
-          :controls-target="handControls"
-          :disabled="!inputReady"
-          :error="error"
-          @confirm="confirmMove"
-        />
-        <template v-else>
-          <h1 aria-live="polite">{{ prompt }}</h1>
-          <div v-if="resolving.length || randomHandCount || pool.length" class="classic-pool">
-            <div v-if="resolving.length" class="classic-resolving" role="group" aria-label="已打出的牌">
-              <div
-                v-for="{ id, event, face, nature } in resolving"
-                :key="id ?? `virtual-${event}`"
-                class="playing-card classic-choice-card"
-                :class="{
-                  red: face.suit === 'heart' || face.suit === 'diamond',
-                  'long-name': face.name.length > 2,
-                }"
-                :data-resolving-card="id"
-                :data-resolving-virtual="event"
-                :data-nature="nature"
-                :aria-label="printedFace(face)"
-                role="img"
-              >
-                <CardFace :card="face" />
+        <p v-if="!centerChoice && !choice && !resolving.length" class="classic-turn">
+          {{
+            view.turn?.seat === view.humanSeat
+              ? '你的回合'
+              : `${seatName(view, view.turn?.seat)}的回合`
+          }}
+          · {{ phases[view.turn?.phase ?? ''] ?? view.turn?.phase }}
+        </p>
+        <section
+          class="classic-center-surface"
+          :data-card-choice="centerChoice ? '' : undefined"
+          aria-label="当前操作"
+        >
+          <MoveChoice
+            v-if="moveChoice && !readonly && handControls"
+            :key="choice?.event"
+            :request="moveChoice"
+            :cards="moveChoiceCards"
+            :controls-target="handControls"
+            :disabled="!inputReady"
+            :error="error"
+            @confirm="confirmMove"
+          />
+          <template v-else>
+            <h1 aria-live="polite">{{ prompt }}</h1>
+            <div v-if="resolving.length || randomHandCount || pool.length" class="classic-pool">
+              <div v-if="resolving.length" class="classic-resolving" role="group" aria-label="已打出的牌">
+                <div
+                  v-for="{ id, event, face, nature } in resolving"
+                  :key="id ?? `virtual-${event}`"
+                  class="playing-card classic-choice-card"
+                  :class="{
+                    red: face.suit === 'heart' || face.suit === 'diamond',
+                    'long-name': face.name.length > 2,
+                  }"
+                  :data-resolving-card="id"
+                  :data-resolving-virtual="event"
+                  :data-nature="nature"
+                  :aria-label="printedFace(face)"
+                  role="img"
+                >
+                  <CardFace :card="face" />
+                </div>
+              </div>
+              <div v-if="randomHandCount" class="classic-random-hand" role="group" aria-label="手牌区（随机）">
+                <button
+                  v-for="index in randomHandCount"
+                  :key="index"
+                  type="button"
+                  class="playing-card classic-choice-card card-back"
+                  :class="{ selected: selectedRandomBack === index }"
+                  :aria-label="`暗牌 ${index}（随机结算）`"
+                  :aria-pressed="selectedRandomBack === index"
+                  :disabled="!active"
+                  @click="chooseRandomBack(index)"
+                >
+                  <img :src="drawBack" alt="" />
+                </button>
+              </div>
+              <div v-if="pool.length" role="group" aria-label="候选牌">
+                <button
+                  v-for="({ id, card }, index) in pool"
+                  :key="id"
+                  type="button"
+                  class="playing-card classic-choice-card"
+                  :data-card-id="id"
+                  :data-nature="card ? view.cardNatures?.[id] : undefined"
+                  :class="{
+                    selected: isCardSelected(id),
+                    'card-back': !card,
+                    red: card?.suit === 'heart' || card?.suit === 'diamond',
+                    'long-name': (card?.name.length ?? 0) > 2,
+                  }"
+                  :aria-label="card ? printedFace(card) : `暗牌 ${index + 1}`"
+                  :aria-pressed="isCardSelected(id)"
+                  :title="card?.description"
+                  :disabled="!active"
+                  @click="choosePool(id)"
+                >
+                  <CardFace v-if="card" :card="card" />
+                  <img v-else :src="drawBack" alt="" />
+                </button>
               </div>
             </div>
-            <div v-if="randomHandCount" class="classic-random-hand" role="group" aria-label="手牌区（随机）">
-              <button
-                v-for="index in randomHandCount"
-                :key="index"
-                type="button"
-                class="playing-card classic-choice-card card-back"
-                :class="{ selected: selectedRandomBack === index }"
-                :aria-label="`暗牌 ${index}（随机结算）`"
-                :aria-pressed="selectedRandomBack === index"
-                :disabled="!active"
-                @click="chooseRandomBack(index)"
-              >
-                <img :src="drawBack" alt="" />
-              </button>
-            </div>
-            <div v-if="pool.length" role="group" aria-label="候选牌">
-              <button
-                v-for="({ id, card }, index) in pool"
-                :key="id"
-                type="button"
-                class="playing-card classic-choice-card"
-                :data-card-id="id"
-                :data-nature="card ? view.cardNatures?.[id] : undefined"
-                :class="{
-                  selected: isCardSelected(id),
-                  'card-back': !card,
-                  red: card?.suit === 'heart' || card?.suit === 'diamond',
-                  'long-name': (card?.name.length ?? 0) > 2,
-                }"
-                :aria-label="card ? printedFace(card) : `暗牌 ${index + 1}`"
-                :aria-pressed="isCardSelected(id)"
-                :title="card?.description"
-                :disabled="!active"
-                @click="choosePool(id)"
-              >
-                <CardFace v-if="card" :card="card" />
-                <img v-else :src="drawBack" alt="" />
-              </button>
-            </div>
-          </div>
-        </template>
-      </section>
-      <div v-if="saveError" class="classic-save-error">
-        战绩保存失败 <button @click="emit('retrySave')">重试</button>
-      </div>
-      <button v-if="!readonly && (view.winner || view.drawn)" class="primary-button" @click="emit('restart')">
-        再来一局
-      </button>
-      <slot />
-    </div>
-    <div ref="handControls" class="classic-hand-toolbar">
-      <div v-if="selectedPreview && !centerChoice" class="classic-card-rule" data-hand-rule>
-        <strong>{{ selectedPreview.name }}</strong>
-        <span>{{ selectedPreview.description }}</span>
-      </div>
-      <div v-if="!moveChoice && !readonly && !view.winner && !view.drawn" class="classic-controls" aria-label="对局操作">
-        <div v-if="branches.length > Number(!!randomHandCount) && !privateBid" class="classic-options">
-          <button
-            v-for="item in branches.filter(item => !randomHandCount || item.id !== randomHandBranch?.id)"
-            :key="item.id"
-            type="button"
-            :class="{ selected: selectedMode === 'choice' && selectedBranch === item.id }"
-            :disabled="!active"
-            @click="chooseBranch(item)"
-          >
-            {{ item.label }}
-          </button>
-        </div>
-        <div v-if="choice && branch?.maxTargets" class="classic-options classic-choice-targets" aria-label="选择目标">
-          <button
-            v-for="target in branch.targets"
-            :key="target"
-            type="button"
-            :class="{ selected: selectedTargets.includes(target) }"
-            :aria-pressed="selectedTargets.includes(target)"
-            :disabled="!active"
-            @click="chooseSeat(target)"
-          >
-            {{ seatName(view, target) }}
-          </button>
-        </div>
-        <div v-if="showCancel || handResponse || view.actions.some(a => a.type === 'endPlay') || showConfirm" class="classic-control-row">
-          <span v-if="selectionProgress" class="classic-choice-progress" aria-live="polite">
-            {{ selectionProgress }}
-          </span>
-          <button
-            v-if="showCancel"
-            type="button"
-            class="secondary"
-            :disabled="!active"
-            @click="reset"
-          >
-            取消
-          </button>
-          <template v-if="handResponse">
-            <button type="button" class="secondary" :disabled="!active" @click="submitResponse(null)">放弃</button>
-            <button
-              v-if="singleResponseCard !== undefined"
-              type="button"
-              :disabled="!active"
-              @click="submitResponse(singleResponseCard)"
-            >
-              {{ handResponse.kind === 'shan' ? '使用闪' : '使用桃' }}
-            </button>
           </template>
-          <button
-            v-if="!choice && !selectedMode && view.actions.some((a) => a.type === 'endPlay')"
-            type="button"
-            class="secondary whitespace-nowrap"
-            :disabled="!active"
-            @click="emit('act', { type: 'endPlay' }, view.version)"
-          >
-            结束出牌
-          </button>
-          <button
-            v-if="selectedRecast"
-            type="button"
-            :class="{ secondary: !!exactAction }"
-            :disabled="!active"
-            @click="recast"
-          >
-            重铸
-          </button>
-          <button v-if="showConfirm" type="button" :disabled="!canConfirm" @click="confirm">确认</button>
+        </section>
+        <div v-if="saveError" class="classic-save-error">
+          战绩保存失败 <button @click="emit('retrySave')">重试</button>
+        </div>
+        <button v-if="!readonly && (view.winner || view.drawn)" class="primary-button" @click="emit('restart')">
+          再来一局
+        </button>
+        <slot />
+      </div>
+      <div ref="handControls" class="classic-hand-toolbar">
+        <div v-if="selectedPreview && !centerChoice" class="classic-card-rule" data-hand-rule>
+          <strong>{{ selectedPreview.name }}</strong>
+          <span>{{ selectedPreview.description }}</span>
+        </div>
+        <div v-if="!moveChoice && !readonly && !view.winner && !view.drawn" class="classic-controls" aria-label="对局操作">
+          <div v-if="branches.length > Number(!!randomHandCount) && !privateBid" class="classic-options">
+            <button
+              v-for="item in branches.filter(item => !randomHandCount || item.id !== randomHandBranch?.id)"
+              :key="item.id"
+              type="button"
+              :class="{ selected: selectedMode === 'choice' && selectedBranch === item.id }"
+              :disabled="!active"
+              @click="chooseBranch(item)"
+            >
+              {{ item.label }}
+            </button>
+          </div>
+          <div v-if="choice && branch?.maxTargets" class="classic-options classic-choice-targets" aria-label="选择目标">
+            <button
+              v-for="target in branch.targets"
+              :key="target"
+              type="button"
+              :class="{ selected: selectedTargets.includes(target) }"
+              :aria-pressed="selectedTargets.includes(target)"
+              :disabled="!active"
+              @click="chooseSeat(target)"
+            >
+              {{ seatName(view, target) }}
+            </button>
+          </div>
+          <div v-if="showCancel || handResponse || view.actions.some(a => a.type === 'endPlay') || showConfirm" class="classic-control-row">
+            <span v-if="selectionProgress" class="classic-choice-progress" aria-live="polite">
+              {{ selectionProgress }}
+            </span>
+            <button
+              v-if="showCancel"
+              type="button"
+              class="secondary"
+              :disabled="!active"
+              @click="reset"
+            >
+              取消
+            </button>
+            <template v-if="handResponse">
+              <button type="button" class="secondary" :disabled="!active" @click="submitResponse(null)">放弃</button>
+              <button
+                v-if="singleResponseCard !== undefined"
+                type="button"
+                :disabled="!active"
+                @click="submitResponse(singleResponseCard)"
+              >
+                {{ handResponse.kind === 'shan' ? '使用闪' : '使用桃' }}
+              </button>
+            </template>
+            <button
+              v-if="!choice && !selectedMode && view.actions.some((a) => a.type === 'endPlay')"
+              type="button"
+              class="secondary whitespace-nowrap"
+              :disabled="!active"
+              @click="emit('act', { type: 'endPlay' }, view.version)"
+            >
+              结束出牌
+            </button>
+            <button
+              v-if="selectedRecast"
+              type="button"
+              :class="{ secondary: !!exactAction }"
+              :disabled="!active"
+              @click="recast"
+            >
+              重铸
+            </button>
+            <button v-if="showConfirm" type="button" :disabled="!canConfirm" @click="confirm">确认</button>
+          </div>
         </div>
       </div>
     </div>
