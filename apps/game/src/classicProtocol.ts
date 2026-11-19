@@ -316,11 +316,23 @@ function isPresentationEvent(e: EventRecord) {
   return e.status === 'started'
 }
 
+function presentedSkill(view: TableView, id: string) {
+  return view.content?.generals.flatMap((general) => general.skills)
+    .find((entry) => entry.id === id)?.name ?? skillName(id)
+}
+
 export function visualEvents(view: TableView): FeedbackEvent[] {
   const cues: FeedbackEvent[] = []
   const announced = new Set<number>()
+  const virtualMaterials = new Set(view.resolvingVirtuals?.flatMap((card) => card.materials))
   for (const e of view.events) {
-    if (!isPresentationEvent(e) || e.seat == null) continue
+    if (!isPresentationEvent(e)) continue
+    if (e.type === 'death') {
+      const fallen = view.seats.find((seat) => seat.id === e.target && !seat.alive)
+      if (fallen) cues.push({ type: 'death', seat: fallen.id, title: '阵亡' })
+      continue
+    }
+    if (e.seat == null) continue
     if (e.type === 'changeHp' && e.before != null && e.after != null && e.before !== e.after) {
       cues.push({
         type: e.after < e.before ? 'damage' : 'heal',
@@ -329,11 +341,28 @@ export function visualEvents(view: TableView): FeedbackEvent[] {
       })
     } else if (e.type === 'draw' && e.amount) {
       cues.push({ type: 'draw', seat: e.seat, amount: e.amount })
+    } else if (e.type === 'skill' && e.skill) {
+      cues.push({ type: 'skill', seat: e.seat, title: presentedSkill(view, e.skill) })
+    } else if (e.type === 'useVirtual' && e.kind) {
+      const nature = view.resolvingVirtuals?.find((card) => card.event === e.id)?.nature
+      cues.push({
+        type: 'play',
+        seat: e.seat,
+        event: e.id,
+        cards: [{ kind: e.kind, name: cardName(e.kind, nature, view.content) }],
+      })
     } else if (e.card) {
-      const type = e.type === 'useCost' && !announced.has(e.card.id) ? 'play' : cardEffects[e.type]
+      const type = e.type === 'useCost' && !announced.has(e.card.id) && !virtualMaterials.has(e.card.id)
+        ? 'play'
+        : cardEffects[e.type]
       if (type) {
         announced.add(e.card.id)
-        cues.push({ type, seat: e.seat, cards: [faceOf(view, e.card)] })
+        cues.push({
+          type,
+          seat: e.seat,
+          target: e.target ?? undefined,
+          cards: [faceOf(view, e.card)],
+        })
       }
     }
   }
@@ -385,8 +414,5 @@ export function describeEvent(view: TableView, e: EventRecord): string | undefin
   if (e.type === 'gainMaxHp' || e.type === 'loseMaxHp') return `${who}体力上限 ${e.before} → ${e.after}`
   if (e.type === 'death') return `${seatName(view, e.target)}阵亡${e.role ? ' · ' + roles[e.role] : ''}`
   if (e.type === 'draw') return `${who}摸了${e.amount}张牌`
-  if (e.type === 'skill' && e.skill) {
-    const skill = view.content?.generals.flatMap((general) => general.skills).find((entry) => entry.id === e.skill)
-    return `${who}发动【${skill?.name ?? skillName(e.skill)}】`
-  }
+  if (e.type === 'skill' && e.skill) return `${who}发动【${presentedSkill(view, e.skill)}】`
 }

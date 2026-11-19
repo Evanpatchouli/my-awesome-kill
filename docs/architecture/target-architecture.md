@@ -16,6 +16,8 @@ pnpm workspace 组织 Tauri 2、Vite 8、Vue 3、vue-router、Pinia 应用。Rus
 
 原始标准武将、卡牌和主题资源在 `apps/game/src/assets/standard`。扩展牌铁索连环的原图在 `apps/game/src/assets/extra/card/tiesuo.png`，来源为 noname 提交 `c73270948d72949aa80009536b9fd5400767d091` 的 `apps/core/image/card/tiesuo.png`。火杀和雷杀沿用同一提交的 `sha.png`，牌名和属性伤害取自当前观察席可见的 Rust 投影。
 
-Tailwind/CSS 管布局和基础交互，GSAP 根据结算事件列表播放牌的移动与体力反馈，@vueuse/motion 负责装饰性入场。开启减动效时显示结果和操作提示。
+Tailwind/CSS 管布局和基础交互。经典牌桌使用原创舆图、漆面和群体锦囊画幅，牌面、牌背与武将立绘沿用标准资源。顶部显示阶段和牌堆，桌心展示结算牌与当前响应，底部从左到右为装备、手牌、技能和自己的武将。回放复用同一牌桌。
+
+GSAP 使用引擎公开的结算事件和牌桌实际锚点，播放牌堆到手牌、出牌席到桌心及公开目标的连线。收到下一次结算或离开牌桌时清理上一批动效。@vueuse/motion 负责装饰性入场。应用设置或系统开启减动效时，牌桌直接显示结算结果和操作提示。
 
 `persistence.ts` 将原生战绩交给 `apps/game/src-tauri/src/lib.rs`；SQLite 按对局 ID 去重。浏览器以本站 localStorage 保存战绩。中途离开会放弃本局；写入失败的完局记录在重试队列中保留。

@@ -212,7 +212,9 @@ try {
     const frame = await animated.waitForFunction(() => {
       const card = document.querySelector('[data-effect="play"] [data-effect-card="90"]')
       const hand = document.querySelector('[data-hand-gallery] .playing-card')
-      if (!card || !hand || Number(getComputedStyle(card.parentElement).opacity) <= 0.05) return null
+      const trace = card?.closest('[data-effect]').querySelector('.effect-trace')
+      if (!card || !hand || !trace || Number(getComputedStyle(card.parentElement).opacity) <= 0.05 ||
+        Number(getComputedStyle(trace).opacity) <= 0.05) return null
       const { width, height } = card.getBoundingClientRect()
       const handBox = hand.getBoundingClientRect()
       return {
@@ -225,7 +227,11 @@ try {
     assert.equal(name, '过河拆桥')
     assert.equal(whiteSpace, 'normal')
     assert.ok(Math.abs(width - handWidth) <= 0.5 && Math.abs(height - handHeight) <= 0.5)
-    console.log('Moving card keeps the hand card dimensions')
+    await animated.waitForFunction(() => {
+      const card = document.querySelector('[data-resolving-card="90"]')
+      return card && getComputedStyle(card).opacity === '1'
+    })
+    console.log('Moving card keeps its dimensions, traces its target and hands off to the resolving face')
   } finally {
     await animated.close()
   }
