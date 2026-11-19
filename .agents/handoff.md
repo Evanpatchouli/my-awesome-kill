@@ -1,40 +1,49 @@
 # 随心杀 P1 直接接棒
 
-## 接棒后先做
+## 先核实现场
 
-用本任完整 `CODEX_THREAD_ID` 在 Codex 桌面端匹配自己的 chat，核实 hostId、projectId 和 cwd，并用 `list_projects` 对照登记项目，再检查 shell 实际目录。固定绑定为 local / `56a3f74c-1f60-47c5-8e25-30ee6f6375cb` / `E:\my-awesome-kill`。核实后读 `.agents/current-task.md`、适用的用户指令，检查 `git status --short --branch`。用户最新的 AGENTS 指令入口为 `C:\Users\evanpatchouli\.agents\AGENTS.md`。接力协议与逐字传递的项目绑定规则在当前任务文件末尾。
+本地固定项目为 local / `56a3f74c-1f60-47c5-8e25-30ee6f6375cb` / `E:\my-awesome-kill`。先用自己的完整 `CODEX_THREAD_ID` 在 Codex 桌面精确匹配当前聊天，核对 hostId、projectId、cwd，再调用 `list_projects` 核实注册记录及实际 shell 工作目录。读 `.agents/current-task.md`、适用项目规范及用户最新入口 `C:\Users\evanpatchouli\.agents\AGENTS.md`，核对 `git status --short --branch` 和真实代码。无需翻旧聊天。若绑定不符，停止写入和传棒。
 
-本任 `01a1f06a-3e4d-75e1-8413-ce32e97cc306` 从 `9351a7d` 接手本地 `master`。交接前所有产品、测试和说明写入均已本地提交，工作区没有用户独立修改。本任创建的应用、测试页面服务、固定上游服务、专属 ADB、模拟器和 Gradle daemon 均已关闭。项目事实以代码、固定样本和可重复运行结果为准。
+本任 `01a1f1c5-2033-74c1-a5ac-86be09da3a00` 从本地 `master` 的 `3208f89` 接棒，初始工作区干净。最后产品提交是 `8dad11d`，之后的验收工具、文档和交接为单独本地提交。没有用户独立改动需要挪动。目标仍是将固定 noname 的对局机制与可观察行为独立迁入通用 Rust 底座，以同一引擎交付经典玩法。现有 25 将、40 技、104 张实体、普通 2–10 席和原图须保留，普通入口保持经典。
 
-**下一项是同步复活与事件版复活。** 首先在固定上游 `c73270948d72949aa80009536b9fd5400767d091` 的独立检出重跑：
+## 第一项具体工作：装备栏
+
+固定上游 `c73270948d72949aa80009536b9fd5400767d091` 已实跑普通/合并坐骑下的废除、恢复与扩展。接手后先运行：
 
 ```powershell
-node scripts/reference-trace.mjs --scenario revival --check tests/reference/revival.json
+node scripts/reference-trace.mjs --scenario equip-slots --check tests/reference/equip-slots.json
 ```
 
-1. 用普通八席注册技能和 `Game::submit(Action::ActivateSkill)` 建立第一个 Rust 失败用例。让非主公 B 带手牌、装备、已显示的七个鼓舌标记，横置并翻面，由另一席的真实操作令其死亡。完整死亡后应能分别读取存储计数 7 和空的公开标记。现有 `clear_marks_on_death` 删除计数，`compare_content/tests.rs` 中也有一个依据旧实现写成 0 的断言。按实测修正存储及投影，并保留临时技能明确清理的语义。
-2. 在同一测试中加入同步复活。复活后 B 实际为 2/4，已公开身份和武将延续，弃掉的实体仍在弃牌堆。B 追加到存活名单末尾，按座位索引的存活环则再次接通原邻座。重复调用传入 9、0、-2，在四点上限下分别得到 4、1、-2 体力，最后仍存活。原上限为负时先把上限恢复到至少 1。同步调用在当前回调立即生效，事件入口另走 Before/Begin/End/After 和可取消流程。
-3. 检验 `reviveBefore` 取消后仍死亡，`reviveEvent(0)` 正常恢复到 1/1。另有真正的 `die` 主时机内同步复活样例。该反贼保留手牌、装备、七个标记及临时技能，身份已明，来源的击杀数增加 1，且在 `dieEnd` 前摸三张。现有死亡清理仍按“已进入死亡”的旧边界执行，需要在真实后继步骤重新读取生死状态。注意正常死亡奖惩、终局及各实体守恒。
-4. 源证据为 `d357024` 及 `17c64d6`。后者保留原 78 条，另加真实鼓舌和死亡主回调复活的独立结果，连续三次上游复跑匹配。实现后按行为复核并用独立非默认内容在正常牌桌验证。跨轮休整另起单元，核对 `rest`、`restEnd`、出局状态、自然回合倒计时及额外回合。详见 `docs/exec-plans/active/p1-engine-migration.md` 和 `docs/exec-plans/active/noname-coverage.md`。
+1. 在普通八席注册内容中，通过真实 `Game::submit(Action::ActivateSkill)` 建立第一个装备栏用例。B 有一把武器、防具和一匹防御马、手中还有替换用武器。普通分马模式下初始五类启用数均为 1，已装三件后空栏为 `[0,0,0,1,1]`，可装备数仍为五个 1；武器不允许无替换再装，但允许替换。不得把四类已存在的标准实体装备当作全部五类槽。
+2. A 的真实技能废除 B 的一个武器栏。先发生计数和公开占位的更新，再通过 `loseToDiscardpile` 和内层 `lose` 结算实际材料。分别取消外层/内层，核对已废除的栏、仍留在装备区的实物与有效登记。重复废除不再凭空增加禁用数或重复失牌，恢复只恢复栏位。上游源码入口是 `content.ts` 的 `disableEquip`、`enableEquip`、`expandEquip` 与 `player.js` 的四类计数和 `canEquip`。
+3. 扩展第二个武器栏后两件可并存。废除一栏由来源 A 选择实际失去哪件；满栏装新武器则由持有者 B 选择替换项。重复槽参数与合马选项各有实测：合马时普通 `[3,4]` 请求扣一个合并栏，宝物栏即使为空也能单独禁用/恢复。覆盖真实玩家与 AI 的选择、失牌中断、当前有效装备、各席投影和全局守恒。 `tests/reference/equip-slots.json` 有 260 条观测、18 个状态和两组取消样例；现有样本只是基准。
+4. `Game::equipment_registrations(seat,slot_of)` 给可信内容返回仍登记的材料引用，`SeatView.equipment` 只含仍在装备区的实体，`detachedEquipment` 仅公开牌种。普通单槽 `replaceEquip` 的 Before/Begin/End/After/Cancelled 已在真正装备帧上执行，父事件按真实可失去的旧实体和当时槽余量结束安装或弃牌。未来的容量、替换候选与选择接口应复用这个事件。不要用一份实体列表代替有效登记，也不要把已公开的空占位伪造成有实体 ID 的牌。
 
-## 本任已交付
+详细行为边界见 `docs/exec-plans/active/p1-engine-migration.md`，其余未覆盖单元见 `docs/exec-plans/active/noname-coverage.md`。装备栏之后继续其他牌区、修饰、联合选择、通用历史和模式契约。弥笃的判定区分支有原版观测，完整装备选择和活墨效果仍待验；酒杀恃勇尚需酒规则族。普通模式可玩和单个 feature 通过都不能宣布全底座完成。
 
-- **批量重铸与明典。** `af59798` 共用重铸根并支持整批工厂、真实 h/e 实体、一个失牌和一个摸牌/获得、可取消包装、已知手牌和局部/整批截获。七个非明典场景逐行核对 211 条共同请求、执行回调与工厂观测。`5ec0446` 补充 23 条给牌中转死亡观测。`d654a09` 验证给牌者与旁观者的独立知情。`e82c45b` 在明典的出牌和受伤入口使用真实多选。种子 317 在实际 UI 选普通杀 28、11，暗摸 92、33，随后 1 号 AI 亦发动。原有单张重铸 377 条已复跑。
-- **有序分区与私有牌堆。** `d519f4c` 固定 82 条上游请求。`b713bf1`、`145824b` 实现逐步校验、AI、取消、私有处理区、牌堆还原与实际清理。`4cc42a2` 在牌桌支持位置插入、行内重排、撤销与短横屏。`0f082cc` 实现恂恂，核对该局 25 条中的 21 条共同请求及五张实体的位置，在真人操作和 AI 路径验收。Rust 对严重边界另验局终不再开选择、无法求解的强制 AI 选择、子选择与清理均取消时释放原实体和所有权。
-- **确定性命令回放。** `89b50b5` 的 `RecordedGame` / `RecordedDuel` 从指定初始局面或经典种子录制接受的命令并恢复任意前缀。自定义内容按同一版本标识重新安装独立工厂，索引触发器按注册顺序采样。完整八席 AI 对局、发布 WASM 的 10 条人机指令和两个独立浏览器上下文的六个检查点均通过。完整命令属于离线可信宿主数据。全局通用事件历史、录像呈现等仍列在覆盖表。
-- **体力上限与死亡。** `587b5b5` 固定 20 局 226 条。`9c56549` 的真实八席对照全部 220 条请求与回调，另外 6 条上游技能内容首尾单列。包含正负数、零、直接夹断、两处取消、带来源或无来源死亡、威重和红色实体杀触发的恃勇分支。实际死亡可取消，取消后隐藏身份受保护；非主公救援者或濒死者在桃的嵌套回调中阵亡都有回归。`f160124` 的真实牌桌验证 4/4 → 4/5 → 4/4 → 3/3，威重分别暗摸 2、1、1 张，较高上限用数字表示。酒杀触发条件仍待酒的规则族验收。
+## 本任交付及证据
 
-既有能力包含普通经典身份局、25 将/40 技/104 张、动态触发与费用、可取消伤害、属性与连环、巧说、忠义、当先/放权、判定与多席拼点。目标仍是参考版本整套对局机制及可观察行为。继续逐族核对区域权限、剩余联合选择、角色生命周期和修饰、完整历史与模式接口。普通模式已可玩只是其中一项验收。
+- 复活在同一回调立即生效，事件版有真实的四阶段与各处取消。存活名单追加、物理环复接、负上限/负体力、已明身份、鼓舌的计数和显示、清理前复活、死者技能和来源奖励均有差分。 `5e262bd`、`e6d1c19`、`c87488f`。原版 78 条与后续 35 条共同观测，以及死亡主回调中的 11 个阶段。 `46d9544` 核对三张奖励按真实顺序放在旧手牌前。
+- 休整分开保存生死、出局、时钟与 `undist`。自然/额外回合、多个候选、有限/无限时钟、保留死亡与已出局者的显式死亡、计时清理、伤害/拼点/响应途中离场、无行动者时暂停同一轮转均有回归。 `fb070b7`、`6707a71`。原版休整有 134 条请求或实际回调、56 个回合边界和 22 个状态；伤害中断另对照 110 条。真实殁亡用最后两名常侍，未把整套党锢及衍生技能计入完成。
+- 判定区废除先改变逻辑标志，实际弃置子事件结束后再公开占位。取消可以留下原牌。真实支付、四层目标、单实体 `addJudge`、闪电绕回、失牌及清理中断、过河/顺手和死亡等均从实际动作验证。原版主样本 310 条；四个废区场景完整比较其中 200 条的共同字段。828 条补充观测中，十二局支付与中断比较 408 条共同观测；748 条支付样本中十局比较 324 条，另验清理、四种外部原区与同席转区。 `fc9c302`、`36b1a4e`、`a51df60`。
+- 同席原青釭材料被获得到手、重新装备后，外层按原判定对象失去原材料，可能留下没有物理装备的有效武器登记。两种顺序、八卦黑杀、防具及借刀均实测；原版仁王只作额外取证。规则和界面区分可选择的实体与仍生效的装备。 `67da4b1`、`526f3cc`。虚拟判定使用独立 key；原材料移出后原判定仍可见/会阻止同名牌，选中逻辑判定会追踪同一实体。 `ed04361`、`8dad11d`。支持范围为单材料；不把多材料虚拟牌、任意历史接口或扩展装备槽宣称为完成。
+- `2959e69` 改为物理环上一次计算距离。相对 `fb070b7` 的对照中，100 局 54,675 次决定的命令与 0 号席投影共 269,241,747 字节，SHA-256 完全相同。固定同一 P 核交替十对，规则 p95 中位 10.7 → 9.8 µs。此前 `f160124` 的 55,216 次决定与本次差异全部来自已在固定上游确认的反贼奖励手牌顺序。
+- 冻结版 308 项库测试、20 项集成测试均通过；另跑忽略的 100 局八席，全部终局且守恒。33 项 TS、WASM conformance、10 条人机命令回放、独立浏览器重放、typecheck、生产构建、默认首页/画廊/牌桌、25 将与 104 张实体及 55 张原图均通过。`84e00fc` 的 13 个独立 feature 全部编译并在正常 Vue 入口实跑，普通模块在运行前后的哈希未改变。`cargo fmt --check` 和 diff 检查通过；`clippy --all-targets --all-features -- -D warnings` 未通过，对 `3208f89` 与冻结版本分别实际运行，两边均为相同的 27 项既有诊断。
 
-## 发行、原生与本机环境
+## 本机与复验
 
-- 冻结功能提交 `f160124` 通过 278 项常规 Rust release 测试（259 单元、19 集成）、100 局八席终局与守恒、33 项 TS、WASM conformance、typecheck、生产构建、标准数据与 55 张原图校验。100 局 55,216 次决定。三次测量的规则 p95 为 10.2 / 10.0 / 10.1 µs，投影与 JSON p95 为 13.0 / 12.9 / 13.0 µs。普通生产入口和十个单独编译的规则 feature 均通过浏览器实跑。忠义和明典的独立动态导入初始化已在 `74b384a` 修正并重跑。
-- 默认发行 WASM SHA-256 为 `23C64D2FC44DF8109E1C9A16E9C632089AD1470E5125FD5735B7076A0DE1B9AD`，1,340,410 字节。冻结资源为 `E:\Temp\mak-p1-dist-f160124-01a1f06a`。Windows release 程序 `E:\Temp\my-awesome-kill-f160124.exe`，SHA-256 `62FF61FDD9333A013E04BFEAA07552682AF4ADE14CA5AEE25F1CB7AB90E1A39B`。
-- 最终 ARM64 debug APK 为 `E:\Temp\my-awesome-kill-f160124-arm64-debug.apk`，大小 144,642,295 字节，SHA-256 `7D21BC45FFD8FABFABB3BCC3CFBBA7933D5BC441B2EA6111B9AF26D8B0D9CE93`。v2、16 KiB 对齐、设备 base.apk 和原生库均核对。复用的 WSL 工程起初留有旧 Activity，第一候选的系统栏占位异常。最终包使用与目标版本核对过的原生源码，API 36 x86_64 隔离模拟器经 ARM64 兼容运行，横屏设备 640×320，WebView 可用区 640×272。
-- 两端均已离线从运行中的 WebView 读回相同冻结 WASM。选张飞进八席并提交过河拆桥，版本均 0→1。返回后选诸葛亮进八席，观星将 28 放底，86、85 自然进入手牌。Windows 1280×720、Android 640×272，均无 JS 异常。证据在 `C:\Users\evanpatchouli\.codex\visualizations\2026\11\18\01a1f06a-3e4d-75e1-8413-ce32e97cc306\f160124`，包含 `native\windows`、`native\android`、`production`、`features` 及测试与测量日志。
-- 复用现有 Rust target、pnpm 10.20.0、wasm-bindgen 0.2.130 和 SDK。Windows 工具目录见 `docs/runbooks/development.md`。本任使用 `CARGO_INCREMENTAL=0`、`CARGO_BUILD_JOBS=2`。E 盘由 `C:\Work\Work.vhdx` 承载，大型构建与模拟器需检查 C/E 空间并错峰。WSL Gradle 临时工程 `/tmp/mak-apk-fast/project`，其受控 Android 文件应先与待测提交核对。两端可复用的 CDP 脚本为 `E:\Temp\mak-p1-native-01a1f06a\native-verify.cjs`。
-- 上游独立检出在 WSL Ubuntu 的 `/tmp/mak-oracle-noname-c7327094`，Node 目录为 `/home/evanpatchouli/.vite-plus/js_runtime/node/24.16.0/bin`。将此目录置于 WSL PATH，在 `packages/fs` 运行 `../../node_modules/.bin/tsx src/entry.ts --debug --dirname=../../apps/core`（8089），在 `apps/core` 运行 `node node_modules/vite/bin/vite.js dev --strictPort`（8081）。Windows 设置 `REFERENCE_PLAYWRIGHT_PATH=E:\Temp\mak-oracle-tools-1.65.1\node_modules\playwright`、`REFERENCE_CHROMIUM_EXECUTABLE_PATH=C:\Program Files\Google\Chrome\Application\chrome.exe`。命令与样本说明见 `tests/reference/README.md`。
+冻结产品为 `8dad11d3bfd92ee416a2bf15aa9c0527b9c9936a`。发行 dist `E:\Temp\mak-p1-dist-8dad11d-01a1f1c5`，默认 WASM 为 1,431,427 字节，SHA-256 `D9889FE1C3E64DE16BD44014B4B950038BD5C85DCB432D96CE544A2B28E3F1F0`。证据总目录 `C:\Users\evanpatchouli\.codex\visualizations\2026\11\19\01a1f1c5-2033-74c1-a5ac-86be09da3a00\8dad11d`。每个非默认绑定及原始构建/浏览器日志在 `E:\Temp\mak-p1-matrix-8dad11d-01a1f1c5`，总目录内的 `features-summary.json` 已核实 13 项均通过。性能原始对照保留在 `E:\Temp\mak-perf-01a1f1c5` 和 `E:\Temp\mak-classic-diff`。
+
+Windows release EXE `E:\Temp\my-awesome-kill-8dad11d.exe`，17,375,744 字节，SHA-256 `27FD09784EA1576471923ED9BCB7CA16F25AF71CC6BCFBFBCBE8DCD986A17AEA`。Windows 1280×720 的离线 WebView 已读取冻结 WASM。张飞进八席提交过河拆桥，版本 0→1；诸葛亮观星把 28 放底，86、85 入手，无 JS 异常。首个旧验证器未等首页位置稳定，实际点击错过入口；增强版 `E:\Temp\mak-p1-native-01a1f1c5\windows-verify.cjs` 等待坐标稳定且实际命中按钮，再重跑以上流程成功。
+
+Android 最终 ARM64 debug 包的便捷路径为 `E:\Temp\my-awesome-kill-8dad11d-arm64-debug.apk`，与 `E:\Temp\mak-p1-native-01a1f1c5\artifacts\20261119-134227-c7bfeb53\app-arm64-debug.apk` 是同一制品。大小 135,263,231 字节；SHA-256 为 `CB06367339611B17B0911AD252E59624ECAC53505EC7D2391AAD9FBF9AAA7BD2`。已验证 v2、16 KiB 对齐，设备 base.apk 与发行包同哈希，包内 JNI 与新编译 ARM64 库均为 `69E7778418FE368B1BAD19B32A2874AC3F375984CC4EC3AA1BDF745E726459DC`。API 36 x86_64 隔离模拟器通过 ARM64 兼容层运行，设备 640×320 横屏，WebView 为 640×272。设备离线读取到同一默认 WASM，张飞八席过河拆桥 0→1，诸葛亮 28 放底、86/85 实际入手，无 JS 异常。见总证据目录下 `native/android/device-20261119-134313-e00a0e10` 与 `native/windows`。这次未验证物理 ARM 设备。
+
+沿用 Windows 已装 Rust、pnpm 和 wasm-bindgen 版本，PATH 在 `docs/runbooks/development.md`。本任使用 `CARGO_BUILD_JOBS=2`、`CARGO_INCREMENTAL=0` 和既有 target。本机 Android SDK 为 `E:\dvp\Android\Sdk`、NDK `28.2.13676358`，离线 Gradle 工程在 WSL `/tmp/mak-apk-fast/project`。本任外置 `E:\Temp\mak-p1-native-01a1f1c5\android-native.ps1` 支持传入冻结 revision/freeze.json 后分 Build、Device 两步验证。重新核对受控 Android 源码、原生库和冻结 dist；Gradle 验签工具调用需将 Linux JDK 的 bin 放入 PATH。本次构建/设备核验的临时服务、隔离 WebView、专属 ADB、模拟器、Gradle 均已关闭。`C:\Work\Work.vhdx` 承载 E 盘；本任收口时 C/E 各约 58.7 / 185.9 GiB 可用，大型构建/模拟器前重新核对并错峰。
+
+固定上游独立检出仍为 WSL Ubuntu `/tmp/mak-oracle-noname-c7327094`。将 `/home/evanpatchouli/.vite-plus/js_runtime/node/24.16.0/bin` 放入 WSL PATH，从 `packages/fs` 启动 `../../node_modules/.bin/tsx src/entry.ts --debug --dirname=../../apps/core`（8089），从 `apps/core` 启动 `node node_modules/vite/bin/vite.js dev --strictPort`（8081）。Windows 取证设 `REFERENCE_PLAYWRIGHT_PATH=E:\Temp\mak-oracle-tools-1.65.1\node_modules\playwright` 及 `REFERENCE_CHROMIUM_EXECUTABLE_PATH=C:\Program Files\Google\Chrome\Application\chrome.exe`。脚本使用真实上游操作和独立浏览器上下文，用完仅关闭自启服务。所有命令与已有样本见 `tests/reference/README.md`。
 
 ## 交接原因
 
-本任最新有效采样为 2026-11-19T03:04:02.695Z，last_token_usage.total_tokens = 637,209，model_context_window = 828,400，占 76.92%。距 80% 余 25,511 个 token。 从体力上限工作仍在进行时的 513,956 到本次收口，实际增长了 123,253 个 token。下一项要同时处理同步与事件复活、公开身份、标记存储、两种名单顺序、死亡中途回调和奖惩，并完成输入和牌桌复验。再开这一单元可能挤占交接空间。本任在完整发行和原生验收后交班。
+本任最新有效采样为 2026-11-19T05:47:06.381Z，last_token_usage.total_tokens = 605,102，model_context_window = 828,400，占 73.04%。距 80% 余 57,618 个 token。在第一次冻结休整单元后的样本（331,383）与本次收口之间，活跃上下文实际增加 273,719，包括判定区、真实支付、独立登记和发行验收。下一单元需要同时处理装备容量、可替换性、多人选择、失牌中断以及独立牌桌回归。现在启动可能挤占交接空间，选择在有完整制品及可复跑样本的本地提交边界交接。
+
+按 `.agents/current-task.md` 末尾的逐字传递规则，仅创建本项目的一个直接后继，明确受理后结束本会话。下一任从自己的最新有效样本开始计数。P1 整体验收完成后停止接力。
