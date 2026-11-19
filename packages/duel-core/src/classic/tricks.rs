@@ -1,3 +1,4 @@
+use super::add_judge::{self, DelayedPlacement};
 use super::PlannedUse;
 use crate::scheduler::{EventRef, Outcome};
 use crate::{
@@ -278,17 +279,26 @@ impl Game {
 
 impl Game {
     fn pass_lightning(&mut self, target: SeatId, material: Card) {
-        let skips_other_seats = self.has_skill(target, "undist");
-        let next = self
-            .in_order_from(target)
-            .into_iter()
-            .skip(1)
-            .filter(|&seat| !skips_other_seats && !self.has_skill(seat, "undist"))
-            .chain(std::iter::once(target))
-            .find(|&seat| self.can_add_judge(seat, CardKind::Shandian));
-        if let Some(next) = next.filter(|_| self.resolving.contains(&material)) {
-            let card = self.take_resolving(material.id);
-            self.put_in_judgment(next, card, CardKind::Shandian);
+        if !self.resolving.contains(&material) {
+            return;
+        }
+        let mut candidate = target;
+        loop {
+            candidate = self
+                .next_participant(candidate)
+                .expect("lightning candidate is a valid seat")
+                .unwrap_or(target);
+            if self.can_add_judge(candidate, CardKind::Shandian) {
+                self.scheduler.next(Program::AddJudge(add_judge::Flow::new(
+                    candidate,
+                    material,
+                    CardKind::Shandian,
+                )));
+                return;
+            }
+            if candidate == target {
+                return;
+            }
         }
     }
 
@@ -300,21 +310,26 @@ impl Game {
 
     pub(crate) fn resolve_trick(
         &mut self,
-        _event: EventRef,
+        event: EventRef,
         mut flow: Trick,
         child: Option<Outcome<Resolution>>,
     ) {
         use CardKind::*;
         use TrickStage::*;
-        if self.match_result().is_some() {
-            if matches!(flow.kind, Lebu | Shandian) && !flow.judgment {
-                for card in &flow.costs {
-                    if self.resolving.contains(card) {
-                        self.scheduler
-                            .after(Program::event(EventKind::Discard { card: *card }));
-                    }
+        if matches!(flow.stage, AfterCosts) && matches!(flow.kind, Lebu | Shandian) {
+            for card in &flow.costs {
+                if self.resolving.contains(card) {
+                    self.ordering_owners.entry(card.id).or_insert(event.id);
                 }
             }
+            self.scheduler.after(Program::JudgmentCleanup(
+                super::hero_integration::Cleanup::Ordering {
+                    owner: event.id,
+                    cards: flow.costs.clone(),
+                },
+            ));
+        }
+        if self.match_result().is_some() {
             for card in flow.pool {
                 self.scheduler
                     .next(Program::event(EventKind::Discard { card }));
@@ -348,12 +363,6 @@ impl Game {
             }
             AfterUseCard2 => {
                 if matches!(child, Some(Outcome::Cancelled)) {
-                    if matches!(flow.kind, Lebu | Shandian) {
-                        for card in &flow.costs {
-                            self.scheduler
-                                .after(Program::event(EventKind::Discard { card: *card }));
-                        }
-                    }
                     self.scheduler.end(Outcome::Cancelled);
                     return;
                 }
@@ -410,19 +419,14 @@ impl Game {
             BeginEffects => {
                 self.sort_card_targets(&mut flow.targets);
                 if matches!(flow.kind, Lebu | Shandian) {
-                    let material = flow.costs[0];
-                    if self.resolving.contains(&material) {
-                        if let Some(&target) = flow
-                            .targets
-                            .first()
-                            .filter(|&&seat| self.can_add_judge(seat, flow.kind))
-                        {
-                            let card = self.take_resolving(material.id);
-                            self.put_in_judgment(target, card, flow.kind);
-                        } else {
-                            self.scheduler
-                                .after(Program::event(EventKind::Discard { card: material }));
-                        }
+                    if let Some(&target) = flow.targets.first().filter(|&&seat| self.is_in(seat)) {
+                        self.scheduler
+                            .next(Program::DelayedPlacement(DelayedPlacement {
+                                source: flow.seat,
+                                target,
+                                material: flow.costs[0],
+                                kind: flow.kind,
+                            }));
                     }
                     self.finish();
                     return;

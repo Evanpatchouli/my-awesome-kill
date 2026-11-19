@@ -229,6 +229,8 @@ enum Program {
     Dispatch(classic::skills::Dispatch),
     Registered(triggers::Registered),
     JudgeArea(classic::judge_area::Flow),
+    AddJudge(classic::add_judge::Flow),
+    DelayedPlacement(classic::add_judge::DelayedPlacement),
     Judgment(Judgment),
     JudgmentCleanup(classic::hero_integration::Cleanup),
     CardDamage(CardDamage),
@@ -326,6 +328,8 @@ impl Program {
             Self::Dispatch(flow) => flow.kind(),
             Self::Registered(flow) => flow.kind(),
             Self::JudgeArea(flow) => flow.kind(),
+            Self::AddJudge(flow) => flow.kind(),
+            Self::DelayedPlacement(placement) => placement.kind(),
             Self::Judgment(judgment) => EventKind::Judge {
                 seat: judgment.seat,
             },
@@ -1271,6 +1275,10 @@ impl Game {
                 return self.resolve_selection(event, request, Some(context), answer)
             }
             Program::JudgeArea(flow) => return self.resolve_judge_area(flow, child),
+            Program::AddJudge(flow) => return self.resolve_add_judge(flow, child),
+            Program::DelayedPlacement(placement) => {
+                return self.resolve_delayed_placement(placement)
+            }
             Program::Judgment(judgment) => return self.resolve_judgment(judgment, child),
             Program::JudgmentCleanup(cleanup) => return self.resolve_judgment_cleanup(cleanup),
             Program::CardDamage(damage) => return self.resolve_card_damage(event, damage, child),

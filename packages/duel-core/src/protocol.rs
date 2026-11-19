@@ -501,6 +501,9 @@ pub enum EventKind {
         seat: SeatId,
         source: Option<SeatId>,
     },
+    AddJudge {
+        seat: SeatId,
+    },
     Link {
         seat: SeatId,
         linked: bool,

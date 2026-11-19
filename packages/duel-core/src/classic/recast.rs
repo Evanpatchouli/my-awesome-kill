@@ -350,6 +350,7 @@ enum MoveKind {
 #[derive(Clone, Copy)]
 enum LossDestination {
     Discard,
+    JudgeSpecial,
     Ordering(EventId),
     Transfer { to: SeatId, visible: bool },
     Compare(EventId),
@@ -536,6 +537,19 @@ impl Game {
         card: Card,
     ) -> Program {
         self.lose_to_ordering(seat, Zone::Judgment, card, owner)
+    }
+
+    pub(crate) fn lose_to_judge_special(&self, seat: SeatId, zone: Zone, card: Card) -> Program {
+        let mut movement = Movement::new(
+            seat,
+            MoveKind::Lose {
+                card,
+                zone,
+                destination: LossDestination::JudgeSpecial,
+            },
+        );
+        movement.allow_intercepted = true;
+        Program::Recast(Flow::Movement(movement))
     }
     pub(crate) fn lose_to_ordering(
         &self,
@@ -1173,6 +1187,9 @@ impl Game {
                             Lose {
                                 zone: Zone::Expansion,
                                 ..
+                            } | Lose {
+                                destination: LossDestination::JudgeSpecial,
+                                ..
                             }
                         )
                     {
@@ -1194,6 +1211,20 @@ impl Game {
                     {
                         movement.stage = Cancel(MoveCancellation::InvalidMovement);
                         continue;
+                    }
+                    if let Lose {
+                        card,
+                        zone,
+                        destination: LossDestination::JudgeSpecial,
+                    } = &mut movement.kind
+                    {
+                        let owner = self.seat(seat).expect("material holder");
+                        if let Some(current) = [Zone::Hand, Zone::Equipment, Zone::Judgment]
+                            .into_iter()
+                            .find(|&current| owner.zone(current).contains(card))
+                        {
+                            *zone = current;
+                        }
                     }
                     let child_move = match movement.kind {
                         DiscardToPile(card) => Some(Movement::new(
@@ -1268,6 +1299,10 @@ impl Game {
                             }
                             match destination {
                                 LossDestination::Discard => self.discard.push(taken),
+                                LossDestination::JudgeSpecial => {
+                                    self.known_to_all.insert(taken.id);
+                                    self.transferring.push(taken);
+                                }
                                 LossDestination::Ordering(owner) => {
                                     self.resolving.push(taken);
                                     self.ordering_owners.insert(taken.id, owner);

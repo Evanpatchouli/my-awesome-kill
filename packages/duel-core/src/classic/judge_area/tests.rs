@@ -514,3 +514,5 @@ fn real_lebu_use_is_rejected_when_disabled_then_lands_after_restore() {
     assert!(!game.can_add_judge(1, CardKind::Lebu));
     assert!(game.can_add_judge(1, CardKind::Shandian));
 }
+
+mod placement;

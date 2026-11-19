@@ -279,6 +279,28 @@ impl TriggerContext<'_> {
         self.queue_judge_area(seat, false)
     }
 
+    /// Place a physical card in a judgment area with the given delayed-trick identity.
+    /// Effects that require an available area can check `Game::can_add_judge` first.
+    pub fn add_judge(
+        &mut self,
+        seat: SeatId,
+        material: CardId,
+        kind: crate::CardKind,
+    ) -> Result<(), RuleError> {
+        self.game.seat(seat)?;
+        if kind.card_type() != crate::CardType::Delay {
+            return Err(RuleError::UnsupportedCard);
+        }
+        let card = self
+            .game
+            .add_judge_material(material)
+            .ok_or(RuleError::InvalidCard)?;
+        self.operations.push_back(TriggerOperation::AddJudge(
+            crate::classic::add_judge::Flow::new(seat, card, kind),
+        ));
+        Ok(())
+    }
+
     fn queue_judge_area(&mut self, seat: SeatId, disable: bool) -> Result<(), RuleError> {
         self.game.seat(seat)?;
         self.operations.push_back(TriggerOperation::JudgeArea(
@@ -757,6 +779,7 @@ impl TriggerContext<'_> {
                 | TriggerOperation::Revive { .. }
                 | TriggerOperation::Rest(_)
                 | TriggerOperation::JudgeArea(_)
+                | TriggerOperation::AddJudge(_)
                 | TriggerOperation::CompareMany { .. }
                 | TriggerOperation::VirtualSha { .. }
                 | TriggerOperation::Emit(_)
@@ -807,6 +830,7 @@ impl TriggerContext<'_> {
 enum TriggerOperation {
     Rest(crate::classic::rest::Flow),
     JudgeArea(crate::classic::judge_area::Flow),
+    AddJudge(crate::classic::add_judge::Flow),
     MaxHp {
         seat: SeatId,
         source: Option<SeatId>,
@@ -1128,6 +1152,7 @@ impl Game {
         );
         let (card_kind, nature) = match frame {
             Some((_, Program::CardDamage(hit))) => (hit.card.kind, hit.card.nature),
+            Some((_, Program::AddJudge(flow))) => (Some(flow.card_kind()), None),
             Some((_, program)) => (
                 match program.kind() {
                     crate::EventKind::UseSha { .. } | crate::EventKind::UseShaTargets { .. } => {
@@ -1309,6 +1334,7 @@ impl Game {
                 TriggerOperation::Revive { seat, hp } => self.revive_program(seat, hp),
                 TriggerOperation::Rest(flow) => Program::Rest(flow),
                 TriggerOperation::JudgeArea(flow) => Program::JudgeArea(flow),
+                TriggerOperation::AddJudge(flow) => Program::AddJudge(flow),
                 TriggerOperation::MaxHp {
                     seat,
                     source,
