@@ -1,0 +1,1471 @@
+{
+  "schema": "noname-reference-trace-v1",
+  "referenceCommit": "c73270948d72949aa80009536b9fd5400767d091",
+  "mode": "identity",
+  "scenario": "ordinary, disabled and expanded equipment slots",
+  "combined": false,
+  "mountDefault": {
+    "enabled": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "empty": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "equipable": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "disabled": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "horse": [
+      true,
+      true,
+      false
+    ],
+    "equipment": [],
+    "markers": [],
+    "cards": {
+      "weapon-1": "d",
+      "weapon-2": "B:e",
+      "weapon-3": "B:e",
+      "armor": "B:e",
+      "horse": "B:e"
+    }
+  },
+  "mountAlternate": {
+    "combined": true,
+    "enabled": [
+      1,
+      1,
+      1,
+      0,
+      1
+    ],
+    "empty": [
+      1,
+      1,
+      1,
+      0,
+      1
+    ],
+    "equipable": [
+      1,
+      1,
+      1,
+      0,
+      1
+    ],
+    "disabled": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "horse": [
+      true,
+      true,
+      false
+    ],
+    "equipment": [],
+    "markers": [],
+    "cards": {
+      "weapon-1": "d",
+      "weapon-2": "B:e",
+      "weapon-3": "B:e",
+      "armor": "B:e",
+      "horse": "B:e"
+    }
+  },
+  "mountAlternateDisabled": {
+    "enabled": [
+      1,
+      1,
+      0,
+      0,
+      1
+    ],
+    "empty": [
+      1,
+      1,
+      0,
+      0,
+      1
+    ],
+    "equipable": [
+      1,
+      1,
+      0,
+      0,
+      1
+    ],
+    "disabled": [
+      0,
+      0,
+      1,
+      0,
+      0
+    ],
+    "horse": [
+      false,
+      false,
+      true
+    ],
+    "equipment": [],
+    "markers": [
+      "feichu_equip3"
+    ],
+    "cards": {
+      "weapon-1": "d",
+      "weapon-2": "B:e",
+      "weapon-3": "B:e",
+      "armor": "B:e",
+      "horse": "B:e"
+    }
+  },
+  "columns": [
+    "trial",
+    "kind",
+    "timing",
+    "event",
+    "parent",
+    "player",
+    "source",
+    "slots",
+    "cards",
+    "chosen",
+    "finished",
+    "cancelled",
+    "state"
+  ],
+  "events": [
+    ["disable-weapon","request","disableEquipBefore","disableEquip","reference_fixture_use","B","A",["equip1"],[],[],false,false,{"enabled":[1,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[1,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-1","armor","horse"],"markers":[],"cards":{"weapon-1":"B:e","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-weapon","callback","disableEquipBefore","disableEquip","reference_fixture_use","B","A",["equip1"],[],[],false,false,{"enabled":[1,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[1,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-1","armor","horse"],"markers":[],"cards":{"weapon-1":"B:e","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-weapon","request","disableEquipBegin","disableEquip","reference_fixture_use","B","A",["equip1"],[],[],false,false,{"enabled":[1,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[1,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-1","armor","horse"],"markers":[],"cards":{"weapon-1":"B:e","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-weapon","callback","disableEquipBegin","disableEquip","reference_fixture_use","B","A",["equip1"],[],[],false,false,{"enabled":[1,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[1,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-1","armor","horse"],"markers":[],"cards":{"weapon-1":"B:e","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-weapon","request","loseToDiscardpileBefore","loseToDiscardpile","disableEquip","B",null,null,["weapon-1"],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[0,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-1","armor","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"B:e","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-weapon","callback","loseToDiscardpileBefore","loseToDiscardpile","disableEquip","B",null,null,["weapon-1"],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[0,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-1","armor","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"B:e","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-weapon","request","loseToDiscardpileBegin","loseToDiscardpile","disableEquip","B",null,null,["weapon-1"],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[0,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-1","armor","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"B:e","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-weapon","callback","loseToDiscardpileBegin","loseToDiscardpile","disableEquip","B",null,null,["weapon-1"],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[0,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-1","armor","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"B:e","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-weapon","request","loseBefore","lose","loseToDiscardpile","B",null,null,["weapon-1"],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[0,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-1","armor","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"B:e","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-weapon","callback","loseBefore","lose","loseToDiscardpile","B",null,null,["weapon-1"],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[0,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-1","armor","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"B:e","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-weapon","request","loseBegin","lose","loseToDiscardpile","B",null,null,["weapon-1"],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[0,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-1","armor","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"B:e","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-weapon","callback","loseBegin","lose","loseToDiscardpile","B",null,null,["weapon-1"],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[0,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-1","armor","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"B:e","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-weapon","request","loseEnd","lose","loseToDiscardpile","B",null,null,["weapon-1"],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[0,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-weapon","callback","loseEnd","lose","loseToDiscardpile","B",null,null,["weapon-1"],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[0,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-weapon","request","loseAfter","lose","loseToDiscardpile","B",null,null,["weapon-1"],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[0,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-weapon","callback","loseAfter","lose","loseToDiscardpile","B",null,null,["weapon-1"],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[0,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-weapon","request","loseToDiscardpile","loseToDiscardpile","disableEquip","B",null,null,["weapon-1"],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[0,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-weapon","callback","loseToDiscardpile","loseToDiscardpile","disableEquip","B",null,null,["weapon-1"],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[0,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-weapon","request","loseToDiscardpileEnd","loseToDiscardpile","disableEquip","B",null,null,["weapon-1"],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[0,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-weapon","callback","loseToDiscardpileEnd","loseToDiscardpile","disableEquip","B",null,null,["weapon-1"],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[0,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-weapon","request","loseToDiscardpileAfter","loseToDiscardpile","disableEquip","B",null,null,["weapon-1"],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[0,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-weapon","callback","loseToDiscardpileAfter","loseToDiscardpile","disableEquip","B",null,null,["weapon-1"],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[0,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-weapon","request","disableEquipEnd","disableEquip","reference_fixture_use","B","A",["equip1"],["weapon-1"],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[0,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-weapon","callback","disableEquipEnd","disableEquip","reference_fixture_use","B","A",["equip1"],["weapon-1"],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[0,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-weapon","request","disableEquipAfter","disableEquip","reference_fixture_use","B","A",["equip1"],["weapon-1"],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[0,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-weapon","callback","disableEquipAfter","disableEquip","reference_fixture_use","B","A",["equip1"],["weapon-1"],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[0,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-weapon-repeat","request","disableEquipBefore","disableEquip","reference_fixture_use","B","A",["equip1"],[],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[0,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-weapon-repeat","callback","disableEquipBefore","disableEquip","reference_fixture_use","B","A",["equip1"],[],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[0,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-weapon-repeat","request","disableEquipBegin","disableEquip","reference_fixture_use","B","A",["equip1"],[],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[0,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-weapon-repeat","callback","disableEquipBegin","disableEquip","reference_fixture_use","B","A",["equip1"],[],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[0,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-weapon-repeat","request","disableEquipEnd","disableEquip","reference_fixture_use","B","A",["equip1"],[],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[0,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-weapon-repeat","callback","disableEquipEnd","disableEquip","reference_fixture_use","B","A",["equip1"],[],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[0,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-weapon-repeat","request","disableEquipAfter","disableEquip","reference_fixture_use","B","A",["equip1"],[],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[0,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-weapon-repeat","callback","disableEquipAfter","disableEquip","reference_fixture_use","B","A",["equip1"],[],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[0,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["enable-weapon","request","enableEquipBefore","enableEquip","reference_fixture_use","B","A",["equip1"],[],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[0,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["enable-weapon","callback","enableEquipBefore","enableEquip","reference_fixture_use","B","A",["equip1"],[],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[0,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["enable-weapon","request","enableEquipBegin","enableEquip","reference_fixture_use","B","A",["equip1"],[],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[0,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["enable-weapon","callback","enableEquipBegin","enableEquip","reference_fixture_use","B","A",["equip1"],[],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[0,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["enable-weapon","request","enableEquipEnd","enableEquip","reference_fixture_use","B","A",["equip1"],[],[],true,false,{"enabled":[1,1,1,1,1],"empty":[1,0,0,1,1],"equipable":[1,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["enable-weapon","callback","enableEquipEnd","enableEquip","reference_fixture_use","B","A",["equip1"],[],[],true,false,{"enabled":[1,1,1,1,1],"empty":[1,0,0,1,1],"equipable":[1,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["enable-weapon","request","enableEquipAfter","enableEquip","reference_fixture_use","B","A",["equip1"],[],[],true,false,{"enabled":[1,1,1,1,1],"empty":[1,0,0,1,1],"equipable":[1,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["enable-weapon","callback","enableEquipAfter","enableEquip","reference_fixture_use","B","A",["equip1"],[],[],true,false,{"enabled":[1,1,1,1,1],"empty":[1,0,0,1,1],"equipable":[1,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-armor-duplicate","request","disableEquipBefore","disableEquip","reference_fixture_use","B","A",["equip2","equip2"],[],[],false,false,{"enabled":[1,1,1,1,1],"empty":[1,0,0,1,1],"equipable":[1,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-armor-duplicate","callback","disableEquipBefore","disableEquip","reference_fixture_use","B","A",["equip2","equip2"],[],[],false,false,{"enabled":[1,1,1,1,1],"empty":[1,0,0,1,1],"equipable":[1,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-armor-duplicate","request","disableEquipBegin","disableEquip","reference_fixture_use","B","A",["equip2","equip2"],[],[],false,false,{"enabled":[1,1,1,1,1],"empty":[1,0,0,1,1],"equipable":[1,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-armor-duplicate","callback","disableEquipBegin","disableEquip","reference_fixture_use","B","A",["equip2","equip2"],[],[],false,false,{"enabled":[1,1,1,1,1],"empty":[1,0,0,1,1],"equipable":[1,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-armor-duplicate","request","loseToDiscardpileBefore","loseToDiscardpile","disableEquip","B",null,null,["armor"],[],false,false,{"enabled":[1,0,1,1,1],"empty":[1,0,0,1,1],"equipable":[1,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-armor-duplicate","callback","loseToDiscardpileBefore","loseToDiscardpile","disableEquip","B",null,null,["armor"],[],false,false,{"enabled":[1,0,1,1,1],"empty":[1,0,0,1,1],"equipable":[1,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-armor-duplicate","request","loseToDiscardpileBegin","loseToDiscardpile","disableEquip","B",null,null,["armor"],[],false,false,{"enabled":[1,0,1,1,1],"empty":[1,0,0,1,1],"equipable":[1,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-armor-duplicate","callback","loseToDiscardpileBegin","loseToDiscardpile","disableEquip","B",null,null,["armor"],[],false,false,{"enabled":[1,0,1,1,1],"empty":[1,0,0,1,1],"equipable":[1,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-armor-duplicate","request","loseBefore","lose","loseToDiscardpile","B",null,null,["armor"],[],false,false,{"enabled":[1,0,1,1,1],"empty":[1,0,0,1,1],"equipable":[1,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-armor-duplicate","callback","loseBefore","lose","loseToDiscardpile","B",null,null,["armor"],[],false,false,{"enabled":[1,0,1,1,1],"empty":[1,0,0,1,1],"equipable":[1,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-armor-duplicate","request","loseBegin","lose","loseToDiscardpile","B",null,null,["armor"],[],false,false,{"enabled":[1,0,1,1,1],"empty":[1,0,0,1,1],"equipable":[1,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-armor-duplicate","callback","loseBegin","lose","loseToDiscardpile","B",null,null,["armor"],[],false,false,{"enabled":[1,0,1,1,1],"empty":[1,0,0,1,1],"equipable":[1,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["armor","horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"B:e","horse":"B:e"}}],
+    ["disable-armor-duplicate","request","loseEnd","lose","loseToDiscardpile","B",null,null,["armor"],[],true,false,{"enabled":[1,0,1,1,1],"empty":[1,0,0,1,1],"equipable":[1,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-armor-duplicate","callback","loseEnd","lose","loseToDiscardpile","B",null,null,["armor"],[],true,false,{"enabled":[1,0,1,1,1],"empty":[1,0,0,1,1],"equipable":[1,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-armor-duplicate","request","loseAfter","lose","loseToDiscardpile","B",null,null,["armor"],[],true,false,{"enabled":[1,0,1,1,1],"empty":[1,0,0,1,1],"equipable":[1,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-armor-duplicate","callback","loseAfter","lose","loseToDiscardpile","B",null,null,["armor"],[],true,false,{"enabled":[1,0,1,1,1],"empty":[1,0,0,1,1],"equipable":[1,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-armor-duplicate","request","loseToDiscardpile","loseToDiscardpile","disableEquip","B",null,null,["armor"],[],false,false,{"enabled":[1,0,1,1,1],"empty":[1,0,0,1,1],"equipable":[1,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-armor-duplicate","callback","loseToDiscardpile","loseToDiscardpile","disableEquip","B",null,null,["armor"],[],false,false,{"enabled":[1,0,1,1,1],"empty":[1,0,0,1,1],"equipable":[1,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-armor-duplicate","request","loseToDiscardpileEnd","loseToDiscardpile","disableEquip","B",null,null,["armor"],[],true,false,{"enabled":[1,0,1,1,1],"empty":[1,0,0,1,1],"equipable":[1,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-armor-duplicate","callback","loseToDiscardpileEnd","loseToDiscardpile","disableEquip","B",null,null,["armor"],[],true,false,{"enabled":[1,0,1,1,1],"empty":[1,0,0,1,1],"equipable":[1,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-armor-duplicate","request","loseToDiscardpileAfter","loseToDiscardpile","disableEquip","B",null,null,["armor"],[],true,false,{"enabled":[1,0,1,1,1],"empty":[1,0,0,1,1],"equipable":[1,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-armor-duplicate","callback","loseToDiscardpileAfter","loseToDiscardpile","disableEquip","B",null,null,["armor"],[],true,false,{"enabled":[1,0,1,1,1],"empty":[1,0,0,1,1],"equipable":[1,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-armor-duplicate","request","disableEquipEnd","disableEquip","reference_fixture_use","B","A",["equip2","equip2"],["armor"],[],true,false,{"enabled":[1,0,1,1,1],"empty":[1,0,0,1,1],"equipable":[1,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-armor-duplicate","callback","disableEquipEnd","disableEquip","reference_fixture_use","B","A",["equip2","equip2"],["armor"],[],true,false,{"enabled":[1,0,1,1,1],"empty":[1,0,0,1,1],"equipable":[1,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-armor-duplicate","request","disableEquipAfter","disableEquip","reference_fixture_use","B","A",["equip2","equip2"],["armor"],[],true,false,{"enabled":[1,0,1,1,1],"empty":[1,0,0,1,1],"equipable":[1,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-armor-duplicate","callback","disableEquipAfter","disableEquip","reference_fixture_use","B","A",["equip2","equip2"],["armor"],[],true,false,{"enabled":[1,0,1,1,1],"empty":[1,0,0,1,1],"equipable":[1,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["enable-armor-duplicate","request","enableEquipBefore","enableEquip","reference_fixture_use","B","A",["equip2","equip2"],[],[],false,false,{"enabled":[1,0,1,1,1],"empty":[1,0,0,1,1],"equipable":[1,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["enable-armor-duplicate","callback","enableEquipBefore","enableEquip","reference_fixture_use","B","A",["equip2","equip2"],[],[],false,false,{"enabled":[1,0,1,1,1],"empty":[1,0,0,1,1],"equipable":[1,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["enable-armor-duplicate","request","enableEquipBegin","enableEquip","reference_fixture_use","B","A",["equip2","equip2"],[],[],false,false,{"enabled":[1,0,1,1,1],"empty":[1,0,0,1,1],"equipable":[1,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["enable-armor-duplicate","callback","enableEquipBegin","enableEquip","reference_fixture_use","B","A",["equip2","equip2"],[],[],false,false,{"enabled":[1,0,1,1,1],"empty":[1,0,0,1,1],"equipable":[1,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["enable-armor-duplicate","request","enableEquipEnd","enableEquip","reference_fixture_use","B","A",["equip2","equip2"],[],[],true,false,{"enabled":[1,1,1,1,1],"empty":[1,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["enable-armor-duplicate","callback","enableEquipEnd","enableEquip","reference_fixture_use","B","A",["equip2","equip2"],[],[],true,false,{"enabled":[1,1,1,1,1],"empty":[1,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["enable-armor-duplicate","request","enableEquipAfter","enableEquip","reference_fixture_use","B","A",["equip2","equip2"],[],[],true,false,{"enabled":[1,1,1,1,1],"empty":[1,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["enable-armor-duplicate","callback","enableEquipAfter","enableEquip","reference_fixture_use","B","A",["equip2","equip2"],[],[],true,false,{"enabled":[1,1,1,1,1],"empty":[1,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-empty-treasure","request","disableEquipBefore","disableEquip","reference_fixture_use","B","A",["equip5"],[],[],false,false,{"enabled":[1,1,1,1,1],"empty":[1,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-empty-treasure","callback","disableEquipBefore","disableEquip","reference_fixture_use","B","A",["equip5"],[],[],false,false,{"enabled":[1,1,1,1,1],"empty":[1,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-empty-treasure","request","disableEquipBegin","disableEquip","reference_fixture_use","B","A",["equip5"],[],[],false,false,{"enabled":[1,1,1,1,1],"empty":[1,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-empty-treasure","callback","disableEquipBegin","disableEquip","reference_fixture_use","B","A",["equip5"],[],[],false,false,{"enabled":[1,1,1,1,1],"empty":[1,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-empty-treasure","request","disableEquipEnd","disableEquip","reference_fixture_use","B","A",["equip5"],[],[],true,false,{"enabled":[1,1,1,1,0],"empty":[1,1,0,1,0],"equipable":[1,1,1,1,0],"disabled":[0,0,0,0,1],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip5"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-empty-treasure","callback","disableEquipEnd","disableEquip","reference_fixture_use","B","A",["equip5"],[],[],true,false,{"enabled":[1,1,1,1,0],"empty":[1,1,0,1,0],"equipable":[1,1,1,1,0],"disabled":[0,0,0,0,1],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip5"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-empty-treasure","request","disableEquipAfter","disableEquip","reference_fixture_use","B","A",["equip5"],[],[],true,false,{"enabled":[1,1,1,1,0],"empty":[1,1,0,1,0],"equipable":[1,1,1,1,0],"disabled":[0,0,0,0,1],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip5"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-empty-treasure","callback","disableEquipAfter","disableEquip","reference_fixture_use","B","A",["equip5"],[],[],true,false,{"enabled":[1,1,1,1,0],"empty":[1,1,0,1,0],"equipable":[1,1,1,1,0],"disabled":[0,0,0,0,1],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip5"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["enable-empty-treasure","request","enableEquipBefore","enableEquip","reference_fixture_use","B","A",["equip5"],[],[],false,false,{"enabled":[1,1,1,1,0],"empty":[1,1,0,1,0],"equipable":[1,1,1,1,0],"disabled":[0,0,0,0,1],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip5"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["enable-empty-treasure","callback","enableEquipBefore","enableEquip","reference_fixture_use","B","A",["equip5"],[],[],false,false,{"enabled":[1,1,1,1,0],"empty":[1,1,0,1,0],"equipable":[1,1,1,1,0],"disabled":[0,0,0,0,1],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip5"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["enable-empty-treasure","request","enableEquipBegin","enableEquip","reference_fixture_use","B","A",["equip5"],[],[],false,false,{"enabled":[1,1,1,1,0],"empty":[1,1,0,1,0],"equipable":[1,1,1,1,0],"disabled":[0,0,0,0,1],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip5"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["enable-empty-treasure","callback","enableEquipBegin","enableEquip","reference_fixture_use","B","A",["equip5"],[],[],false,false,{"enabled":[1,1,1,1,0],"empty":[1,1,0,1,0],"equipable":[1,1,1,1,0],"disabled":[0,0,0,0,1],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip5"],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["enable-empty-treasure","request","enableEquipEnd","enableEquip","reference_fixture_use","B","A",["equip5"],[],[],true,false,{"enabled":[1,1,1,1,1],"empty":[1,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["enable-empty-treasure","callback","enableEquipEnd","enableEquip","reference_fixture_use","B","A",["equip5"],[],[],true,false,{"enabled":[1,1,1,1,1],"empty":[1,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["enable-empty-treasure","request","enableEquipAfter","enableEquip","reference_fixture_use","B","A",["equip5"],[],[],true,false,{"enabled":[1,1,1,1,1],"empty":[1,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["enable-empty-treasure","callback","enableEquipAfter","enableEquip","reference_fixture_use","B","A",["equip5"],[],[],true,false,{"enabled":[1,1,1,1,1],"empty":[1,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["expand-weapon","request","expandEquipBefore","expandEquip","reference_fixture_use","B","A",["equip1"],[],[],false,false,{"enabled":[1,1,1,1,1],"empty":[1,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["expand-weapon","callback","expandEquipBefore","expandEquip","reference_fixture_use","B","A",["equip1"],[],[],false,false,{"enabled":[1,1,1,1,1],"empty":[1,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["expand-weapon","request","expandEquipBegin","expandEquip","reference_fixture_use","B","A",["equip1"],[],[],false,false,{"enabled":[1,1,1,1,1],"empty":[1,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["expand-weapon","callback","expandEquipBegin","expandEquip","reference_fixture_use","B","A",["equip1"],[],[],false,false,{"enabled":[1,1,1,1,1],"empty":[1,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["expand-weapon","request","expandEquipEnd","expandEquip","reference_fixture_use","B","A",["equip1"],[],[],true,false,{"enabled":[2,1,1,1,1],"empty":[2,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["expand-weapon","callback","expandEquipEnd","expandEquip","reference_fixture_use","B","A",["equip1"],[],[],true,false,{"enabled":[2,1,1,1,1],"empty":[2,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["expand-weapon","request","expandEquipAfter","expandEquip","reference_fixture_use","B","A",["equip1"],[],[],true,false,{"enabled":[2,1,1,1,1],"empty":[2,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["expand-weapon","callback","expandEquipAfter","expandEquip","reference_fixture_use","B","A",["equip1"],[],[],true,false,{"enabled":[2,1,1,1,1],"empty":[2,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"s","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-one-of-two","request","disableEquipBefore","disableEquip","reference_fixture_use","B","A",["equip1"],[],[],false,false,{"enabled":[2,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":[],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-one-of-two","callback","disableEquipBefore","disableEquip","reference_fixture_use","B","A",["equip1"],[],[],false,false,{"enabled":[2,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":[],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-one-of-two","request","disableEquipBegin","disableEquip","reference_fixture_use","B","A",["equip1"],[],[],false,false,{"enabled":[2,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":[],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-one-of-two","callback","disableEquipBegin","disableEquip","reference_fixture_use","B","A",["equip1"],[],[],false,false,{"enabled":[2,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":[],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-one-of-two","request","chooseButtonBefore","chooseButton","disableEquip","A",null,null,[],[],false,false,{"enabled":[1,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":[],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-one-of-two","callback","chooseButtonBefore","chooseButton","disableEquip","A",null,null,[],[],false,false,{"enabled":[1,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":[],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-one-of-two","request","chooseButtonBegin","chooseButton","disableEquip","A",null,null,[],[],false,false,{"enabled":[1,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":[],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-one-of-two","callback","chooseButtonBegin","chooseButton","disableEquip","A",null,null,[],[],false,false,{"enabled":[1,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":[],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-one-of-two","request","chooseButtonEnd","chooseButton","disableEquip","A",null,null,[],["weapon-1"],true,false,{"enabled":[1,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":[],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-one-of-two","callback","chooseButtonEnd","chooseButton","disableEquip","A",null,null,[],["weapon-1"],true,false,{"enabled":[1,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":[],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-one-of-two","request","chooseButtonAfter","chooseButton","disableEquip","A",null,null,[],["weapon-1"],true,false,{"enabled":[1,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":[],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-one-of-two","callback","chooseButtonAfter","chooseButton","disableEquip","A",null,null,[],["weapon-1"],true,false,{"enabled":[1,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":[],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-one-of-two","request","loseToDiscardpileBefore","loseToDiscardpile","disableEquip","B",null,null,["weapon-1"],[],false,false,{"enabled":[1,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-one-of-two","callback","loseToDiscardpileBefore","loseToDiscardpile","disableEquip","B",null,null,["weapon-1"],[],false,false,{"enabled":[1,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-one-of-two","request","loseToDiscardpileBegin","loseToDiscardpile","disableEquip","B",null,null,["weapon-1"],[],false,false,{"enabled":[1,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-one-of-two","callback","loseToDiscardpileBegin","loseToDiscardpile","disableEquip","B",null,null,["weapon-1"],[],false,false,{"enabled":[1,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-one-of-two","request","loseBefore","lose","loseToDiscardpile","B",null,null,["weapon-1"],[],false,false,{"enabled":[1,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-one-of-two","callback","loseBefore","lose","loseToDiscardpile","B",null,null,["weapon-1"],[],false,false,{"enabled":[1,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-one-of-two","request","loseBegin","lose","loseToDiscardpile","B",null,null,["weapon-1"],[],false,false,{"enabled":[1,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-one-of-two","callback","loseBegin","lose","loseToDiscardpile","B",null,null,["weapon-1"],[],false,false,{"enabled":[1,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-one-of-two","request","loseEnd","lose","loseToDiscardpile","B",null,null,["weapon-1"],[],true,false,{"enabled":[1,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-one-of-two","callback","loseEnd","lose","loseToDiscardpile","B",null,null,["weapon-1"],[],true,false,{"enabled":[1,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-one-of-two","request","loseAfter","lose","loseToDiscardpile","B",null,null,["weapon-1"],[],true,false,{"enabled":[1,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-one-of-two","callback","loseAfter","lose","loseToDiscardpile","B",null,null,["weapon-1"],[],true,false,{"enabled":[1,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-one-of-two","request","loseToDiscardpile","loseToDiscardpile","disableEquip","B",null,null,["weapon-1"],[],false,false,{"enabled":[1,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-one-of-two","callback","loseToDiscardpile","loseToDiscardpile","disableEquip","B",null,null,["weapon-1"],[],false,false,{"enabled":[1,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-one-of-two","request","loseToDiscardpileEnd","loseToDiscardpile","disableEquip","B",null,null,["weapon-1"],[],true,false,{"enabled":[1,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-one-of-two","callback","loseToDiscardpileEnd","loseToDiscardpile","disableEquip","B",null,null,["weapon-1"],[],true,false,{"enabled":[1,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-one-of-two","request","loseToDiscardpileAfter","loseToDiscardpile","disableEquip","B",null,null,["weapon-1"],[],true,false,{"enabled":[1,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-one-of-two","callback","loseToDiscardpileAfter","loseToDiscardpile","disableEquip","B",null,null,["weapon-1"],[],true,false,{"enabled":[1,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-one-of-two","request","disableEquipEnd","disableEquip","reference_fixture_use","B","A",["equip1"],["weapon-1"],[],true,false,{"enabled":[1,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-one-of-two","callback","disableEquipEnd","disableEquip","reference_fixture_use","B","A",["equip1"],["weapon-1"],[],true,false,{"enabled":[1,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-one-of-two","request","disableEquipAfter","disableEquip","reference_fixture_use","B","A",["equip1"],["weapon-1"],[],true,false,{"enabled":[1,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-one-of-two","callback","disableEquipAfter","disableEquip","reference_fixture_use","B","A",["equip1"],["weapon-1"],[],true,false,{"enabled":[1,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-second","request","disableEquipBefore","disableEquip","reference_fixture_use","B","A",["equip1"],[],[],false,false,{"enabled":[1,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-second","callback","disableEquipBefore","disableEquip","reference_fixture_use","B","A",["equip1"],[],[],false,false,{"enabled":[1,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-second","request","disableEquipBegin","disableEquip","reference_fixture_use","B","A",["equip1"],[],[],false,false,{"enabled":[1,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-second","callback","disableEquipBegin","disableEquip","reference_fixture_use","B","A",["equip1"],[],[],false,false,{"enabled":[1,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[1,1,1,1,1],"disabled":[1,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","horse"],"markers":["feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-second","request","loseToDiscardpileBefore","loseToDiscardpile","disableEquip","B",null,null,["weapon-2"],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-second","callback","loseToDiscardpileBefore","loseToDiscardpile","disableEquip","B",null,null,["weapon-2"],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-second","request","loseToDiscardpileBegin","loseToDiscardpile","disableEquip","B",null,null,["weapon-2"],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-second","callback","loseToDiscardpileBegin","loseToDiscardpile","disableEquip","B",null,null,["weapon-2"],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-second","request","loseBefore","lose","loseToDiscardpile","B",null,null,["weapon-2"],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-second","callback","loseBefore","lose","loseToDiscardpile","B",null,null,["weapon-2"],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-second","request","loseBegin","lose","loseToDiscardpile","B",null,null,["weapon-2"],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-second","callback","loseBegin","lose","loseToDiscardpile","B",null,null,["weapon-2"],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-second","request","loseEnd","lose","loseToDiscardpile","B",null,null,["weapon-2"],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-second","callback","loseEnd","lose","loseToDiscardpile","B",null,null,["weapon-2"],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-second","request","loseAfter","lose","loseToDiscardpile","B",null,null,["weapon-2"],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-second","callback","loseAfter","lose","loseToDiscardpile","B",null,null,["weapon-2"],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-second","request","loseToDiscardpile","loseToDiscardpile","disableEquip","B",null,null,["weapon-2"],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-second","callback","loseToDiscardpile","loseToDiscardpile","disableEquip","B",null,null,["weapon-2"],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-second","request","loseToDiscardpileEnd","loseToDiscardpile","disableEquip","B",null,null,["weapon-2"],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-second","callback","loseToDiscardpileEnd","loseToDiscardpile","disableEquip","B",null,null,["weapon-2"],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-second","request","loseToDiscardpileAfter","loseToDiscardpile","disableEquip","B",null,null,["weapon-2"],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-second","callback","loseToDiscardpileAfter","loseToDiscardpile","disableEquip","B",null,null,["weapon-2"],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-second","request","disableEquipEnd","disableEquip","reference_fixture_use","B","A",["equip1"],["weapon-2"],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-second","callback","disableEquipEnd","disableEquip","reference_fixture_use","B","A",["equip1"],["weapon-2"],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-second","request","disableEquipAfter","disableEquip","reference_fixture_use","B","A",["equip1"],["weapon-2"],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-second","callback","disableEquipAfter","disableEquip","reference_fixture_use","B","A",["equip1"],["weapon-2"],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["enable-two","request","enableEquipBefore","enableEquip","reference_fixture_use","B","A",["equip1","equip1"],[],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["enable-two","callback","enableEquipBefore","enableEquip","reference_fixture_use","B","A",["equip1","equip1"],[],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["enable-two","request","enableEquipBegin","enableEquip","reference_fixture_use","B","A",["equip1","equip1"],[],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["enable-two","callback","enableEquipBegin","enableEquip","reference_fixture_use","B","A",["equip1","equip1"],[],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["enable-two","request","enableEquipEnd","enableEquip","reference_fixture_use","B","A",["equip1","equip1"],[],[],true,false,{"enabled":[2,1,1,1,1],"empty":[2,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["enable-two","callback","enableEquipEnd","enableEquip","reference_fixture_use","B","A",["equip1","equip1"],[],[],true,false,{"enabled":[2,1,1,1,1],"empty":[2,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["enable-two","request","enableEquipAfter","enableEquip","reference_fixture_use","B","A",["equip1","equip1"],[],[],true,false,{"enabled":[2,1,1,1,1],"empty":[2,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["enable-two","callback","enableEquipAfter","enableEquip","reference_fixture_use","B","A",["equip1","equip1"],[],[],true,false,{"enabled":[2,1,1,1,1],"empty":[2,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-two-duplicate","request","disableEquipBefore","disableEquip","reference_fixture_use","B","A",["equip1","equip1"],[],[],false,false,{"enabled":[2,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":[],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-two-duplicate","callback","disableEquipBefore","disableEquip","reference_fixture_use","B","A",["equip1","equip1"],[],[],false,false,{"enabled":[2,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":[],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-two-duplicate","request","disableEquipBegin","disableEquip","reference_fixture_use","B","A",["equip1","equip1"],[],[],false,false,{"enabled":[2,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":[],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-two-duplicate","callback","disableEquipBegin","disableEquip","reference_fixture_use","B","A",["equip1","equip1"],[],[],false,false,{"enabled":[2,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":[],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-two-duplicate","request","loseToDiscardpileBefore","loseToDiscardpile","disableEquip","B",null,null,["weapon-2","weapon-1"],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-two-duplicate","callback","loseToDiscardpileBefore","loseToDiscardpile","disableEquip","B",null,null,["weapon-2","weapon-1"],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-two-duplicate","request","loseToDiscardpileBegin","loseToDiscardpile","disableEquip","B",null,null,["weapon-2","weapon-1"],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-two-duplicate","callback","loseToDiscardpileBegin","loseToDiscardpile","disableEquip","B",null,null,["weapon-2","weapon-1"],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-two-duplicate","request","loseBefore","lose","loseToDiscardpile","B",null,null,["weapon-2","weapon-1"],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-two-duplicate","callback","loseBefore","lose","loseToDiscardpile","B",null,null,["weapon-2","weapon-1"],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-two-duplicate","request","loseBegin","lose","loseToDiscardpile","B",null,null,["weapon-2","weapon-1"],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-two-duplicate","callback","loseBegin","lose","loseToDiscardpile","B",null,null,["weapon-2","weapon-1"],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-two-duplicate","request","loseEnd","lose","loseToDiscardpile","B",null,null,["weapon-2","weapon-1"],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-two-duplicate","callback","loseEnd","lose","loseToDiscardpile","B",null,null,["weapon-2","weapon-1"],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-two-duplicate","request","loseAfter","lose","loseToDiscardpile","B",null,null,["weapon-2","weapon-1"],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-two-duplicate","callback","loseAfter","lose","loseToDiscardpile","B",null,null,["weapon-2","weapon-1"],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-two-duplicate","request","loseToDiscardpile","loseToDiscardpile","disableEquip","B",null,null,["weapon-2","weapon-1"],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-two-duplicate","callback","loseToDiscardpile","loseToDiscardpile","disableEquip","B",null,null,["weapon-2","weapon-1"],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-two-duplicate","request","loseToDiscardpileEnd","loseToDiscardpile","disableEquip","B",null,null,["weapon-2","weapon-1"],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-two-duplicate","callback","loseToDiscardpileEnd","loseToDiscardpile","disableEquip","B",null,null,["weapon-2","weapon-1"],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-two-duplicate","request","loseToDiscardpileAfter","loseToDiscardpile","disableEquip","B",null,null,["weapon-2","weapon-1"],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-two-duplicate","callback","loseToDiscardpileAfter","loseToDiscardpile","disableEquip","B",null,null,["weapon-2","weapon-1"],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-two-duplicate","request","disableEquipEnd","disableEquip","reference_fixture_use","B","A",["equip1","equip1"],["weapon-2","weapon-1"],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-two-duplicate","callback","disableEquipEnd","disableEquip","reference_fixture_use","B","A",["equip1","equip1"],["weapon-2","weapon-1"],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-two-duplicate","request","disableEquipAfter","disableEquip","reference_fixture_use","B","A",["equip1","equip1"],["weapon-2","weapon-1"],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["disable-two-duplicate","callback","disableEquipAfter","disableEquip","reference_fixture_use","B","A",["equip1","equip1"],["weapon-2","weapon-1"],[],true,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["enable-two-duplicate","request","enableEquipBefore","enableEquip","reference_fixture_use","B","A",["equip1","equip1"],[],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["enable-two-duplicate","callback","enableEquipBefore","enableEquip","reference_fixture_use","B","A",["equip1","equip1"],[],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["enable-two-duplicate","request","enableEquipBegin","enableEquip","reference_fixture_use","B","A",["equip1","equip1"],[],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["enable-two-duplicate","callback","enableEquipBegin","enableEquip","reference_fixture_use","B","A",["equip1","equip1"],[],[],false,false,{"enabled":[0,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[0,1,1,1,1],"disabled":[2,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":["feichu_equip1","feichu_equip1"],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["enable-two-duplicate","request","enableEquipEnd","enableEquip","reference_fixture_use","B","A",["equip1","equip1"],[],[],true,false,{"enabled":[2,1,1,1,1],"empty":[2,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["enable-two-duplicate","callback","enableEquipEnd","enableEquip","reference_fixture_use","B","A",["equip1","equip1"],[],[],true,false,{"enabled":[2,1,1,1,1],"empty":[2,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["enable-two-duplicate","request","enableEquipAfter","enableEquip","reference_fixture_use","B","A",["equip1","equip1"],[],[],true,false,{"enabled":[2,1,1,1,1],"empty":[2,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["enable-two-duplicate","callback","enableEquipAfter","enableEquip","reference_fixture_use","B","A",["equip1","equip1"],[],[],true,false,{"enabled":[2,1,1,1,1],"empty":[2,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"d","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["equip-third","request","equipBefore","equip","reference_fixture_use","B",null,null,["weapon-3"],[],false,false,{"enabled":[2,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":[],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["equip-third","callback","equipBefore","equip","reference_fixture_use","B",null,null,["weapon-3"],[],false,false,{"enabled":[2,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":[],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["equip-third","request","equipBegin","equip","reference_fixture_use","B",null,null,["weapon-3"],[],false,false,{"enabled":[2,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":[],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["equip-third","callback","equipBegin","equip","reference_fixture_use","B",null,null,["weapon-3"],[],false,false,{"enabled":[2,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":[],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["equip-third","request","chooseButtonBefore","chooseButton","replaceEquip","B",null,null,[],[],false,false,{"enabled":[2,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":[],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["equip-third","callback","chooseButtonBefore","chooseButton","replaceEquip","B",null,null,[],[],false,false,{"enabled":[2,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":[],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["equip-third","request","chooseButtonBegin","chooseButton","replaceEquip","B",null,null,[],[],false,false,{"enabled":[2,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":[],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["equip-third","callback","chooseButtonBegin","chooseButton","replaceEquip","B",null,null,[],[],false,false,{"enabled":[2,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":[],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["equip-third","request","chooseButtonEnd","chooseButton","replaceEquip","B",null,null,[],["weapon-1"],true,false,{"enabled":[2,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":[],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["equip-third","callback","chooseButtonEnd","chooseButton","replaceEquip","B",null,null,[],["weapon-1"],true,false,{"enabled":[2,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":[],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["equip-third","request","chooseButtonAfter","chooseButton","replaceEquip","B",null,null,[],["weapon-1"],true,false,{"enabled":[2,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":[],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["equip-third","callback","chooseButtonAfter","chooseButton","replaceEquip","B",null,null,[],["weapon-1"],true,false,{"enabled":[2,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":[],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["equip-third","request","loseBefore","lose","equip","B",null,null,["weapon-1"],[],false,false,{"enabled":[2,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":[],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["equip-third","callback","loseBefore","lose","equip","B",null,null,["weapon-1"],[],false,false,{"enabled":[2,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":[],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["equip-third","request","loseBegin","lose","equip","B",null,null,["weapon-1"],[],false,false,{"enabled":[2,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":[],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["equip-third","callback","loseBegin","lose","equip","B",null,null,["weapon-1"],[],false,false,{"enabled":[2,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","weapon-1","horse"],"markers":[],"cards":{"weapon-1":"B:e","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["equip-third","request","loseEnd","lose","equip","B",null,null,["weapon-1"],[],true,false,{"enabled":[2,1,1,1,1],"empty":[1,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["equip-third","callback","loseEnd","lose","equip","B",null,null,["weapon-1"],[],true,false,{"enabled":[2,1,1,1,1],"empty":[1,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["equip-third","request","loseAfter","lose","equip","B",null,null,["weapon-1"],[],true,false,{"enabled":[2,1,1,1,1],"empty":[1,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["equip-third","callback","loseAfter","lose","equip","B",null,null,["weapon-1"],[],true,false,{"enabled":[2,1,1,1,1],"empty":[1,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-2","horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"s","armor":"d","horse":"B:e"}}],
+    ["equip-third","request","equipEnd","equip","reference_fixture_use","B",null,null,["weapon-3"],[],true,false,{"enabled":[2,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-3","weapon-2","horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"B:e","armor":"d","horse":"B:e"}}],
+    ["equip-third","callback","equipEnd","equip","reference_fixture_use","B",null,null,["weapon-3"],[],true,false,{"enabled":[2,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-3","weapon-2","horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"B:e","armor":"d","horse":"B:e"}}],
+    ["equip-third","request","equipAfter","equip","reference_fixture_use","B",null,null,["weapon-3"],[],true,false,{"enabled":[2,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-3","weapon-2","horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"B:e","armor":"d","horse":"B:e"}}],
+    ["equip-third","callback","equipAfter","equip","reference_fixture_use","B",null,null,["weapon-3"],[],true,false,{"enabled":[2,1,1,1,1],"empty":[0,1,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-3","weapon-2","horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"B:e","armor":"d","horse":"B:e"}}],
+    ["cancel:loseToDiscardpileBefore","request","disableEquipBefore","disableEquip","reference_fixture_use","B","A",["equip2"],[],[],false,false,{"enabled":[2,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-3","weapon-2","armor","horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"B:e","armor":"B:e","horse":"B:e"}}],
+    ["cancel:loseToDiscardpileBefore","callback","disableEquipBefore","disableEquip","reference_fixture_use","B","A",["equip2"],[],[],false,false,{"enabled":[2,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-3","weapon-2","armor","horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"B:e","armor":"B:e","horse":"B:e"}}],
+    ["cancel:loseToDiscardpileBefore","request","disableEquipBegin","disableEquip","reference_fixture_use","B","A",["equip2"],[],[],false,false,{"enabled":[2,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-3","weapon-2","armor","horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"B:e","armor":"B:e","horse":"B:e"}}],
+    ["cancel:loseToDiscardpileBefore","callback","disableEquipBegin","disableEquip","reference_fixture_use","B","A",["equip2"],[],[],false,false,{"enabled":[2,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-3","weapon-2","armor","horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"B:e","armor":"B:e","horse":"B:e"}}],
+    ["cancel:loseToDiscardpileBefore","request","loseToDiscardpileBefore","loseToDiscardpile","disableEquip","B",null,null,["armor"],[],false,false,{"enabled":[2,0,1,1,1],"empty":[0,0,0,1,1],"equipable":[2,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["weapon-3","weapon-2","armor","horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"B:e","armor":"B:e","horse":"B:e"}}],
+    ["cancel:loseToDiscardpileBefore","callback","loseToDiscardpileBefore","loseToDiscardpile","disableEquip","B",null,null,["armor"],[],false,false,{"enabled":[2,0,1,1,1],"empty":[0,0,0,1,1],"equipable":[2,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["weapon-3","weapon-2","armor","horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"B:e","armor":"B:e","horse":"B:e"}}],
+    ["cancel:loseToDiscardpileBefore","request","loseToDiscardpileCancelled","loseToDiscardpile","disableEquip","B",null,null,["armor"],[],false,true,{"enabled":[2,0,1,1,1],"empty":[0,0,0,1,1],"equipable":[2,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["weapon-3","weapon-2","armor","horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"B:e","armor":"B:e","horse":"B:e"}}],
+    ["cancel:loseToDiscardpileBefore","callback","loseToDiscardpileCancelled","loseToDiscardpile","disableEquip","B",null,null,["armor"],[],true,true,{"enabled":[2,0,1,1,1],"empty":[0,0,0,1,1],"equipable":[2,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["weapon-3","weapon-2","armor","horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"B:e","armor":"B:e","horse":"B:e"}}],
+    ["cancel:loseToDiscardpileBefore","request","disableEquipEnd","disableEquip","reference_fixture_use","B","A",["equip2"],["armor"],[],true,false,{"enabled":[2,0,1,1,1],"empty":[0,0,0,1,1],"equipable":[2,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["weapon-3","weapon-2","armor","horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"B:e","armor":"B:e","horse":"B:e"}}],
+    ["cancel:loseToDiscardpileBefore","callback","disableEquipEnd","disableEquip","reference_fixture_use","B","A",["equip2"],["armor"],[],true,false,{"enabled":[2,0,1,1,1],"empty":[0,0,0,1,1],"equipable":[2,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["weapon-3","weapon-2","armor","horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"B:e","armor":"B:e","horse":"B:e"}}],
+    ["cancel:loseToDiscardpileBefore","request","disableEquipAfter","disableEquip","reference_fixture_use","B","A",["equip2"],["armor"],[],true,false,{"enabled":[2,0,1,1,1],"empty":[0,0,0,1,1],"equipable":[2,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["weapon-3","weapon-2","armor","horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"B:e","armor":"B:e","horse":"B:e"}}],
+    ["cancel:loseToDiscardpileBefore","callback","disableEquipAfter","disableEquip","reference_fixture_use","B","A",["equip2"],["armor"],[],true,false,{"enabled":[2,0,1,1,1],"empty":[0,0,0,1,1],"equipable":[2,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["weapon-3","weapon-2","armor","horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"B:e","armor":"B:e","horse":"B:e"}}],
+    ["cancel:loseBefore","request","disableEquipBefore","disableEquip","reference_fixture_use","B","A",["equip2"],[],[],false,false,{"enabled":[2,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-3","weapon-2","armor","horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"B:e","armor":"B:e","horse":"B:e"}}],
+    ["cancel:loseBefore","callback","disableEquipBefore","disableEquip","reference_fixture_use","B","A",["equip2"],[],[],false,false,{"enabled":[2,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-3","weapon-2","armor","horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"B:e","armor":"B:e","horse":"B:e"}}],
+    ["cancel:loseBefore","request","disableEquipBegin","disableEquip","reference_fixture_use","B","A",["equip2"],[],[],false,false,{"enabled":[2,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-3","weapon-2","armor","horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"B:e","armor":"B:e","horse":"B:e"}}],
+    ["cancel:loseBefore","callback","disableEquipBegin","disableEquip","reference_fixture_use","B","A",["equip2"],[],[],false,false,{"enabled":[2,1,1,1,1],"empty":[0,0,0,1,1],"equipable":[2,1,1,1,1],"disabled":[0,0,0,0,0],"horse":[true,false,false],"equipment":["weapon-3","weapon-2","armor","horse"],"markers":[],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"B:e","armor":"B:e","horse":"B:e"}}],
+    ["cancel:loseBefore","request","loseToDiscardpileBefore","loseToDiscardpile","disableEquip","B",null,null,["armor"],[],false,false,{"enabled":[2,0,1,1,1],"empty":[0,0,0,1,1],"equipable":[2,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["weapon-3","weapon-2","armor","horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"B:e","armor":"B:e","horse":"B:e"}}],
+    ["cancel:loseBefore","callback","loseToDiscardpileBefore","loseToDiscardpile","disableEquip","B",null,null,["armor"],[],false,false,{"enabled":[2,0,1,1,1],"empty":[0,0,0,1,1],"equipable":[2,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["weapon-3","weapon-2","armor","horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"B:e","armor":"B:e","horse":"B:e"}}],
+    ["cancel:loseBefore","request","loseToDiscardpileBegin","loseToDiscardpile","disableEquip","B",null,null,["armor"],[],false,false,{"enabled":[2,0,1,1,1],"empty":[0,0,0,1,1],"equipable":[2,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["weapon-3","weapon-2","armor","horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"B:e","armor":"B:e","horse":"B:e"}}],
+    ["cancel:loseBefore","callback","loseToDiscardpileBegin","loseToDiscardpile","disableEquip","B",null,null,["armor"],[],false,false,{"enabled":[2,0,1,1,1],"empty":[0,0,0,1,1],"equipable":[2,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["weapon-3","weapon-2","armor","horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"B:e","armor":"B:e","horse":"B:e"}}],
+    ["cancel:loseBefore","request","loseBefore","lose","loseToDiscardpile","B",null,null,["armor"],[],false,false,{"enabled":[2,0,1,1,1],"empty":[0,0,0,1,1],"equipable":[2,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["weapon-3","weapon-2","armor","horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"B:e","armor":"B:e","horse":"B:e"}}],
+    ["cancel:loseBefore","callback","loseBefore","lose","loseToDiscardpile","B",null,null,["armor"],[],false,false,{"enabled":[2,0,1,1,1],"empty":[0,0,0,1,1],"equipable":[2,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["weapon-3","weapon-2","armor","horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"B:e","armor":"B:e","horse":"B:e"}}],
+    ["cancel:loseBefore","request","loseCancelled","lose","loseToDiscardpile","B",null,null,["armor"],[],false,true,{"enabled":[2,0,1,1,1],"empty":[0,0,0,1,1],"equipable":[2,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["weapon-3","weapon-2","armor","horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"B:e","armor":"B:e","horse":"B:e"}}],
+    ["cancel:loseBefore","callback","loseCancelled","lose","loseToDiscardpile","B",null,null,["armor"],[],true,true,{"enabled":[2,0,1,1,1],"empty":[0,0,0,1,1],"equipable":[2,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["weapon-3","weapon-2","armor","horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"B:e","armor":"B:e","horse":"B:e"}}],
+    ["cancel:loseBefore","request","loseToDiscardpile","loseToDiscardpile","disableEquip","B",null,null,["armor"],[],false,false,{"enabled":[2,0,1,1,1],"empty":[0,0,0,1,1],"equipable":[2,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["weapon-3","weapon-2","armor","horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"B:e","armor":"B:e","horse":"B:e"}}],
+    ["cancel:loseBefore","callback","loseToDiscardpile","loseToDiscardpile","disableEquip","B",null,null,["armor"],[],false,false,{"enabled":[2,0,1,1,1],"empty":[0,0,0,1,1],"equipable":[2,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["weapon-3","weapon-2","armor","horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"B:e","armor":"B:e","horse":"B:e"}}],
+    ["cancel:loseBefore","request","loseToDiscardpileEnd","loseToDiscardpile","disableEquip","B",null,null,["armor"],[],true,false,{"enabled":[2,0,1,1,1],"empty":[0,0,0,1,1],"equipable":[2,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["weapon-3","weapon-2","armor","horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"B:e","armor":"B:e","horse":"B:e"}}],
+    ["cancel:loseBefore","callback","loseToDiscardpileEnd","loseToDiscardpile","disableEquip","B",null,null,["armor"],[],true,false,{"enabled":[2,0,1,1,1],"empty":[0,0,0,1,1],"equipable":[2,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["weapon-3","weapon-2","armor","horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"B:e","armor":"B:e","horse":"B:e"}}],
+    ["cancel:loseBefore","request","loseToDiscardpileAfter","loseToDiscardpile","disableEquip","B",null,null,["armor"],[],true,false,{"enabled":[2,0,1,1,1],"empty":[0,0,0,1,1],"equipable":[2,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["weapon-3","weapon-2","armor","horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"B:e","armor":"B:e","horse":"B:e"}}],
+    ["cancel:loseBefore","callback","loseToDiscardpileAfter","loseToDiscardpile","disableEquip","B",null,null,["armor"],[],true,false,{"enabled":[2,0,1,1,1],"empty":[0,0,0,1,1],"equipable":[2,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["weapon-3","weapon-2","armor","horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"B:e","armor":"B:e","horse":"B:e"}}],
+    ["cancel:loseBefore","request","disableEquipEnd","disableEquip","reference_fixture_use","B","A",["equip2"],["armor"],[],true,false,{"enabled":[2,0,1,1,1],"empty":[0,0,0,1,1],"equipable":[2,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["weapon-3","weapon-2","armor","horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"B:e","armor":"B:e","horse":"B:e"}}],
+    ["cancel:loseBefore","callback","disableEquipEnd","disableEquip","reference_fixture_use","B","A",["equip2"],["armor"],[],true,false,{"enabled":[2,0,1,1,1],"empty":[0,0,0,1,1],"equipable":[2,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["weapon-3","weapon-2","armor","horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"B:e","armor":"B:e","horse":"B:e"}}],
+    ["cancel:loseBefore","request","disableEquipAfter","disableEquip","reference_fixture_use","B","A",["equip2"],["armor"],[],true,false,{"enabled":[2,0,1,1,1],"empty":[0,0,0,1,1],"equipable":[2,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["weapon-3","weapon-2","armor","horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"B:e","armor":"B:e","horse":"B:e"}}],
+    ["cancel:loseBefore","callback","disableEquipAfter","disableEquip","reference_fixture_use","B","A",["equip2"],["armor"],[],true,false,{"enabled":[2,0,1,1,1],"empty":[0,0,0,1,1],"equipable":[2,0,1,1,1],"disabled":[0,1,0,0,0],"horse":[true,false,false],"equipment":["weapon-3","weapon-2","armor","horse"],"markers":["feichu_equip2"],"cards":{"weapon-1":"d","weapon-2":"B:e","weapon-3":"B:e","armor":"B:e","horse":"B:e"}}]
+  ],
+  "stages": [
+    {
+      "name": "empty-default",
+      "enabled": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "empty": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "equipable": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "disabled": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "horse": [
+        true,
+        true,
+        false
+      ],
+      "equipment": [],
+      "markers": [],
+      "cards": {
+        "weapon-1": "s",
+        "weapon-2": "s",
+        "weapon-3": "s",
+        "armor": "s",
+        "horse": "s"
+      },
+      "canEquipWeapon": [
+        true,
+        true
+      ]
+    },
+    {
+      "name": "equipped-default",
+      "enabled": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "empty": [
+        0,
+        0,
+        0,
+        1,
+        1
+      ],
+      "equipable": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "disabled": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "horse": [
+        true,
+        false,
+        false
+      ],
+      "equipment": [
+        "weapon-1",
+        "armor",
+        "horse"
+      ],
+      "markers": [],
+      "cards": {
+        "weapon-1": "B:e",
+        "weapon-2": "s",
+        "weapon-3": "s",
+        "armor": "B:e",
+        "horse": "B:e"
+      },
+      "canEquipWeapon": [
+        false,
+        true
+      ]
+    },
+    {
+      "name": "disable-weapon",
+      "enabled": [
+        0,
+        1,
+        1,
+        1,
+        1
+      ],
+      "empty": [
+        0,
+        0,
+        0,
+        1,
+        1
+      ],
+      "equipable": [
+        0,
+        1,
+        1,
+        1,
+        1
+      ],
+      "disabled": [
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "horse": [
+        true,
+        false,
+        false
+      ],
+      "equipment": [
+        "armor",
+        "horse"
+      ],
+      "markers": [
+        "feichu_equip1"
+      ],
+      "cards": {
+        "weapon-1": "d",
+        "weapon-2": "s",
+        "weapon-3": "s",
+        "armor": "B:e",
+        "horse": "B:e"
+      },
+      "canEquipWeapon": [
+        false,
+        false
+      ]
+    },
+    {
+      "name": "disable-weapon-repeat",
+      "enabled": [
+        0,
+        1,
+        1,
+        1,
+        1
+      ],
+      "empty": [
+        0,
+        0,
+        0,
+        1,
+        1
+      ],
+      "equipable": [
+        0,
+        1,
+        1,
+        1,
+        1
+      ],
+      "disabled": [
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "horse": [
+        true,
+        false,
+        false
+      ],
+      "equipment": [
+        "armor",
+        "horse"
+      ],
+      "markers": [
+        "feichu_equip1"
+      ],
+      "cards": {
+        "weapon-1": "d",
+        "weapon-2": "s",
+        "weapon-3": "s",
+        "armor": "B:e",
+        "horse": "B:e"
+      },
+      "canEquipWeapon": [
+        false,
+        false
+      ]
+    },
+    {
+      "name": "enable-weapon",
+      "enabled": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "empty": [
+        1,
+        0,
+        0,
+        1,
+        1
+      ],
+      "equipable": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "disabled": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "horse": [
+        true,
+        false,
+        false
+      ],
+      "equipment": [
+        "armor",
+        "horse"
+      ],
+      "markers": [],
+      "cards": {
+        "weapon-1": "d",
+        "weapon-2": "s",
+        "weapon-3": "s",
+        "armor": "B:e",
+        "horse": "B:e"
+      },
+      "canEquipWeapon": [
+        true,
+        true
+      ]
+    },
+    {
+      "name": "disable-armor-duplicate",
+      "enabled": [
+        1,
+        0,
+        1,
+        1,
+        1
+      ],
+      "empty": [
+        1,
+        0,
+        0,
+        1,
+        1
+      ],
+      "equipable": [
+        1,
+        0,
+        1,
+        1,
+        1
+      ],
+      "disabled": [
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      "horse": [
+        true,
+        false,
+        false
+      ],
+      "equipment": [
+        "horse"
+      ],
+      "markers": [
+        "feichu_equip2"
+      ],
+      "cards": {
+        "weapon-1": "d",
+        "weapon-2": "s",
+        "weapon-3": "s",
+        "armor": "d",
+        "horse": "B:e"
+      },
+      "canEquipWeapon": [
+        true,
+        true
+      ]
+    },
+    {
+      "name": "enable-armor-duplicate",
+      "enabled": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "empty": [
+        1,
+        1,
+        0,
+        1,
+        1
+      ],
+      "equipable": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "disabled": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "horse": [
+        true,
+        false,
+        false
+      ],
+      "equipment": [
+        "horse"
+      ],
+      "markers": [],
+      "cards": {
+        "weapon-1": "d",
+        "weapon-2": "s",
+        "weapon-3": "s",
+        "armor": "d",
+        "horse": "B:e"
+      },
+      "canEquipWeapon": [
+        true,
+        true
+      ]
+    },
+    {
+      "name": "disable-empty-treasure",
+      "enabled": [
+        1,
+        1,
+        1,
+        1,
+        0
+      ],
+      "empty": [
+        1,
+        1,
+        0,
+        1,
+        0
+      ],
+      "equipable": [
+        1,
+        1,
+        1,
+        1,
+        0
+      ],
+      "disabled": [
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "horse": [
+        true,
+        false,
+        false
+      ],
+      "equipment": [
+        "horse"
+      ],
+      "markers": [
+        "feichu_equip5"
+      ],
+      "cards": {
+        "weapon-1": "d",
+        "weapon-2": "s",
+        "weapon-3": "s",
+        "armor": "d",
+        "horse": "B:e"
+      },
+      "canEquipWeapon": [
+        true,
+        true
+      ]
+    },
+    {
+      "name": "enable-empty-treasure",
+      "enabled": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "empty": [
+        1,
+        1,
+        0,
+        1,
+        1
+      ],
+      "equipable": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "disabled": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "horse": [
+        true,
+        false,
+        false
+      ],
+      "equipment": [
+        "horse"
+      ],
+      "markers": [],
+      "cards": {
+        "weapon-1": "d",
+        "weapon-2": "s",
+        "weapon-3": "s",
+        "armor": "d",
+        "horse": "B:e"
+      },
+      "canEquipWeapon": [
+        true,
+        true
+      ]
+    },
+    {
+      "name": "expand-weapon",
+      "enabled": [
+        2,
+        1,
+        1,
+        1,
+        1
+      ],
+      "empty": [
+        2,
+        1,
+        0,
+        1,
+        1
+      ],
+      "equipable": [
+        2,
+        1,
+        1,
+        1,
+        1
+      ],
+      "disabled": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "horse": [
+        true,
+        false,
+        false
+      ],
+      "equipment": [
+        "horse"
+      ],
+      "markers": [],
+      "cards": {
+        "weapon-1": "d",
+        "weapon-2": "s",
+        "weapon-3": "s",
+        "armor": "d",
+        "horse": "B:e"
+      },
+      "canEquipWeapon": [
+        true,
+        true
+      ]
+    },
+    {
+      "name": "two-weapons",
+      "enabled": [
+        2,
+        1,
+        1,
+        1,
+        1
+      ],
+      "empty": [
+        0,
+        1,
+        0,
+        1,
+        1
+      ],
+      "equipable": [
+        2,
+        1,
+        1,
+        1,
+        1
+      ],
+      "disabled": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "horse": [
+        true,
+        false,
+        false
+      ],
+      "equipment": [
+        "weapon-2",
+        "weapon-1",
+        "horse"
+      ],
+      "markers": [],
+      "cards": {
+        "weapon-1": "B:e",
+        "weapon-2": "B:e",
+        "weapon-3": "s",
+        "armor": "d",
+        "horse": "B:e"
+      },
+      "canEquipWeapon": [
+        false,
+        true
+      ]
+    },
+    {
+      "name": "disable-one-of-two",
+      "enabled": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "empty": [
+        0,
+        1,
+        0,
+        1,
+        1
+      ],
+      "equipable": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "disabled": [
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "horse": [
+        true,
+        false,
+        false
+      ],
+      "equipment": [
+        "weapon-2",
+        "horse"
+      ],
+      "markers": [
+        "feichu_equip1"
+      ],
+      "cards": {
+        "weapon-1": "d",
+        "weapon-2": "B:e",
+        "weapon-3": "s",
+        "armor": "d",
+        "horse": "B:e"
+      },
+      "canEquipWeapon": [
+        false,
+        true
+      ]
+    },
+    {
+      "name": "disable-second",
+      "enabled": [
+        0,
+        1,
+        1,
+        1,
+        1
+      ],
+      "empty": [
+        0,
+        1,
+        0,
+        1,
+        1
+      ],
+      "equipable": [
+        0,
+        1,
+        1,
+        1,
+        1
+      ],
+      "disabled": [
+        2,
+        0,
+        0,
+        0,
+        0
+      ],
+      "horse": [
+        true,
+        false,
+        false
+      ],
+      "equipment": [
+        "horse"
+      ],
+      "markers": [
+        "feichu_equip1",
+        "feichu_equip1"
+      ],
+      "cards": {
+        "weapon-1": "d",
+        "weapon-2": "d",
+        "weapon-3": "s",
+        "armor": "d",
+        "horse": "B:e"
+      },
+      "canEquipWeapon": [
+        false,
+        false
+      ]
+    },
+    {
+      "name": "enable-two",
+      "enabled": [
+        2,
+        1,
+        1,
+        1,
+        1
+      ],
+      "empty": [
+        2,
+        1,
+        0,
+        1,
+        1
+      ],
+      "equipable": [
+        2,
+        1,
+        1,
+        1,
+        1
+      ],
+      "disabled": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "horse": [
+        true,
+        false,
+        false
+      ],
+      "equipment": [
+        "horse"
+      ],
+      "markers": [],
+      "cards": {
+        "weapon-1": "d",
+        "weapon-2": "d",
+        "weapon-3": "s",
+        "armor": "d",
+        "horse": "B:e"
+      },
+      "canEquipWeapon": [
+        true,
+        true
+      ]
+    },
+    {
+      "name": "re-equipped-two",
+      "enabled": [
+        2,
+        1,
+        1,
+        1,
+        1
+      ],
+      "empty": [
+        0,
+        1,
+        0,
+        1,
+        1
+      ],
+      "equipable": [
+        2,
+        1,
+        1,
+        1,
+        1
+      ],
+      "disabled": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "horse": [
+        true,
+        false,
+        false
+      ],
+      "equipment": [
+        "weapon-2",
+        "weapon-1",
+        "horse"
+      ],
+      "markers": [],
+      "cards": {
+        "weapon-1": "B:e",
+        "weapon-2": "B:e",
+        "weapon-3": "s",
+        "armor": "d",
+        "horse": "B:e"
+      },
+      "canEquipWeapon": [
+        false,
+        true
+      ]
+    },
+    {
+      "name": "disable-two-duplicate",
+      "enabled": [
+        0,
+        1,
+        1,
+        1,
+        1
+      ],
+      "empty": [
+        0,
+        1,
+        0,
+        1,
+        1
+      ],
+      "equipable": [
+        0,
+        1,
+        1,
+        1,
+        1
+      ],
+      "disabled": [
+        2,
+        0,
+        0,
+        0,
+        0
+      ],
+      "horse": [
+        true,
+        false,
+        false
+      ],
+      "equipment": [
+        "horse"
+      ],
+      "markers": [
+        "feichu_equip1",
+        "feichu_equip1"
+      ],
+      "cards": {
+        "weapon-1": "d",
+        "weapon-2": "d",
+        "weapon-3": "s",
+        "armor": "d",
+        "horse": "B:e"
+      },
+      "canEquipWeapon": [
+        false,
+        false
+      ]
+    },
+    {
+      "name": "enable-two-duplicate",
+      "enabled": [
+        2,
+        1,
+        1,
+        1,
+        1
+      ],
+      "empty": [
+        2,
+        1,
+        0,
+        1,
+        1
+      ],
+      "equipable": [
+        2,
+        1,
+        1,
+        1,
+        1
+      ],
+      "disabled": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "horse": [
+        true,
+        false,
+        false
+      ],
+      "equipment": [
+        "horse"
+      ],
+      "markers": [],
+      "cards": {
+        "weapon-1": "d",
+        "weapon-2": "d",
+        "weapon-3": "s",
+        "armor": "d",
+        "horse": "B:e"
+      },
+      "canEquipWeapon": [
+        true,
+        true
+      ]
+    },
+    {
+      "name": "equip-third",
+      "enabled": [
+        2,
+        1,
+        1,
+        1,
+        1
+      ],
+      "empty": [
+        0,
+        1,
+        0,
+        1,
+        1
+      ],
+      "equipable": [
+        2,
+        1,
+        1,
+        1,
+        1
+      ],
+      "disabled": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "horse": [
+        true,
+        false,
+        false
+      ],
+      "equipment": [
+        "weapon-3",
+        "weapon-2",
+        "horse"
+      ],
+      "markers": [],
+      "cards": {
+        "weapon-1": "d",
+        "weapon-2": "B:e",
+        "weapon-3": "B:e",
+        "armor": "d",
+        "horse": "B:e"
+      },
+      "canEquipWeapon": [
+        false,
+        true
+      ]
+    }
+  ],
+  "cancellations": [
+    {
+      "timing": "loseToDiscardpileBefore",
+      "enabled": [
+        2,
+        0,
+        1,
+        1,
+        1
+      ],
+      "empty": [
+        0,
+        0,
+        0,
+        1,
+        1
+      ],
+      "equipable": [
+        2,
+        0,
+        1,
+        1,
+        1
+      ],
+      "disabled": [
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      "horse": [
+        true,
+        false,
+        false
+      ],
+      "equipment": [
+        "weapon-3",
+        "weapon-2",
+        "armor",
+        "horse"
+      ],
+      "markers": [
+        "feichu_equip2"
+      ],
+      "cards": {
+        "weapon-1": "d",
+        "weapon-2": "B:e",
+        "weapon-3": "B:e",
+        "armor": "B:e",
+        "horse": "B:e"
+      }
+    },
+    {
+      "timing": "loseBefore",
+      "enabled": [
+        2,
+        0,
+        1,
+        1,
+        1
+      ],
+      "empty": [
+        0,
+        0,
+        0,
+        1,
+        1
+      ],
+      "equipable": [
+        2,
+        0,
+        1,
+        1,
+        1
+      ],
+      "disabled": [
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      "horse": [
+        true,
+        false,
+        false
+      ],
+      "equipment": [
+        "weapon-3",
+        "weapon-2",
+        "armor",
+        "horse"
+      ],
+      "markers": [
+        "feichu_equip2"
+      ],
+      "cards": {
+        "weapon-1": "d",
+        "weapon-2": "B:e",
+        "weapon-3": "B:e",
+        "armor": "B:e",
+        "horse": "B:e"
+      }
+    }
+  ]
+}

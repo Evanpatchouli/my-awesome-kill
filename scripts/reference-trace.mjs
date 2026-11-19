@@ -19,6 +19,7 @@ import { checkRestInterruptions, installRestInterruptions } from './reference-re
 import { checkJudgeArea, installJudgeArea } from './reference-judge-area.mjs';
 import { checkJudgeInterruptions, installJudgeInterruptions } from './reference-judge-interruptions.mjs';
 import { checkJudgePayment, installJudgePayment } from './reference-judge-payment.mjs';
+import { checkEquipSlots, installEquipSlots } from './reference-equip-slots.mjs';
 import { checkReferenceExpansion, installReferenceExpansion } from './reference-expansion.mjs';
 import { checkZhongyiBoundaries, installZhongyiBoundaries } from './reference-zhongyi-boundaries.mjs';
 import { checkZhongyiTransitDeath, installZhongyiTransitDeath } from './reference-zhongyi-transit-death.mjs';
@@ -81,6 +82,7 @@ const descriptions = new Map([
   ['judge-area', 'abolishing and restoring the judgment area, including interrupted card loss'],
   ['judge-interruptions', 'judgment-area interruptions, retained cards and lightning return'],
   ['judge-payment', 'delayed-card payment interruptions and judgment-zone card movement'],
+  ['equip-slots', 'ordinary, disabled and expanded equipment slots'],
 ]);
 let scenario = 'sha-no-shan';
 const scenarioIndex = argv.indexOf('--scenario');
@@ -181,6 +183,8 @@ try {
     await context.addInitScript(installJudgeInterruptions);
   } else if (scenario === 'judge-payment') {
     await context.addInitScript(installJudgePayment);
+  } else if (scenario === 'equip-slots') {
+    await context.addInitScript(installEquipSlots);
   } else if (scenario === 'zhongyi-expansion') {
     await context.addInitScript(installReferenceExpansion);
   } else if (scenario === 'zhongyi-boundaries') {
@@ -299,6 +303,11 @@ try {
           }
           if (scenario === 'judge-payment') {
             window.__referenceResult = await window.__runJudgePayment({ lib, game, ui, get, _status, actor });
+            game.pause();
+            return;
+          }
+          if (scenario === 'equip-slots') {
+            window.__referenceResult = await window.__runEquipSlots({ lib, game, ui, get, _status, actor });
             game.pause();
             return;
           }
@@ -485,6 +494,7 @@ try {
   if (scenario === 'judge-area') checkJudgeArea(captured.value);
   if (scenario === 'judge-interruptions') checkJudgeInterruptions(captured.value);
   if (scenario === 'judge-payment') checkJudgePayment(captured.value);
+  if (scenario === 'equip-slots') checkEquipSlots(captured.value);
   if (scenario === 'compare') checkReferenceCompare(captured.value);
   if (scenario === 'qiaoshui-targets') checkQiaoshuiTargets(captured.value);
   if (scenario === 'compare-boundaries') checkCompareBoundaries(captured.value);
