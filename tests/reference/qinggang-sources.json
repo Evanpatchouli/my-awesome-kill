@@ -1,0 +1,1700 @@
+{
+  "schema": "noname-reference-trace-v1",
+  "referenceCommit": "c73270948d72949aa80009536b9fd5400767d091",
+  "mode": "identity",
+  "scenario": "qinggang target skill sources and out-of-play behavior",
+  "columns": [
+    "trial",
+    "kind",
+    "timing",
+    "frame",
+    "event",
+    "parentId",
+    "parent",
+    "player",
+    "target",
+    "cards",
+    "state"
+  ],
+  "events": [
+    ["independent","request","useCardBefore",1,"useCard",2,"reference_fixture_use","A",null,["independent-sha"],{"hp":20,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"s","armor":"B:e","independent-red":"c","independent-sha":"A:h"}}],
+    ["independent","callback-high","useCardBefore",1,"useCard",2,"reference_fixture_use","A",null,["independent-sha"],{"hp":20,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"s","armor":"B:e","independent-red":"c","independent-sha":"A:h"}}],
+    ["independent","callback-low","useCardBefore",1,"useCard",2,"reference_fixture_use","A",null,["independent-sha"],{"hp":20,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"s","armor":"B:e","independent-red":"c","independent-sha":"A:h"}}],
+    ["independent","request","useCardToPlayered",3,"useCardToPlayered",1,"useCard","A","B",["independent-sha"],{"hp":20,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"s","armor":"B:e","independent-red":"c","independent-sha":"o"}}],
+    ["independent","callback-high","useCardToPlayered",3,"useCardToPlayered",1,"useCard","A","B",["independent-sha"],{"hp":20,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"s","armor":"B:e","independent-red":"c","independent-sha":"o"}}],
+    ["independent","callback-low","useCardToPlayered",3,"useCardToPlayered",1,"useCard","A","B",["independent-sha"],{"hp":20,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"s","armor":"B:e","independent-red":"c","independent-sha":"o"}}],
+    ["independent","request","damage",4,"damage",5,"sha","B",null,["independent-sha"],{"hp":20,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"s","armor":"B:e","independent-red":"c","independent-sha":"o"}}],
+    ["independent","callback-high","damage",4,"damage",5,"sha","B",null,["independent-sha"],{"hp":19,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"s","armor":"B:e","independent-red":"c","independent-sha":"o"}}],
+    ["independent","callback-low","damage",4,"damage",5,"sha","B",null,["independent-sha"],{"hp":19,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"s","armor":"B:e","independent-red":"c","independent-sha":"o"}}],
+    ["independent","request","damageEnd",4,"damage",5,"sha","B",null,["independent-sha"],{"hp":19,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"s","armor":"B:e","independent-red":"c","independent-sha":"o"}}],
+    ["independent","callback-high","damageEnd",4,"damage",5,"sha","B",null,["independent-sha"],{"hp":19,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"s","armor":"B:e","independent-red":"c","independent-sha":"o"}}],
+    ["independent","callback-low","damageEnd",4,"damage",5,"sha","B",null,["independent-sha"],{"hp":19,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"s","armor":"B:e","independent-red":"c","independent-sha":"o"}}],
+    ["independent","request","useCardEnd",1,"useCard",2,"reference_fixture_use","A",null,["independent-sha"],{"hp":19,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"s","armor":"B:e","independent-red":"c","independent-sha":"o"}}],
+    ["independent","callback-high","useCardEnd",1,"useCard",2,"reference_fixture_use","A",null,["independent-sha"],{"hp":19,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"s","armor":"B:e","independent-red":"c","independent-sha":"o"}}],
+    ["independent","callback-low","useCardEnd",1,"useCard",2,"reference_fixture_use","A",null,["independent-sha"],{"hp":19,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"s","armor":"B:e","independent-red":"c","independent-sha":"o"}}],
+    ["independent","request","useCardAfter",1,"useCard",2,"reference_fixture_use","A",null,["independent-sha"],{"hp":19,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"s","armor":"B:e","independent-red":"c","independent-sha":"o"}}],
+    ["independent","callback-high","useCardAfter",1,"useCard",2,"reference_fixture_use","A",null,["independent-sha"],{"hp":19,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"s","armor":"B:e","independent-red":"c","independent-sha":"o"}}],
+    ["independent","callback-low","useCardAfter",1,"useCard",2,"reference_fixture_use","A",null,["independent-sha"],{"hp":19,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"s","armor":"B:e","independent-red":"c","independent-sha":"o"}}],
+    ["ordinary","request","useCardBefore",6,"useCard",2,"reference_fixture_use","A",null,["ordinary-sha"],{"hp":19,"out":false,"has":true,"own":true,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"A:h"}}],
+    ["ordinary","callback-high","useCardBefore",6,"useCard",2,"reference_fixture_use","A",null,["ordinary-sha"],{"hp":19,"out":false,"has":true,"own":true,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"A:h"}}],
+    ["ordinary","callback-low","useCardBefore",6,"useCard",2,"reference_fixture_use","A",null,["ordinary-sha"],{"hp":19,"out":false,"has":true,"own":true,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"A:h"}}],
+    ["ordinary","request","useCardToPlayered",7,"useCardToPlayered",6,"useCard","A","B",["ordinary-sha"],{"hp":19,"out":false,"has":true,"own":true,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"o"}}],
+    ["ordinary","callback-high","useCardToPlayered",7,"useCardToPlayered",6,"useCard","A","B",["ordinary-sha"],{"hp":19,"out":false,"has":true,"own":true,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"o"}}],
+    ["ordinary","callback-low","useCardToPlayered",7,"useCardToPlayered",6,"useCard","A","B",["ordinary-sha"],{"hp":19,"out":false,"has":true,"own":true,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"o"}}],
+    ["ordinary","request","damage",9,"damage",10,"sha","B",null,["ordinary-sha"],{"hp":19,"out":false,"has":true,"own":true,"temp":false,"expiry":null,"additional":[],"mark":true,"hookDamage":true,"hookUseEnd":true,"storageLength":1,"contains":true,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"o"}}],
+    ["ordinary","callback-high","damage",9,"damage",10,"sha","B",null,["ordinary-sha"],{"hp":18,"out":false,"has":true,"own":true,"temp":false,"expiry":null,"additional":[],"mark":true,"hookDamage":true,"hookUseEnd":true,"storageLength":1,"contains":true,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"o"}}],
+    ["ordinary","callback-low","damage",9,"damage",10,"sha","B",null,["ordinary-sha"],{"hp":18,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"o"}}],
+    ["ordinary","request","damageEnd",9,"damage",10,"sha","B",null,["ordinary-sha"],{"hp":18,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"o"}}],
+    ["ordinary","callback-high","damageEnd",9,"damage",10,"sha","B",null,["ordinary-sha"],{"hp":18,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"o"}}],
+    ["ordinary","callback-low","damageEnd",9,"damage",10,"sha","B",null,["ordinary-sha"],{"hp":18,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"o"}}],
+    ["ordinary","request","useCardEnd",6,"useCard",2,"reference_fixture_use","A",null,["ordinary-sha"],{"hp":18,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"o"}}],
+    ["ordinary","callback-high","useCardEnd",6,"useCard",2,"reference_fixture_use","A",null,["ordinary-sha"],{"hp":18,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"o"}}],
+    ["ordinary","callback-low","useCardEnd",6,"useCard",2,"reference_fixture_use","A",null,["ordinary-sha"],{"hp":18,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"o"}}],
+    ["ordinary","request","useCardAfter",6,"useCard",2,"reference_fixture_use","A",null,["ordinary-sha"],{"hp":18,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"o"}}],
+    ["ordinary","callback-high","useCardAfter",6,"useCard",2,"reference_fixture_use","A",null,["ordinary-sha"],{"hp":18,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"o"}}],
+    ["ordinary","callback-low","useCardAfter",6,"useCard",2,"reference_fixture_use","A",null,["ordinary-sha"],{"hp":18,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"o"}}],
+    ["additional","request","useCardBefore",12,"useCard",2,"reference_fixture_use","A",null,["additional-sha"],{"hp":18,"out":false,"has":true,"own":false,"temp":false,"expiry":null,"additional":["qinggang2"],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"A:h"}}],
+    ["additional","callback-high","useCardBefore",12,"useCard",2,"reference_fixture_use","A",null,["additional-sha"],{"hp":18,"out":false,"has":true,"own":false,"temp":false,"expiry":null,"additional":["qinggang2"],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"A:h"}}],
+    ["additional","callback-low","useCardBefore",12,"useCard",2,"reference_fixture_use","A",null,["additional-sha"],{"hp":18,"out":false,"has":true,"own":false,"temp":false,"expiry":null,"additional":["qinggang2"],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"A:h"}}],
+    ["additional","request","useCardToPlayered",13,"useCardToPlayered",12,"useCard","A","B",["additional-sha"],{"hp":18,"out":false,"has":true,"own":false,"temp":false,"expiry":null,"additional":["qinggang2"],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"o"}}],
+    ["additional","callback-high","useCardToPlayered",13,"useCardToPlayered",12,"useCard","A","B",["additional-sha"],{"hp":18,"out":false,"has":true,"own":false,"temp":false,"expiry":null,"additional":["qinggang2"],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"o"}}],
+    ["additional","callback-low","useCardToPlayered",13,"useCardToPlayered",12,"useCard","A","B",["additional-sha"],{"hp":18,"out":false,"has":true,"own":false,"temp":false,"expiry":null,"additional":["qinggang2"],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"o"}}],
+    ["additional","request","damage",15,"damage",16,"sha","B",null,["additional-sha"],{"hp":18,"out":false,"has":true,"own":false,"temp":false,"expiry":null,"additional":["qinggang2"],"mark":true,"hookDamage":true,"hookUseEnd":true,"storageLength":1,"contains":true,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"o"}}],
+    ["additional","callback-high","damage",15,"damage",16,"sha","B",null,["additional-sha"],{"hp":17,"out":false,"has":true,"own":false,"temp":false,"expiry":null,"additional":["qinggang2"],"mark":true,"hookDamage":true,"hookUseEnd":true,"storageLength":1,"contains":true,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"o"}}],
+    ["additional","callback-low","damage",15,"damage",16,"sha","B",null,["additional-sha"],{"hp":17,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"o"}}],
+    ["additional","request","damageEnd",15,"damage",16,"sha","B",null,["additional-sha"],{"hp":17,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"o"}}],
+    ["additional","callback-high","damageEnd",15,"damage",16,"sha","B",null,["additional-sha"],{"hp":17,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"o"}}],
+    ["additional","callback-low","damageEnd",15,"damage",16,"sha","B",null,["additional-sha"],{"hp":17,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"o"}}],
+    ["additional","request","useCardEnd",12,"useCard",2,"reference_fixture_use","A",null,["additional-sha"],{"hp":17,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"o"}}],
+    ["additional","callback-high","useCardEnd",12,"useCard",2,"reference_fixture_use","A",null,["additional-sha"],{"hp":17,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"o"}}],
+    ["additional","callback-low","useCardEnd",12,"useCard",2,"reference_fixture_use","A",null,["additional-sha"],{"hp":17,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"o"}}],
+    ["additional","request","useCardAfter",12,"useCard",2,"reference_fixture_use","A",null,["additional-sha"],{"hp":17,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"o"}}],
+    ["additional","callback-high","useCardAfter",12,"useCard",2,"reference_fixture_use","A",null,["additional-sha"],{"hp":17,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"o"}}],
+    ["additional","callback-low","useCardAfter",12,"useCard",2,"reference_fixture_use","A",null,["additional-sha"],{"hp":17,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"o"}}],
+    ["temp-hit","request","useCardBefore",18,"useCard",2,"reference_fixture_use","A",null,["temp-hit-sha"],{"hp":17,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"A:h"}}],
+    ["temp-hit","callback-high","useCardBefore",18,"useCard",2,"reference_fixture_use","A",null,["temp-hit-sha"],{"hp":17,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"A:h"}}],
+    ["temp-hit","callback-low","useCardBefore",18,"useCard",2,"reference_fixture_use","A",null,["temp-hit-sha"],{"hp":17,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"A:h"}}],
+    ["temp-hit","request","useCardToPlayered",19,"useCardToPlayered",18,"useCard","A","B",["temp-hit-sha"],{"hp":17,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"o"}}],
+    ["temp-hit","callback-high","useCardToPlayered",19,"useCardToPlayered",18,"useCard","A","B",["temp-hit-sha"],{"hp":17,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"o"}}],
+    ["temp-hit","callback-low","useCardToPlayered",19,"useCardToPlayered",18,"useCard","A","B",["temp-hit-sha"],{"hp":17,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"o"}}],
+    ["temp-hit","request","damage",21,"damage",22,"sha","B",null,["temp-hit-sha"],{"hp":17,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":true,"hookDamage":true,"hookUseEnd":true,"storageLength":1,"contains":true,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"o"}}],
+    ["temp-hit","callback-high","damage",21,"damage",22,"sha","B",null,["temp-hit-sha"],{"hp":16,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":true,"hookDamage":true,"hookUseEnd":true,"storageLength":1,"contains":true,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"o"}}],
+    ["temp-hit","callback-low","damage",21,"damage",22,"sha","B",null,["temp-hit-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"o"}}],
+    ["temp-hit","request","damageEnd",21,"damage",22,"sha","B",null,["temp-hit-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"o"}}],
+    ["temp-hit","callback-high","damageEnd",21,"damage",22,"sha","B",null,["temp-hit-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"o"}}],
+    ["temp-hit","callback-low","damageEnd",21,"damage",22,"sha","B",null,["temp-hit-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"o"}}],
+    ["temp-hit","request","useCardEnd",18,"useCard",2,"reference_fixture_use","A",null,["temp-hit-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"o"}}],
+    ["temp-hit","callback-high","useCardEnd",18,"useCard",2,"reference_fixture_use","A",null,["temp-hit-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"o"}}],
+    ["temp-hit","callback-low","useCardEnd",18,"useCard",2,"reference_fixture_use","A",null,["temp-hit-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"o"}}],
+    ["temp-hit","request","useCardAfter",18,"useCard",2,"reference_fixture_use","A",null,["temp-hit-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"o"}}],
+    ["temp-hit","callback-high","useCardAfter",18,"useCard",2,"reference_fixture_use","A",null,["temp-hit-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"o"}}],
+    ["temp-hit","callback-low","useCardAfter",18,"useCard",2,"reference_fixture_use","A",null,["temp-hit-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"o"}}],
+    ["temp-phase","request","phaseBeforeStart",24,"phase",2,"reference_fixture_use","B",null,[],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d"}}],
+    ["temp-phase","callback-high","phaseBeforeStart",24,"phase",2,"reference_fixture_use","B",null,[],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d"}}],
+    ["temp-phase","callback-low","phaseBeforeStart",24,"phase",2,"reference_fixture_use","B",null,[],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"c","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d"}}],
+    ["temp-phase","request","phaseAfter",24,"phase",2,"reference_fixture_use","B",null,[],{"hp":17,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d"}}],
+    ["temp-phase","callback-high","phaseAfter",24,"phase",2,"reference_fixture_use","B",null,[],{"hp":17,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d"}}],
+    ["temp-phase","callback-low","phaseAfter",24,"phase",2,"reference_fixture_use","B",null,[],{"hp":17,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d"}}],
+    ["temp-refresh-hit","request","useCardBefore",25,"useCard",2,"reference_fixture_use","A",null,["temp-refresh-hit-sha"],{"hp":17,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"A:h"}}],
+    ["temp-refresh-hit","callback-high","useCardBefore",25,"useCard",2,"reference_fixture_use","A",null,["temp-refresh-hit-sha"],{"hp":17,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"A:h"}}],
+    ["temp-refresh-hit","callback-low","useCardBefore",25,"useCard",2,"reference_fixture_use","A",null,["temp-refresh-hit-sha"],{"hp":17,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"A:h"}}],
+    ["temp-refresh-hit","request","useCardToPlayered",26,"useCardToPlayered",25,"useCard","A","B",["temp-refresh-hit-sha"],{"hp":17,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"o"}}],
+    ["temp-refresh-hit","callback-high","useCardToPlayered",26,"useCardToPlayered",25,"useCard","A","B",["temp-refresh-hit-sha"],{"hp":17,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"o"}}],
+    ["temp-refresh-hit","callback-low","useCardToPlayered",26,"useCardToPlayered",25,"useCard","A","B",["temp-refresh-hit-sha"],{"hp":17,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"o"}}],
+    ["temp-refresh-hit","request","damage",28,"damage",29,"sha","B",null,["temp-refresh-hit-sha"],{"hp":17,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":true,"hookDamage":true,"hookUseEnd":true,"storageLength":1,"contains":true,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"o"}}],
+    ["temp-refresh-hit","callback-high","damage",28,"damage",29,"sha","B",null,["temp-refresh-hit-sha"],{"hp":16,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":true,"hookDamage":true,"hookUseEnd":true,"storageLength":1,"contains":true,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"o"}}],
+    ["temp-refresh-hit","callback-low","damage",28,"damage",29,"sha","B",null,["temp-refresh-hit-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"o"}}],
+    ["temp-refresh-hit","request","damageEnd",28,"damage",29,"sha","B",null,["temp-refresh-hit-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"o"}}],
+    ["temp-refresh-hit","callback-high","damageEnd",28,"damage",29,"sha","B",null,["temp-refresh-hit-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"o"}}],
+    ["temp-refresh-hit","callback-low","damageEnd",28,"damage",29,"sha","B",null,["temp-refresh-hit-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"o"}}],
+    ["temp-refresh-hit","request","useCardEnd",25,"useCard",2,"reference_fixture_use","A",null,["temp-refresh-hit-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"o"}}],
+    ["temp-refresh-hit","callback-high","useCardEnd",25,"useCard",2,"reference_fixture_use","A",null,["temp-refresh-hit-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"o"}}],
+    ["temp-refresh-hit","callback-low","useCardEnd",25,"useCard",2,"reference_fixture_use","A",null,["temp-refresh-hit-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"o"}}],
+    ["temp-refresh-hit","request","useCardAfter",25,"useCard",2,"reference_fixture_use","A",null,["temp-refresh-hit-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"o"}}],
+    ["temp-refresh-hit","callback-high","useCardAfter",25,"useCard",2,"reference_fixture_use","A",null,["temp-refresh-hit-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"o"}}],
+    ["temp-refresh-hit","callback-low","useCardAfter",25,"useCard",2,"reference_fixture_use","A",null,["temp-refresh-hit-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"o"}}],
+    ["temp-refresh-phase","request","phaseBeforeStart",31,"phase",2,"reference_fixture_use","B",null,[],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d"}}],
+    ["temp-refresh-phase","callback-high","phaseBeforeStart",31,"phase",2,"reference_fixture_use","B",null,[],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d"}}],
+    ["temp-refresh-phase","callback-low","phaseBeforeStart",31,"phase",2,"reference_fixture_use","B",null,[],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d"}}],
+    ["temp-refresh-phase","request","phaseAfter",31,"phase",2,"reference_fixture_use","B",null,[],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d"}}],
+    ["temp-refresh-phase","callback-high","phaseAfter",31,"phase",2,"reference_fixture_use","B",null,[],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d"}}],
+    ["temp-refresh-phase","callback-low","phaseAfter",31,"phase",2,"reference_fixture_use","B",null,[],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d"}}],
+    ["temp-phase-first","request","phaseBeforeStart",32,"phase",2,"reference_fixture_use","B",null,[],{"hp":16,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":false,"hookDamage":true,"hookUseEnd":true,"storageLength":0,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d"}}],
+    ["temp-phase-first","callback-high","phaseBeforeStart",32,"phase",2,"reference_fixture_use","B",null,[],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d"}}],
+    ["temp-phase-first","callback-low","phaseBeforeStart",32,"phase",2,"reference_fixture_use","B",null,[],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d"}}],
+    ["temp-phase-first","request","phaseAfter",32,"phase",2,"reference_fixture_use","B",null,[],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d"}}],
+    ["temp-phase-first","callback-high","phaseAfter",32,"phase",2,"reference_fixture_use","B",null,[],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d"}}],
+    ["temp-phase-first","callback-low","phaseAfter",32,"phase",2,"reference_fixture_use","B",null,[],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d"}}],
+    ["temp-phase-first-hit","request","useCardBefore",33,"useCard",2,"reference_fixture_use","A",null,["temp-phase-first-hit-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"A:h"}}],
+    ["temp-phase-first-hit","callback-high","useCardBefore",33,"useCard",2,"reference_fixture_use","A",null,["temp-phase-first-hit-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"A:h"}}],
+    ["temp-phase-first-hit","callback-low","useCardBefore",33,"useCard",2,"reference_fixture_use","A",null,["temp-phase-first-hit-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"A:h"}}],
+    ["temp-phase-first-hit","request","useCardToPlayered",34,"useCardToPlayered",33,"useCard","A","B",["temp-phase-first-hit-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"o"}}],
+    ["temp-phase-first-hit","callback-high","useCardToPlayered",34,"useCardToPlayered",33,"useCard","A","B",["temp-phase-first-hit-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"o"}}],
+    ["temp-phase-first-hit","callback-low","useCardToPlayered",34,"useCardToPlayered",33,"useCard","A","B",["temp-phase-first-hit-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"o"}}],
+    ["temp-phase-first-hit","request","shaMiss",36,"sha",33,"useCard","A","B",["temp-phase-first-hit-sha"],{"hp":16,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":true,"hookDamage":true,"hookUseEnd":true,"storageLength":1,"contains":true,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"o"}}],
+    ["temp-phase-first-hit","callback-high","shaMiss",36,"sha",33,"useCard","A","B",["temp-phase-first-hit-sha"],{"hp":16,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":true,"hookDamage":true,"hookUseEnd":true,"storageLength":1,"contains":true,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"o"}}],
+    ["temp-phase-first-hit","callback-low","shaMiss",36,"sha",33,"useCard","A","B",["temp-phase-first-hit-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"o"}}],
+    ["temp-phase-first-hit","request","useCardEnd",33,"useCard",2,"reference_fixture_use","A",null,["temp-phase-first-hit-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"o"}}],
+    ["temp-phase-first-hit","callback-high","useCardEnd",33,"useCard",2,"reference_fixture_use","A",null,["temp-phase-first-hit-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"o"}}],
+    ["temp-phase-first-hit","callback-low","useCardEnd",33,"useCard",2,"reference_fixture_use","A",null,["temp-phase-first-hit-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"o"}}],
+    ["temp-phase-first-hit","request","useCardAfter",33,"useCard",2,"reference_fixture_use","A",null,["temp-phase-first-hit-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"o"}}],
+    ["temp-phase-first-hit","callback-high","useCardAfter",33,"useCard",2,"reference_fixture_use","A",null,["temp-phase-first-hit-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"o"}}],
+    ["temp-phase-first-hit","callback-low","useCardAfter",33,"useCard",2,"reference_fixture_use","A",null,["temp-phase-first-hit-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"o"}}],
+    ["out","request","useCardBefore",38,"useCard",2,"reference_fixture_use","A",null,["out-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"d","out-sha":"A:h"}}],
+    ["out","callback-high","useCardBefore",38,"useCard",2,"reference_fixture_use","A",null,["out-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"d","out-sha":"A:h"}}],
+    ["out","callback-low","useCardBefore",38,"useCard",2,"reference_fixture_use","A",null,["out-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"d","out-sha":"A:h"}}],
+    ["out","request","useCardToPlayered",39,"useCardToPlayered",38,"useCard","A","B",["out-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"d","out-sha":"o"}}],
+    ["out","callback-high","useCardToPlayered",39,"useCardToPlayered",38,"useCard","A","B",["out-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"d","out-sha":"o"}}],
+    ["out","callback-low","useCardToPlayered",39,"useCardToPlayered",38,"useCard","A","B",["out-sha"],{"hp":16,"out":false,"has":false,"own":false,"temp":false,"expiry":null,"additional":[],"mark":false,"hookDamage":false,"hookUseEnd":false,"storageLength":null,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"d","out-sha":"o"}}],
+    ["out","request","useCardEnd",38,"useCard",2,"reference_fixture_use","A",null,["out-sha"],{"hp":16,"out":true,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":true,"hookDamage":true,"hookUseEnd":true,"storageLength":1,"contains":true,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"d","out-sha":"o"}}],
+    ["out","callback-high","useCardEnd",38,"useCard",2,"reference_fixture_use","A",null,["out-sha"],{"hp":16,"out":true,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":true,"hookDamage":true,"hookUseEnd":true,"storageLength":1,"contains":true,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"d","out-sha":"o"}}],
+    ["out","callback-low","useCardEnd",38,"useCard",2,"reference_fixture_use","A",null,["out-sha"],{"hp":16,"out":true,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":true,"hookDamage":true,"hookUseEnd":true,"storageLength":1,"contains":true,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"d","out-sha":"o"}}],
+    ["out","request","useCardAfter",38,"useCard",2,"reference_fixture_use","A",null,["out-sha"],{"hp":16,"out":true,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":true,"hookDamage":true,"hookUseEnd":true,"storageLength":1,"contains":true,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"d","out-sha":"o"}}],
+    ["out","callback-high","useCardAfter",38,"useCard",2,"reference_fixture_use","A",null,["out-sha"],{"hp":16,"out":true,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":true,"hookDamage":true,"hookUseEnd":true,"storageLength":1,"contains":true,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"d","out-sha":"o"}}],
+    ["out","callback-low","useCardAfter",38,"useCard",2,"reference_fixture_use","A",null,["out-sha"],{"hp":16,"out":true,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":true,"hookDamage":true,"hookUseEnd":true,"storageLength":1,"contains":true,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"d","out-sha":"o"}}],
+    ["out-follow","request","useCardBefore",41,"useCard",2,"reference_fixture_use","C",null,["out-follow-sha"],{"hp":16,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":true,"hookDamage":true,"hookUseEnd":true,"storageLength":1,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"d","out-sha":"d","out-follow-red":"c","out-follow-sha":"C:h"}}],
+    ["out-follow","callback-high","useCardBefore",41,"useCard",2,"reference_fixture_use","C",null,["out-follow-sha"],{"hp":16,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":true,"hookDamage":true,"hookUseEnd":true,"storageLength":1,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"d","out-sha":"d","out-follow-red":"c","out-follow-sha":"C:h"}}],
+    ["out-follow","callback-low","useCardBefore",41,"useCard",2,"reference_fixture_use","C",null,["out-follow-sha"],{"hp":16,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":true,"hookDamage":true,"hookUseEnd":true,"storageLength":1,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"d","out-sha":"d","out-follow-red":"c","out-follow-sha":"C:h"}}],
+    ["out-follow","request","useCardToPlayered",42,"useCardToPlayered",41,"useCard","C","B",["out-follow-sha"],{"hp":16,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":true,"hookDamage":true,"hookUseEnd":true,"storageLength":1,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"d","out-sha":"d","out-follow-red":"c","out-follow-sha":"o"}}],
+    ["out-follow","callback-high","useCardToPlayered",42,"useCardToPlayered",41,"useCard","C","B",["out-follow-sha"],{"hp":16,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":true,"hookDamage":true,"hookUseEnd":true,"storageLength":1,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"d","out-sha":"d","out-follow-red":"c","out-follow-sha":"o"}}],
+    ["out-follow","callback-low","useCardToPlayered",42,"useCardToPlayered",41,"useCard","C","B",["out-follow-sha"],{"hp":16,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":true,"hookDamage":true,"hookUseEnd":true,"storageLength":1,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"d","out-sha":"d","out-follow-red":"c","out-follow-sha":"o"}}],
+    ["out-follow","request","damage",43,"damage",44,"sha","B",null,["out-follow-sha"],{"hp":16,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":true,"hookDamage":true,"hookUseEnd":true,"storageLength":1,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"d","out-sha":"d","out-follow-red":"c","out-follow-sha":"o"}}],
+    ["out-follow","callback-high","damage",43,"damage",44,"sha","B",null,["out-follow-sha"],{"hp":15,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":true,"hookDamage":true,"hookUseEnd":true,"storageLength":1,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"d","out-sha":"d","out-follow-red":"c","out-follow-sha":"o"}}],
+    ["out-follow","callback-low","damage",43,"damage",44,"sha","B",null,["out-follow-sha"],{"hp":15,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":true,"hookDamage":true,"hookUseEnd":true,"storageLength":1,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"d","out-sha":"d","out-follow-red":"c","out-follow-sha":"o"}}],
+    ["out-follow","request","damageEnd",43,"damage",44,"sha","B",null,["out-follow-sha"],{"hp":15,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":true,"hookDamage":true,"hookUseEnd":true,"storageLength":1,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"d","out-sha":"d","out-follow-red":"c","out-follow-sha":"o"}}],
+    ["out-follow","callback-high","damageEnd",43,"damage",44,"sha","B",null,["out-follow-sha"],{"hp":15,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":true,"hookDamage":true,"hookUseEnd":true,"storageLength":1,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"d","out-sha":"d","out-follow-red":"c","out-follow-sha":"o"}}],
+    ["out-follow","callback-low","damageEnd",43,"damage",44,"sha","B",null,["out-follow-sha"],{"hp":15,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":true,"hookDamage":true,"hookUseEnd":true,"storageLength":1,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"d","out-sha":"d","out-follow-red":"c","out-follow-sha":"o"}}],
+    ["out-follow","request","useCardEnd",41,"useCard",2,"reference_fixture_use","C",null,["out-follow-sha"],{"hp":15,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":true,"hookDamage":true,"hookUseEnd":true,"storageLength":1,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"d","out-sha":"d","out-follow-red":"c","out-follow-sha":"o"}}],
+    ["out-follow","callback-high","useCardEnd",41,"useCard",2,"reference_fixture_use","C",null,["out-follow-sha"],{"hp":15,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":true,"hookDamage":true,"hookUseEnd":true,"storageLength":1,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"d","out-sha":"d","out-follow-red":"c","out-follow-sha":"o"}}],
+    ["out-follow","callback-low","useCardEnd",41,"useCard",2,"reference_fixture_use","C",null,["out-follow-sha"],{"hp":15,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":true,"hookDamage":true,"hookUseEnd":true,"storageLength":1,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"d","out-sha":"d","out-follow-red":"c","out-follow-sha":"o"}}],
+    ["out-follow","request","useCardAfter",41,"useCard",2,"reference_fixture_use","C",null,["out-follow-sha"],{"hp":15,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":true,"hookDamage":true,"hookUseEnd":true,"storageLength":1,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"d","out-sha":"d","out-follow-red":"c","out-follow-sha":"o"}}],
+    ["out-follow","callback-high","useCardAfter",41,"useCard",2,"reference_fixture_use","C",null,["out-follow-sha"],{"hp":15,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":true,"hookDamage":true,"hookUseEnd":true,"storageLength":1,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"d","out-sha":"d","out-follow-red":"c","out-follow-sha":"o"}}],
+    ["out-follow","callback-low","useCardAfter",41,"useCard",2,"reference_fixture_use","C",null,["out-follow-sha"],{"hp":15,"out":false,"has":true,"own":false,"temp":true,"expiry":{"global":["phaseAfter","phaseBeforeStart"]},"additional":[],"mark":true,"hookDamage":true,"hookUseEnd":true,"storageLength":1,"contains":false,"cards":{"sword":"A:e","armor":"B:e","independent-red":"d","independent-sha":"d","ordinary-sha":"d","additional-sha":"d","temp-hit-sha":"d","temp-refresh-hit-sha":"d","temp-phase-first-hit-sha":"d","out-sha":"d","out-follow-red":"c","out-follow-sha":"o"}}]
+  ],
+  "stages": [
+    [
+      "independent-before",
+      {
+        "hp": 20,
+        "out": false,
+        "has": true,
+        "own": false,
+        "temp": true,
+        "expiry": {
+          "global": [
+            "phaseAfter",
+            "phaseBeforeStart"
+          ]
+        },
+        "additional": [],
+        "mark": false,
+        "hookDamage": true,
+        "hookUseEnd": true,
+        "storageLength": 0,
+        "contains": false,
+        "cards": {
+          "sword": "s",
+          "armor": "B:e"
+        }
+      }
+    ],
+    [
+      "independent",
+      {
+        "hp": 19,
+        "out": false,
+        "has": true,
+        "own": false,
+        "temp": true,
+        "expiry": {
+          "global": [
+            "phaseAfter",
+            "phaseBeforeStart"
+          ]
+        },
+        "additional": [],
+        "mark": false,
+        "hookDamage": true,
+        "hookUseEnd": true,
+        "storageLength": 0,
+        "contains": false,
+        "cards": {
+          "sword": "s",
+          "armor": "B:e",
+          "independent-red": "c",
+          "independent-sha": "d"
+        }
+      }
+    ],
+    [
+      "independent-removed",
+      {
+        "hp": 19,
+        "out": false,
+        "has": false,
+        "own": false,
+        "temp": false,
+        "expiry": null,
+        "additional": [],
+        "mark": false,
+        "hookDamage": false,
+        "hookUseEnd": false,
+        "storageLength": null,
+        "contains": false,
+        "cards": {
+          "sword": "s",
+          "armor": "B:e",
+          "independent-red": "c",
+          "independent-sha": "d"
+        }
+      }
+    ],
+    [
+      "ordinary-before",
+      {
+        "hp": 19,
+        "out": false,
+        "has": true,
+        "own": true,
+        "temp": false,
+        "expiry": null,
+        "additional": [],
+        "mark": false,
+        "hookDamage": true,
+        "hookUseEnd": true,
+        "storageLength": 0,
+        "contains": false,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "c",
+          "independent-sha": "d"
+        }
+      }
+    ],
+    [
+      "ordinary-marked",
+      {
+        "hp": 19,
+        "out": false,
+        "has": true,
+        "own": true,
+        "temp": false,
+        "expiry": null,
+        "additional": [],
+        "mark": true,
+        "hookDamage": true,
+        "hookUseEnd": true,
+        "storageLength": 1,
+        "contains": true,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "c",
+          "independent-sha": "d",
+          "ordinary-sha": "o"
+        }
+      }
+    ],
+    [
+      "ordinary",
+      {
+        "hp": 18,
+        "out": false,
+        "has": false,
+        "own": false,
+        "temp": false,
+        "expiry": null,
+        "additional": [],
+        "mark": false,
+        "hookDamage": false,
+        "hookUseEnd": false,
+        "storageLength": null,
+        "contains": false,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "c",
+          "independent-sha": "d",
+          "ordinary-sha": "d"
+        }
+      }
+    ],
+    [
+      "ordinary-after",
+      {
+        "hp": 18,
+        "out": false,
+        "has": false,
+        "own": false,
+        "temp": false,
+        "expiry": null,
+        "additional": [],
+        "mark": false,
+        "hookDamage": false,
+        "hookUseEnd": false,
+        "storageLength": null,
+        "contains": false,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "c",
+          "independent-sha": "d",
+          "ordinary-sha": "d"
+        }
+      }
+    ],
+    [
+      "additional-before",
+      {
+        "hp": 18,
+        "out": false,
+        "has": true,
+        "own": false,
+        "temp": false,
+        "expiry": null,
+        "additional": [
+          "qinggang2"
+        ],
+        "mark": false,
+        "hookDamage": true,
+        "hookUseEnd": true,
+        "storageLength": 0,
+        "contains": false,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "c",
+          "independent-sha": "d",
+          "ordinary-sha": "d"
+        }
+      }
+    ],
+    [
+      "additional-marked",
+      {
+        "hp": 18,
+        "out": false,
+        "has": true,
+        "own": false,
+        "temp": false,
+        "expiry": null,
+        "additional": [
+          "qinggang2"
+        ],
+        "mark": true,
+        "hookDamage": true,
+        "hookUseEnd": true,
+        "storageLength": 1,
+        "contains": true,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "c",
+          "independent-sha": "d",
+          "ordinary-sha": "d",
+          "additional-sha": "o"
+        }
+      }
+    ],
+    [
+      "additional",
+      {
+        "hp": 17,
+        "out": false,
+        "has": false,
+        "own": false,
+        "temp": false,
+        "expiry": null,
+        "additional": [],
+        "mark": false,
+        "hookDamage": false,
+        "hookUseEnd": false,
+        "storageLength": null,
+        "contains": false,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "c",
+          "independent-sha": "d",
+          "ordinary-sha": "d",
+          "additional-sha": "d"
+        }
+      }
+    ],
+    [
+      "additional-after",
+      {
+        "hp": 17,
+        "out": false,
+        "has": false,
+        "own": false,
+        "temp": false,
+        "expiry": null,
+        "additional": [],
+        "mark": false,
+        "hookDamage": false,
+        "hookUseEnd": false,
+        "storageLength": null,
+        "contains": false,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "c",
+          "independent-sha": "d",
+          "ordinary-sha": "d",
+          "additional-sha": "d"
+        }
+      }
+    ],
+    [
+      "temp-before",
+      {
+        "hp": 17,
+        "out": false,
+        "has": true,
+        "own": false,
+        "temp": true,
+        "expiry": {
+          "global": [
+            "phaseAfter",
+            "phaseBeforeStart"
+          ]
+        },
+        "additional": [],
+        "mark": false,
+        "hookDamage": true,
+        "hookUseEnd": true,
+        "storageLength": 0,
+        "contains": false,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "c",
+          "independent-sha": "d",
+          "ordinary-sha": "d",
+          "additional-sha": "d"
+        }
+      }
+    ],
+    [
+      "temp-hit-marked",
+      {
+        "hp": 17,
+        "out": false,
+        "has": true,
+        "own": false,
+        "temp": true,
+        "expiry": {
+          "global": [
+            "phaseAfter",
+            "phaseBeforeStart"
+          ]
+        },
+        "additional": [],
+        "mark": true,
+        "hookDamage": true,
+        "hookUseEnd": true,
+        "storageLength": 1,
+        "contains": true,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "c",
+          "independent-sha": "d",
+          "ordinary-sha": "d",
+          "additional-sha": "d",
+          "temp-hit-sha": "o"
+        }
+      }
+    ],
+    [
+      "temp-hit",
+      {
+        "hp": 16,
+        "out": false,
+        "has": false,
+        "own": false,
+        "temp": false,
+        "expiry": null,
+        "additional": [],
+        "mark": false,
+        "hookDamage": false,
+        "hookUseEnd": false,
+        "storageLength": null,
+        "contains": false,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "c",
+          "independent-sha": "d",
+          "ordinary-sha": "d",
+          "additional-sha": "d",
+          "temp-hit-sha": "d"
+        }
+      }
+    ],
+    [
+      "temp-hit-after",
+      {
+        "hp": 16,
+        "out": false,
+        "has": false,
+        "own": false,
+        "temp": false,
+        "expiry": null,
+        "additional": [],
+        "mark": false,
+        "hookDamage": false,
+        "hookUseEnd": false,
+        "storageLength": null,
+        "contains": false,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "c",
+          "independent-sha": "d",
+          "ordinary-sha": "d",
+          "additional-sha": "d",
+          "temp-hit-sha": "d"
+        }
+      }
+    ],
+    [
+      "temp-phase-after",
+      {
+        "hp": 17,
+        "out": false,
+        "has": false,
+        "own": false,
+        "temp": false,
+        "expiry": null,
+        "additional": [],
+        "mark": false,
+        "hookDamage": false,
+        "hookUseEnd": false,
+        "storageLength": null,
+        "contains": false,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "d",
+          "independent-sha": "d",
+          "ordinary-sha": "d",
+          "additional-sha": "d",
+          "temp-hit-sha": "d"
+        }
+      }
+    ],
+    [
+      "temp-refresh-before",
+      {
+        "hp": 17,
+        "out": false,
+        "has": true,
+        "own": false,
+        "temp": true,
+        "expiry": {
+          "global": [
+            "phaseAfter",
+            "phaseBeforeStart"
+          ]
+        },
+        "additional": [],
+        "mark": false,
+        "hookDamage": true,
+        "hookUseEnd": true,
+        "storageLength": 0,
+        "contains": false,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "d",
+          "independent-sha": "d",
+          "ordinary-sha": "d",
+          "additional-sha": "d",
+          "temp-hit-sha": "d"
+        }
+      }
+    ],
+    [
+      "temp-refresh-hit-marked",
+      {
+        "hp": 17,
+        "out": false,
+        "has": true,
+        "own": false,
+        "temp": true,
+        "expiry": {
+          "global": [
+            "phaseAfter",
+            "phaseBeforeStart"
+          ]
+        },
+        "additional": [],
+        "mark": true,
+        "hookDamage": true,
+        "hookUseEnd": true,
+        "storageLength": 1,
+        "contains": true,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "d",
+          "independent-sha": "d",
+          "ordinary-sha": "d",
+          "additional-sha": "d",
+          "temp-hit-sha": "d",
+          "temp-refresh-hit-sha": "o"
+        }
+      }
+    ],
+    [
+      "temp-refresh-hit",
+      {
+        "hp": 16,
+        "out": false,
+        "has": false,
+        "own": false,
+        "temp": false,
+        "expiry": null,
+        "additional": [],
+        "mark": false,
+        "hookDamage": false,
+        "hookUseEnd": false,
+        "storageLength": null,
+        "contains": false,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "d",
+          "independent-sha": "d",
+          "ordinary-sha": "d",
+          "additional-sha": "d",
+          "temp-hit-sha": "d",
+          "temp-refresh-hit-sha": "d"
+        }
+      }
+    ],
+    [
+      "temp-refresh-hit-after",
+      {
+        "hp": 16,
+        "out": false,
+        "has": false,
+        "own": false,
+        "temp": false,
+        "expiry": null,
+        "additional": [],
+        "mark": false,
+        "hookDamage": false,
+        "hookUseEnd": false,
+        "storageLength": null,
+        "contains": false,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "d",
+          "independent-sha": "d",
+          "ordinary-sha": "d",
+          "additional-sha": "d",
+          "temp-hit-sha": "d",
+          "temp-refresh-hit-sha": "d"
+        }
+      }
+    ],
+    [
+      "temp-refresh-phase-after",
+      {
+        "hp": 16,
+        "out": false,
+        "has": false,
+        "own": false,
+        "temp": false,
+        "expiry": null,
+        "additional": [],
+        "mark": false,
+        "hookDamage": false,
+        "hookUseEnd": false,
+        "storageLength": null,
+        "contains": false,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "d",
+          "independent-sha": "d",
+          "ordinary-sha": "d",
+          "additional-sha": "d",
+          "temp-hit-sha": "d",
+          "temp-refresh-hit-sha": "d"
+        }
+      }
+    ],
+    [
+      "temp-phase-first-before",
+      {
+        "hp": 16,
+        "out": false,
+        "has": true,
+        "own": false,
+        "temp": true,
+        "expiry": {
+          "global": [
+            "phaseAfter",
+            "phaseBeforeStart"
+          ]
+        },
+        "additional": [],
+        "mark": false,
+        "hookDamage": true,
+        "hookUseEnd": true,
+        "storageLength": 0,
+        "contains": false,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "d",
+          "independent-sha": "d",
+          "ordinary-sha": "d",
+          "additional-sha": "d",
+          "temp-hit-sha": "d",
+          "temp-refresh-hit-sha": "d"
+        }
+      }
+    ],
+    [
+      "temp-phase-first-after",
+      {
+        "hp": 16,
+        "out": false,
+        "has": false,
+        "own": false,
+        "temp": false,
+        "expiry": null,
+        "additional": [],
+        "mark": false,
+        "hookDamage": false,
+        "hookUseEnd": false,
+        "storageLength": null,
+        "contains": false,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "d",
+          "independent-sha": "d",
+          "ordinary-sha": "d",
+          "additional-sha": "d",
+          "temp-hit-sha": "d",
+          "temp-refresh-hit-sha": "d"
+        }
+      }
+    ],
+    [
+      "temp-phase-first-hit",
+      {
+        "hp": 16,
+        "out": false,
+        "has": false,
+        "own": false,
+        "temp": false,
+        "expiry": null,
+        "additional": [],
+        "mark": false,
+        "hookDamage": false,
+        "hookUseEnd": false,
+        "storageLength": null,
+        "contains": false,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "d",
+          "independent-sha": "d",
+          "ordinary-sha": "d",
+          "additional-sha": "d",
+          "temp-hit-sha": "d",
+          "temp-refresh-hit-sha": "d",
+          "temp-phase-first-hit-sha": "d"
+        }
+      }
+    ],
+    [
+      "out",
+      {
+        "hp": 16,
+        "out": true,
+        "has": true,
+        "own": false,
+        "temp": true,
+        "expiry": {
+          "global": [
+            "phaseAfter",
+            "phaseBeforeStart"
+          ]
+        },
+        "additional": [],
+        "mark": true,
+        "hookDamage": true,
+        "hookUseEnd": true,
+        "storageLength": 1,
+        "contains": true,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "d",
+          "independent-sha": "d",
+          "ordinary-sha": "d",
+          "additional-sha": "d",
+          "temp-hit-sha": "d",
+          "temp-refresh-hit-sha": "d",
+          "temp-phase-first-hit-sha": "d",
+          "out-sha": "d"
+        }
+      }
+    ],
+    [
+      "out-before-return",
+      {
+        "hp": 16,
+        "out": true,
+        "has": true,
+        "own": false,
+        "temp": true,
+        "expiry": {
+          "global": [
+            "phaseAfter",
+            "phaseBeforeStart"
+          ]
+        },
+        "additional": [],
+        "mark": true,
+        "hookDamage": true,
+        "hookUseEnd": true,
+        "storageLength": 1,
+        "contains": true,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "d",
+          "independent-sha": "d",
+          "ordinary-sha": "d",
+          "additional-sha": "d",
+          "temp-hit-sha": "d",
+          "temp-refresh-hit-sha": "d",
+          "temp-phase-first-hit-sha": "d",
+          "out-sha": "d"
+        }
+      }
+    ],
+    [
+      "out-after-return",
+      {
+        "hp": 16,
+        "out": false,
+        "has": true,
+        "own": false,
+        "temp": true,
+        "expiry": {
+          "global": [
+            "phaseAfter",
+            "phaseBeforeStart"
+          ]
+        },
+        "additional": [],
+        "mark": true,
+        "hookDamage": true,
+        "hookUseEnd": true,
+        "storageLength": 1,
+        "contains": true,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "d",
+          "independent-sha": "d",
+          "ordinary-sha": "d",
+          "additional-sha": "d",
+          "temp-hit-sha": "d",
+          "temp-refresh-hit-sha": "d",
+          "temp-phase-first-hit-sha": "d",
+          "out-sha": "d"
+        }
+      }
+    ],
+    [
+      "out-follow",
+      {
+        "hp": 15,
+        "out": false,
+        "has": true,
+        "own": false,
+        "temp": true,
+        "expiry": {
+          "global": [
+            "phaseAfter",
+            "phaseBeforeStart"
+          ]
+        },
+        "additional": [],
+        "mark": true,
+        "hookDamage": true,
+        "hookUseEnd": true,
+        "storageLength": 1,
+        "contains": false,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "d",
+          "independent-sha": "d",
+          "ordinary-sha": "d",
+          "additional-sha": "d",
+          "temp-hit-sha": "d",
+          "temp-refresh-hit-sha": "d",
+          "temp-phase-first-hit-sha": "d",
+          "out-sha": "d",
+          "out-follow-red": "c",
+          "out-follow-sha": "d"
+        }
+      }
+    ]
+  ],
+  "calls": [
+    [
+      "ordinary",
+      "qinggang_skill",
+      "begin",
+      "A",
+      8,
+      7,
+      {
+        "hp": 19,
+        "out": false,
+        "has": true,
+        "own": true,
+        "temp": false,
+        "expiry": null,
+        "additional": [],
+        "mark": false,
+        "hookDamage": true,
+        "hookUseEnd": true,
+        "storageLength": 0,
+        "contains": false,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "c",
+          "independent-sha": "d",
+          "ordinary-sha": "o"
+        }
+      }
+    ],
+    [
+      "ordinary",
+      "qinggang_skill",
+      "end",
+      "A",
+      8,
+      7,
+      {
+        "hp": 19,
+        "out": false,
+        "has": true,
+        "own": true,
+        "temp": false,
+        "expiry": null,
+        "additional": [],
+        "mark": true,
+        "hookDamage": true,
+        "hookUseEnd": true,
+        "storageLength": 1,
+        "contains": true,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "c",
+          "independent-sha": "d",
+          "ordinary-sha": "o"
+        }
+      }
+    ],
+    [
+      "ordinary",
+      "qinggang2",
+      "begin",
+      "B",
+      11,
+      9,
+      {
+        "hp": 18,
+        "out": false,
+        "has": true,
+        "own": true,
+        "temp": false,
+        "expiry": null,
+        "additional": [],
+        "mark": true,
+        "hookDamage": true,
+        "hookUseEnd": true,
+        "storageLength": 1,
+        "contains": true,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "c",
+          "independent-sha": "d",
+          "ordinary-sha": "o"
+        }
+      }
+    ],
+    [
+      "ordinary",
+      "qinggang2",
+      "end",
+      "B",
+      11,
+      9,
+      {
+        "hp": 18,
+        "out": false,
+        "has": false,
+        "own": false,
+        "temp": false,
+        "expiry": null,
+        "additional": [],
+        "mark": false,
+        "hookDamage": false,
+        "hookUseEnd": false,
+        "storageLength": null,
+        "contains": false,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "c",
+          "independent-sha": "d",
+          "ordinary-sha": "o"
+        }
+      }
+    ],
+    [
+      "additional",
+      "qinggang_skill",
+      "begin",
+      "A",
+      14,
+      13,
+      {
+        "hp": 18,
+        "out": false,
+        "has": true,
+        "own": false,
+        "temp": false,
+        "expiry": null,
+        "additional": [
+          "qinggang2"
+        ],
+        "mark": false,
+        "hookDamage": true,
+        "hookUseEnd": true,
+        "storageLength": 0,
+        "contains": false,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "c",
+          "independent-sha": "d",
+          "ordinary-sha": "d",
+          "additional-sha": "o"
+        }
+      }
+    ],
+    [
+      "additional",
+      "qinggang_skill",
+      "end",
+      "A",
+      14,
+      13,
+      {
+        "hp": 18,
+        "out": false,
+        "has": true,
+        "own": false,
+        "temp": false,
+        "expiry": null,
+        "additional": [
+          "qinggang2"
+        ],
+        "mark": true,
+        "hookDamage": true,
+        "hookUseEnd": true,
+        "storageLength": 1,
+        "contains": true,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "c",
+          "independent-sha": "d",
+          "ordinary-sha": "d",
+          "additional-sha": "o"
+        }
+      }
+    ],
+    [
+      "additional",
+      "qinggang2",
+      "begin",
+      "B",
+      17,
+      15,
+      {
+        "hp": 17,
+        "out": false,
+        "has": true,
+        "own": false,
+        "temp": false,
+        "expiry": null,
+        "additional": [
+          "qinggang2"
+        ],
+        "mark": true,
+        "hookDamage": true,
+        "hookUseEnd": true,
+        "storageLength": 1,
+        "contains": true,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "c",
+          "independent-sha": "d",
+          "ordinary-sha": "d",
+          "additional-sha": "o"
+        }
+      }
+    ],
+    [
+      "additional",
+      "qinggang2",
+      "end",
+      "B",
+      17,
+      15,
+      {
+        "hp": 17,
+        "out": false,
+        "has": false,
+        "own": false,
+        "temp": false,
+        "expiry": null,
+        "additional": [],
+        "mark": false,
+        "hookDamage": false,
+        "hookUseEnd": false,
+        "storageLength": null,
+        "contains": false,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "c",
+          "independent-sha": "d",
+          "ordinary-sha": "d",
+          "additional-sha": "o"
+        }
+      }
+    ],
+    [
+      "temp-hit",
+      "qinggang_skill",
+      "begin",
+      "A",
+      20,
+      19,
+      {
+        "hp": 17,
+        "out": false,
+        "has": true,
+        "own": false,
+        "temp": true,
+        "expiry": {
+          "global": [
+            "phaseAfter",
+            "phaseBeforeStart"
+          ]
+        },
+        "additional": [],
+        "mark": false,
+        "hookDamage": true,
+        "hookUseEnd": true,
+        "storageLength": 0,
+        "contains": false,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "c",
+          "independent-sha": "d",
+          "ordinary-sha": "d",
+          "additional-sha": "d",
+          "temp-hit-sha": "o"
+        }
+      }
+    ],
+    [
+      "temp-hit",
+      "qinggang_skill",
+      "end",
+      "A",
+      20,
+      19,
+      {
+        "hp": 17,
+        "out": false,
+        "has": true,
+        "own": false,
+        "temp": true,
+        "expiry": {
+          "global": [
+            "phaseAfter",
+            "phaseBeforeStart"
+          ]
+        },
+        "additional": [],
+        "mark": true,
+        "hookDamage": true,
+        "hookUseEnd": true,
+        "storageLength": 1,
+        "contains": true,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "c",
+          "independent-sha": "d",
+          "ordinary-sha": "d",
+          "additional-sha": "d",
+          "temp-hit-sha": "o"
+        }
+      }
+    ],
+    [
+      "temp-hit",
+      "qinggang2",
+      "begin",
+      "B",
+      23,
+      21,
+      {
+        "hp": 16,
+        "out": false,
+        "has": true,
+        "own": false,
+        "temp": true,
+        "expiry": {
+          "global": [
+            "phaseAfter",
+            "phaseBeforeStart"
+          ]
+        },
+        "additional": [],
+        "mark": true,
+        "hookDamage": true,
+        "hookUseEnd": true,
+        "storageLength": 1,
+        "contains": true,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "c",
+          "independent-sha": "d",
+          "ordinary-sha": "d",
+          "additional-sha": "d",
+          "temp-hit-sha": "o"
+        }
+      }
+    ],
+    [
+      "temp-hit",
+      "qinggang2",
+      "end",
+      "B",
+      23,
+      21,
+      {
+        "hp": 16,
+        "out": false,
+        "has": false,
+        "own": false,
+        "temp": false,
+        "expiry": null,
+        "additional": [],
+        "mark": false,
+        "hookDamage": false,
+        "hookUseEnd": false,
+        "storageLength": null,
+        "contains": false,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "c",
+          "independent-sha": "d",
+          "ordinary-sha": "d",
+          "additional-sha": "d",
+          "temp-hit-sha": "o"
+        }
+      }
+    ],
+    [
+      "temp-refresh-hit",
+      "qinggang_skill",
+      "begin",
+      "A",
+      27,
+      26,
+      {
+        "hp": 17,
+        "out": false,
+        "has": true,
+        "own": false,
+        "temp": true,
+        "expiry": {
+          "global": [
+            "phaseAfter",
+            "phaseBeforeStart"
+          ]
+        },
+        "additional": [],
+        "mark": false,
+        "hookDamage": true,
+        "hookUseEnd": true,
+        "storageLength": 0,
+        "contains": false,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "d",
+          "independent-sha": "d",
+          "ordinary-sha": "d",
+          "additional-sha": "d",
+          "temp-hit-sha": "d",
+          "temp-refresh-hit-sha": "o"
+        }
+      }
+    ],
+    [
+      "temp-refresh-hit",
+      "qinggang_skill",
+      "end",
+      "A",
+      27,
+      26,
+      {
+        "hp": 17,
+        "out": false,
+        "has": true,
+        "own": false,
+        "temp": true,
+        "expiry": {
+          "global": [
+            "phaseAfter",
+            "phaseBeforeStart"
+          ]
+        },
+        "additional": [],
+        "mark": true,
+        "hookDamage": true,
+        "hookUseEnd": true,
+        "storageLength": 1,
+        "contains": true,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "d",
+          "independent-sha": "d",
+          "ordinary-sha": "d",
+          "additional-sha": "d",
+          "temp-hit-sha": "d",
+          "temp-refresh-hit-sha": "o"
+        }
+      }
+    ],
+    [
+      "temp-refresh-hit",
+      "qinggang2",
+      "begin",
+      "B",
+      30,
+      28,
+      {
+        "hp": 16,
+        "out": false,
+        "has": true,
+        "own": false,
+        "temp": true,
+        "expiry": {
+          "global": [
+            "phaseAfter",
+            "phaseBeforeStart"
+          ]
+        },
+        "additional": [],
+        "mark": true,
+        "hookDamage": true,
+        "hookUseEnd": true,
+        "storageLength": 1,
+        "contains": true,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "d",
+          "independent-sha": "d",
+          "ordinary-sha": "d",
+          "additional-sha": "d",
+          "temp-hit-sha": "d",
+          "temp-refresh-hit-sha": "o"
+        }
+      }
+    ],
+    [
+      "temp-refresh-hit",
+      "qinggang2",
+      "end",
+      "B",
+      30,
+      28,
+      {
+        "hp": 16,
+        "out": false,
+        "has": false,
+        "own": false,
+        "temp": false,
+        "expiry": null,
+        "additional": [],
+        "mark": false,
+        "hookDamage": false,
+        "hookUseEnd": false,
+        "storageLength": null,
+        "contains": false,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "d",
+          "independent-sha": "d",
+          "ordinary-sha": "d",
+          "additional-sha": "d",
+          "temp-hit-sha": "d",
+          "temp-refresh-hit-sha": "o"
+        }
+      }
+    ],
+    [
+      "temp-phase-first-hit",
+      "qinggang_skill",
+      "begin",
+      "A",
+      35,
+      34,
+      {
+        "hp": 16,
+        "out": false,
+        "has": false,
+        "own": false,
+        "temp": false,
+        "expiry": null,
+        "additional": [],
+        "mark": false,
+        "hookDamage": false,
+        "hookUseEnd": false,
+        "storageLength": null,
+        "contains": false,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "d",
+          "independent-sha": "d",
+          "ordinary-sha": "d",
+          "additional-sha": "d",
+          "temp-hit-sha": "d",
+          "temp-refresh-hit-sha": "d",
+          "temp-phase-first-hit-sha": "o"
+        }
+      }
+    ],
+    [
+      "temp-phase-first-hit",
+      "qinggang_skill",
+      "end",
+      "A",
+      35,
+      34,
+      {
+        "hp": 16,
+        "out": false,
+        "has": true,
+        "own": false,
+        "temp": true,
+        "expiry": {
+          "global": [
+            "phaseAfter",
+            "phaseBeforeStart"
+          ]
+        },
+        "additional": [],
+        "mark": true,
+        "hookDamage": true,
+        "hookUseEnd": true,
+        "storageLength": 1,
+        "contains": true,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "d",
+          "independent-sha": "d",
+          "ordinary-sha": "d",
+          "additional-sha": "d",
+          "temp-hit-sha": "d",
+          "temp-refresh-hit-sha": "d",
+          "temp-phase-first-hit-sha": "o"
+        }
+      }
+    ],
+    [
+      "temp-phase-first-hit",
+      "qinggang2",
+      "begin",
+      "B",
+      37,
+      36,
+      {
+        "hp": 16,
+        "out": false,
+        "has": true,
+        "own": false,
+        "temp": true,
+        "expiry": {
+          "global": [
+            "phaseAfter",
+            "phaseBeforeStart"
+          ]
+        },
+        "additional": [],
+        "mark": true,
+        "hookDamage": true,
+        "hookUseEnd": true,
+        "storageLength": 1,
+        "contains": true,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "d",
+          "independent-sha": "d",
+          "ordinary-sha": "d",
+          "additional-sha": "d",
+          "temp-hit-sha": "d",
+          "temp-refresh-hit-sha": "d",
+          "temp-phase-first-hit-sha": "o"
+        }
+      }
+    ],
+    [
+      "temp-phase-first-hit",
+      "qinggang2",
+      "end",
+      "B",
+      37,
+      36,
+      {
+        "hp": 16,
+        "out": false,
+        "has": false,
+        "own": false,
+        "temp": false,
+        "expiry": null,
+        "additional": [],
+        "mark": false,
+        "hookDamage": false,
+        "hookUseEnd": false,
+        "storageLength": null,
+        "contains": false,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "d",
+          "independent-sha": "d",
+          "ordinary-sha": "d",
+          "additional-sha": "d",
+          "temp-hit-sha": "d",
+          "temp-refresh-hit-sha": "d",
+          "temp-phase-first-hit-sha": "o"
+        }
+      }
+    ],
+    [
+      "out",
+      "qinggang_skill",
+      "begin",
+      "A",
+      40,
+      39,
+      {
+        "hp": 16,
+        "out": false,
+        "has": false,
+        "own": false,
+        "temp": false,
+        "expiry": null,
+        "additional": [],
+        "mark": false,
+        "hookDamage": false,
+        "hookUseEnd": false,
+        "storageLength": null,
+        "contains": false,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "d",
+          "independent-sha": "d",
+          "ordinary-sha": "d",
+          "additional-sha": "d",
+          "temp-hit-sha": "d",
+          "temp-refresh-hit-sha": "d",
+          "temp-phase-first-hit-sha": "d",
+          "out-sha": "o"
+        }
+      }
+    ],
+    [
+      "out",
+      "qinggang_skill",
+      "end",
+      "A",
+      40,
+      39,
+      {
+        "hp": 16,
+        "out": false,
+        "has": true,
+        "own": false,
+        "temp": true,
+        "expiry": {
+          "global": [
+            "phaseAfter",
+            "phaseBeforeStart"
+          ]
+        },
+        "additional": [],
+        "mark": true,
+        "hookDamage": true,
+        "hookUseEnd": true,
+        "storageLength": 1,
+        "contains": true,
+        "cards": {
+          "sword": "A:e",
+          "armor": "B:e",
+          "independent-red": "d",
+          "independent-sha": "d",
+          "ordinary-sha": "d",
+          "additional-sha": "d",
+          "temp-hit-sha": "d",
+          "temp-refresh-hit-sha": "d",
+          "temp-phase-first-hit-sha": "d",
+          "out-sha": "o"
+        }
+      }
+    ]
+  ]
+}
