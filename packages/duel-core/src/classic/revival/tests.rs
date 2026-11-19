@@ -184,7 +184,7 @@ fn revival_reference_all_requests_callbacks_and_full_death_stages() {
         .create_content_card(CardKind::Zhuge, Suit::Club, 1, None)
         .unwrap();
     game.seat_mut(1).hand.push(hand);
-    game.seat_mut(1).equipment.push(equip);
+    game.seat_mut(1).equipment.install_test(equip);
     game.seat_mut(1).linked = true;
     game.seat_mut(1).turned_over = true;
     game.add_skill_mark(1, "reference_mark", None, 2).unwrap();
@@ -379,7 +379,7 @@ fn revival_during_die_preserves_cards_marks_and_temporary_skill_and_pays_reward(
         .create_content_card(CardKind::Qinggang, Suit::Spade, 6, None)
         .unwrap();
     game.seat_mut(3).hand.push(hand);
-    game.seat_mut(3).equipment.push(equip);
+    game.seat_mut(3).equipment.install_test(equip);
     game.add_skill_mark(3, "gushe", None, 7).unwrap();
     game.grant_temporary(3, TemporarySkill::until_removed("early_temp"))
         .unwrap();

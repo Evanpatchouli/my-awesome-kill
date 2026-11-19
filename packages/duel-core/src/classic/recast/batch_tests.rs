@@ -29,7 +29,7 @@ fn batch_recast_intercepts_one_of_three_selected_cards() {
     let control = card(4, CardKind::Shan);
     let selected = [shown, hidden, equipped];
     game.seat_mut(0).hand.extend([shown, hidden, control]);
-    game.seat_mut(0).equipment.push(equipped);
+    game.seat_mut(0).equipment.install_test(equipped);
     game.known_to_all.extend([shown.id, control.id]);
     let initial_deck = game.classic.as_ref().unwrap().deck.clone();
 
@@ -313,7 +313,7 @@ fn batch_recast_cancellation_interception_and_public_gain_boundaries() {
         let selected = [shown, hidden, equipped];
         let ids: Vec<_> = selected.iter().map(|c| c.id).collect();
         game.seat_mut(0).hand.extend([shown, hidden, control]);
-        game.seat_mut(0).equipment.push(equipped);
+        game.seat_mut(0).equipment.install_test(equipped);
         game.known_to_all.extend([shown.id, control.id]);
         let original_deck = game.classic.as_ref().unwrap().deck.clone();
         let public_cards: Vec<_> = original_deck.iter().rev().take(3).copied().collect();
@@ -631,7 +631,7 @@ fn give_cards_handles_cancelled_loss_and_recipient_death_after_loss() {
         let equipped = card(2, CardKind::Qinggang);
         let selected = [hidden, equipped];
         game.seat_mut(0).hand.push(hidden);
-        game.seat_mut(0).equipment.push(equipped);
+        game.seat_mut(0).equipment.install_test(equipped);
         let active = game
             .register_active_skill(ActiveSkillRegistration {
                 owner: 0,

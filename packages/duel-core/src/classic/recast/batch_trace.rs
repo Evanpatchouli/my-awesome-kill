@@ -228,7 +228,7 @@ fn upstream_batch_observations_match_real_eight_seat_submission() {
                 card(107, CardKind::Sha),
             ];
             game.seat_mut(0).hand.extend([cards[0], cards[3], cards[1]]);
-            game.seat_mut(0).equipment.push(cards[2]);
+            game.seat_mut(0).equipment.install_test(cards[2]);
             game.known_to_all.extend([cards[0].id, cards[3].id]);
             for c in &cards[4..] {
                 let slot = game

@@ -87,6 +87,18 @@ impl BatchMovement {
         movement.equipment_discard = true;
         movement
     }
+    pub(crate) fn equipment_replacement_loss(seat: SeatId, cards: Arc<[Card]>) -> Self {
+        let mut movement = Self::new(
+            seat,
+            BatchKind::Lose {
+                destination: BatchDestination::Discard,
+                from_judgment_discard: false,
+            },
+            cards,
+        );
+        movement.equipment_discard = true;
+        movement
+    }
     pub(super) fn draw(seat: SeatId, amount: u16, reason: DrawReason) -> Self {
         Self::new(seat, BatchKind::Draw { amount, reason }, Arc::from([]))
     }

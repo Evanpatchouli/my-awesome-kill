@@ -280,7 +280,7 @@ fn five_eight_seat_trials_match_reference_and_private_loser_choices() {
 fn gushe_discard_is_paid_before_next_pair_is_revealed() {
     let (mut game, bids) = setup([13, 8, 10, 12], false);
     let armor = card(999, CardKind::Bagua);
-    game.seat_mut(1).equipment.push(armor);
+    game.seat_mut(1).equipment.install_test(armor);
     let paid_before_next = Arc::new(std::sync::Mutex::new(false));
     let observed = paid_before_next.clone();
     game.register_trigger(probe("payment_order", "showCardsAfter", move |ctx| {

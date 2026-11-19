@@ -187,6 +187,8 @@ impl Probe {
                 amount: 1,
                 cards: vec![card],
                 equipment_slots: None,
+                button_links: vec![],
+                button_registration_links: vec![],
             },
         );
     }

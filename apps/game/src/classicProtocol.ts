@@ -88,6 +88,7 @@ export type Action =
   | { type: 'discard'; event: number; cards: number[] }
   | { type: 'select'; event: number; branch: number; cards: number[]; targets: number[] }
   | { type: 'moveCards'; event: number; moves: MoveStep[] | null }
+  | { type: 'selectEquipmentButtons'; event: number; buttons: number[] }
   | { type: 'playVirtual'; kind: string; cards: number[]; targets: number[] }
   | { type: 'useSkill'; skill: string; cards: number[]; targets: number[] }
   | { type: 'activateSkill'; registration: number; cards: number[]; targets: number[] }
@@ -113,6 +114,7 @@ export interface SeatView {
   marks?: { skill: string; count: number; source: number | null }[]
   equipment: Entity[]
   detachedEquipment?: string[]
+  equipmentDisabledMarkers?: ('weapon' | 'armor' | 'defenseHorse' | 'attackHorse' | 'treasure')[]
   judges: Entity[]
   judgeAssignments: Entity[]
   logicalJudges?: { kind: string; material?: number }[]
@@ -131,6 +133,7 @@ export interface Choice {
   compare?: CompareParticipants
   compareGroup?: CompareGroup
   moveCards?: MoveChoiceView
+  equipmentButtons?: { required: number; options: { id: number; kind: string; card?: number }[] }
 }
 interface EventRecord {
   bodySkipped?: boolean

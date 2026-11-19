@@ -332,6 +332,7 @@ pub(crate) struct Movement {
     committed: Option<Card>,
     allow_intercepted: bool,
     follow_holder_zone: bool,
+    exclude_virtual_judgment: bool,
     judgment: Option<Judgment>,
 }
 
@@ -412,6 +413,7 @@ impl Movement {
             committed: None,
             allow_intercepted: false,
             follow_holder_zone: false,
+            exclude_virtual_judgment: false,
             judgment: None,
         }
     }
@@ -607,6 +609,7 @@ impl Game {
             },
         );
         movement.follow_holder_zone = true;
+        movement.exclude_virtual_judgment = true;
         Program::Recast(Flow::Movement(movement))
     }
     pub(crate) fn use_loss_to_ordering(
@@ -1294,6 +1297,14 @@ impl Game {
                             .find(|&current| owner.zone(current).contains(card))
                         {
                             *zone = current;
+                        }
+                    }
+                    if movement.exclude_virtual_judgment {
+                        if let Lose { card, .. } = movement.kind {
+                            if self.is_virtual_judgment_material(seat, card.id) {
+                                movement.stage = End;
+                                continue;
+                            }
                         }
                     }
                     let child_move = match movement.kind {

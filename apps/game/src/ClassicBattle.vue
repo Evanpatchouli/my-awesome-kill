@@ -8,11 +8,13 @@ import ClassicSeatZones from './ClassicSeatZones.vue'
 import MoveChoice from './MoveChoice.vue'
 import { heroPortrait } from './battleArt'
 import {
+  cardName,
   counterPrompt,
   faceOf,
   factions,
   generalById,
   phases,
+  printedFace,
   roles,
   seatName,
   sides,
@@ -38,6 +40,7 @@ const emit = defineEmits<{
 
 const selectedCard = ref<number | null>(null)
 const selectedCards = ref<number[]>([])
+const selectedEquipmentButtons = ref<number[]>([])
 const selectedTargets = ref<number[]>([])
 const selectedBranch = ref<number | null>(null)
 const selectedMode = ref<'card' | 'virtual' | 'skill' | 'active' | 'choice' | null>(null)
@@ -58,6 +61,7 @@ const choice = computed(() =>
   props.view.choice?.seat === props.view.humanSeat ? props.view.choice : null,
 )
 const moveChoice = computed(() => choice.value?.moveCards)
+const equipmentButtons = computed(() => choice.value?.equipmentButtons)
 const active = computed(() => inputReady.value && !moveChoice.value)
 const moveChoiceCards = computed(() =>
   (props.view.privateChoiceCards ?? []).map((card) => faceOf(props.view, card)),
@@ -71,7 +75,7 @@ const recastActions = computed(() => props.view.actions.filter((action) => actio
 const playable = computed(
   () => new Set([...cardActions.value, ...recastActions.value].map((action) => action.card)),
 )
-const branches = computed(() => (choice.value?.kind === 'content' ? choice.value.branches : []))
+const branches = computed(() => (!equipmentButtons.value && choice.value?.kind === 'content' ? choice.value.branches : []))
 const virtuals = computed(() => props.view.virtualPlays ?? [])
 const skills = computed(() => props.view.skillPlays ?? [])
 const activePlays = computed(() => props.view.activePlays ?? [])
@@ -122,6 +126,7 @@ const exactAction = computed(() =>
 const targetOrder = computed(() => exactAction.value?.targets ?? selectedTargets.value)
 const canConfirm = computed(() => {
   if (!active.value) return false
+  if (equipmentButtons.value) return selectedEquipmentButtons.value.length === equipmentButtons.value.required
   if (choice.value?.kind === 'discard')
     return (
       selectedCards.value.length >= choice.value.min &&
@@ -193,12 +198,14 @@ const prompt = computed(() => {
 function reset() {
   selectedCard.value = null
   selectedCards.value = []
+  selectedEquipmentButtons.value = []
   selectedTargets.value = []
   selectedBranch.value = null
   selectedMode.value = null
   selectedPlay.value = null
 }
 watch(() => props.view.version, reset)
+watch(() => JSON.stringify([choice.value?.event, choice.value?.equipmentButtons]), reset)
 function setMode(mode: 'choice' | 'virtual' | 'skill' | 'active', index: number) {
   reset()
   selectedMode.value = mode
@@ -210,7 +217,7 @@ function toggle(list: number[], id: number, max: number): number[] {
   return list.length < max ? [...list, id] : list
 }
 function chooseHand(id: number) {
-  if (!active.value) return
+  if (!active.value || equipmentButtons.value) return
   if (branch.value) {
     if (!branchCards.value.has(id)) return
     if (privateBid.value) selectedCards.value = selectedCards.value.includes(id) ? [] : [id]
@@ -234,7 +241,7 @@ function choosePool(id: number) {
     selectedCards.value = toggle(selectedCards.value, id, branch.value.maxCards)
 }
 function chooseSeat(id: number) {
-  if (!active.value) return
+  if (!active.value || equipmentButtons.value) return
   const index = selectedTargets.value.indexOf(id)
   if (index >= 0) {
     selectedTargets.value = branch.value || unorderedTargets.value
@@ -251,7 +258,9 @@ function chooseSeat(id: number) {
 function confirm() {
   if (!canConfirm.value) return
   let action: Action | undefined
-  if (choice.value?.kind === 'discard')
+  if (choice.value && equipmentButtons.value)
+    action = { type: 'selectEquipmentButtons', event: choice.value.event, buttons: [...selectedEquipmentButtons.value] }
+  else if (choice.value?.kind === 'discard')
     action = { type: 'discard', event: choice.value.event, cards: [...selectedCards.value] }
   else if (
     (choice.value?.kind === 'shan' || choice.value?.kind === 'save') &&
@@ -323,7 +332,7 @@ function isCardSelected(id: number) {
   return selectedCard.value === id || selectedCards.value.includes(id)
 }
 function canPickCard(id: number) {
-  if (!active.value) return false
+  if (!active.value || equipmentButtons.value) return false
   if (branch.value) return branchCards.value.has(id)
   if (choice.value) return handOptions.value.has(id)
   return playable.value.has(id)
@@ -504,6 +513,22 @@ function canPickCard(id: number) {
         </div>
       </div>
       <div class="classic-controls" aria-label="对局操作">
+        <div v-if="equipmentButtons" class="classic-pool" aria-label="选择装备登记">
+          <button
+            v-for="option in equipmentButtons.options"
+            :key="option.id"
+            type="button"
+            :data-equipment-button="option.id"
+            :class="{ selected: selectedEquipmentButtons.includes(option.id) }"
+            :aria-pressed="selectedEquipmentButtons.includes(option.id)"
+            :disabled="!active"
+            @click="selectedEquipmentButtons = toggle(selectedEquipmentButtons, option.id, equipmentButtons.required)"
+          >
+            {{ option.card === undefined ? cardName(option.kind) : printedFace(faceOf(view, { id: option.card, kind: option.kind })) }}
+            <span v-if="option.card === undefined">（效果仍生效）</span>
+          </button>
+          <span>已选 {{ selectedEquipmentButtons.length }}/{{ equipmentButtons.required }}</span>
+        </div>
         <div v-if="branches.length && !privateBid" class="classic-options">
           <button
             v-for="item in branches"

@@ -28,8 +28,12 @@ fn eight_seat_borrowed_swords_target_requests_match_reference() {
     );
     let material = card(1, CardKind::Jiedao);
     game.seat_mut(0).hand.push(material);
-    game.seat_mut(1).equipment.push(card(5, CardKind::Qinglong));
-    game.seat_mut(3).equipment.push(card(6, CardKind::Qinglong));
+    game.seat_mut(1)
+        .equipment
+        .install_test(card(5, CardKind::Qinglong));
+    game.seat_mut(3)
+        .equipment
+        .install_test(card(6, CardKind::Qinglong));
     let mut add = registration(0, "useCard2", TriggerRole::Player);
     add.effect = Arc::new(|ctx, _, _| {
         ctx.add_use_target(1).unwrap();

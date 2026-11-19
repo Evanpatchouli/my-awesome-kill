@@ -345,6 +345,7 @@ impl Game {
                         .flat_map(|row| row.cards.iter().copied())
                         .collect::<Vec<_>>();
                     self.decision = Some(Decision::Cards(ChoiceView {
+                        equipment_buttons: None,
                         event: event.id,
                         seat,
                         kind: ChoiceKind::Content,

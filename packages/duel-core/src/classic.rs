@@ -154,8 +154,7 @@ impl Game {
                     role_shown: role == Role::Lord,
                     turn_kills: 0,
                     hand: Vec::new(),
-                    equipment: Vec::new(),
-                    detached_equipment: Vec::new(),
+                    equipment: crate::equipment_registry::EquipmentArea::new(id),
                     judges: Vec::new(),
                     equipment_expanded: [0; 5],
                     equipment_disabled: [0; 5],
@@ -446,6 +445,18 @@ impl Game {
                     event: choice.event,
                     card: choice.cards.first().copied(),
                 },
+                ChoiceKind::Content if choice.equipment_buttons.is_some() => {
+                    let buttons = choice.equipment_buttons.as_ref()?;
+                    Action::SelectEquipmentButtons {
+                        event: choice.event,
+                        buttons: buttons
+                            .options
+                            .iter()
+                            .take(buttons.required)
+                            .map(|option| option.id)
+                            .collect(),
+                    }
+                }
                 ChoiceKind::Content if choice.move_cards.is_some() => {
                     self.bot_move_choice(choice.event)?
                 }

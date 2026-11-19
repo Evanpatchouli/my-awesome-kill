@@ -131,6 +131,10 @@ pub enum Action {
         cards: Vec<CardId>,
         targets: Vec<SeatId>,
     },
+    SelectEquipmentButtons {
+        event: EventId,
+        buttons: Vec<u32>,
+    },
     MoveCards {
         event: EventId,
         moves: Option<Vec<crate::MoveStep>>,
@@ -302,6 +306,8 @@ pub enum Phase {
 #[serde(rename_all = "camelCase")]
 pub struct ChoiceView {
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub equipment_buttons: Option<EquipmentButtons>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub move_cards: Option<crate::MoveChoiceView>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub compare_group: Option<CompareGroup>,
@@ -318,6 +324,21 @@ pub struct ChoiceView {
     /// Present only for the acting seat's choice of a face-down comparison card.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub compare: Option<CompareParticipants>,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct EquipmentButtons {
+    pub required: usize,
+    pub options: Vec<EquipmentButton>,
+}
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct EquipmentButton {
+    pub id: u32,
+    pub kind: CardKind,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub card: Option<CardId>,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -532,7 +553,14 @@ pub enum EventKind {
         seat: SeatId,
         source: Option<SeatId>,
     },
+    ChooseButton {
+        seat: SeatId,
+    },
     EnableEquip {
+        seat: SeatId,
+        source: Option<SeatId>,
+    },
+    ExpandEquip {
         seat: SeatId,
         source: Option<SeatId>,
     },

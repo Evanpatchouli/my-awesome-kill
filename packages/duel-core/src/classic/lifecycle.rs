@@ -115,6 +115,7 @@ impl Game {
         } else {
             let cards = player.hand.iter().map(|card| card.id).collect();
             self.decision = Some(Decision::Cards(ChoiceView {
+                equipment_buttons: None,
                 move_cards: None,
                 event: event.id,
                 seat,
@@ -159,7 +160,7 @@ impl Game {
             .iter()
             .copied()
             .flat_map(|zone| {
-                let cards = match zone {
+                let cards: &[crate::Card] = match zone {
                     Zone::Hand => &player.hand,
                     Zone::Equipment => &player.equipment,
                     Zone::Judgment => &player.judges,

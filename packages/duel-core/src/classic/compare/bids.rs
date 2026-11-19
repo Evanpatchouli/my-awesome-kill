@@ -365,6 +365,7 @@ impl Game {
                                 _ => None,
                             };
                             self.decision = Some(Decision::Cards(ChoiceView {
+                                equipment_buttons: None,
                                 move_cards: None,
                                 event: event.id,
                                 seat,

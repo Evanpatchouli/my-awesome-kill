@@ -33,6 +33,8 @@ fn event(timing: &str, player: SeatId) -> TriggerEvent {
         amount: 0,
         cards: vec![],
         equipment_slots: None,
+        button_links: vec![],
+        button_registration_links: vec![],
         card_kind: None,
         nature: None,
         delta: None,

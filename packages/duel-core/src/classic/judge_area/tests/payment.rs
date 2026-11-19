@@ -959,7 +959,7 @@ fn ordinary_equipment_transfer_replacement_and_death_remove_registrations() {
     let mut game = table();
     let old = card(201, CardKind::Qinggang);
     let replacement = card(202, CardKind::Zhuge);
-    game.seat_mut(1).equipment.push(old);
+    game.seat_mut(1).equipment.install_test(old);
     let gain = owned_skill(&mut game, "normal_equipment_gain", move |ctx| {
         ctx.gain_owned_card(1, 1, old.id).unwrap();
     });
@@ -976,7 +976,7 @@ fn ordinary_equipment_transfer_replacement_and_death_remove_registrations() {
         .is_empty());
 
     let mut game = table();
-    game.seat_mut(1).equipment.push(old);
+    game.seat_mut(1).equipment.install_test(old);
     game.seat_mut(1).hand.push(replacement);
     game.known_to_all.insert(replacement.id);
     let equip = owned_skill(&mut game, "normal_equipment_replace", move |ctx| {
@@ -1022,7 +1022,7 @@ fn detached_qinggang_changes_real_bagua_response_without_becoming_a_cost() {
         let dismantle = card(214, CardKind::Guohe);
         let borrowed_sword = card(215, CardKind::Jiedao);
         game.seat_mut(0).hand.push(sha);
-        game.seat_mut(1).equipment.push(bagua);
+        game.seat_mut(1).equipment.install_test(bagua);
         game.seat_mut(2).hand.extend([dismantle, borrowed_sword]);
         game.classic.as_mut().unwrap().faces.extend([
             CardFace {

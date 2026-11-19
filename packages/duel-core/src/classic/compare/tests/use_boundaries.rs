@@ -202,10 +202,10 @@ fn borrowed_sword_positional_self_victim_cannot_offer_lord_or_hand_attack() {
     game.seat_mut(5).hand.push(card(5, CardKind::Sha));
     game.seat_mut(1)
         .equipment
-        .push(card(11, CardKind::Qinglong));
+        .install_test(card(11, CardKind::Qinglong));
     game.seat_mut(3)
         .equipment
-        .push(card(13, CardKind::Qinglong));
+        .install_test(card(13, CardKind::Qinglong));
     game.grant_temporary(0, crate::qiaoshui::win_skill(0))
         .unwrap();
     submit(

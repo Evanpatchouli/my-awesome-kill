@@ -10,7 +10,7 @@ fn target_eligibility_obeys_distance_empty_zones_and_delayed_duplicates() {
     let mut game = Game::classic(3, 0, "zhangfei", 4).unwrap();
     for seat in &mut game.seats {
         seat.hand.clear();
-        seat.equipment.clear();
+        seat.equipment.clear_test();
         seat.judges.clear();
     }
     game.seat_mut(1).hand.push(card(1000, CardKind::Sha));
@@ -36,9 +36,11 @@ fn target_eligibility_obeys_distance_empty_zones_and_delayed_duplicates() {
 fn borrowed_weapon_requires_valid_holder_and_reachable_second_target() {
     let mut game = Game::classic(3, 0, "zhangfei", 4).unwrap();
     for seat in &mut game.seats {
-        seat.equipment.clear();
+        seat.equipment.clear_test();
     }
-    game.seat_mut(1).equipment.push(card(1000, CardKind::Zhuge));
+    game.seat_mut(1)
+        .equipment
+        .install_test(card(1000, CardKind::Zhuge));
     let actor = game.seat(0).unwrap();
     let targets = game
         .trick_uses(actor, card(1001, CardKind::Jiedao))
@@ -54,10 +56,12 @@ fn borrowed_weapon_added_targets_use_upstream_positional_victims() {
     use crate::{TriggerOrder, TriggerRegistration, TriggerRole, TriggerStep};
     use std::sync::Arc;
     let mut game = scene();
-    game.seat_mut(1).equipment.push(card(50, CardKind::Zhuge));
+    game.seat_mut(1)
+        .equipment
+        .install_test(card(50, CardKind::Zhuge));
     game.seat_mut(2)
         .equipment
-        .push(card(51, CardKind::Qinglong));
+        .install_test(card(51, CardKind::Qinglong));
     game.register_trigger(TriggerRegistration {
         owner: 0,
         skill: "add_holder".into(),
@@ -403,7 +407,7 @@ fn lethal_lightning_discards_once_before_death_cleanup() {
 fn borrowed_weapon_transfers_when_holder_declines_to_attack() {
     let mut game = scene();
     let weapon = card(50, CardKind::Zhuge);
-    game.seat_mut(1).equipment.push(weapon);
+    game.seat_mut(1).equipment.install_test(weapon);
     start_trick(&mut game, card(20, CardKind::Jiedao), vec![1, 2]);
     pass_counters(&mut game);
     assert_eq!(game.view(None).unwrap().waiting_for, Some(1));
@@ -440,7 +444,9 @@ fn lebu_non_heart_skips_the_affected_turn_play_decision() {
 fn borrowed_weapon_attack_targets_designated_other_seat() {
     use crate::{Action, ChoiceKind, Command};
     let mut game = scene();
-    game.seat_mut(1).equipment.push(card(50, CardKind::Zhuge));
+    game.seat_mut(1)
+        .equipment
+        .install_test(card(50, CardKind::Zhuge));
     game.seat_mut(1).hand.push(card(51, CardKind::Sha));
     start_trick(&mut game, card(20, CardKind::Jiedao), vec![1, 2]);
     pass_counters(&mut game);

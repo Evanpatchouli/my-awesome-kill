@@ -1408,6 +1408,8 @@ mod dispatch_regressions {
             amount: 0,
             cards: vec![],
             equipment_slots: None,
+            button_links: vec![],
+            button_registration_links: vec![],
         };
         game.scheduler
             .start(Program::Dispatch(game.dispatch_for_timing(event)));

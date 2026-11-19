@@ -67,6 +67,8 @@ pub struct TriggerEvent {
     pub cards: Vec<Card>,
     /// Original slot arguments for equipment-area events, including repetitions.
     pub equipment_slots: Option<Arc<[crate::EquipmentSlot]>>,
+    pub button_links: Vec<CardId>,
+    pub button_registration_links: Vec<u32>,
     pub card_kind: Option<crate::CardKind>,
     pub nature: Option<crate::DamageNature>,
     /// Signed change on changeHp and changeHujia subjects.
@@ -322,7 +324,7 @@ impl TriggerContext<'_> {
         seat: SeatId,
         slots: Vec<crate::EquipmentSlot>,
     ) -> Result<(), RuleError> {
-        self.queue_equip_area(seat, slots, true)
+        self.queue_equip_area(seat, slots, crate::classic::equipment::AreaOp::Disable)
     }
 
     pub fn enable_equip(
@@ -330,21 +332,29 @@ impl TriggerContext<'_> {
         seat: SeatId,
         slots: Vec<crate::EquipmentSlot>,
     ) -> Result<(), RuleError> {
-        self.queue_equip_area(seat, slots, false)
+        self.queue_equip_area(seat, slots, crate::classic::equipment::AreaOp::Enable)
+    }
+
+    pub fn expand_equip(
+        &mut self,
+        seat: SeatId,
+        slots: Vec<crate::EquipmentSlot>,
+    ) -> Result<(), RuleError> {
+        self.queue_equip_area(seat, slots, crate::classic::equipment::AreaOp::Expand)
     }
 
     fn queue_equip_area(
         &mut self,
         seat: SeatId,
         slots: Vec<crate::EquipmentSlot>,
-        disable: bool,
+        op: crate::classic::equipment::AreaOp,
     ) -> Result<(), RuleError> {
         if slots.is_empty() {
             return Ok(());
         }
         self.game.seat(seat)?;
         self.operations.push_back(TriggerOperation::EquipArea(
-            crate::classic::equipment::AreaFlow::new(seat, Some(self.owner), slots, disable),
+            crate::classic::equipment::AreaFlow::new(seat, Some(self.owner), slots, op),
         ));
         Ok(())
     }
@@ -1279,6 +1289,14 @@ impl Game {
             equipment_slots: match frame {
                 Some((_, Program::EquipArea(flow))) => Some(Arc::from(flow.slots())),
                 _ => None,
+            },
+            button_links: match frame {
+                Some((_, Program::ChooseButton(flow))) => flow.links.clone(),
+                _ => Vec::new(),
+            },
+            button_registration_links: match frame {
+                Some((_, Program::ChooseButton(flow))) => flow.registration_links().to_vec(),
+                _ => Vec::new(),
             },
             card_kind,
             nature,

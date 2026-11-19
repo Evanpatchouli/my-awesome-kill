@@ -264,8 +264,12 @@ fn borrowed_swords_preserves_positional_victims_and_active_shan_consumes_bonus()
             (4, card(4, CardKind::Shan)),
         ],
     );
-    game.seat_mut(1).equipment.push(card(5, CardKind::Qinglong));
-    game.seat_mut(3).equipment.push(card(6, CardKind::Qinglong));
+    game.seat_mut(1)
+        .equipment
+        .install_test(card(5, CardKind::Qinglong));
+    game.seat_mut(3)
+        .equipment
+        .install_test(card(6, CardKind::Qinglong));
     game.grant_temporary(4, crate::qiaoshui::win_skill(4))
         .unwrap();
     let rows = observe(&mut game);

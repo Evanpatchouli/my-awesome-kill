@@ -92,7 +92,7 @@ fn reserved_lord_and_last_rebel_do_not_end_or_reveal() {
         let hand = card(51, CardKind::Sha);
         let equip = card(52, CardKind::Zhuge);
         game.seat_mut(target).hand.push(hand);
-        game.seat_mut(target).equipment.push(equip);
+        game.seat_mut(target).equipment.install_test(equip);
         game.seat_mut(target).linked = true;
         game.seat_mut(target).turned_over = true;
         game.add_skill_mark(target, "keep", None, 2).unwrap();

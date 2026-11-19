@@ -207,13 +207,11 @@ impl Game {
                 // The loss was of the public judgment. Knowledge of a separate hand
                 // card changes only when an effect selects it directly from that hand.
                 Self::remove_card(&mut self.seat_mut(owner).hand, entry.material.id)
+            } else if zone == Zone::Equipment {
+                self.seat_mut(owner).equipment.take(entry.material.id, true)
             } else {
                 self.take_card(owner, zone, entry.material.id)
             };
-            if zone == Zone::Equipment {
-                // Consuming the judgment selects its wrapper, leaving a distinct equipment registration.
-                self.seat_mut(owner).detached_equipment.push(material);
-            }
             Some(material)
         } else {
             self.take_unowned_card(entry.material)

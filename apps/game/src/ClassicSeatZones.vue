@@ -13,6 +13,7 @@ const props = defineProps<{
   seatNames: string[]
 }>()
 const labels = { weapon: '武', armor: '防', plus: '+马', minus: '−马' }
+const slotLabels = { weapon: '武器', armor: '防具', defenseHorse: '防御马', attackHorse: '进攻马', treasure: '宝物' }
 const absence = computed(() => {
   const clock = props.seat.rest
   if (!clock) return props.seat.out ? '已离场' : ''
@@ -47,6 +48,9 @@ const known = computed(() => props.knownHand?.map(printedFace).join(' · '))
       {{ state }}
     </div>
     <div :title="equipped || '无装备'"><span>装备</span> {{ equipped || '—' }}</div>
+    <div v-if="seat.equipmentDisabledMarkers?.length" :data-disabled-equipment="seat.id" title="已废除的装备栏">
+      <span>废栏</span> {{ seat.equipmentDisabledMarkers.map(slot => slotLabels[slot]).join(' · ') }}
+    </div>
     <div v-if="seat.detachedEquipment?.length" :data-equipment-effect="seat.id" title="实体已经离开，装备效果仍然生效">
       <span>生效</span> {{ seat.detachedEquipment.map(kind => cardName(kind)).join(' · ') }}
     </div>

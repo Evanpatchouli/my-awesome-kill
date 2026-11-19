@@ -68,7 +68,9 @@ fn active_defense_and_counter_are_vetoed_but_passive_responses_are_not() {
         card(2, CardKind::Sha),
         card(3, CardKind::Wuxie),
     ];
-    game.seat_mut(1).equipment.push(card(4, CardKind::Bagua));
+    game.seat_mut(1)
+        .equipment
+        .install_test(card(4, CardKind::Bagua));
     veto(
         &mut game,
         1,

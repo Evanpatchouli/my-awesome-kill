@@ -374,8 +374,8 @@ fn qilin_runs_during_damage_begin2_and_only_after_earlier_candidates() {
         let bow = card(2, CardKind::Qilin);
         let horse = card(3, CardKind::Dilu);
         game.seat_mut(0).hand.push(sha);
-        game.seat_mut(0).equipment.push(bow);
-        game.seat_mut(1).equipment.push(horse);
+        game.seat_mut(0).equipment.install_test(bow);
+        game.seat_mut(1).equipment.install_test(horse);
 
         let timings: &[&str] = if cancel_at == "damageBegin3" {
             &["damageBegin2", "damageBegin3"]

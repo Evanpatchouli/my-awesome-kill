@@ -132,7 +132,7 @@ fn roster_skill_ids_match_the_wire_format() {
 fn equipped_red_card_can_pay_wusheng_with_the_same_sha_target_validation() {
     let mut game = assigned(&["guanyu", "zhugeliang", "zhouyu", "huanggai"], 0);
     let red = card(1, CardKind::Qilin);
-    game.seat_mut(0).equipment.push(red);
+    game.seat_mut(0).equipment.install_test(red);
     set_face(&mut game, red.id, Suit::Heart, 5);
     play_phase(&mut game, 0);
 
@@ -239,7 +239,7 @@ fn wusheng_can_spend_zhuge_for_a_second_sha_when_paoxiao_remains() {
     let mut game = assigned(&["guanyu", "lvbu"], 0);
     game.seat_mut(0).hero = Some(hero);
     let zhuge = card(1, CardKind::Zhuge);
-    game.seat_mut(0).equipment.push(zhuge);
+    game.seat_mut(0).equipment.install_test(zhuge);
     game.seat_mut(0).hand.push(card(2, CardKind::Sha));
     set_face(&mut game, zhuge.id, Suit::Diamond, 1);
     play_phase(&mut game, 0);
@@ -463,7 +463,7 @@ fn liuli_discarding_the_weapon_cannot_move_sha_beyond_the_remaining_range() {
     let held = card(1, CardKind::Shan);
     let weapon = card(2, CardKind::Qilin);
     game.seat_mut(1).hand.push(held);
-    game.seat_mut(1).equipment.push(weapon);
+    game.seat_mut(1).equipment.install_test(weapon);
     let redirect = game.hero_triggers(HeroMoment::ShaRedirect {
         seat: 0,
         target: 1,
@@ -613,7 +613,7 @@ fn xiaoji_triggers_once_for_a_replaced_equipment_card() {
     let mut game = assigned(&["sunshangxiang", "zhouyu", "lvbu"], 0);
     let old = card(1, CardKind::Qilin);
     let replacement = card(2, CardKind::Zhuge);
-    game.seat_mut(0).equipment.push(old);
+    game.seat_mut(0).equipment.install_test(old);
     game.seat_mut(0).hand.push(replacement);
     play_phase(&mut game, 0);
     command(
@@ -740,7 +740,7 @@ fn jijiu_can_save_another_player_with_a_red_equipped_card() {
     let remedy = card(1, CardKind::Qilin);
     set_face(&mut game, remedy.id, Suit::Heart, 5);
     game.seat_mut(0).hp = 1;
-    game.seat_mut(1).equipment.push(remedy);
+    game.seat_mut(1).equipment.install_test(remedy);
     start(
         &mut game,
         Program::event(EventKind::Damage {

@@ -3,6 +3,7 @@ pub use active_skill::{ActiveSkillId, ActiveSkillRegistration};
 mod card_use;
 #[cfg(any(test, feature = "content-multi-compare"))]
 pub mod compare_content;
+mod equipment_registry;
 mod group_compare;
 pub use group_compare::{
     CompareManyFrame, CompareManyResult, CompareMode, GroupAnnouncement, RevealedBid,
@@ -86,7 +87,12 @@ enum Resolution {
     Countered(bool),
     ExpansionDiscarded(Vec<Card>),
     EquipReplacement {
-        card: Option<Card>,
+        cards: Vec<Card>,
+        cancelled: bool,
+    },
+    ButtonSelection {
+        cards: Vec<CardId>,
+        keys: Vec<equipment_registry::EquipmentRegistrationKey>,
         cancelled: bool,
     },
     CompareBid(Card),
@@ -131,6 +137,7 @@ enum Answer {
     EndPlay,
     Discard(Vec<CardId>),
     Select(Selection),
+    SelectEquipmentButtons(Vec<u32>),
     MoveCards(Option<Vec<Vec<Card>>>),
 }
 
@@ -223,6 +230,7 @@ enum Program {
         card: Card,
     },
     Choose(ChoiceRequest),
+    ChooseButton(equipment::ButtonFlow),
     CounterChoice {
         request: ChoiceRequest,
         context: CounterContext,
@@ -331,6 +339,7 @@ impl Program {
                 seat: choice.seat,
                 target: choice.target,
             },
+            Self::ChooseButton(flow) => EventKind::ChooseButton { seat: flow.seat },
             Self::Equipment(flow) => flow.kind(),
             Self::Trick(flow) => flow.kind(),
             Self::TargetTiming(flow) => flow.kind(),
@@ -385,8 +394,7 @@ struct Seat {
     role_shown: bool,
     turn_kills: u64,
     hand: Vec<Card>,
-    equipment: Vec<Card>,
-    detached_equipment: Vec<Card>,
+    equipment: equipment_registry::EquipmentArea,
     judges: Vec<Card>,
     equipment_expanded: [usize; 5],
     equipment_disabled: [usize; 5],
@@ -412,7 +420,7 @@ impl Seat {
     fn zone_mut(&mut self, zone: Zone) -> &mut Vec<Card> {
         match zone {
             Zone::Hand => &mut self.hand,
-            Zone::Equipment => &mut self.equipment,
+            Zone::Equipment => panic!("equipment mutation must preserve registrations"),
             Zone::Judgment => &mut self.judges,
             Zone::Expansion => &mut self.expansions,
         }
@@ -439,8 +447,7 @@ impl From<SeatSetup> for Seat {
             role_shown: false,
             turn_kills: 0,
             hand: setup.hand,
-            equipment: Vec::new(),
-            detached_equipment: Vec::new(),
+            equipment: equipment_registry::EquipmentArea::new(setup.id),
             judges: Vec::new(),
             equipment_expanded: [0; 5],
             equipment_disabled: [0; 5],
@@ -784,11 +791,13 @@ impl Game {
                         .filter(|c| self.is_known_hand_identity(c.id, viewer))
                         .copied()
                         .collect(),
-                    equipment: seat.equipment.clone(),
+                    equipment: seat.equipment.to_vec(),
                     detached_equipment: seat
-                        .detached_equipment
+                        .equipment
+                        .registrations()
                         .iter()
-                        .map(|card| card.kind)
+                        .filter(|entry| !entry.attached)
+                        .map(|entry| entry.card.kind)
                         .collect(),
                     judges: seat.judges.clone(),
                     equipment_disabled_markers: equipment::markers(seat),
@@ -1056,6 +1065,22 @@ impl Game {
             Action::Discard { event, cards } => {
                 Some(self.validate_discard(command.seat, event, cards)?)
             }
+            Action::SelectEquipmentButtons { event, buttons } => {
+                let choice = self.checked_choice(command.seat, event)?;
+                let options = choice
+                    .equipment_buttons
+                    .as_ref()
+                    .ok_or(RuleError::InvalidSelection)?;
+                if buttons.len() != options.required
+                    || buttons.iter().copied().collect::<HashSet<_>>().len() != buttons.len()
+                    || !buttons
+                        .iter()
+                        .all(|id| options.options.iter().any(|option| option.id == *id))
+                {
+                    return Err(RuleError::InvalidSelection);
+                }
+                Some(Answer::SelectEquipmentButtons(buttons))
+            }
             Action::MoveCards { event, moves } => {
                 Some(self.validate_move_choice(command.seat, event, moves)?)
             }
@@ -1264,6 +1289,9 @@ impl Game {
                         | Outcome::Finished(Resolution::EquipReplacement {
                             cancelled: true, ..
                         })
+                        | Outcome::Finished(Resolution::ButtonSelection {
+                            cancelled: true, ..
+                        })
                         | Outcome::Finished(Resolution::RestCancelled)
                         | Outcome::Finished(Resolution::MovedCards(MoveResult {
                             cancelled: true,
@@ -1325,6 +1353,9 @@ impl Game {
             Program::Dispatch(flow) => return self.resolve_dispatch(flow, child),
             Program::Registered(flow) => return self.resolve_registered(flow, child),
             Program::Choose(choice) => return self.resolve_selection(event, choice, None, answer),
+            Program::ChooseButton(flow) => {
+                return self.resolve_choose_button(event, flow, child, answer)
+            }
             Program::CounterChoice { request, context } => {
                 return self.resolve_selection(event, request, Some(context), answer)
             }
@@ -1438,23 +1469,33 @@ impl Game {
                 .scheduler
                 .end(Outcome::Finished(Resolution::Selected(selected))),
             None => {
-                self.decision = Some(Decision::Cards(ChoiceView {
-                    move_cards: None,
-                    event: event.id,
-                    seat: choice.seat,
-                    kind: ChoiceKind::Content,
-                    target: choice.target,
-                    min: 0,
-                    max: 0,
-                    cards: vec![],
-                    branches: choice.branches,
-                    counter,
-                    compare: None,
-                    compare_group: None,
-                }));
+                self.ask_selection(event, choice, counter);
             }
             _ => unreachable!("a content choice receives a selection"),
         }
+    }
+
+    fn ask_selection(
+        &mut self,
+        event: EventRef,
+        choice: ChoiceRequest,
+        counter: Option<CounterContext>,
+    ) {
+        self.decision = Some(Decision::Cards(ChoiceView {
+            equipment_buttons: None,
+            move_cards: None,
+            event: event.id,
+            seat: choice.seat,
+            kind: ChoiceKind::Content,
+            target: choice.target,
+            min: 0,
+            max: 0,
+            cards: vec![],
+            branches: choice.branches,
+            counter,
+            compare: None,
+            compare_group: None,
+        }));
     }
 
     fn ask_for_card(
@@ -1474,6 +1515,7 @@ impl Game {
             .map(|card| card.id)
             .collect();
         self.decision = Some(Decision::Cards(ChoiceView {
+            equipment_buttons: None,
             move_cards: None,
             event: event.id,
             seat,
@@ -1569,7 +1611,11 @@ impl Game {
     }
 
     fn take_card(&mut self, seat: SeatId, zone: Zone, id: CardId) -> Card {
-        let card = Self::remove_card(self.seat_mut(seat).zone_mut(zone), id);
+        let card = if zone == Zone::Equipment {
+            self.seat_mut(seat).equipment.take(id, false)
+        } else {
+            Self::remove_card(self.seat_mut(seat).zone_mut(zone), id)
+        };
         if matches!(zone, Zone::Hand) {
             self.known_to_all.remove(&id);
             self.known_to_seats.remove(&id);

@@ -3,16 +3,208 @@ mod response;
 mod skill;
 
 use crate::classic::PlannedUse;
+use crate::equipment_registry::EquipmentRegistrationKey;
 use crate::scheduler::{EventRef, Outcome};
 use crate::CounterContext;
 use crate::{
-    Card, CardId, CardKind, ChoiceBranch, ChoiceRequest, EquipmentSlot, EquipmentSlotState,
+    Answer, Card, CardId, CardKind, ChoiceBranch, ChoiceRequest, EquipmentSlot, EquipmentSlotState,
     EventKind, Game, Program, Resolution, RuleError, Seat, SeatId, VirtualPlay, Zone,
 };
 
+#[derive(Clone, Copy)]
+enum ButtonStage {
+    Before,
+    Begin,
+    Ask,
+    End,
+    After,
+    Finish,
+    Cancel,
+    FinishCancelled,
+}
+#[derive(Clone)]
+pub(crate) struct ButtonFlow {
+    pub(crate) seat: SeatId,
+    pub(crate) links: Vec<CardId>,
+    choices: Vec<CardId>,
+    equipment_options: Option<Vec<(u32, EquipmentRegistrationKey, crate::EquipmentButton)>>,
+    physical_keys: Vec<(CardId, EquipmentRegistrationKey)>,
+    selected_buttons: Vec<u32>,
+    count: usize,
+    stage: ButtonStage,
+}
+impl ButtonFlow {
+    pub(crate) fn registration_links(&self) -> &[u32] {
+        &self.selected_buttons
+    }
+    fn new(seat: SeatId, choices: Vec<CardId>, count: usize) -> Self {
+        Self {
+            seat,
+            choices,
+            equipment_options: None,
+            physical_keys: Vec::new(),
+            selected_buttons: Vec::new(),
+            count,
+            links: Vec::new(),
+            stage: ButtonStage::Before,
+        }
+    }
+    fn physical_registrations(
+        seat: SeatId,
+        cards: &[Card],
+        entries: &[crate::equipment_registry::EquipmentRegistration],
+        count: usize,
+    ) -> Self {
+        let mut flow = Self::new(seat, cards.iter().map(|card| card.id).collect(), count);
+        flow.physical_keys = cards
+            .iter()
+            .filter_map(|card| {
+                entries
+                    .iter()
+                    .find(|entry| entry.attached && entry.card.id == card.id)
+                    .map(|entry| (card.id, entry.key))
+            })
+            .collect();
+        flow
+    }
+    fn registrations(
+        seat: SeatId,
+        entries: &[crate::equipment_registry::EquipmentRegistration],
+        count: usize,
+    ) -> Self {
+        let options = entries
+            .iter()
+            .enumerate()
+            .map(|(id, entry)| {
+                let id = id as u32;
+                (
+                    id,
+                    entry.key,
+                    crate::EquipmentButton {
+                        id,
+                        kind: entry.card.kind,
+                        card: entry.attached.then_some(entry.card.id),
+                    },
+                )
+            })
+            .collect();
+        Self {
+            seat,
+            choices: Vec::new(),
+            equipment_options: Some(options),
+            physical_keys: Vec::new(),
+            selected_buttons: Vec::new(),
+            count,
+            links: Vec::new(),
+            stage: ButtonStage::Before,
+        }
+    }
+}
+impl Game {
+    pub(crate) fn resolve_choose_button(
+        &mut self,
+        event: EventRef,
+        mut flow: ButtonFlow,
+        child: Option<Outcome<Resolution>>,
+        answer: &mut Option<Answer>,
+    ) {
+        use ButtonStage::*;
+        if matches!(child, Some(Outcome::Cancelled)) && !matches!(flow.stage, FinishCancelled) {
+            flow.stage = Cancel;
+        }
+        loop {
+            let (timing, next) = match flow.stage {
+                Before => ("chooseButtonBefore", Begin),
+                Begin => ("chooseButtonBegin", Ask),
+                Ask if !self.is_in(flow.seat) => {
+                    flow.stage = Finish;
+                    continue;
+                }
+                Ask => match answer.take() {
+                    Some(Answer::Select(selection)) => {
+                        flow.links = selection.cards;
+                        flow.stage = End;
+                        continue;
+                    }
+                    Some(Answer::SelectEquipmentButtons(buttons)) => {
+                        flow.selected_buttons = buttons;
+                        flow.stage = End;
+                        continue;
+                    }
+                    None => {
+                        self.ask_selection(
+                            event,
+                            ChoiceRequest {
+                                seat: flow.seat,
+                                target: None,
+                                branches: vec![branch(
+                                    0,
+                                    "选择装备",
+                                    flow.choices.clone(),
+                                    flow.count,
+                                )],
+                            },
+                            None,
+                        );
+                        if let Some(options) = &flow.equipment_options {
+                            if let Some(crate::Decision::Cards(choice)) = self.decision.as_mut() {
+                                choice.branches.clear();
+                                choice.equipment_buttons = Some(crate::EquipmentButtons {
+                                    required: flow.count,
+                                    options: options
+                                        .iter()
+                                        .map(|(_, _, option)| option.clone())
+                                        .collect(),
+                                });
+                            }
+                        }
+                        self.scheduler.replace_current(Program::ChooseButton(flow));
+                        return;
+                    }
+                    _ => unreachable!("a button choice receives a selection"),
+                },
+                End => ("chooseButtonEnd", After),
+                After => ("chooseButtonAfter", Finish),
+                Cancel => ("chooseButtonCancelled", FinishCancelled),
+                Finish | FinishCancelled => {
+                    self.scheduler
+                        .end(Outcome::Finished(Resolution::ButtonSelection {
+                            cards: flow.links.clone(),
+                            keys: flow
+                                .equipment_options
+                                .as_ref()
+                                .map(|options| {
+                                    options
+                                        .iter()
+                                        .filter(|(id, _, _)| flow.selected_buttons.contains(id))
+                                        .map(|(_, key, _)| *key)
+                                        .collect()
+                                })
+                                .unwrap_or_else(|| {
+                                    flow.physical_keys
+                                        .iter()
+                                        .filter(|(id, _)| flow.links.contains(id))
+                                        .map(|(_, key)| *key)
+                                        .collect()
+                                }),
+                            cancelled: matches!(flow.stage, FinishCancelled),
+                        }));
+                    return;
+                }
+            };
+            flow.stage = next;
+            self.scheduler
+                .replace_current(Program::ChooseButton(flow.clone()));
+            if self.queue_timing(timing, Some(flow.seat), None, None, 0, &[]) {
+                return;
+            }
+        }
+    }
+}
+
 pub(crate) type Slot = EquipmentSlot;
 
-fn slot(kind: CardKind) -> Option<Slot> {
+pub(crate) fn slot(kind: CardKind) -> Option<Slot> {
     use CardKind::*;
     match kind {
         Zhuge | Cixiong | Qinggang | Qinglong | Zhangba | Guanshi | Fangtian | Qilin => {
@@ -36,7 +228,10 @@ pub(crate) fn has_slot(seat: &Seat, wanted: Slot, ignored: Option<CardId>) -> bo
 
 impl Seat {
     fn registered_equipment(&self) -> impl Iterator<Item = &Card> {
-        self.equipment.iter().chain(&self.detached_equipment)
+        self.equipment
+            .registrations()
+            .iter()
+            .map(|entry| &entry.card)
     }
 }
 
@@ -78,6 +273,7 @@ enum ReplacementStep {
     Before,
     Begin,
     Select,
+    Selected,
     End,
     After,
     Finish,
@@ -89,7 +285,7 @@ enum ReplacementStep {
 pub(crate) struct Replacement {
     seat: SeatId,
     incoming: Card,
-    selected: Option<Card>,
+    selected: Vec<Card>,
     step: ReplacementStep,
 }
 
@@ -312,6 +508,7 @@ impl Game {
                         .replace_current(program(EquipStep::DirectEnd));
                     return;
                 }
+                self.known_to_all.insert(card.id);
                 self.scheduler.replace_current(program(EquipStep::Replace));
                 self.scheduler
                     .next(self.lose_to_own_special(seat, card, Zone::Hand));
@@ -358,22 +555,33 @@ impl Game {
                     .next(Program::Equipment(Flow::Replace(Replacement {
                         seat,
                         incoming: card,
-                        selected: None,
+                        selected: Vec::new(),
                         step: ReplacementStep::Before,
                     })));
             }
             EquipStep::ApplyReplacement => {
                 self.scheduler.replace_current(program(EquipStep::Install));
-                if let Some(Outcome::Finished(Resolution::EquipReplacement {
-                    card: Some(old),
-                    ..
-                })) = child
-                {
-                    if let Some((holder, zone, material)) = self.held_card_location(old.id) {
-                        if holder == seat {
-                            self.scheduler
-                                .next(self.equip_replacement_loss_program(seat, zone, material));
-                        }
+                if let Some(Outcome::Finished(Resolution::EquipReplacement { cards, .. })) = child {
+                    let live: Vec<_> = cards
+                        .into_iter()
+                        .filter_map(|old| self.held_card_location(old.id))
+                        .filter(|(holder, _, material)| {
+                            *holder == seat && !self.is_virtual_judgment_material(seat, material.id)
+                        })
+                        .collect();
+                    if let [(_, zone, material)] = live.as_slice() {
+                        self.scheduler
+                            .next(self.equip_replacement_loss_program(seat, *zone, *material));
+                    } else if !live.is_empty() {
+                        use super::recast::{batch_movement::BatchMovement, Flow as RecastFlow};
+                        let cards = live
+                            .into_iter()
+                            .map(|(_, _, card)| card)
+                            .collect::<Vec<_>>();
+                        self.scheduler
+                            .next(Program::Recast(RecastFlow::BatchMovement(
+                                BatchMovement::equipment_replacement_loss(seat, cards.into()),
+                            )));
                     }
                 }
             }
@@ -403,7 +611,7 @@ impl Game {
                     if let Some(index) = self.transferring.iter().position(|&c| c == card) {
                         if self.is_in(seat) {
                             let taken = self.transferring.remove(index);
-                            self.seat_mut(seat).equipment.push(taken);
+                            self.install_equipment(seat, taken);
                         } else {
                             self.scheduler.next(Program::JudgmentCleanup(
                                 super::hero_integration::Cleanup::Cards {
@@ -424,7 +632,7 @@ impl Game {
                     return;
                 }
                 let card = self.take_resolving(card.id);
-                self.seat_mut(seat).equipment.push(card);
+                self.install_equipment(seat, card);
                 self.finish();
             }
             EquipStep::DirectFinish => self.finish(),
@@ -455,11 +663,110 @@ impl Game {
                             .seat(replacement.seat)
                             .expect("the equipping seat exists");
                         let wanted = slot(replacement.incoming.kind);
-                        replacement.selected = player
+                        let entries: Vec<_> = player
                             .equipment
+                            .registrations()
                             .iter()
-                            .copied()
-                            .find(|card| slot(card.kind) == wanted);
+                            .filter(|entry| slot(entry.card.kind) == wanted)
+                            .cloned()
+                            .collect();
+                        let required = entries.len().saturating_add(1).saturating_sub(
+                            self.equipment_slot_state(
+                                replacement.seat,
+                                wanted.expect("equipment slot"),
+                            )
+                            .equipable,
+                        );
+                        if required >= entries.len() {
+                            replacement.selected = player
+                                .equipment
+                                .iter()
+                                .copied()
+                                .filter(|card| {
+                                    entries
+                                        .iter()
+                                        .any(|entry| entry.attached && entry.card == *card)
+                                })
+                                .collect();
+                            replacement.step = End;
+                            continue;
+                        }
+                        if entries.iter().any(|entry| !entry.attached) {
+                            replacement.step = Selected;
+                            self.scheduler
+                                .next(Program::ChooseButton(ButtonFlow::registrations(
+                                    replacement.seat,
+                                    &entries,
+                                    required,
+                                )));
+                            self.scheduler
+                                .replace_current(Program::Equipment(Flow::Replace(replacement)));
+                            return;
+                        }
+                        let choices: Vec<_> = entries
+                            .iter()
+                            .filter(|entry| entry.attached)
+                            .map(|entry| entry.card)
+                            .collect();
+                        if choices.len() > 1 {
+                            replacement.step = Selected;
+                            self.scheduler.next(Program::ChooseButton(
+                                ButtonFlow::physical_registrations(
+                                    replacement.seat,
+                                    &choices,
+                                    &entries,
+                                    required,
+                                ),
+                            ));
+                            self.scheduler
+                                .replace_current(Program::Equipment(Flow::Replace(replacement)));
+                            return;
+                        }
+                        replacement.selected = choices;
+                    }
+                    replacement.step = End;
+                    continue;
+                }
+                Selected => {
+                    if let Some(Outcome::Finished(Resolution::ButtonSelection {
+                        cards,
+                        keys,
+                        ..
+                    })) = child.as_ref()
+                    {
+                        replacement.selected = if !keys.is_empty() {
+                            self.seat(replacement.seat)
+                                .ok()
+                                .map(|player| {
+                                    player
+                                        .equipment
+                                        .iter()
+                                        .copied()
+                                        .filter(|card| {
+                                            keys.iter().any(|&key| {
+                                                player.equipment.attached(key) == Some(*card)
+                                            })
+                                        })
+                                        .collect()
+                                })
+                                .unwrap_or_default()
+                        } else {
+                            self.seat(replacement.seat)
+                                .ok()
+                                .map(|player| {
+                                    player
+                                        .equipment
+                                        .iter()
+                                        .copied()
+                                        .filter(|card| {
+                                            cards.contains(&card.id)
+                                                && slot(card.kind)
+                                                    == slot(replacement.incoming.kind)
+                                        })
+                                        .collect()
+                                })
+                                .unwrap_or_default()
+                        };
                     }
                     replacement.step = End;
                     continue;
@@ -470,26 +777,23 @@ impl Game {
                 Finish | FinishCancelled => {
                     self.scheduler
                         .end(Outcome::Finished(Resolution::EquipReplacement {
-                            card: replacement.selected,
+                            cards: replacement.selected,
                             cancelled: matches!(replacement.step, FinishCancelled),
                         }));
                     return;
                 }
             };
             replacement.step = next;
-            if self.queue_timing(
-                timing,
-                Some(replacement.seat),
-                None,
-                None,
-                1,
-                &[replacement.incoming],
-            ) {
+            if self.queue_timing(timing, Some(replacement.seat), None, None, 1, &[]) {
                 self.scheduler
                     .replace_current(Program::Equipment(Flow::Replace(replacement)));
                 return;
             }
         }
+    }
+
+    fn install_equipment(&mut self, seat: SeatId, card: Card) {
+        self.seat_mut(seat).equipment.install(card);
     }
 
     pub(crate) fn weapon(&self, seat: SeatId) -> Option<Card> {
@@ -763,6 +1067,9 @@ enum AreaStage {
     Before,
     Begin,
     Apply,
+    Select,
+    Selected,
+    Publish,
     End,
     After,
     Finish,
@@ -775,8 +1082,16 @@ pub(crate) struct AreaFlow {
     source: Option<SeatId>,
     slots: Vec<EquipmentSlot>,
     cards: Vec<Card>,
-    disable: bool,
+    candidates: Vec<Card>,
+    index: usize,
+    op: AreaOp,
     stage: AreaStage,
+}
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(crate) enum AreaOp {
+    Disable,
+    Enable,
+    Expand,
 }
 impl AreaFlow {
     pub(crate) fn slots(&self) -> &[EquipmentSlot] {
@@ -786,28 +1101,33 @@ impl AreaFlow {
         seat: SeatId,
         source: Option<SeatId>,
         slots: Vec<EquipmentSlot>,
-        disable: bool,
+        op: AreaOp,
     ) -> Self {
         Self {
             seat,
             source,
             slots,
             cards: Vec::new(),
-            disable,
+            candidates: Vec::new(),
+            index: 0,
+            op,
             stage: AreaStage::Before,
         }
     }
     pub(crate) fn kind(&self) -> EventKind {
-        if self.disable {
-            EventKind::DisableEquip {
+        match self.op {
+            AreaOp::Disable => EventKind::DisableEquip {
                 seat: self.seat,
                 source: self.source,
-            }
-        } else {
-            EventKind::EnableEquip {
+            },
+            AreaOp::Enable => EventKind::EnableEquip {
                 seat: self.seat,
                 source: self.source,
-            }
+            },
+            AreaOp::Expand => EventKind::ExpandEquip {
+                seat: self.seat,
+                source: self.source,
+            },
         }
     }
 }
@@ -853,60 +1173,135 @@ impl Game {
             flow.stage = Cancel;
         }
         loop {
-            let (disable, enable, next) = match flow.stage {
-                Before => ("disableEquipBefore", "enableEquipBefore", Begin),
-                Begin => ("disableEquipBegin", "enableEquipBegin", Apply),
+            let (disable, enable, expand, next) = match flow.stage {
+                Before => (
+                    "disableEquipBefore",
+                    "enableEquipBefore",
+                    "expandEquipBefore",
+                    Begin,
+                ),
+                Begin => (
+                    "disableEquipBegin",
+                    "enableEquipBegin",
+                    "expandEquipBegin",
+                    Apply,
+                ),
                 Apply => {
                     if !self.is_in(flow.seat) {
                         flow.stage = End;
                         continue;
                     }
-                    let mut changed = Vec::new();
+                    if flow.op == AreaOp::Disable {
+                        flow.stage = Select;
+                        continue;
+                    }
                     for &slot in &flow.slots {
                         let i = slot_index(slot);
                         let player = self.seat_mut(flow.seat);
-                        if flow.disable
-                            && player.equipment_disabled[i] < 1 + player.equipment_expanded[i]
-                        {
-                            player.equipment_disabled[i] += 1;
-                            player.equipment_markers[i] += 1;
-                            changed.push(slot);
-                        } else if !flow.disable && player.equipment_disabled[i] > 0 {
+                        if flow.op == AreaOp::Expand {
+                            player.equipment_expanded[i] += 1;
+                        } else if flow.op == AreaOp::Enable && player.equipment_disabled[i] > 0 {
                             player.equipment_disabled[i] -= 1;
                             player.equipment_markers[i] =
                                 player.equipment_markers[i].saturating_sub(1);
                         }
                     }
                     flow.stage = End;
-                    if flow.disable && !changed.is_empty() {
-                        let cards: Vec<_> = self
-                            .seat(flow.seat)
-                            .unwrap()
-                            .equipment
-                            .iter()
-                            .copied()
-                            .filter(|card| slot(card.kind).is_some_and(|s| changed.contains(&s)))
-                            .collect();
-                        if !cards.is_empty() {
-                            flow.cards = cards.clone();
-                            use super::recast::{
-                                batch_movement::BatchMovement, Flow as RecastFlow,
-                            };
-                            self.scheduler
-                                .next(Program::Recast(RecastFlow::BatchMovement(
-                                    BatchMovement::equipment_discard(flow.seat, cards.into()),
-                                )));
-                            self.scheduler.replace_current(Program::EquipArea(flow));
-                            return;
+                    continue;
+                }
+                Select => {
+                    if flow.index == SLOTS.len() {
+                        flow.stage = Publish;
+                        continue;
+                    }
+                    let i = flow.index;
+                    flow.index += 1;
+                    let count = flow.slots.iter().filter(|&&slot| slot == SLOTS[i]).count();
+                    if count == 0 {
+                        continue;
+                    }
+                    let player = self.seat_mut(flow.seat);
+                    let enabled = (1 + player.equipment_expanded[i])
+                        .saturating_sub(player.equipment_disabled[i]);
+                    let change = count.min(enabled);
+                    if change == 0 {
+                        continue;
+                    }
+                    player.equipment_disabled[i] += change;
+                    let wanted = SLOTS[i];
+                    let capacity = self.equipment_slot_state(flow.seat, wanted).enabled;
+                    let cards: Vec<_> = self
+                        .seat(flow.seat)
+                        .unwrap()
+                        .equipment
+                        .iter()
+                        .copied()
+                        .filter(|card| slot(card.kind) == Some(wanted))
+                        .collect();
+                    let excess = cards.len().saturating_sub(capacity);
+                    if excess == 0 {
+                        continue;
+                    }
+                    if capacity == 0 {
+                        flow.cards.extend(cards);
+                        continue;
+                    }
+                    let chooser = flow
+                        .source
+                        .filter(|&seat| self.is_in(seat))
+                        .unwrap_or(flow.seat);
+                    flow.candidates = cards.clone();
+                    flow.stage = Selected;
+                    self.scheduler.next(Program::ChooseButton(ButtonFlow::new(
+                        chooser,
+                        cards.iter().map(|card| card.id).collect(),
+                        excess,
+                    )));
+                    self.scheduler.replace_current(Program::EquipArea(flow));
+                    return;
+                }
+                Selected => {
+                    if let Some(Outcome::Finished(Resolution::ButtonSelection { cards, .. })) =
+                        child.as_ref()
+                    {
+                        for &id in cards {
+                            if let Some(card) =
+                                flow.candidates.iter().find(|card| card.id == id).copied()
+                            {
+                                flow.cards.push(card);
+                            }
                         }
+                    }
+                    flow.stage = Select;
+                    continue;
+                }
+                Publish => {
+                    let player = self.seat_mut(flow.seat);
+                    player.equipment_markers = player.equipment_disabled;
+                    flow.stage = End;
+                    if !flow.cards.is_empty() {
+                        let cards = flow.cards.clone();
+                        use super::recast::{batch_movement::BatchMovement, Flow as RecastFlow};
+                        self.scheduler
+                            .next(Program::Recast(RecastFlow::BatchMovement(
+                                BatchMovement::equipment_discard(flow.seat, cards.into()),
+                            )));
+                        self.scheduler.replace_current(Program::EquipArea(flow));
+                        return;
                     }
                     continue;
                 }
-                End => ("disableEquipEnd", "enableEquipEnd", After),
-                After => ("disableEquipAfter", "enableEquipAfter", Finish),
+                End => ("disableEquipEnd", "enableEquipEnd", "expandEquipEnd", After),
+                After => (
+                    "disableEquipAfter",
+                    "enableEquipAfter",
+                    "expandEquipAfter",
+                    Finish,
+                ),
                 Cancel => (
                     "disableEquipCancelled",
                     "enableEquipCancelled",
+                    "expandEquipCancelled",
                     FinishCancelled,
                 ),
                 Finish => {
@@ -920,7 +1315,11 @@ impl Game {
             };
             flow.stage = next;
             if self.queue_timing(
-                if flow.disable { disable } else { enable },
+                match flow.op {
+                    AreaOp::Disable => disable,
+                    AreaOp::Enable => enable,
+                    AreaOp::Expand => expand,
+                },
                 Some(flow.seat),
                 flow.source,
                 None,

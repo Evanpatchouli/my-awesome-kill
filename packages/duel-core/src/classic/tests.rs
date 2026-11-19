@@ -177,9 +177,9 @@ fn lord_penalty_cleans_hand_and_equipment_after_death_and_skips_dead_seat() {
     let dead_equipment = card(4, CardKind::Zhuge);
     let dead_judgment = card(5, CardKind::Lebu);
     game.seat_mut(0).hand = vec![lord_hand];
-    game.seat_mut(0).equipment = vec![lord_equipment];
+    game.seat_mut(0).equipment.set_test(vec![lord_equipment]);
     game.seat_mut(1).hand = vec![dead_hand];
-    game.seat_mut(1).equipment = vec![dead_equipment];
+    game.seat_mut(1).equipment.set_test(vec![dead_equipment]);
     game.seat_mut(1).judges = vec![dead_judgment];
     game.seat_mut(1).hp = 1;
     assert_eq!(game.distance(0, 2), Ok(2));

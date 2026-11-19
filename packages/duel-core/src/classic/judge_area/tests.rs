@@ -236,7 +236,7 @@ fn four_reference_trials_match_real_skill_requests_callbacks_and_stages() {
         );
         let mut cards = vec![card(1, CardKind::Sha), card(2, CardKind::Zhuge)];
         game.seat_mut(1).hand.push(cards[0]);
-        game.seat_mut(1).equipment.push(cards[1]);
+        game.seat_mut(1).equipment.install_test(cards[1]);
         if trial_name != "empty" {
             let material = card(3, CardKind::Sha);
             let lightning = card(4, CardKind::Shandian);

@@ -177,9 +177,11 @@ fn propagation_runs_damage_begin2_without_activating_qilin_for_another_mount() {
     game.seat_mut(7).hand.push(sha);
     game.set_sha_nature(sha.id, Some(DamageNature::Fire))
         .unwrap();
-    game.seat_mut(7).equipment.push(card(90, CardKind::Qilin));
+    game.seat_mut(7)
+        .equipment
+        .install_test(card(90, CardKind::Qilin));
     let horse = card(91, CardKind::Dilu);
-    game.seat_mut(10).equipment.push(horse);
+    game.seat_mut(10).equipment.install_test(horse);
     for id in [99, 10] {
         game.seat_mut(id).linked = true;
     }

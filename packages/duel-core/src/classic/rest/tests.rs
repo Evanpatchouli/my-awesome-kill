@@ -138,7 +138,7 @@ fn manual_rest_and_end_match_the_reference_requests_and_callbacks() {
     let player = game.seat_mut(1);
     player.max_hp = 4;
     player.hand.push(hand);
-    player.equipment.push(equipment);
+    player.equipment.install_test(equipment);
     player.linked = true;
     player.turned_over = true;
 

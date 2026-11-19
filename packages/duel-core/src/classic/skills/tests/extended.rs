@@ -61,7 +61,7 @@ fn mashu_reaches_an_opposite_seat_and_red_tieji_bypasses_its_shan() {
 fn guose_moves_a_diamond_equipment_card_to_judgment_and_respects_qianxun() {
     let mut game = assigned(&["daqiao", "luxun", "lvbu"], 0);
     let cost = card(1, CardKind::Qilin);
-    game.seat_mut(0).equipment.push(cost);
+    game.seat_mut(0).equipment.install_test(cost);
     set_face(&mut game, cost.id, Suit::Diamond, 9);
     play_phase(&mut game, 0);
     let view = game.view(Some(0)).unwrap();
@@ -91,7 +91,7 @@ fn qixi_turns_a_black_equipped_card_into_guohe() {
     let mut game = assigned(&["ganning", "zhouyu", "lvbu"], 0);
     let cost = card(1, CardKind::Qilin);
     let removed = card(2, CardKind::Tao);
-    game.seat_mut(0).equipment.push(cost);
+    game.seat_mut(0).equipment.install_test(cost);
     game.seat_mut(1).hand.push(removed);
     set_face(&mut game, cost.id, Suit::Spade, 9);
     play_phase(&mut game, 0);
@@ -332,7 +332,7 @@ fn keji_skips_discard_only_if_no_sha_was_played() {
 fn fankui_takes_a_selected_equipment_card_from_the_damage_source() {
     let mut game = assigned(&["simayi", "zhouyu", "lvbu"], 0);
     let gained = card(1, CardKind::Qilin);
-    game.seat_mut(2).equipment.push(gained);
+    game.seat_mut(2).equipment.install_test(gained);
     deal_damage(&mut game, 2, 0);
     select(&mut game, 0, 2, vec![gained.id], vec![]);
     assert!(game.seat(2).unwrap().equipment.is_empty());
@@ -357,7 +357,7 @@ fn ganglie_lets_the_damage_source_discard_two_cards_to_avoid_retaliation() {
 fn zhiheng_accepts_equipment_and_hand_costs_once_each_play_phase() {
     let mut game = assigned(&["sunquan", "zhouyu", "lvbu"], 0);
     let costs = [card(1, CardKind::Qilin), card(2, CardKind::Shan)];
-    game.seat_mut(0).equipment.push(costs[0]);
+    game.seat_mut(0).equipment.install_test(costs[0]);
     game.seat_mut(0).hand.push(costs[1]);
     play_phase(&mut game, 0);
     skill(&mut game, 0, SkillId::Zhiheng, vec![1, 2], vec![]);

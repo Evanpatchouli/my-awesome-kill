@@ -462,7 +462,7 @@ fn black_equipment_diverted_from_expansion_keeps_live_buff() {
     let slash = game
         .create_content_card(CardKind::Sha, Suit::Club, 3, None)
         .unwrap();
-    game.seat_mut(0).equipment.push(equipment);
+    game.seat_mut(0).equipment.install_test(equipment);
     game.seat_mut(0).hand.push(slash);
     let active = game.register_active_skill(registration(0)).unwrap();
     submit(
@@ -575,7 +575,7 @@ fn stacked_holders_remove_dead_holders_material_once_and_survivor_remains() {
     game.seat_mut(1).hand.push(mat1);
     game.seat_mut(1).hp = 3;
     game.seat_mut(2).hand.extend([first, second]);
-    game.seat_mut(2).equipment.push(weapon);
+    game.seat_mut(2).equipment.install_test(weapon);
     let death_rows = Arc::new(Mutex::new(Vec::new()));
     let output = death_rows.clone();
     game.timing_observer = Some(Arc::new(move |game, event| {
@@ -753,7 +753,7 @@ fn virtual_slash_and_fire_chain_use_the_same_bonus_without_reapplying_it() {
         .create_content_card(CardKind::Zhuge, Suit::Club, 1, None)
         .unwrap();
     game.seat_mut(0).hand.extend([material, red, fire]);
-    game.seat_mut(0).equipment.push(weapon);
+    game.seat_mut(0).equipment.install_test(weapon);
     let active = game.register_active_skill(registration(0)).unwrap();
     submit(
         &mut game,
@@ -974,7 +974,7 @@ fn expansion_identity_knowledge_matches_hand_and_equipment_reference() {
             )
             .unwrap();
         if equipped {
-            game.seat_mut(0).equipment.push(material);
+            game.seat_mut(0).equipment.install_test(material);
         } else {
             game.seat_mut(0).hand.push(material);
         }
@@ -1060,7 +1060,7 @@ fn death_during_expansion_transit_leaves_public_material_in_special() {
     let material = game
         .create_content_card(CardKind::Qinggang, Suit::Spade, 6, None)
         .unwrap();
-    game.seat_mut(1).equipment.push(material);
+    game.seat_mut(1).equipment.install_test(material);
     let active = game.register_active_skill(registration(1)).unwrap();
     let rows = Arc::new(Mutex::new(Vec::new()));
     let output = rows.clone();

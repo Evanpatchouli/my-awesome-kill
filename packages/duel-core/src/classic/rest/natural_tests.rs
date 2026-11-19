@@ -479,11 +479,11 @@ fn fixture() -> Game {
     // come from test setup. Its later death, clean-up and draw use normal rules.
     let player = game.seat_mut(B);
     player.hand.truncate(1);
-    player.equipment.push(card(700, CardKind::Zhuge));
+    player.equipment.install_test(card(700, CardKind::Zhuge));
     player.linked = true;
     let player = game.seat_mut(E);
     player.hand = vec![REAL_HAND];
-    player.equipment.push(REAL_EQUIP);
+    player.equipment.install_test(REAL_EQUIP);
     player.linked = true;
     for seat in [D, E, F, G] {
         game.seat_mut(seat).hp = 2;
