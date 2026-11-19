@@ -224,7 +224,9 @@ onBeforeUnmount(() => effects?.revert())
   color: #fff0cd;
   background: #17221ff5;
   border: 1px solid #b89a66;
-  font: 700 11px/1.45 var(--font-kai);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.45;
 }
 .effect-draw-count { right: -5px; top: -4px; }
 .effect-label { left: 50%; bottom: -8px; transform: translateX(-50%); }
@@ -264,7 +266,9 @@ onBeforeUnmount(() => effects?.revert())
 }
 .effect-hp {
   color: #ffe0b3;
-  font: 800 clamp(23px, 4.2dvh, 47px)/1 var(--font-kai);
+  font-size: clamp(23px, 4.2dvh, 47px);
+  font-weight: 800;
+  line-height: 1;
   text-shadow: 0 1px 2px #452014, 0 0 11px #e4482b, 0 0 17px #992916;
 }
 [data-effect='heal'] .effect-hp {
@@ -277,7 +281,9 @@ onBeforeUnmount(() => effects?.revert())
   border: 1px solid #af915b;
   background: #17221fed;
   color: #f7e7bd;
-  font: 700 clamp(13px, 2.4dvh, 24px)/1.25 var(--font-kai);
+  font-size: clamp(13px, 2.4dvh, 24px);
+  font-weight: 700;
+  line-height: 1.25;
   text-align: center;
   white-space: normal;
 }

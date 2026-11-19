@@ -47,7 +47,6 @@
   background:
     radial-gradient(ellipse at 50% 53%, transparent 36%, #161d1980 100%),
     #535e4c url('./assets/battle/atlas.webp') center / 100% 100% no-repeat;
-  font-family: var(--font-kai);
   font-size: clamp(11px, 1.05vw, 16px);
   font-variant-numeric: tabular-nums;
 }
@@ -279,7 +278,9 @@
   background: linear-gradient(90deg, #1c211f, #2b3129);
 }
 .seat-name, .self-name {
-  font: 700 clamp(12px, 1.4vw, 24px) / 1.1 var(--font-kai);
+  font-size: clamp(12px, 1.4vw, 24px);
+  font-weight: 700;
+  line-height: 1.1;
   white-space: nowrap;
   min-width: 0;
   text-overflow: ellipsis;
@@ -290,7 +291,9 @@
   right: 3px;
   bottom: calc(100% + var(--pip-size) + 7px);
   color: #ead0a3;
-  font: 700 .75em / 1.2 var(--font-kai);
+  font-size: .75em;
+  font-weight: 700;
+  line-height: 1.2;
   padding: 1px;
   background: #242923e8;
   border: 1px solid #b39b6c82;
@@ -307,7 +310,9 @@
   border: 1px solid #df9886;
   color: #ffd4ba;
   background: #642d26de;
-  font: bold clamp(14px, 2vw, 31px) / 1 var(--font-kai);
+  font-size: clamp(14px, 2vw, 31px);
+  font-weight: 700;
+  line-height: 1;
   transform: translate(-50%, -50%) rotate(-9deg);
   white-space: nowrap;
 }
@@ -433,7 +438,9 @@
 .classic-center-surface h1 {
   margin: 0;
   max-width: min(100%, 68ch);
-  font: 700 clamp(14px, 1.6vw, 27px) / 1.25 var(--font-kai);
+  font-size: clamp(14px, 1.6vw, 27px);
+  font-weight: 700;
+  line-height: 1.25;
   color: var(--battle-ink);
 }
 .classic-action-area:not(.has-result) .classic-center-surface h1 {
@@ -515,7 +522,6 @@
   border: 0;
   background: var(--button-ink) center / 100% 100% no-repeat;
   color: var(--battle-ink);
-  font-family: var(--font-kai);
   font-weight: 700;
   transition: filter .16s;
 }
@@ -627,7 +633,9 @@
   z-index: 1;
   align-self: flex-start;
   color: currentColor;
-  font: 700 clamp(9px, calc(var(--card-height) * .128), 23px) / 1 var(--font-kai);
+  font-size: clamp(9px, calc(var(--card-height) * .128), 23px);
+  font-weight: 700;
+  line-height: 1;
 }
 .classic-board .playing-card > strong {
   position: relative;
@@ -635,7 +643,9 @@
   width: 100%;
   max-width: 100%;
   margin: 0;
-  font: 700 clamp(13px, calc(var(--card-height) * .24), 37px) / 1.02 var(--font-kai);
+  font-size: clamp(13px, calc(var(--card-height) * .24), 37px);
+  font-weight: 700;
+  line-height: 1.02;
 }
 .classic-board .playing-card.long-name > strong {
   font-size: clamp(9px, calc(var(--card-height) * .142), 25px);

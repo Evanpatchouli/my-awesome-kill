@@ -112,7 +112,6 @@ function chooseFile(event: Event) {
 }
 .pick-heading h1,
 .pick-detail h2 {
-  font-family: var(--font-kai);
   font-size: clamp(27px, 3vw, 46px);
   margin: 0;
 }
