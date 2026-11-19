@@ -20,6 +20,7 @@ import { checkJudgeArea, installJudgeArea } from './reference-judge-area.mjs';
 import { checkJudgeInterruptions, installJudgeInterruptions } from './reference-judge-interruptions.mjs';
 import { checkJudgePayment, installJudgePayment } from './reference-judge-payment.mjs';
 import { checkEquipSlots, installEquipSlots } from './reference-equip-slots.mjs';
+import { checkMultiWeaponCombat, installMultiWeaponCombat } from './reference-multi-weapon-combat.mjs';
 import { checkVirtualEquipProbe, installVirtualEquipProbe } from './reference-virtual-equip-probe.mjs';
 import { checkVirtualEquipCombat, installVirtualEquipCombat } from './reference-virtual-equip-combat.mjs';
 import { checkVirtualJudgeProbe, installVirtualJudgeProbe } from './reference-virtual-judge-probe.mjs';
@@ -87,6 +88,7 @@ const descriptions = new Map([
   ['judge-interruptions', 'judgment-area interruptions, retained cards and lightning return'],
   ['judge-payment', 'delayed-card payment interruptions and judgment-zone card movement'],
   ['equip-slots', 'ordinary, disabled and expanded equipment slots'],
+  ['multi-weapon-combat', 'multiple weapon combat and trigger ordering'],
   ['virtual-equip-discard-first', 'virtual judgment material equipped during discard then loss'],
   ['virtual-equip-lose-first', 'virtual judgment material equipped during loss then discard'],
   ['virtual-equip-combat', 'black attack against armor with and without an orphaned weapon'],
@@ -121,7 +123,7 @@ if (['batch-give-death', 'zhongyi-transit-death', 'phase-scheduling', 'phase-que
   sourceHashes['/noname/library/element/GameEvent/compilers/ContentCompilerBase.ts'] = 'ea0174cdbc2ce664532335df11e120efa45b5c35253ecba5f28a73e0271c6cee';
   sourceHashes['/noname/library/element/GameEvent/compilers/ArrayCompiler.ts'] = '78d495e8871751bc38749775c1b402f810e234547ab4e6a12565160d4950853e';
 }
-if (scenario === 'zhongyi-boundaries') {
+if (['zhongyi-boundaries', 'multi-weapon-combat'].includes(scenario)) {
   sourceHashes['/noname/ai/basic.js'] = 'c32e43e690563d685929838635a40878baeb3333f52a2f585638fbe37655d83d';
   sourceHashes['/noname/game/check.js'] = '802b65210f6dc7eb76e22af82e8f95706b445f9c3b15c297750f6202ec287c9d';
   sourceHashes['/noname/ui/click/index.js'] = '6c85a0c7a1ecf7bc23534349fb82de18a1c2f436b882189dae5341fa5e6d69e1';
@@ -192,6 +194,8 @@ try {
     await context.addInitScript(installJudgeInterruptions);
   } else if (scenario === 'judge-payment') {
     await context.addInitScript(installJudgePayment);
+  } else if (scenario === 'multi-weapon-combat') {
+    await context.addInitScript(installMultiWeaponCombat);
   } else if (scenario === 'equip-slots') {
     await context.addInitScript(installEquipSlots);
   } else if (scenario === 'virtual-equip-combat') {
@@ -320,6 +324,11 @@ try {
           }
           if (scenario === 'judge-payment') {
             window.__referenceResult = await window.__runJudgePayment({ lib, game, ui, get, _status, actor });
+            game.pause();
+            return;
+          }
+          if (scenario === 'multi-weapon-combat') {
+            window.__referenceResult = await window.__runMultiWeaponCombat({ lib, game, ui, get, _status, actor });
             game.pause();
             return;
           }
@@ -503,6 +512,15 @@ try {
   }, scenario);
 
   await page.locator('.button.character.selectable').first().click({ timeout: 45000 });
+  let humanAxeClick = false;
+  if (scenario === 'multi-weapon-combat') {
+    void (async () => {
+      try {
+        await page.locator('.control').getByText('贯石斧', { exact: true }).first().click({ timeout: 85000 });
+        humanAxeClick = true;
+      } catch { /* The scenario assertion reports a missing human click. */ }
+    })();
+  }
   if (scenario === 'trigger-order-cancel') {
     void (async () => {
       try {
@@ -532,6 +550,7 @@ try {
   if (scenario === 'judge-interruptions') checkJudgeInterruptions(captured.value);
   if (scenario === 'judge-payment') checkJudgePayment(captured.value);
   if (scenario === 'equip-slots') checkEquipSlots(captured.value);
+  if (scenario === 'multi-weapon-combat') { captured.value.humanAxeClick = humanAxeClick; checkMultiWeaponCombat(captured.value); }
   if (scenario === 'virtual-judge-probe') checkVirtualJudgeProbe(captured.value);
   else if (scenario === 'virtual-judge-tricks') checkVirtualJudgeTricks(captured.value);
   else if (scenario === 'virtual-equip-combat') checkVirtualEquipCombat(captured.value);

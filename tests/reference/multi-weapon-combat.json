@@ -1,0 +1,808 @@
+{
+  "schema": "noname-reference-trace-v1",
+  "referenceCommit": "c73270948d72949aa80009536b9fd5400767d091",
+  "mode": "identity",
+  "scenario": "multiple weapon combat and trigger ordering",
+  "columns": [
+    "trial",
+    "kind",
+    "timing",
+    "event",
+    "parent",
+    "player",
+    "target",
+    "cards",
+    "control",
+    "state"
+  ],
+  "events": [
+    ["control","request","useCardBefore","useCard","reference_fixture_use","A",null,["control-sha"],null,{"hp":12,"distance":1,"slots":1,"equipment":["crossbow"],"skills":[],"cards":{"crossbow":"A:e","sword-1":"s","sword-2":"s","armor":"B:e","control-sha":"A:h","red":"c"}}],
+    ["control","callback","useCardBefore","useCard","reference_fixture_use","A",null,["control-sha"],null,{"hp":12,"distance":1,"slots":1,"equipment":["crossbow"],"skills":[],"cards":{"crossbow":"A:e","sword-1":"s","sword-2":"s","armor":"B:e","control-sha":"A:h","red":"c"}}],
+    ["control","request","useCardToPlayered","useCardToPlayered","useCard","A","B",["control-sha"],null,{"hp":12,"distance":1,"slots":1,"equipment":["crossbow"],"skills":[],"cards":{"crossbow":"A:e","sword-1":"s","sword-2":"s","armor":"B:e","control-sha":"o","red":"c"}}],
+    ["control","callback","useCardToPlayered","useCardToPlayered","useCard","A","B",["control-sha"],null,{"hp":12,"distance":1,"slots":1,"equipment":["crossbow"],"skills":[],"cards":{"crossbow":"A:e","sword-1":"s","sword-2":"s","armor":"B:e","control-sha":"o","red":"c"}}],
+    ["control","request","chooseToUseBegin","chooseToUse","sha","B",null,[],null,{"hp":12,"distance":1,"slots":1,"equipment":["crossbow"],"skills":[],"cards":{"crossbow":"A:e","sword-1":"s","sword-2":"s","armor":"B:e","control-sha":"o","red":"c"}}],
+    ["control","callback","chooseToUseBegin","chooseToUse","sha","B",null,[],null,{"hp":12,"distance":1,"slots":1,"equipment":["crossbow"],"skills":[],"cards":{"crossbow":"A:e","sword-1":"s","sword-2":"s","armor":"B:e","control-sha":"o","red":"c"}}],
+    ["control","request","judgeBefore","judge","bagua_skill","B",null,[],null,{"hp":12,"distance":1,"slots":1,"equipment":["crossbow"],"skills":[],"cards":{"crossbow":"A:e","sword-1":"s","sword-2":"s","armor":"B:e","control-sha":"o","red":"c"}}],
+    ["control","callback","judgeBefore","judge","bagua_skill","B",null,[],null,{"hp":12,"distance":1,"slots":1,"equipment":["crossbow"],"skills":[],"cards":{"crossbow":"A:e","sword-1":"s","sword-2":"s","armor":"B:e","control-sha":"o","red":"c"}}],
+    ["control","request","judgeAfter","judge","bagua_skill","B",null,[],null,{"hp":12,"distance":1,"slots":1,"equipment":["crossbow"],"skills":[],"cards":{"crossbow":"A:e","sword-1":"s","sword-2":"s","armor":"B:e","control-sha":"o","red":"o"}}],
+    ["control","callback","judgeAfter","judge","bagua_skill","B",null,[],null,{"hp":12,"distance":1,"slots":1,"equipment":["crossbow"],"skills":[],"cards":{"crossbow":"A:e","sword-1":"s","sword-2":"s","armor":"B:e","control-sha":"o","red":"o"}}],
+    ["control","request","useCardBefore","useCard","chooseToUse","B",null,[],null,{"hp":12,"distance":1,"slots":1,"equipment":["crossbow"],"skills":[],"cards":{"crossbow":"A:e","sword-1":"s","sword-2":"s","armor":"B:e","control-sha":"o","red":"d"}}],
+    ["control","callback","useCardBefore","useCard","chooseToUse","B",null,[],null,{"hp":12,"distance":1,"slots":1,"equipment":["crossbow"],"skills":[],"cards":{"crossbow":"A:e","sword-1":"s","sword-2":"s","armor":"B:e","control-sha":"o","red":"d"}}],
+    ["control","request","useCardAfter","useCard","chooseToUse","B",null,[],null,{"hp":12,"distance":1,"slots":1,"equipment":["crossbow"],"skills":[],"cards":{"crossbow":"A:e","sword-1":"s","sword-2":"s","armor":"B:e","control-sha":"o","red":"d"}}],
+    ["control","callback","useCardAfter","useCard","chooseToUse","B",null,[],null,{"hp":12,"distance":1,"slots":1,"equipment":["crossbow"],"skills":[],"cards":{"crossbow":"A:e","sword-1":"s","sword-2":"s","armor":"B:e","control-sha":"o","red":"d"}}],
+    ["control","request","shaMiss","sha","useCard","A","B",["control-sha"],null,{"hp":12,"distance":1,"slots":1,"equipment":["crossbow"],"skills":[],"cards":{"crossbow":"A:e","sword-1":"s","sword-2":"s","armor":"B:e","control-sha":"o","red":"d"}}],
+    ["control","callback","shaMiss","sha","useCard","A","B",["control-sha"],null,{"hp":12,"distance":1,"slots":1,"equipment":["crossbow"],"skills":[],"cards":{"crossbow":"A:e","sword-1":"s","sword-2":"s","armor":"B:e","control-sha":"o","red":"d"}}],
+    ["control","request","useCardAfter","useCard","reference_fixture_use","A",null,["control-sha"],null,{"hp":12,"distance":1,"slots":1,"equipment":["crossbow"],"skills":[],"cards":{"crossbow":"A:e","sword-1":"s","sword-2":"s","armor":"B:e","control-sha":"o","red":"d"}}],
+    ["control","callback","useCardAfter","useCard","reference_fixture_use","A",null,["control-sha"],null,{"hp":12,"distance":1,"slots":1,"equipment":["crossbow"],"skills":[],"cards":{"crossbow":"A:e","sword-1":"s","sword-2":"s","armor":"B:e","control-sha":"o","red":"d"}}],
+    ["phase","request","chooseToUseBegin","chooseToUse","phaseUse","A",null,[],null,{"hp":12,"distance":2,"slots":3,"equipment":["sword-2","sword-1","crossbow"],"skills":["qinggang_skill"],"cards":{"crossbow":"A:e","sword-1":"A:e","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"A:h","phase-sha-2":"A:h","phase-sha-3":"A:h"}}],
+    ["phase","callback","chooseToUseBegin","chooseToUse","phaseUse","A",null,[],null,{"hp":12,"distance":2,"slots":3,"equipment":["sword-2","sword-1","crossbow"],"skills":["qinggang_skill"],"cards":{"crossbow":"A:e","sword-1":"A:e","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"A:h","phase-sha-2":"A:h","phase-sha-3":"A:h"}}],
+    ["phase","request","useCardBefore","useCard","chooseToUse","A",null,["phase-sha-1"],null,{"hp":12,"distance":2,"slots":3,"equipment":["sword-2","sword-1","crossbow"],"skills":["qinggang_skill"],"cards":{"crossbow":"A:e","sword-1":"A:e","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"A:h","phase-sha-2":"A:h","phase-sha-3":"A:h"}}],
+    ["phase","callback","useCardBefore","useCard","chooseToUse","A",null,["phase-sha-1"],null,{"hp":12,"distance":2,"slots":3,"equipment":["sword-2","sword-1","crossbow"],"skills":["qinggang_skill"],"cards":{"crossbow":"A:e","sword-1":"A:e","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"A:h","phase-sha-2":"A:h","phase-sha-3":"A:h"}}],
+    ["phase","request","useCardToPlayered","useCardToPlayered","useCard","A","B",["phase-sha-1"],null,{"hp":12,"distance":2,"slots":3,"equipment":["sword-2","sword-1","crossbow"],"skills":["qinggang_skill"],"cards":{"crossbow":"A:e","sword-1":"A:e","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"o","phase-sha-2":"A:h","phase-sha-3":"A:h"}}],
+    ["phase","callback","useCardToPlayered","useCardToPlayered","useCard","A","B",["phase-sha-1"],null,{"hp":12,"distance":2,"slots":3,"equipment":["sword-2","sword-1","crossbow"],"skills":["qinggang_skill"],"cards":{"crossbow":"A:e","sword-1":"A:e","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"o","phase-sha-2":"A:h","phase-sha-3":"A:h"}}],
+    ["phase","request","chooseToUseBegin","chooseToUse","sha","B",null,[],null,{"hp":12,"distance":2,"slots":3,"equipment":["sword-2","sword-1","crossbow"],"skills":["qinggang_skill"],"cards":{"crossbow":"A:e","sword-1":"A:e","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"o","phase-sha-2":"A:h","phase-sha-3":"A:h"}}],
+    ["phase","callback","chooseToUseBegin","chooseToUse","sha","B",null,[],null,{"hp":12,"distance":2,"slots":3,"equipment":["sword-2","sword-1","crossbow"],"skills":["qinggang_skill"],"cards":{"crossbow":"A:e","sword-1":"A:e","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"o","phase-sha-2":"A:h","phase-sha-3":"A:h"}}],
+    ["phase","request","chooseToUseAfter","chooseToUse","sha","B",null,[],null,{"hp":12,"distance":2,"slots":3,"equipment":["sword-2","sword-1","crossbow"],"skills":["qinggang_skill"],"cards":{"crossbow":"A:e","sword-1":"A:e","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"o","phase-sha-2":"A:h","phase-sha-3":"A:h"}}],
+    ["phase","callback","chooseToUseAfter","chooseToUse","sha","B",null,[],null,{"hp":12,"distance":2,"slots":3,"equipment":["sword-2","sword-1","crossbow"],"skills":["qinggang_skill"],"cards":{"crossbow":"A:e","sword-1":"A:e","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"o","phase-sha-2":"A:h","phase-sha-3":"A:h"}}],
+    ["phase","request","shaHit","sha","useCard","A","B",["phase-sha-1"],null,{"hp":12,"distance":2,"slots":3,"equipment":["sword-2","sword-1","crossbow"],"skills":["qinggang_skill"],"cards":{"crossbow":"A:e","sword-1":"A:e","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"o","phase-sha-2":"A:h","phase-sha-3":"A:h"}}],
+    ["phase","callback","shaHit","sha","useCard","A","B",["phase-sha-1"],null,{"hp":12,"distance":2,"slots":3,"equipment":["sword-2","sword-1","crossbow"],"skills":["qinggang_skill"],"cards":{"crossbow":"A:e","sword-1":"A:e","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"o","phase-sha-2":"A:h","phase-sha-3":"A:h"}}],
+    ["phase","request","damageBegin1","damage","sha","B",null,["phase-sha-1"],null,{"hp":12,"distance":2,"slots":3,"equipment":["sword-2","sword-1","crossbow"],"skills":["qinggang_skill"],"cards":{"crossbow":"A:e","sword-1":"A:e","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"o","phase-sha-2":"A:h","phase-sha-3":"A:h"}}],
+    ["phase","callback","damageBegin1","damage","sha","B",null,["phase-sha-1"],null,{"hp":12,"distance":2,"slots":3,"equipment":["sword-2","sword-1","crossbow"],"skills":["qinggang_skill"],"cards":{"crossbow":"A:e","sword-1":"A:e","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"o","phase-sha-2":"A:h","phase-sha-3":"A:h"}}],
+    ["phase","request","damageEnd","damage","sha","B",null,["phase-sha-1"],null,{"hp":11,"distance":2,"slots":3,"equipment":["sword-2","sword-1","crossbow"],"skills":["qinggang_skill"],"cards":{"crossbow":"A:e","sword-1":"A:e","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"o","phase-sha-2":"A:h","phase-sha-3":"A:h"}}],
+    ["phase","callback","damageEnd","damage","sha","B",null,["phase-sha-1"],null,{"hp":11,"distance":2,"slots":3,"equipment":["sword-2","sword-1","crossbow"],"skills":["qinggang_skill"],"cards":{"crossbow":"A:e","sword-1":"A:e","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"o","phase-sha-2":"A:h","phase-sha-3":"A:h"}}],
+    ["phase","request","useCardAfter","useCard","chooseToUse","A",null,["phase-sha-1"],null,{"hp":11,"distance":2,"slots":3,"equipment":["sword-2","sword-1","crossbow"],"skills":["qinggang_skill"],"cards":{"crossbow":"A:e","sword-1":"A:e","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"o","phase-sha-2":"A:h","phase-sha-3":"A:h"}}],
+    ["phase","callback","useCardAfter","useCard","chooseToUse","A",null,["phase-sha-1"],null,{"hp":11,"distance":2,"slots":3,"equipment":["sword-2","sword-1","crossbow"],"skills":["qinggang_skill"],"cards":{"crossbow":"A:e","sword-1":"A:e","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"o","phase-sha-2":"A:h","phase-sha-3":"A:h"}}],
+    ["phase","request","chooseToUseAfter","chooseToUse","phaseUse","A",null,[],null,{"hp":11,"distance":2,"slots":3,"equipment":["sword-2","crossbow"],"skills":["qinggang_skill"],"cards":{"crossbow":"A:e","sword-1":"d","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"A:h","phase-sha-3":"A:h"}}],
+    ["phase","callback","chooseToUseAfter","chooseToUse","phaseUse","A",null,[],null,{"hp":11,"distance":2,"slots":3,"equipment":["sword-2","crossbow"],"skills":["qinggang_skill"],"cards":{"crossbow":"A:e","sword-1":"d","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"A:h","phase-sha-3":"A:h"}}],
+    ["phase","request","chooseToUseBegin","chooseToUse","phaseUse","A",null,[],null,{"hp":11,"distance":2,"slots":3,"equipment":["sword-2","crossbow"],"skills":["qinggang_skill"],"cards":{"crossbow":"A:e","sword-1":"d","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"A:h","phase-sha-3":"A:h"}}],
+    ["phase","callback","chooseToUseBegin","chooseToUse","phaseUse","A",null,[],null,{"hp":11,"distance":2,"slots":3,"equipment":["sword-2","crossbow"],"skills":["qinggang_skill"],"cards":{"crossbow":"A:e","sword-1":"d","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"A:h","phase-sha-3":"A:h"}}],
+    ["phase","request","useCardBefore","useCard","chooseToUse","A",null,["phase-sha-2"],null,{"hp":11,"distance":2,"slots":3,"equipment":["sword-2","crossbow"],"skills":["qinggang_skill"],"cards":{"crossbow":"A:e","sword-1":"d","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"A:h","phase-sha-3":"A:h"}}],
+    ["phase","callback","useCardBefore","useCard","chooseToUse","A",null,["phase-sha-2"],null,{"hp":11,"distance":2,"slots":3,"equipment":["sword-2","crossbow"],"skills":["qinggang_skill"],"cards":{"crossbow":"A:e","sword-1":"d","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"A:h","phase-sha-3":"A:h"}}],
+    ["phase","request","useCardToPlayered","useCardToPlayered","useCard","A","B",["phase-sha-2"],null,{"hp":11,"distance":2,"slots":3,"equipment":["sword-2","crossbow"],"skills":["qinggang_skill"],"cards":{"crossbow":"A:e","sword-1":"d","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"o","phase-sha-3":"A:h"}}],
+    ["phase","callback","useCardToPlayered","useCardToPlayered","useCard","A","B",["phase-sha-2"],null,{"hp":11,"distance":2,"slots":3,"equipment":["sword-2","crossbow"],"skills":["qinggang_skill"],"cards":{"crossbow":"A:e","sword-1":"d","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"o","phase-sha-3":"A:h"}}],
+    ["phase","request","chooseToUseBegin","chooseToUse","sha","B",null,[],null,{"hp":11,"distance":2,"slots":3,"equipment":["sword-2","crossbow"],"skills":["qinggang_skill"],"cards":{"crossbow":"A:e","sword-1":"d","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"o","phase-sha-3":"A:h"}}],
+    ["phase","callback","chooseToUseBegin","chooseToUse","sha","B",null,[],null,{"hp":11,"distance":2,"slots":3,"equipment":["sword-2","crossbow"],"skills":["qinggang_skill"],"cards":{"crossbow":"A:e","sword-1":"d","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"o","phase-sha-3":"A:h"}}],
+    ["phase","request","chooseToUseAfter","chooseToUse","sha","B",null,[],null,{"hp":11,"distance":2,"slots":3,"equipment":["sword-2","crossbow"],"skills":["qinggang_skill"],"cards":{"crossbow":"A:e","sword-1":"d","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"o","phase-sha-3":"A:h"}}],
+    ["phase","callback","chooseToUseAfter","chooseToUse","sha","B",null,[],null,{"hp":11,"distance":2,"slots":3,"equipment":["sword-2","crossbow"],"skills":["qinggang_skill"],"cards":{"crossbow":"A:e","sword-1":"d","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"o","phase-sha-3":"A:h"}}],
+    ["phase","request","shaHit","sha","useCard","A","B",["phase-sha-2"],null,{"hp":11,"distance":2,"slots":3,"equipment":["sword-2","crossbow"],"skills":["qinggang_skill"],"cards":{"crossbow":"A:e","sword-1":"d","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"o","phase-sha-3":"A:h"}}],
+    ["phase","callback","shaHit","sha","useCard","A","B",["phase-sha-2"],null,{"hp":11,"distance":2,"slots":3,"equipment":["sword-2","crossbow"],"skills":["qinggang_skill"],"cards":{"crossbow":"A:e","sword-1":"d","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"o","phase-sha-3":"A:h"}}],
+    ["phase","request","damageBegin1","damage","sha","B",null,["phase-sha-2"],null,{"hp":11,"distance":2,"slots":3,"equipment":["sword-2","crossbow"],"skills":["qinggang_skill"],"cards":{"crossbow":"A:e","sword-1":"d","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"o","phase-sha-3":"A:h"}}],
+    ["phase","callback","damageBegin1","damage","sha","B",null,["phase-sha-2"],null,{"hp":11,"distance":2,"slots":3,"equipment":["sword-2","crossbow"],"skills":["qinggang_skill"],"cards":{"crossbow":"A:e","sword-1":"d","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"o","phase-sha-3":"A:h"}}],
+    ["phase","request","damageEnd","damage","sha","B",null,["phase-sha-2"],null,{"hp":10,"distance":2,"slots":3,"equipment":["sword-2","crossbow"],"skills":["qinggang_skill"],"cards":{"crossbow":"A:e","sword-1":"d","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"o","phase-sha-3":"A:h"}}],
+    ["phase","callback","damageEnd","damage","sha","B",null,["phase-sha-2"],null,{"hp":10,"distance":2,"slots":3,"equipment":["sword-2","crossbow"],"skills":["qinggang_skill"],"cards":{"crossbow":"A:e","sword-1":"d","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"o","phase-sha-3":"A:h"}}],
+    ["phase","request","useCardAfter","useCard","chooseToUse","A",null,["phase-sha-2"],null,{"hp":10,"distance":2,"slots":3,"equipment":["sword-2","crossbow"],"skills":["qinggang_skill"],"cards":{"crossbow":"A:e","sword-1":"d","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"o","phase-sha-3":"A:h"}}],
+    ["phase","callback","useCardAfter","useCard","chooseToUse","A",null,["phase-sha-2"],null,{"hp":10,"distance":2,"slots":3,"equipment":["sword-2","crossbow"],"skills":["qinggang_skill"],"cards":{"crossbow":"A:e","sword-1":"d","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"o","phase-sha-3":"A:h"}}],
+    ["phase","request","chooseToUseAfter","chooseToUse","phaseUse","A",null,[],null,{"hp":10,"distance":2,"slots":3,"equipment":["sword-2"],"skills":["qinggang_skill"],"cards":{"crossbow":"d","sword-1":"d","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"A:h"}}],
+    ["phase","callback","chooseToUseAfter","chooseToUse","phaseUse","A",null,[],null,{"hp":10,"distance":2,"slots":3,"equipment":["sword-2"],"skills":["qinggang_skill"],"cards":{"crossbow":"d","sword-1":"d","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"A:h"}}],
+    ["phase","request","chooseToUseBegin","chooseToUse","phaseUse","A",null,[],null,{"hp":10,"distance":2,"slots":3,"equipment":["sword-2"],"skills":["qinggang_skill"],"cards":{"crossbow":"d","sword-1":"d","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"A:h"}}],
+    ["phase","callback","chooseToUseBegin","chooseToUse","phaseUse","A",null,[],null,{"hp":10,"distance":2,"slots":3,"equipment":["sword-2"],"skills":["qinggang_skill"],"cards":{"crossbow":"d","sword-1":"d","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"A:h"}}],
+    ["phase","request","chooseToUseAfter","chooseToUse","phaseUse","A",null,[],null,{"hp":10,"distance":2,"slots":3,"equipment":["sword-2"],"skills":["qinggang_skill"],"cards":{"crossbow":"d","sword-1":"d","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"A:h"}}],
+    ["phase","callback","chooseToUseAfter","chooseToUse","phaseUse","A",null,[],null,{"hp":10,"distance":2,"slots":3,"equipment":["sword-2"],"skills":["qinggang_skill"],"cards":{"crossbow":"d","sword-1":"d","sword-2":"A:e","armor":"B:e","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"A:h"}}],
+    ["axe-first","request","useCardBefore","useCard","reference_fixture_use","A",null,["axe-first-sha"],null,{"hp":12,"distance":3,"slots":2,"equipment":["axe-first-axe","axe-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"A:e","axe-first-axe":"A:e","axe-first-sha":"A:h","axe-first-follow-sha":"A:h","axe-first-shan":"B:h","axe-first-cost-1":"A:h","axe-first-cost-2":"A:h"}}],
+    ["axe-first","callback","useCardBefore","useCard","reference_fixture_use","A",null,["axe-first-sha"],null,{"hp":12,"distance":3,"slots":2,"equipment":["axe-first-axe","axe-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"A:e","axe-first-axe":"A:e","axe-first-sha":"A:h","axe-first-follow-sha":"A:h","axe-first-shan":"B:h","axe-first-cost-1":"A:h","axe-first-cost-2":"A:h"}}],
+    ["axe-first","request","useCardToPlayered","useCardToPlayered","useCard","A","B",["axe-first-sha"],null,{"hp":12,"distance":3,"slots":2,"equipment":["axe-first-axe","axe-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"A:e","axe-first-axe":"A:e","axe-first-sha":"o","axe-first-follow-sha":"A:h","axe-first-shan":"B:h","axe-first-cost-1":"A:h","axe-first-cost-2":"A:h"}}],
+    ["axe-first","callback","useCardToPlayered","useCardToPlayered","useCard","A","B",["axe-first-sha"],null,{"hp":12,"distance":3,"slots":2,"equipment":["axe-first-axe","axe-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"A:e","axe-first-axe":"A:e","axe-first-sha":"o","axe-first-follow-sha":"A:h","axe-first-shan":"B:h","axe-first-cost-1":"A:h","axe-first-cost-2":"A:h"}}],
+    ["axe-first","request","chooseToUseBegin","chooseToUse","sha","B",null,[],null,{"hp":12,"distance":3,"slots":2,"equipment":["axe-first-axe","axe-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"A:e","axe-first-axe":"A:e","axe-first-sha":"o","axe-first-follow-sha":"A:h","axe-first-shan":"B:h","axe-first-cost-1":"A:h","axe-first-cost-2":"A:h"}}],
+    ["axe-first","callback","chooseToUseBegin","chooseToUse","sha","B",null,[],null,{"hp":12,"distance":3,"slots":2,"equipment":["axe-first-axe","axe-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"A:e","axe-first-axe":"A:e","axe-first-sha":"o","axe-first-follow-sha":"A:h","axe-first-shan":"B:h","axe-first-cost-1":"A:h","axe-first-cost-2":"A:h"}}],
+    ["axe-first","request","useCardBefore","useCard","chooseToUse","B",null,["axe-first-shan"],null,{"hp":12,"distance":3,"slots":2,"equipment":["axe-first-axe","axe-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"A:e","axe-first-axe":"A:e","axe-first-sha":"o","axe-first-follow-sha":"A:h","axe-first-shan":"B:h","axe-first-cost-1":"A:h","axe-first-cost-2":"A:h"}}],
+    ["axe-first","callback","useCardBefore","useCard","chooseToUse","B",null,["axe-first-shan"],null,{"hp":12,"distance":3,"slots":2,"equipment":["axe-first-axe","axe-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"A:e","axe-first-axe":"A:e","axe-first-sha":"o","axe-first-follow-sha":"A:h","axe-first-shan":"B:h","axe-first-cost-1":"A:h","axe-first-cost-2":"A:h"}}],
+    ["axe-first","request","useCardAfter","useCard","chooseToUse","B",null,["axe-first-shan"],null,{"hp":12,"distance":3,"slots":2,"equipment":["axe-first-axe","axe-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"A:e","axe-first-axe":"A:e","axe-first-sha":"o","axe-first-follow-sha":"A:h","axe-first-shan":"o","axe-first-cost-1":"A:h","axe-first-cost-2":"A:h"}}],
+    ["axe-first","callback","useCardAfter","useCard","chooseToUse","B",null,["axe-first-shan"],null,{"hp":12,"distance":3,"slots":2,"equipment":["axe-first-axe","axe-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"A:e","axe-first-axe":"A:e","axe-first-sha":"o","axe-first-follow-sha":"A:h","axe-first-shan":"o","axe-first-cost-1":"A:h","axe-first-cost-2":"A:h"}}],
+    ["axe-first","request","chooseToUseAfter","chooseToUse","sha","B",null,[],null,{"hp":12,"distance":3,"slots":2,"equipment":["axe-first-axe","axe-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"A:e","axe-first-axe":"A:e","axe-first-sha":"o","axe-first-follow-sha":"A:h","axe-first-shan":"d","axe-first-cost-1":"A:h","axe-first-cost-2":"A:h"}}],
+    ["axe-first","callback","chooseToUseAfter","chooseToUse","sha","B",null,[],null,{"hp":12,"distance":3,"slots":2,"equipment":["axe-first-axe","axe-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"A:e","axe-first-axe":"A:e","axe-first-sha":"o","axe-first-follow-sha":"A:h","axe-first-shan":"d","axe-first-cost-1":"A:h","axe-first-cost-2":"A:h"}}],
+    ["axe-first","request","shaMiss","sha","useCard","A","B",["axe-first-sha"],null,{"hp":12,"distance":3,"slots":2,"equipment":["axe-first-axe","axe-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"A:e","axe-first-axe":"A:e","axe-first-sha":"o","axe-first-follow-sha":"A:h","axe-first-shan":"d","axe-first-cost-1":"A:h","axe-first-cost-2":"A:h"}}],
+    ["axe-first","callback","shaMiss","sha","useCard","A","B",["axe-first-sha"],null,{"hp":12,"distance":3,"slots":2,"equipment":["axe-first-axe","axe-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"A:e","axe-first-axe":"A:e","axe-first-sha":"o","axe-first-follow-sha":"A:h","axe-first-shan":"d","axe-first-cost-1":"A:h","axe-first-cost-2":"A:h"}}],
+    ["axe-first","request","chooseControlBegin","chooseControl","arrangeTrigger","A",null,[],null,{"hp":12,"distance":3,"slots":2,"equipment":["axe-first-axe","axe-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"A:e","axe-first-axe":"A:e","axe-first-sha":"o","axe-first-follow-sha":"A:h","axe-first-shan":"d","axe-first-cost-1":"A:h","axe-first-cost-2":"A:h"}}],
+    ["axe-first","callback","chooseControlBegin","chooseControl","arrangeTrigger","A",null,[],null,{"hp":12,"distance":3,"slots":2,"equipment":["axe-first-axe","axe-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"A:e","axe-first-axe":"A:e","axe-first-sha":"o","axe-first-follow-sha":"A:h","axe-first-shan":"d","axe-first-cost-1":"A:h","axe-first-cost-2":"A:h"}}],
+    ["axe-first","request","chooseControlAfter","chooseControl","arrangeTrigger","A",null,[],"贯石斧",{"hp":12,"distance":3,"slots":2,"equipment":["axe-first-axe","axe-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"A:e","axe-first-axe":"A:e","axe-first-sha":"o","axe-first-follow-sha":"A:h","axe-first-shan":"d","axe-first-cost-1":"A:h","axe-first-cost-2":"A:h"}}],
+    ["axe-first","callback","chooseControlAfter","chooseControl","arrangeTrigger","A",null,[],"贯石斧",{"hp":12,"distance":3,"slots":2,"equipment":["axe-first-axe","axe-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"A:e","axe-first-axe":"A:e","axe-first-sha":"o","axe-first-follow-sha":"A:h","axe-first-shan":"d","axe-first-cost-1":"A:h","axe-first-cost-2":"A:h"}}],
+    ["axe-first","request","chooseToDiscardBegin","chooseToDiscard","guanshi_skill","A",null,[],null,{"hp":12,"distance":3,"slots":2,"equipment":["axe-first-axe","axe-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"A:e","axe-first-axe":"A:e","axe-first-sha":"o","axe-first-follow-sha":"A:h","axe-first-shan":"d","axe-first-cost-1":"A:h","axe-first-cost-2":"A:h"}}],
+    ["axe-first","callback","chooseToDiscardBegin","chooseToDiscard","guanshi_skill","A",null,[],null,{"hp":12,"distance":3,"slots":2,"equipment":["axe-first-axe","axe-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"A:e","axe-first-axe":"A:e","axe-first-sha":"o","axe-first-follow-sha":"A:h","axe-first-shan":"d","axe-first-cost-1":"A:h","axe-first-cost-2":"A:h"}}],
+    ["axe-first","request","chooseToDiscardAfter","chooseToDiscard","guanshi_skill","A",null,[],null,{"hp":12,"distance":3,"slots":2,"equipment":["axe-first-axe","axe-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"A:e","axe-first-axe":"A:e","axe-first-sha":"o","axe-first-follow-sha":"A:h","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d"}}],
+    ["axe-first","callback","chooseToDiscardAfter","chooseToDiscard","guanshi_skill","A",null,[],null,{"hp":12,"distance":3,"slots":2,"equipment":["axe-first-axe","axe-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"A:e","axe-first-axe":"A:e","axe-first-sha":"o","axe-first-follow-sha":"A:h","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d"}}],
+    ["axe-first","request","shaHit","sha","useCard","A","B",["axe-first-sha"],null,{"hp":12,"distance":3,"slots":2,"equipment":["axe-first-axe","axe-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"A:e","axe-first-axe":"A:e","axe-first-sha":"o","axe-first-follow-sha":"A:h","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d"}}],
+    ["axe-first","callback","shaHit","sha","useCard","A","B",["axe-first-sha"],null,{"hp":12,"distance":3,"slots":2,"equipment":["axe-first-axe","axe-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"A:e","axe-first-axe":"A:e","axe-first-sha":"o","axe-first-follow-sha":"A:h","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d"}}],
+    ["axe-first","request","damageBegin1","damage","sha","B",null,["axe-first-sha"],null,{"hp":12,"distance":3,"slots":2,"equipment":["axe-first-axe","axe-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"A:e","axe-first-axe":"A:e","axe-first-sha":"o","axe-first-follow-sha":"A:h","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d"}}],
+    ["axe-first","callback","damageBegin1","damage","sha","B",null,["axe-first-sha"],null,{"hp":12,"distance":3,"slots":2,"equipment":["axe-first-axe","axe-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"A:e","axe-first-axe":"A:e","axe-first-sha":"o","axe-first-follow-sha":"A:h","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d"}}],
+    ["axe-first","request","damageEnd","damage","sha","B",null,["axe-first-sha"],null,{"hp":11,"distance":3,"slots":2,"equipment":["axe-first-axe","axe-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"A:e","axe-first-axe":"A:e","axe-first-sha":"o","axe-first-follow-sha":"A:h","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d"}}],
+    ["axe-first","callback","damageEnd","damage","sha","B",null,["axe-first-sha"],null,{"hp":11,"distance":3,"slots":2,"equipment":["axe-first-axe","axe-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"A:e","axe-first-axe":"A:e","axe-first-sha":"o","axe-first-follow-sha":"A:h","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d"}}],
+    ["axe-first","request","useCardAfter","useCard","reference_fixture_use","A",null,["axe-first-sha"],null,{"hp":11,"distance":3,"slots":2,"equipment":["axe-first-axe","axe-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"A:e","axe-first-axe":"A:e","axe-first-sha":"o","axe-first-follow-sha":"A:h","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d"}}],
+    ["axe-first","callback","useCardAfter","useCard","reference_fixture_use","A",null,["axe-first-sha"],null,{"hp":11,"distance":3,"slots":2,"equipment":["axe-first-axe","axe-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"A:e","axe-first-axe":"A:e","axe-first-sha":"o","axe-first-follow-sha":"A:h","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d"}}],
+    ["dragon-first","request","useCardBefore","useCard","reference_fixture_use","A",null,["dragon-first-sha"],null,{"hp":12,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"A:h","dragon-first-follow-sha":"A:h","dragon-first-shan":"B:h","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","callback","useCardBefore","useCard","reference_fixture_use","A",null,["dragon-first-sha"],null,{"hp":12,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"A:h","dragon-first-follow-sha":"A:h","dragon-first-shan":"B:h","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","request","useCardToPlayered","useCardToPlayered","useCard","A","B",["dragon-first-sha"],null,{"hp":12,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"A:h","dragon-first-shan":"B:h","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","callback","useCardToPlayered","useCardToPlayered","useCard","A","B",["dragon-first-sha"],null,{"hp":12,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"A:h","dragon-first-shan":"B:h","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","request","chooseToUseBegin","chooseToUse","sha","B",null,[],null,{"hp":12,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"A:h","dragon-first-shan":"B:h","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","callback","chooseToUseBegin","chooseToUse","sha","B",null,[],null,{"hp":12,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"A:h","dragon-first-shan":"B:h","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","request","useCardBefore","useCard","chooseToUse","B",null,["dragon-first-shan"],null,{"hp":12,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"A:h","dragon-first-shan":"B:h","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","callback","useCardBefore","useCard","chooseToUse","B",null,["dragon-first-shan"],null,{"hp":12,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"A:h","dragon-first-shan":"B:h","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","request","useCardAfter","useCard","chooseToUse","B",null,["dragon-first-shan"],null,{"hp":12,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"A:h","dragon-first-shan":"o","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","callback","useCardAfter","useCard","chooseToUse","B",null,["dragon-first-shan"],null,{"hp":12,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"A:h","dragon-first-shan":"o","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","request","chooseToUseAfter","chooseToUse","sha","B",null,[],null,{"hp":12,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"A:h","dragon-first-shan":"d","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","callback","chooseToUseAfter","chooseToUse","sha","B",null,[],null,{"hp":12,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"A:h","dragon-first-shan":"d","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","request","shaMiss","sha","useCard","A","B",["dragon-first-sha"],null,{"hp":12,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"A:h","dragon-first-shan":"d","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","callback","shaMiss","sha","useCard","A","B",["dragon-first-sha"],null,{"hp":12,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"A:h","dragon-first-shan":"d","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","request","chooseControlBegin","chooseControl","arrangeTrigger","A",null,[],null,{"hp":12,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"A:h","dragon-first-shan":"d","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","callback","chooseControlBegin","chooseControl","arrangeTrigger","A",null,[],null,{"hp":12,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"A:h","dragon-first-shan":"d","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","request","chooseControlAfter","chooseControl","arrangeTrigger","A",null,[],"青龙偃月刀",{"hp":12,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"A:h","dragon-first-shan":"d","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","callback","chooseControlAfter","chooseControl","arrangeTrigger","A",null,[],"青龙偃月刀",{"hp":12,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"A:h","dragon-first-shan":"d","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","request","chooseToUseBegin","chooseToUse","qinglong_skill","A",null,[],null,{"hp":12,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"A:h","dragon-first-shan":"d","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","callback","chooseToUseBegin","chooseToUse","qinglong_skill","A",null,[],null,{"hp":12,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"A:h","dragon-first-shan":"d","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","request","useCardBefore","useCard","chooseToUse","A",null,["dragon-first-follow-sha"],null,{"hp":12,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"A:h","dragon-first-shan":"d","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","callback","useCardBefore","useCard","chooseToUse","A",null,["dragon-first-follow-sha"],null,{"hp":12,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"A:h","dragon-first-shan":"d","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","request","useCardToPlayered","useCardToPlayered","useCard","A","B",["dragon-first-follow-sha"],null,{"hp":12,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"o","dragon-first-shan":"d","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","callback","useCardToPlayered","useCardToPlayered","useCard","A","B",["dragon-first-follow-sha"],null,{"hp":12,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"o","dragon-first-shan":"d","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","request","chooseToUseBegin","chooseToUse","sha","B",null,[],null,{"hp":12,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"o","dragon-first-shan":"d","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","callback","chooseToUseBegin","chooseToUse","sha","B",null,[],null,{"hp":12,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"o","dragon-first-shan":"d","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","request","chooseToUseAfter","chooseToUse","sha","B",null,[],null,{"hp":12,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"o","dragon-first-shan":"d","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","callback","chooseToUseAfter","chooseToUse","sha","B",null,[],null,{"hp":12,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"o","dragon-first-shan":"d","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","request","shaHit","sha","useCard","A","B",["dragon-first-follow-sha"],null,{"hp":12,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"o","dragon-first-shan":"d","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","callback","shaHit","sha","useCard","A","B",["dragon-first-follow-sha"],null,{"hp":12,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"o","dragon-first-shan":"d","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","request","damageBegin1","damage","sha","B",null,["dragon-first-follow-sha"],null,{"hp":12,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"o","dragon-first-shan":"d","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","callback","damageBegin1","damage","sha","B",null,["dragon-first-follow-sha"],null,{"hp":12,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"o","dragon-first-shan":"d","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","request","damageEnd","damage","sha","B",null,["dragon-first-follow-sha"],null,{"hp":11,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"o","dragon-first-shan":"d","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","callback","damageEnd","damage","sha","B",null,["dragon-first-follow-sha"],null,{"hp":11,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"o","dragon-first-shan":"d","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","request","useCardAfter","useCard","chooseToUse","A",null,["dragon-first-follow-sha"],null,{"hp":11,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"o","dragon-first-shan":"d","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","callback","useCardAfter","useCard","chooseToUse","A",null,["dragon-first-follow-sha"],null,{"hp":11,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"o","dragon-first-shan":"d","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","request","chooseToUseAfter","chooseToUse","qinglong_skill","A",null,[],null,{"hp":11,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"d","dragon-first-shan":"d","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","callback","chooseToUseAfter","chooseToUse","qinglong_skill","A",null,[],null,{"hp":11,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"d","dragon-first-shan":"d","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","request","chooseToDiscardBegin","chooseToDiscard","guanshi_skill","A",null,[],null,{"hp":11,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"d","dragon-first-shan":"d","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","callback","chooseToDiscardBegin","chooseToDiscard","guanshi_skill","A",null,[],null,{"hp":11,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"d","dragon-first-shan":"d","dragon-first-cost-1":"A:h","dragon-first-cost-2":"A:h"}}],
+    ["dragon-first","request","chooseToDiscardAfter","chooseToDiscard","guanshi_skill","A",null,[],null,{"hp":11,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"d","dragon-first-shan":"d","dragon-first-cost-1":"d","dragon-first-cost-2":"d"}}],
+    ["dragon-first","callback","chooseToDiscardAfter","chooseToDiscard","guanshi_skill","A",null,[],null,{"hp":11,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"d","dragon-first-shan":"d","dragon-first-cost-1":"d","dragon-first-cost-2":"d"}}],
+    ["dragon-first","request","shaHit","sha","useCard","A","B",["dragon-first-sha"],null,{"hp":11,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"d","dragon-first-shan":"d","dragon-first-cost-1":"d","dragon-first-cost-2":"d"}}],
+    ["dragon-first","callback","shaHit","sha","useCard","A","B",["dragon-first-sha"],null,{"hp":11,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"d","dragon-first-shan":"d","dragon-first-cost-1":"d","dragon-first-cost-2":"d"}}],
+    ["dragon-first","request","damageBegin1","damage","sha","B",null,["dragon-first-sha"],null,{"hp":11,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"d","dragon-first-shan":"d","dragon-first-cost-1":"d","dragon-first-cost-2":"d"}}],
+    ["dragon-first","callback","damageBegin1","damage","sha","B",null,["dragon-first-sha"],null,{"hp":11,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"d","dragon-first-shan":"d","dragon-first-cost-1":"d","dragon-first-cost-2":"d"}}],
+    ["dragon-first","request","damageEnd","damage","sha","B",null,["dragon-first-sha"],null,{"hp":10,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"d","dragon-first-shan":"d","dragon-first-cost-1":"d","dragon-first-cost-2":"d"}}],
+    ["dragon-first","callback","damageEnd","damage","sha","B",null,["dragon-first-sha"],null,{"hp":10,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"d","dragon-first-shan":"d","dragon-first-cost-1":"d","dragon-first-cost-2":"d"}}],
+    ["dragon-first","request","useCardAfter","useCard","reference_fixture_use","A",null,["dragon-first-sha"],null,{"hp":10,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"d","dragon-first-shan":"d","dragon-first-cost-1":"d","dragon-first-cost-2":"d"}}],
+    ["dragon-first","callback","useCardAfter","useCard","reference_fixture_use","A",null,["dragon-first-sha"],null,{"hp":10,"distance":3,"slots":2,"equipment":["dragon-first-axe","dragon-first-dragon"],"skills":[],"cards":{"crossbow":"d","sword-1":"d","sword-2":"d","armor":"d","control-sha":"d","red":"d","phase-sha-1":"d","phase-sha-2":"d","phase-sha-3":"d","axe-first-dragon":"d","axe-first-axe":"d","axe-first-sha":"d","axe-first-follow-sha":"d","axe-first-shan":"d","axe-first-cost-1":"d","axe-first-cost-2":"d","dragon-first-dragon":"A:e","dragon-first-axe":"A:e","dragon-first-sha":"o","dragon-first-follow-sha":"d","dragon-first-shan":"d","dragon-first-cost-1":"d","dragon-first-cost-2":"d"}}]
+  ],
+  "calls": [
+    [
+      "control",
+      "bagua_skill",
+      "begin",
+      "B",
+      "trigger",
+      {
+        "hp": 12,
+        "distance": 1,
+        "slots": 1,
+        "equipment": [
+          "crossbow"
+        ],
+        "skills": [],
+        "cards": {
+          "crossbow": "A:e",
+          "sword-1": "s",
+          "sword-2": "s",
+          "armor": "B:e",
+          "control-sha": "o",
+          "red": "c"
+        }
+      }
+    ],
+    [
+      "control",
+      "bagua_skill",
+      "end",
+      "B",
+      "trigger",
+      {
+        "hp": 12,
+        "distance": 1,
+        "slots": 1,
+        "equipment": [
+          "crossbow"
+        ],
+        "skills": [],
+        "cards": {
+          "crossbow": "A:e",
+          "sword-1": "s",
+          "sword-2": "s",
+          "armor": "B:e",
+          "control-sha": "o",
+          "red": "d"
+        }
+      }
+    ],
+    [
+      "phase",
+      "qinggang_skill",
+      "begin",
+      "A",
+      "trigger",
+      {
+        "hp": 12,
+        "distance": 2,
+        "slots": 3,
+        "equipment": [
+          "sword-2",
+          "sword-1",
+          "crossbow"
+        ],
+        "skills": [
+          "qinggang_skill"
+        ],
+        "cards": {
+          "crossbow": "A:e",
+          "sword-1": "A:e",
+          "sword-2": "A:e",
+          "armor": "B:e",
+          "control-sha": "d",
+          "red": "d",
+          "phase-sha-1": "o",
+          "phase-sha-2": "A:h",
+          "phase-sha-3": "A:h"
+        }
+      }
+    ],
+    [
+      "phase",
+      "qinggang_skill",
+      "end",
+      "A",
+      "trigger",
+      {
+        "hp": 12,
+        "distance": 2,
+        "slots": 3,
+        "equipment": [
+          "sword-2",
+          "sword-1",
+          "crossbow"
+        ],
+        "skills": [
+          "qinggang_skill"
+        ],
+        "cards": {
+          "crossbow": "A:e",
+          "sword-1": "A:e",
+          "sword-2": "A:e",
+          "armor": "B:e",
+          "control-sha": "d",
+          "red": "d",
+          "phase-sha-1": "o",
+          "phase-sha-2": "A:h",
+          "phase-sha-3": "A:h"
+        }
+      }
+    ],
+    [
+      "phase",
+      "qinggang_skill",
+      "begin",
+      "A",
+      "trigger",
+      {
+        "hp": 11,
+        "distance": 2,
+        "slots": 3,
+        "equipment": [
+          "sword-2",
+          "crossbow"
+        ],
+        "skills": [
+          "qinggang_skill"
+        ],
+        "cards": {
+          "crossbow": "A:e",
+          "sword-1": "d",
+          "sword-2": "A:e",
+          "armor": "B:e",
+          "control-sha": "d",
+          "red": "d",
+          "phase-sha-1": "d",
+          "phase-sha-2": "o",
+          "phase-sha-3": "A:h"
+        }
+      }
+    ],
+    [
+      "phase",
+      "qinggang_skill",
+      "end",
+      "A",
+      "trigger",
+      {
+        "hp": 11,
+        "distance": 2,
+        "slots": 3,
+        "equipment": [
+          "sword-2",
+          "crossbow"
+        ],
+        "skills": [
+          "qinggang_skill"
+        ],
+        "cards": {
+          "crossbow": "A:e",
+          "sword-1": "d",
+          "sword-2": "A:e",
+          "armor": "B:e",
+          "control-sha": "d",
+          "red": "d",
+          "phase-sha-1": "d",
+          "phase-sha-2": "o",
+          "phase-sha-3": "A:h"
+        }
+      }
+    ],
+    [
+      "axe-first",
+      "guanshi_skill",
+      "begin",
+      "A",
+      "trigger",
+      {
+        "hp": 12,
+        "distance": 3,
+        "slots": 2,
+        "equipment": [
+          "axe-first-axe",
+          "axe-first-dragon"
+        ],
+        "skills": [],
+        "cards": {
+          "crossbow": "d",
+          "sword-1": "d",
+          "sword-2": "d",
+          "armor": "d",
+          "control-sha": "d",
+          "red": "d",
+          "phase-sha-1": "d",
+          "phase-sha-2": "d",
+          "phase-sha-3": "d",
+          "axe-first-dragon": "A:e",
+          "axe-first-axe": "A:e",
+          "axe-first-sha": "o",
+          "axe-first-follow-sha": "A:h",
+          "axe-first-shan": "d",
+          "axe-first-cost-1": "A:h",
+          "axe-first-cost-2": "A:h"
+        }
+      }
+    ],
+    [
+      "axe-first",
+      "guanshi_skill",
+      "end",
+      "A",
+      "trigger",
+      {
+        "hp": 12,
+        "distance": 3,
+        "slots": 2,
+        "equipment": [
+          "axe-first-axe",
+          "axe-first-dragon"
+        ],
+        "skills": [],
+        "cards": {
+          "crossbow": "d",
+          "sword-1": "d",
+          "sword-2": "d",
+          "armor": "d",
+          "control-sha": "d",
+          "red": "d",
+          "phase-sha-1": "d",
+          "phase-sha-2": "d",
+          "phase-sha-3": "d",
+          "axe-first-dragon": "A:e",
+          "axe-first-axe": "A:e",
+          "axe-first-sha": "o",
+          "axe-first-follow-sha": "A:h",
+          "axe-first-shan": "d",
+          "axe-first-cost-1": "d",
+          "axe-first-cost-2": "d"
+        }
+      }
+    ],
+    [
+      "dragon-first",
+      "qinglong_skill",
+      "begin",
+      "A",
+      "trigger",
+      {
+        "hp": 12,
+        "distance": 3,
+        "slots": 2,
+        "equipment": [
+          "dragon-first-axe",
+          "dragon-first-dragon"
+        ],
+        "skills": [],
+        "cards": {
+          "crossbow": "d",
+          "sword-1": "d",
+          "sword-2": "d",
+          "armor": "d",
+          "control-sha": "d",
+          "red": "d",
+          "phase-sha-1": "d",
+          "phase-sha-2": "d",
+          "phase-sha-3": "d",
+          "axe-first-dragon": "d",
+          "axe-first-axe": "d",
+          "axe-first-sha": "d",
+          "axe-first-follow-sha": "d",
+          "axe-first-shan": "d",
+          "axe-first-cost-1": "d",
+          "axe-first-cost-2": "d",
+          "dragon-first-dragon": "A:e",
+          "dragon-first-axe": "A:e",
+          "dragon-first-sha": "o",
+          "dragon-first-follow-sha": "A:h",
+          "dragon-first-shan": "d",
+          "dragon-first-cost-1": "A:h",
+          "dragon-first-cost-2": "A:h"
+        }
+      }
+    ],
+    [
+      "dragon-first",
+      "qinglong_skill",
+      "end",
+      "A",
+      "trigger",
+      {
+        "hp": 11,
+        "distance": 3,
+        "slots": 2,
+        "equipment": [
+          "dragon-first-axe",
+          "dragon-first-dragon"
+        ],
+        "skills": [],
+        "cards": {
+          "crossbow": "d",
+          "sword-1": "d",
+          "sword-2": "d",
+          "armor": "d",
+          "control-sha": "d",
+          "red": "d",
+          "phase-sha-1": "d",
+          "phase-sha-2": "d",
+          "phase-sha-3": "d",
+          "axe-first-dragon": "d",
+          "axe-first-axe": "d",
+          "axe-first-sha": "d",
+          "axe-first-follow-sha": "d",
+          "axe-first-shan": "d",
+          "axe-first-cost-1": "d",
+          "axe-first-cost-2": "d",
+          "dragon-first-dragon": "A:e",
+          "dragon-first-axe": "A:e",
+          "dragon-first-sha": "o",
+          "dragon-first-follow-sha": "d",
+          "dragon-first-shan": "d",
+          "dragon-first-cost-1": "A:h",
+          "dragon-first-cost-2": "A:h"
+        }
+      }
+    ],
+    [
+      "dragon-first",
+      "guanshi_skill",
+      "begin",
+      "A",
+      "trigger",
+      {
+        "hp": 11,
+        "distance": 3,
+        "slots": 2,
+        "equipment": [
+          "dragon-first-axe",
+          "dragon-first-dragon"
+        ],
+        "skills": [],
+        "cards": {
+          "crossbow": "d",
+          "sword-1": "d",
+          "sword-2": "d",
+          "armor": "d",
+          "control-sha": "d",
+          "red": "d",
+          "phase-sha-1": "d",
+          "phase-sha-2": "d",
+          "phase-sha-3": "d",
+          "axe-first-dragon": "d",
+          "axe-first-axe": "d",
+          "axe-first-sha": "d",
+          "axe-first-follow-sha": "d",
+          "axe-first-shan": "d",
+          "axe-first-cost-1": "d",
+          "axe-first-cost-2": "d",
+          "dragon-first-dragon": "A:e",
+          "dragon-first-axe": "A:e",
+          "dragon-first-sha": "o",
+          "dragon-first-follow-sha": "d",
+          "dragon-first-shan": "d",
+          "dragon-first-cost-1": "A:h",
+          "dragon-first-cost-2": "A:h"
+        }
+      }
+    ],
+    [
+      "dragon-first",
+      "guanshi_skill",
+      "end",
+      "A",
+      "trigger",
+      {
+        "hp": 11,
+        "distance": 3,
+        "slots": 2,
+        "equipment": [
+          "dragon-first-axe",
+          "dragon-first-dragon"
+        ],
+        "skills": [],
+        "cards": {
+          "crossbow": "d",
+          "sword-1": "d",
+          "sword-2": "d",
+          "armor": "d",
+          "control-sha": "d",
+          "red": "d",
+          "phase-sha-1": "d",
+          "phase-sha-2": "d",
+          "phase-sha-3": "d",
+          "axe-first-dragon": "d",
+          "axe-first-axe": "d",
+          "axe-first-sha": "d",
+          "axe-first-follow-sha": "d",
+          "axe-first-shan": "d",
+          "axe-first-cost-1": "d",
+          "axe-first-cost-2": "d",
+          "dragon-first-dragon": "A:e",
+          "dragon-first-axe": "A:e",
+          "dragon-first-sha": "o",
+          "dragon-first-follow-sha": "d",
+          "dragon-first-shan": "d",
+          "dragon-first-cost-1": "d",
+          "dragon-first-cost-2": "d"
+        }
+      }
+    ]
+  ],
+  "stages": [
+    {
+      "name": "control-before",
+      "hp": 12,
+      "distance": 1,
+      "slots": 1,
+      "equipment": [
+        "crossbow"
+      ],
+      "skills": [],
+      "cards": {
+        "crossbow": "A:e",
+        "sword-1": "s",
+        "sword-2": "s",
+        "armor": "B:e",
+        "control-sha": "A:h",
+        "red": "c"
+      }
+    },
+    {
+      "name": "control-after",
+      "hp": 12,
+      "distance": 1,
+      "slots": 1,
+      "equipment": [
+        "crossbow"
+      ],
+      "skills": [],
+      "cards": {
+        "crossbow": "A:e",
+        "sword-1": "s",
+        "sword-2": "s",
+        "armor": "B:e",
+        "control-sha": "d",
+        "red": "d"
+      }
+    },
+    {
+      "name": "armed",
+      "hp": 12,
+      "distance": 2,
+      "slots": 3,
+      "equipment": [
+        "sword-2",
+        "sword-1",
+        "crossbow"
+      ],
+      "skills": [
+        "qinggang_skill"
+      ],
+      "cards": {
+        "crossbow": "A:e",
+        "sword-1": "A:e",
+        "sword-2": "A:e",
+        "armor": "B:e",
+        "control-sha": "d",
+        "red": "d"
+      }
+    },
+    {
+      "name": "phase-after",
+      "hp": 10,
+      "distance": 2,
+      "slots": 3,
+      "equipment": [
+        "sword-2"
+      ],
+      "skills": [
+        "qinggang_skill"
+      ],
+      "cards": {
+        "crossbow": "d",
+        "sword-1": "d",
+        "sword-2": "A:e",
+        "armor": "B:e",
+        "control-sha": "d",
+        "red": "d",
+        "phase-sha-1": "d",
+        "phase-sha-2": "d",
+        "phase-sha-3": "A:h"
+      }
+    },
+    {
+      "name": "axe-first-before",
+      "hp": 12,
+      "distance": 3,
+      "slots": 2,
+      "equipment": [
+        "axe-first-axe",
+        "axe-first-dragon"
+      ],
+      "skills": [],
+      "cards": {
+        "crossbow": "d",
+        "sword-1": "d",
+        "sword-2": "d",
+        "armor": "d",
+        "control-sha": "d",
+        "red": "d",
+        "phase-sha-1": "d",
+        "phase-sha-2": "d",
+        "phase-sha-3": "d",
+        "axe-first-dragon": "A:e",
+        "axe-first-axe": "A:e",
+        "axe-first-sha": "A:h",
+        "axe-first-follow-sha": "A:h",
+        "axe-first-shan": "B:h",
+        "axe-first-cost-1": "A:h",
+        "axe-first-cost-2": "A:h"
+      }
+    },
+    {
+      "name": "axe-first-after",
+      "hp": 11,
+      "distance": 3,
+      "slots": 2,
+      "equipment": [
+        "axe-first-axe",
+        "axe-first-dragon"
+      ],
+      "skills": [],
+      "cards": {
+        "crossbow": "d",
+        "sword-1": "d",
+        "sword-2": "d",
+        "armor": "d",
+        "control-sha": "d",
+        "red": "d",
+        "phase-sha-1": "d",
+        "phase-sha-2": "d",
+        "phase-sha-3": "d",
+        "axe-first-dragon": "A:e",
+        "axe-first-axe": "A:e",
+        "axe-first-sha": "d",
+        "axe-first-follow-sha": "A:h",
+        "axe-first-shan": "d",
+        "axe-first-cost-1": "d",
+        "axe-first-cost-2": "d"
+      }
+    },
+    {
+      "name": "dragon-first-before",
+      "hp": 12,
+      "distance": 3,
+      "slots": 2,
+      "equipment": [
+        "dragon-first-axe",
+        "dragon-first-dragon"
+      ],
+      "skills": [],
+      "cards": {
+        "crossbow": "d",
+        "sword-1": "d",
+        "sword-2": "d",
+        "armor": "d",
+        "control-sha": "d",
+        "red": "d",
+        "phase-sha-1": "d",
+        "phase-sha-2": "d",
+        "phase-sha-3": "d",
+        "axe-first-dragon": "d",
+        "axe-first-axe": "d",
+        "axe-first-sha": "d",
+        "axe-first-follow-sha": "d",
+        "axe-first-shan": "d",
+        "axe-first-cost-1": "d",
+        "axe-first-cost-2": "d",
+        "dragon-first-dragon": "A:e",
+        "dragon-first-axe": "A:e",
+        "dragon-first-sha": "A:h",
+        "dragon-first-follow-sha": "A:h",
+        "dragon-first-shan": "B:h",
+        "dragon-first-cost-1": "A:h",
+        "dragon-first-cost-2": "A:h"
+      }
+    },
+    {
+      "name": "dragon-first-after",
+      "hp": 10,
+      "distance": 3,
+      "slots": 2,
+      "equipment": [
+        "dragon-first-axe",
+        "dragon-first-dragon"
+      ],
+      "skills": [],
+      "cards": {
+        "crossbow": "d",
+        "sword-1": "d",
+        "sword-2": "d",
+        "armor": "d",
+        "control-sha": "d",
+        "red": "d",
+        "phase-sha-1": "d",
+        "phase-sha-2": "d",
+        "phase-sha-3": "d",
+        "axe-first-dragon": "d",
+        "axe-first-axe": "d",
+        "axe-first-sha": "d",
+        "axe-first-follow-sha": "d",
+        "axe-first-shan": "d",
+        "axe-first-cost-1": "d",
+        "axe-first-cost-2": "d",
+        "dragon-first-dragon": "A:e",
+        "dragon-first-axe": "A:e",
+        "dragon-first-sha": "d",
+        "dragon-first-follow-sha": "d",
+        "dragon-first-shan": "d",
+        "dragon-first-cost-1": "d",
+        "dragon-first-cost-2": "d"
+      }
+    }
+  ],
+  "controls": [
+    [
+      "axe-first",
+      "arrangeTrigger",
+      [
+        "青龙偃月刀",
+        "贯石斧"
+      ],
+      true,
+      false
+    ],
+    [
+      "dragon-first",
+      "arrangeTrigger",
+      [
+        "青龙偃月刀",
+        "贯石斧"
+      ],
+      false,
+      true
+    ]
+  ],
+  "humanAxeClick": true
+}
