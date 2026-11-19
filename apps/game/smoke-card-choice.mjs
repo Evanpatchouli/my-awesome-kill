@@ -120,6 +120,14 @@ try {
         const confirm = button(toolbar, '确认')
         await choice.and(toolbar.locator('button:enabled')).waitFor()
         await assertPlayedCard(board, groupAttack ? 76 : 17, groupAttack ? '万箭齐发' : '杀', groupAttack ? 'A♥' : '10♣')
+        if (groupAttack) {
+          const heading = board.locator('.classic-center h1')
+          const expected = '应对【万箭齐发】，请打出一张【闪】。'
+          assert.equal(await heading.innerText(), expected)
+          await button(toolbar, '龙胆').click()
+          assert.equal(await heading.innerText(), expected)
+          await button(toolbar, '取消').click()
+        }
         assert.equal(await board.locator('[data-card-choice]').count(), 0)
         assert.equal(await confirm.count(), 0)
         await assertToolbarPosition(board)

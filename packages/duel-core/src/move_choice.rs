@@ -354,6 +354,7 @@ impl Game {
                         max: cards.len(),
                         cards,
                         branches: vec![],
+                        prompt: None,
                         counter: None,
                         compare: None,
                         compare_group: None,

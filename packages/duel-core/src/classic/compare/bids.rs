@@ -374,6 +374,7 @@ impl Game {
                                 min: 0,
                                 max: 0,
                                 cards: vec![],
+                                prompt: None,
                                 counter: None,
                                 compare,
                                 compare_group,

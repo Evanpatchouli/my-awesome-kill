@@ -348,6 +348,8 @@ pub struct ChoiceView {
     pub cards: Vec<CardId>,
     pub branches: Vec<ChoiceBranch>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub prompt: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub counter: Option<CounterContext>,
     /// Present only for the acting seat's choice of a face-down comparison card.
     #[serde(default, skip_serializing_if = "Option::is_none")]

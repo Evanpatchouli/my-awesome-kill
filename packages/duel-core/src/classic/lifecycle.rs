@@ -125,6 +125,7 @@ impl Game {
                 max: required,
                 cards,
                 branches: vec![],
+                prompt: None,
                 counter: None,
                 compare: None,
                 compare_group: None,

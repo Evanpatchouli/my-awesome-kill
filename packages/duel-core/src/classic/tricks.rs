@@ -116,6 +116,25 @@ impl Trick {
 }
 
 impl Game {
+    pub(crate) fn trick_response_prompt(&self, event: EventRef, seat: SeatId) -> Option<String> {
+        let (response, program) = self.scheduler.active_frame(event.parent?)?;
+        let EventKind::Respond { kind, .. } = program.kind() else {
+            return None;
+        };
+        let (_, Program::Trick(trick)) = self.scheduler.active_frame(response.parent?)? else {
+            return None;
+        };
+        if !matches!(trick.stage, TrickStage::Response { actor } if actor == seat) {
+            return None;
+        }
+        let (trick_name, required_card) = match (trick.kind, kind) {
+            (CardKind::Wanjian, CardKind::Shan) => ("万箭齐发", "闪"),
+            (CardKind::Nanman, CardKind::Sha) => ("南蛮入侵", "杀"),
+            _ => return None,
+        };
+        Some(format!("应对【{trick_name}】，请打出一张【{required_card}】。"))
+    }
+
     pub(crate) fn judgment_effect_program(
         &self,
         seat: SeatId,

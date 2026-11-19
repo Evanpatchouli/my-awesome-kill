@@ -331,16 +331,36 @@ fn wuxie_cancels_only_the_current_aoe_target() {
     start_trick(&mut game, card(20, CardKind::Nanman), vec![1, 2, 3]);
     pass_counters_until(&mut game, |choice| choice.seat == 2);
     assert_eq!(game.view(None).unwrap().waiting_for, Some(2));
+    assert!(game.view(Some(2)).unwrap().choice.unwrap().prompt.is_none());
     select(&mut game, 1, vec![42]);
     pass_counters(&mut game);
     assert_eq!(game.seat(1).unwrap().hp, 4, "first target was negated");
     assert_eq!(game.view(None).unwrap().waiting_for, Some(2));
+    assert_eq!(
+        game.view(Some(2)).unwrap().choice.unwrap().prompt.as_deref(),
+        Some("应对【南蛮入侵】，请打出一张【杀】。")
+    );
     select(&mut game, 0, vec![]);
     pass_counters(&mut game);
     assert_eq!(game.seat(2).unwrap().hp, 3);
     assert_eq!(game.view(None).unwrap().waiting_for, Some(3));
     select(&mut game, 0, vec![]);
     assert_eq!(game.seat(3).unwrap().hp, 3);
+}
+
+#[test]
+fn wanjian_prompts_the_target_without_requiring_a_conversion_skill() {
+    let mut game = scene();
+    game.seat_mut(1).hand.push(card(42, CardKind::Shan));
+    start_trick(&mut game, card(20, CardKind::Wanjian), vec![1, 2, 3]);
+    pass_counters(&mut game);
+    let choice = game.view(Some(1)).unwrap().choice.unwrap();
+    assert_eq!(choice.kind, crate::ChoiceKind::Shan);
+    assert_eq!(
+        choice.prompt.as_deref(),
+        Some("应对【万箭齐发】，请打出一张【闪】。")
+    );
+    assert!(game.view(Some(0)).unwrap().choice.is_none());
 }
 
 #[test]
