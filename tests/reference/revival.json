@@ -636,5 +636,32 @@
   "physicalCards": {
     "handInDiscard": true,
     "equipmentInDiscard": true
+  },
+  "gushe": {
+    "hasOnUnmark": false,
+    "stages": [
+      {"name":"before-die","hp":4,"alive":true,"count":7,"shown":true,"hasSkill":true,"players":["A","C","D","E","F","G","H","B"],"dead":[],"ring":["A","B","C","D","E","F","G","H"]},
+      {"name":"after-die","hp":0,"alive":false,"count":7,"shown":false,"hasSkill":true,"players":["A","C","D","E","F","G","H"],"dead":["B"],"ring":["A","C","D","E","F","G","H"]},
+      {"name":"after-revive","hp":2,"alive":true,"count":7,"shown":false,"hasSkill":true,"players":["A","C","D","E","F","G","H","B"],"dead":[],"ring":["A","B","C","D","E","F","G","H"]}
+    ]
+  },
+  "earlyRevival": {
+    "target": "D",
+    "targetNonLordAI": true,
+    "stages": [
+      {"name":"before-die","hp":4,"maxHp":4,"alive":true,"identity":"fan","identityShown":false,"hand":[["shan","diamond",6]],"equips":[["qinggang","spade",6]],"markCount":7,"markShown":true,"tempSkill":true,"sourceHand":6,"sourceKill":0,"rewardsInHand":[],"players":["A","C","D","E","F","G","H","B"],"dead":[],"ring":["A","B","C","D","E","F","G","H"],"gameOver":false},
+      {"name":"request-dieBefore","hp":4,"maxHp":4,"alive":true,"identity":"fan","identityShown":false,"hand":[["shan","diamond",6]],"equips":[["qinggang","spade",6]],"markCount":7,"markShown":true,"tempSkill":true,"sourceHand":6,"sourceKill":0,"rewardsInHand":[],"players":["A","C","D","E","F","G","H","B"],"dead":[],"ring":["A","B","C","D","E","F","G","H"],"gameOver":false},
+      {"name":"request-dieBegin","hp":4,"maxHp":4,"alive":true,"identity":"fan","identityShown":false,"hand":[["shan","diamond",6]],"equips":[["qinggang","spade",6]],"markCount":7,"markShown":true,"tempSkill":true,"sourceHand":6,"sourceKill":0,"rewardsInHand":[],"players":["A","C","D","E","F","G","H","B"],"dead":[],"ring":["A","B","C","D","E","F","G","H"],"gameOver":false},
+      {"name":"request-die","hp":0,"maxHp":4,"alive":false,"identity":"fan","identityShown":true,"hand":[["shan","diamond",6]],"equips":[["qinggang","spade",6]],"markCount":7,"markShown":true,"tempSkill":true,"sourceHand":6,"sourceKill":1,"rewardsInHand":[],"players":["A","C","E","F","G","H","B"],"dead":["D"],"ring":["A","B","C","E","F","G","H"],"gameOver":false},
+      {"name":"callback-before-revive","hp":0,"maxHp":4,"alive":false,"identity":"fan","identityShown":true,"hand":[["shan","diamond",6]],"equips":[["qinggang","spade",6]],"markCount":7,"markShown":true,"tempSkill":true,"sourceHand":6,"sourceKill":1,"rewardsInHand":[],"players":["A","C","E","F","G","H","B"],"dead":["D"],"ring":["A","B","C","E","F","G","H"],"gameOver":false},
+      {"name":"callback-after-revive","hp":2,"maxHp":4,"alive":true,"identity":"fan","identityShown":true,"hand":[["shan","diamond",6]],"equips":[["qinggang","spade",6]],"markCount":7,"markShown":true,"tempSkill":true,"sourceHand":6,"sourceKill":1,"rewardsInHand":[],"players":["A","C","E","F","G","H","B","D"],"dead":[],"ring":["A","B","C","D","E","F","G","H"],"gameOver":false},
+      {"name":"request-drawBefore","hp":2,"maxHp":4,"alive":true,"identity":"fan","identityShown":true,"hand":[["shan","diamond",6]],"equips":[["qinggang","spade",6]],"markCount":7,"markShown":true,"tempSkill":true,"sourceHand":6,"sourceKill":1,"rewardsInHand":[],"players":["A","C","E","F","G","H","B","D"],"dead":[],"ring":["A","B","C","D","E","F","G","H"],"gameOver":false},
+      {"name":"request-drawAfter","hp":2,"maxHp":4,"alive":true,"identity":"fan","identityShown":true,"hand":[["shan","diamond",6]],"equips":[["qinggang","spade",6]],"markCount":7,"markShown":true,"tempSkill":true,"sourceHand":9,"sourceKill":1,"rewardsInHand":[["tao","heart",8],["tao","heart",9],["tao","heart",10]],"players":["A","C","E","F","G","H","B","D"],"dead":[],"ring":["A","B","C","D","E","F","G","H"],"gameOver":false},
+      {"name":"request-dieEnd","hp":2,"maxHp":4,"alive":true,"identity":"fan","identityShown":true,"hand":[["shan","diamond",6]],"equips":[["qinggang","spade",6]],"markCount":7,"markShown":true,"tempSkill":true,"sourceHand":9,"sourceKill":1,"rewardsInHand":[["tao","heart",8],["tao","heart",9],["tao","heart",10]],"players":["A","C","E","F","G","H","B","D"],"dead":[],"ring":["A","B","C","D","E","F","G","H"],"gameOver":false},
+      {"name":"request-dieAfter","hp":2,"maxHp":4,"alive":true,"identity":"fan","identityShown":true,"hand":[["shan","diamond",6]],"equips":[["qinggang","spade",6]],"markCount":7,"markShown":true,"tempSkill":true,"sourceHand":9,"sourceKill":1,"rewardsInHand":[["tao","heart",8],["tao","heart",9],["tao","heart",10]],"players":["A","C","E","F","G","H","B","D"],"dead":[],"ring":["A","B","C","D","E","F","G","H"],"gameOver":false},
+      {"name":"after-die","hp":2,"maxHp":4,"alive":true,"identity":"fan","identityShown":true,"hand":[["shan","diamond",6]],"equips":[["qinggang","spade",6]],"markCount":7,"markShown":true,"tempSkill":true,"sourceHand":9,"sourceKill":1,"rewardsInHand":[["tao","heart",8],["tao","heart",9],["tao","heart",10]],"players":["A","C","E","F","G","H","B","D"],"dead":[],"ring":["A","B","C","D","E","F","G","H"],"gameOver":false}
+    ],
+    "handInDiscard": false,
+    "equipmentInDiscard": false
   }
 }

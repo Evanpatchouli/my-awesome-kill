@@ -108,7 +108,7 @@ if (scenario === 'zhongyi-boundaries') {
   sourceHashes['/noname/library/element/dialog.js'] = '24893150df03829703e56c3156f63c784d536f42d1168d77674a167124521b03';
 }
 if (['linked-damage', 'compare', 'qiaoshui-targets', 'phase-scheduling', 'max-hp'].includes(scenario)) sourceHashes['/character/yijiang/skill.js'] = '5b0eb965a8428535bf3cd7d369c261b8ad95cccbeac8d8c817cad3490643a54f';
-if (scenario === 'max-hp') sourceHashes['/character/sp/skill.js'] = 'a63785adcf4c9518b58ca05f6ea85559f8eb6ea3d89ebcd782498f445cde85f9';
+if (['max-hp', 'revival'].includes(scenario)) sourceHashes['/character/sp/skill.js'] = 'a63785adcf4c9518b58ca05f6ea85559f8eb6ea3d89ebcd782498f445cde85f9';
 if (scenario === 'phase-scheduling') {
   sourceHashes['/character/shenhua/skill.js'] = '7e87ec26c3f183b83878f886e3872bd78a0f69a5e51e7f46a64bfcc79362cd62';
 }
@@ -499,8 +499,14 @@ try {
 function formatResult(value) {
   const marker = '__REFERENCE_EVENTS__';
   const compactEvents = value.events.map(event => `    ${JSON.stringify(event)}`).join(',\n');
-  return JSON.stringify({ ...value, events: marker }, null, 2)
-    .replace(`"${marker}"`, `[\n${compactEvents}\n  ]`) + '\n';
+  const compactSupplement = (rows, indentation) => `[\n${rows.map(row => `${' '.repeat(indentation)}${JSON.stringify(row)}`).join(',\n')}\n${' '.repeat(indentation - 2)}]`;
+  const output = { ...value, events: marker };
+  if (value.gushe) output.gushe = { ...value.gushe, stages: '__REFERENCE_GUSHE_STAGES__' };
+  if (value.earlyRevival) output.earlyRevival = { ...value.earlyRevival, stages: '__REFERENCE_EARLY_STAGES__' };
+  let formatted = JSON.stringify(output, null, 2).replace(`"${marker}"`, `[\n${compactEvents}\n  ]`);
+  if (value.gushe) formatted = formatted.replace('"__REFERENCE_GUSHE_STAGES__"', compactSupplement(value.gushe.stages, 6));
+  if (value.earlyRevival) formatted = formatted.replace('"__REFERENCE_EARLY_STAGES__"', compactSupplement(value.earlyRevival.stages, 6));
+  return formatted + '\n';
 }
 
 if (argv[0] === '--check') {

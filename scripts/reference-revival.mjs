@@ -6,6 +6,12 @@ export function installReferenceRevival() {
     const seats = [A];
     while (seats.length < 8) seats.push(seats.at(-1).nextSeat);
     if (new Set(seats).size !== 8 || seats.at(-1).nextSeat !== A) throw new Error('Expected eight physical seats');
+    // The upstream live array can start at a different physical seat between
+    // browser launches. Rotate it once at setup to compare later appends.
+    const start = game.players.indexOf(A);
+    if (start < 0) throw new Error('Current player is missing from the live array');
+    game.players.push(...game.players.splice(0, start));
+    if (game.players.some((player, index) => player !== seats[index])) throw new Error('Expected a seat-ordered live array');
     const label = player => player ? 'ABCDEFGH'[seats.indexOf(player)] || null : null;
     const B = seats.find(player => player !== A && player !== game.me && player !== game.zhu);
     if (!B || _status.currentPhase !== A) throw new Error('Expected a non-lord AI target in the current turn');
@@ -33,7 +39,7 @@ export function installReferenceRevival() {
     const times = ['die', 'loseMaxHp', 'changeHp', 'revive', 'dying'].flatMap(name =>
       ['Before', 'Begin', '', 'End', 'After', 'Cancelled'].map(suffix => name + suffix));
     const events = [];
-    let active = null, cancelRevive = false, activeRevive = null;
+    let active = null, cancelRevive = false, activeRevive = null, earlyRecord = null;
     function record(kind, timing, event) {
       events.push([active, kind, timing, event.name, event.getParent()?.name || null,
         event.num ?? null, event.hp ?? null, B.hp, B.maxHp, B.isAlive(),
@@ -57,6 +63,7 @@ export function installReferenceRevival() {
     const proto = lib.element.GameEvent.prototype, originalTrigger = proto.trigger;
     proto.trigger = function (timing) {
       if (active && this.player === B && times.includes(timing)) record('request', timing, this);
+      if (earlyRecord) earlyRecord(timing, this);
       return originalTrigger.apply(this, arguments);
     };
     try {
@@ -116,10 +123,87 @@ export function installReferenceRevival() {
       const restored = { hp: activeRevive.hp, finished: activeRevive.finished, cancelled: !!activeRevive._cancelled };
       capture('revive-event-zero');
       active = null;
+
+      // Exercise the real gushe mark, whose intro does not define onunmark.
+      lib.skill.gushe = (await import('/character/sp/skill.js')).default.gushe;
+      game.finishSkill('gushe');
+      B.hp = B.maxHp = 4;
+      B.update();
+      B.addSkill('gushe');
+      B.addMark('gushe', 7, false);
+      const gusheStages = [];
+      const captureGushe = name => gusheStages.push({ name, hp: B.hp, alive: B.isAlive(),
+        count: B.countMark('gushe'), shown: !!B.marks.gushe, hasSkill: B.hasSkill('gushe'), ...roster() });
+      captureGushe('before-die');
+      await B.die().set('animate', false);
+      captureGushe('after-die');
+      B.revive(2, false);
+      captureGushe('after-revive');
+      const gushe = { hasOnUnmark: !!lib.skill.gushe.intro.onunmark, stages: gusheStages };
+
+      // A different non-lord AI is revived inside the real die trigger, before
+      // the death content's cleanup and mode reward steps have completed.
+      const C = seats.find(player => player !== A && player !== B && player !== game.me && player.identity === 'fan');
+      if (!C || C === game.zhu) throw new Error('Expected a second non-lord AI rebel');
+      const existingC = C.getCards('he');
+      if (existingC.length) await C.discard(existingC);
+      C.hp = C.maxHp = 4;
+      C.hujia = 0;
+      C.update();
+      C.addSkill('gushe');
+      C.addMark('gushe', 7, false);
+      lib.skill.reference_early_temp = {};
+      game.finishSkill('reference_early_temp');
+      C.addTempSkill('reference_early_temp');
+      const earlyHand = game.createCard2('shan', 'diamond', 6);
+      const earlyEquip = game.createCard2('qinggang', 'spade', 6);
+      await C.gain(earlyHand);
+      await C.equip(earlyEquip);
+      const rewardCards = [8, 9, 10].map(number => game.createCard2('tao', 'heart', number));
+      for (const item of rewardCards.toReversed()) ui.cardPile.insertBefore(item, ui.cardPile.firstChild);
+      const earlyStages = [];
+      const captureEarly = name => earlyStages.push({
+        name, hp: C.hp, maxHp: C.maxHp, alive: C.isAlive(), identity: C.identity,
+        identityShown: !!C.identityShown, hand: C.getCards('h').map(card), equips: C.getCards('e').map(card),
+        markCount: C.countMark('gushe'), markShown: !!C.marks.gushe,
+        tempSkill: !!C.tempSkills.reference_early_temp && C.hasSkill('reference_early_temp'),
+        sourceHand: A.countCards('h'), sourceKill: A.getStat('kill') || 0,
+        rewardsInHand: rewardCards.filter(item => A.getCards('h').includes(item)).map(card),
+        ...roster(), gameOver: !!_status.over,
+      });
+      const earlySkill = 'reference_die_early_revive';
+      lib.skill[earlySkill] = {
+        trigger: { global: 'die' }, firstDo: true, forced: true, silent: true, forceDie: true,
+        filter: event => event.player === C,
+        async content() {
+          captureEarly('callback-before-revive');
+          C.revive(2, false);
+          captureEarly('callback-after-revive');
+        },
+      };
+      game.finishSkill(earlySkill);
+      A.addSkill(earlySkill);
+      captureEarly('before-die');
+      earlyRecord = (timing, event) => {
+        if (event.player === C && event.name === 'die' &&
+          ['dieBefore', 'dieBegin', 'die', 'dieEnd', 'dieAfter'].includes(timing)) {
+          captureEarly(`request-${timing}`);
+        }
+        if (event.player === A && event.name === 'draw' && event.getParent()?.name === 'die' &&
+          ['drawBefore', 'drawAfter'].includes(timing)) captureEarly(`request-${timing}`);
+      };
+      await C.die({ source: A }).set('animate', false);
+      earlyRecord = null;
+      captureEarly('after-die');
+      A.removeSkill(earlySkill);
+      const earlyRevival = { target: label(C), targetNonLordAI: C !== game.zhu && C !== game.me,
+        stages: earlyStages, handInDiscard: ui.discardPile.contains(earlyHand),
+        equipmentInDiscard: ui.discardPile.contains(earlyEquip) };
       return { setup, directReturnedUndefined: directReturn === undefined, stages, cancelled, restored,
         eventColumns: ['trial', 'kind', 'timing', 'event', 'parent', 'num', 'eventHp', 'hp', 'maxHp',
           'alive', 'players', 'dead', 'finished', 'cancelled'], events,
-        physicalCards: { handInDiscard: ui.discardPile.contains(hand), equipmentInDiscard: ui.discardPile.contains(equipment) } };
+        physicalCards: { handInDiscard: ui.discardPile.contains(hand), equipmentInDiscard: ui.discardPile.contains(equipment) },
+        gushe, earlyRevival };
     } finally {
       proto.trigger = originalTrigger;
       A.removeSkill(observer);
@@ -203,4 +287,44 @@ export function checkReferenceRevival(result) {
   const cancelled = rows.filter(row => row.trial === 'revive-event-cancel' && row.timing === 'reviveCancelled');
   assert.deepEqual(cancelled.map(row => [row.kind, row.finished, row.cancelled]),
     [['request', false, true], ['callback', true, true]]);
+
+  assert.equal(result.gushe.hasOnUnmark, false);
+  assert.deepEqual(result.gushe.stages.map(stage => [stage.name, stage.hp, stage.alive,
+    stage.count, stage.shown, stage.hasSkill]), [
+    ['before-die', 4, true, 7, true, true],
+    ['after-die', 0, false, 7, false, true],
+    ['after-revive', 2, true, 7, false, true],
+  ]);
+  assert.deepEqual(result.gushe.stages.map(stage => stage.dead), [[], [target], []]);
+  assert.equal(result.earlyRevival.targetNonLordAI, true);
+  const early = result.earlyRevival.stages;
+  assert.deepEqual(early.map(stage => stage.name), [
+    'before-die', 'request-dieBefore', 'request-dieBegin', 'request-die',
+    'callback-before-revive', 'callback-after-revive', 'request-drawBefore', 'request-drawAfter',
+    'request-dieEnd', 'request-dieAfter', 'after-die',
+  ]);
+  const earlyTarget = result.earlyRevival.target, original = early[0];
+  const reward = [8, 9, 10].map(number => ['tao', 'heart', number]);
+  assert.equal(original.identityShown, false);
+  for (const [index, stage] of early.entries()) {
+    const dead = index === 3 || index === 4;
+    const revived = index >= 5;
+    const rewarded = index >= 7;
+    assert.deepEqual([stage.hp, stage.maxHp, stage.alive], [dead ? 0 : revived ? 2 : 4, 4, !dead], stage.name);
+    assert.equal(stage.identity, 'fan', stage.name);
+    assert.equal(stage.identityShown, index >= 3, stage.name);
+    assert.deepEqual(stage.hand, [['shan', 'diamond', 6]], stage.name);
+    assert.deepEqual(stage.equips, [['qinggang', 'spade', 6]], stage.name);
+    assert.deepEqual([stage.markCount, stage.markShown, stage.tempSkill], [7, true, true], stage.name);
+    assert.equal(stage.sourceKill, original.sourceKill + (index >= 3 ? 1 : 0), stage.name);
+    assert.equal(stage.sourceHand, original.sourceHand + (rewarded ? 3 : 0), stage.name);
+    assert.deepEqual(stage.rewardsInHand, rewarded ? reward : [], stage.name);
+    assert.deepEqual(stage.dead, dead ? [earlyTarget] : [], stage.name);
+    assert.deepEqual(stage.players, dead ? original.players.filter(seat => seat !== earlyTarget)
+      : revived ? [...original.players.filter(seat => seat !== earlyTarget), earlyTarget] : original.players, stage.name);
+    assert.deepEqual(stage.ring, original.ring.filter(seat => !dead || seat !== earlyTarget), stage.name);
+    assert.equal(stage.gameOver, false, stage.name);
+  }
+  assert.equal(result.earlyRevival.handInDiscard, false);
+  assert.equal(result.earlyRevival.equipmentInDiscard, false);
 }
