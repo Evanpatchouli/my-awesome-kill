@@ -622,11 +622,12 @@ fn non_lord_gushe_death_keeps_current_pair_choice_and_later_scores() {
         frame.result.as_ref().unwrap().numbers,
         [[10, 10], [10, 11], [10, 12]]
     );
-    assert_eq!(
-        game.skill_mark_count(1, "gushe", None),
-        0,
-        "death cleared marks and later pairs did not add any"
-    );
+    assert_eq!(game.skill_mark_count(1, "gushe", None), 7);
+    for viewer in std::iter::once(None).chain((0..8).map(Some)) {
+        let public = game.view(viewer).unwrap();
+        let dead = public.seats.iter().find(|seat| seat.id == 1).unwrap();
+        assert!(dead.marks.is_empty(), "death hides marks from {viewer:?}");
+    }
     for item in bids.iter().chain(std::iter::once(&extras[1])) {
         assert_eq!(
             game.discard.iter().filter(|&&card| card == *item).count(),

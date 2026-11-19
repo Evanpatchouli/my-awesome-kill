@@ -4,7 +4,7 @@
 
 在 `E:\my-awesome-kill` 将固定上游 `.reference/noname` 的整套对局机制与可观察行为独立迁移到 Rust，再用同一 Rust/WASM 底座交付经典三国杀。参考提交 `c73270948d72949aa80009536b9fd5400767d091`，内容可适配新接口。正式模式沿用路线图首页和画廊，standard_2008 全部 25 将自由选择、40 技、104 张实体、2–10 席；优先原始美术，运行时无参考检出依赖。Vue 3/Vite、Tauri 2、SQLite 与桌面和 Android 横屏约束继续有效。
 
-本任 `01a1f06a-3e4d-75e1-8413-ce32e97cc306` 已核实桌面记录、项目表及实际 shell 均绑定 local / `56a3f74c-1f60-47c5-8e25-30ee6f6375cb` / `E:\my-awesome-kill`。本地 `master` 从 `9351a7d` 接棒。用户最近指定的 AGENTS 入口为 `C:\Users\evanpatchouli\.agents\AGENTS.md`。保留用户改动，合理委派，相应验证后分阶段本地提交。P1 尚未整体验收。
+本任 `01a1f1c5-2033-74c1-a5ac-86be09da3a00` 已核实桌面记录、项目表及实际 shell 均绑定 local / `56a3f74c-1f60-47c5-8e25-30ee6f6375cb` / `E:\my-awesome-kill`。本地 `master` 从 `3208f89` 接棒，初始工作区干净。用户最近指定的 AGENTS 入口为 `C:\Users\evanpatchouli\.agents\AGENTS.md`。保留用户改动，合理委派，相应验证后分阶段本地提交。P1 尚未整体验收。
 
 ## 已落地的边界
 
@@ -45,7 +45,7 @@
 
 达到条件先收口所有写入者和本地提交，更新本文件与 `.agents/handoff.md` 的分支、用户改动、测试、未完成项、明确第一步和最新采样。按下节重新核对项目并创建一个直接后继，将目标、进度、授权、停止条件与下节全文放入首条 prompt。受理后立即结束，禁止监测。创建结果不明先核实，防止重复；若工具不可用或有仅用户能解决的阻塞，报告实际原因，避免接力传递同一个阻塞。完成 P1 后停止接力。
 
-本任最新有效采样为 2026-11-19T03:04:02.695Z，last_token_usage.total_tokens = 637,209，model_context_window = 828,400，占 76.92%。距 80% 余 25,511 个 token。 下一单元跨同步及事件恢复、标记、名单、角色身份与死亡奖惩，并需完整复验。本任在干净的本地提交边界交接。
+本任从自己的 rollout 重新计数。接棒初期有效样本为 2026-11-19T03:08:59.841Z，last_token_usage.total_tokens = 66,536，model_context_window = 828,400。
 
 ## 每一任必须原样传递的项目绑定规则
 
