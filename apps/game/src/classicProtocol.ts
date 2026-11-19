@@ -95,6 +95,8 @@ export interface SeatView {
   alive: boolean
   out?: boolean
   rest?: { unit: 'phase' | 'round'; count: number }
+  judgeDisabled?: boolean
+  judgeDisabledMarker?: boolean
   linked?: boolean
   turnedOver?: boolean
   armor?: number

@@ -47,6 +47,10 @@
 
 休整牌桌使用 `qa-rest`、`MAK_REST_BINDINGS` 和 `node apps/game/smoke-rest.mjs`。在 640×272 横屏上选择、反选再确认目标，比较休整前后同一张公开赠牌在手牌与已知手牌中的位置。另开一桌，正常结束出牌并按要求弃牌，让 1 号电脑角色完成回合，自然发动殁亡。返回当回合的三张新手牌分别来自返场技能和自然摸牌。[休整参考数据](../../tests/reference/rest.json)
 
+### 判定区废除与恢复
+
+判定区烟测使用 `qa-judge-area` 和 `MAK_JUDGE_AREA_BINDINGS`，运行 `node apps/game/smoke-judge-area.mjs`。种子 317 可用大乔的国色将方片杀 28 作为乐不思蜀放入 1 号席。废除该席判定区并取消弃置，牌桌会同时显示“已废除”和原判定牌。再次废除并允许弃置后 28 只进入弃牌堆一次，恢复区域后可用方片闪 40 再次国色。[普通与取消](../../tests/reference/judge-area.json) · [落地时机](../../tests/reference/judge-interruptions.json)
+
 ### 重铸的真实 WebAssembly 交互
 
 在项目根目录构建带测试内容的独立绑定，随后用普通 Vite 开发入口运行烟测。示例中的第二套绑定放在临时目录，正常发行版保持默认 Cargo features。
