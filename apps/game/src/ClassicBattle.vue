@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import { slot } from '@mak/rules'
 import BattleEffects from './BattleEffects.vue'
 import CardFace from './CardFace.vue'
 import ClassicCompare from './ClassicCompare.vue'
@@ -102,6 +103,13 @@ const branchCards = computed(() => new Set(branch.value?.cards ?? []))
 const currentActions = computed(() =>
   cardActions.value.filter((action) => action.card === selectedCard.value),
 )
+// Ordinary equipment comes with its wearer already determined by the engine.
+const selfEquipAction = computed(() => {
+  if (selectedMode.value !== 'card' || !selectedHand.value || !slot(selectedHand.value.kind)) return
+  const [action] = currentActions.value
+  if (currentActions.value.length === 1 && action?.targets.length === 1 && action.targets[0] === me.value?.id)
+    return action
+})
 const selectedRecast = computed(() =>
   selectedMode.value === 'card' && !choice.value
     ? recastActions.value.find((action) => action.card === selectedCard.value)
@@ -119,6 +127,7 @@ const matchingActions = computed(() =>
 )
 const possibleTargets = computed(() => {
   if (branch.value) return new Set(branch.value.targets)
+  if (selfEquipAction.value) return new Set<number>()
   return new Set(
     matchingActions.value.flatMap((action) =>
       unorderedTargets.value
@@ -128,7 +137,7 @@ const possibleTargets = computed(() => {
   )
 })
 const exactAction = computed(() =>
-  matchingActions.value.find((action) => action.targets.length === selectedTargets.value.length),
+  selfEquipAction.value ?? matchingActions.value.find((action) => action.targets.length === selectedTargets.value.length),
 )
 const targetOrder = computed(() => exactAction.value?.targets ?? selectedTargets.value)
 const canConfirm = computed(() => {
@@ -193,6 +202,7 @@ const prompt = computed(() => {
   if (choice.value?.kind === 'save')
     return `是否救援 ${seatName(props.view, choice.value.target ?? undefined)}？`
   if (choice.value?.kind === 'content') return '请选择一项并完成所需选择'
+  if (selfEquipAction.value) return `确认装备${selectedHand.value!.name}`
   if (branch.value) return branch.value.label
   if (selectedRecast.value) {
     if (!currentActions.value.length) return '可重铸此牌'
