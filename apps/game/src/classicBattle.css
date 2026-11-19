@@ -436,6 +436,12 @@
   font: 700 clamp(14px, 1.6vw, 27px) / 1.25 var(--font-kai);
   color: var(--battle-ink);
 }
+.classic-action-area:not(.has-result) .classic-center-surface h1 {
+  padding: 3px 14px;
+  color: #fff2d6;
+  background: linear-gradient(90deg, transparent, #202720d9 10% 90%, transparent);
+  text-shadow: 0 1px 3px #1f261e;
+}
 .classic-center-surface[data-card-choice] {
   width: fit-content;
   min-width: min(230px, 100%);
@@ -683,6 +689,7 @@
   .classic-action-area { inset-block: calc(var(--rail-height) + var(--portrait-height) + 9px) calc(var(--dock-height) + 5px); }
   .classic-action-area.has-move { inset-block-start: calc(var(--rail-height) + var(--portrait-height) * .55); }
   .classic-center, .classic-center-surface { gap: 2px; }
+  .classic-action-area:not(.has-result) .classic-center-surface h1 { padding: 0 8px; }
   .classic-center-surface[data-card-choice] { padding: 3px 6px; }
   .classic-pool { padding: 3px 2px 1px; gap: 4px; }
   .classic-board :is(.classic-controls, .classic-result-actions, .move-choice-controls) button {
