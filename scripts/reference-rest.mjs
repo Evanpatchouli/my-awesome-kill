@@ -21,6 +21,7 @@ export function installReferenceRest() {
       'linked', 'turnedOver', 'inPlayers', 'inDead', 'counted', 'previous', 'next', 'previousEligibleNext', 'identityShown'];
     const events = [], stages = [], turns = [];
     let seats, trial = null, active = false, protocolDone = false, roundClockStarted = false, realCards;
+    let outProbe = null;
     let dNaturalTurns = 0, eNaturalTurns = 0, cancel = null, competingClocks = false;
     const seat = player => labels[seats.indexOf(player)] ?? null;
     const [A, B, C, D, E, F, G] = [0, 1, 2, 3, 4, 5, 6];
@@ -49,6 +50,59 @@ export function installReferenceRest() {
           reviveHp: event.hp ?? null, reserveOut: !!event.reserveOut, finished: event.finished,
           cancelled: !!event._cancelled,
         }]);
+    }
+
+    async function outDeathTrials() {
+      const player = seats[B];
+      if (player === game.zhu || player === game.me || !player.isAlive() || player.isOut()) {
+        throw new Error('Expected B to be a living, present non-lord AI');
+      }
+      const [hand, equip] = await setupPlayer(player);
+      player.hp = 1;
+      player.update();
+      const events = [], stages = [];
+      let probeTrial = 'rest';
+      const snapshot = name => stages.push({ name, hp: player.hp, alive: player.isAlive(), out: player.isOut(),
+        clock: clock(player), mark: !!player.marks._rest_return, undist: player.hasSkill('undist'),
+        hand: player.getCards('h').includes(hand), equip: player.getCards('e').includes(equip),
+        handInDiscard: ui.discardPile.contains(hand), equipInDiscard: ui.discardPile.contains(equip),
+        players: game.players.map(seat), dead: game.dead.map(seat) });
+      const record = (kind, timing, event) => events.push([kind, probeTrial, timing, event.getParent()?.name ?? null,
+        player.hp, player.isAlive(), player.isOut(), clock(player), game.players.map(seat), game.dead.map(seat),
+        !!player.marks._rest_return, player.hasSkill('undist'), player.getCards('h').includes(hand),
+        player.getCards('e').includes(equip), ui.discardPile.contains(hand), ui.discardPile.contains(equip),
+        !!event.finished, !!event._cancelled, !!event.includeOut]);
+      outProbe = { player, record };
+      snapshot('initial');
+      await player.rest({ type: 'round', count: 20 });
+      snapshot('rest');
+      probeTrial = 'ordinary-die';
+      let event = player.die();
+      await event;
+      snapshot('ordinary-die');
+      player.revive(2, false);
+      snapshot('direct-revive');
+      probeTrial = 'event-revive';
+      event = player.reviveEvent(3, false);
+      await event;
+      snapshot('event-revive');
+      if (!player.isOut()) {
+        probeTrial = 'rest-again';
+        await player.rest({ type: 'round', count: 20 });
+        snapshot('rest-again');
+      }
+      probeTrial = 'include-out-die';
+      event = player.die().set('includeOut', true);
+      await event;
+      snapshot('include-out-die');
+      probeTrial = 'rest-end-after-death';
+      event = player.restEnd({ hp: 2 });
+      await event;
+      snapshot('rest-end-after-death');
+      outProbe = null;
+      return { seat: seat(player), columns: ['kind', 'trial', 'timing', 'parent', 'hp', 'alive', 'out', 'clock',
+        'players', 'dead', 'mark', 'undist', 'hand', 'equip', 'handInDiscard', 'equipInDiscard',
+        'finished', 'cancelled', 'includeOut'], events, stages };
     }
 
     async function setupPlayer(player) {
@@ -143,6 +197,9 @@ export function installReferenceRest() {
       async content(event, trigger) {
         try {
           const timing = event.triggername, player = trigger.player;
+          if (outProbe && player === outProbe.player && lifecycleTimings.includes(timing)) {
+            outProbe.record('callback', timing, trigger);
+          }
           if (watched(trigger, timing)) {
             observe('callback', timing, trigger);
             if (timing === cancel) trigger.cancel();
@@ -166,8 +223,9 @@ export function installReferenceRest() {
             }
             if (player === seats[F] && competingClocks && !trigger.skill) {
               active = false;
+              const outDeath = await outDeathTrials();
               window.__referenceResult = { seats: labels, clockSeats: subjectNames, eventColumns, stateColumns,
-                events, stages, turns };
+                events, stages, turns, outDeath };
               game.pause();
             }
           }
@@ -223,6 +281,9 @@ export function installReferenceRest() {
 
     const proto = lib.element.GameEvent.prototype, originalTrigger = proto.trigger;
     proto.trigger = function (timing) {
+      if (outProbe && this.player === outProbe.player && lifecycleTimings.includes(timing)) {
+        outProbe.record('request', timing, this);
+      }
       if (watched(this, timing)) observe('request', timing, this);
       if (active && ['phaseBefore', 'phaseZhunbeiBefore', 'roundStart'].includes(timing)) {
         turnState(timing, timing === 'phaseZhunbeiBefore' ? this.getParent('phase') : this);
@@ -338,4 +399,44 @@ export function checkReferenceRest(result) {
   assert.deepEqual(turn('G-priority-extra', 3, 'F'), [[before, false, false, ['phase', 1]],
     [after, true, true, ['phase', 1]], [prepare, true, true, ['phase', 1]]]);
   assert.deepEqual(turn('F-natural', 3, 'F'), [[before, false, false, ['phase', 1]], [after, true, true, null]]);
+
+  const probe = result.outDeath;
+  assert.equal(probe.seat, 'B');
+  const probeStages = Object.fromEntries(probe.stages.map(stage => [stage.name, stage]));
+  const initialProbe = probeStages.initial;
+  const expectedProbe = (name, changes) => assert.deepEqual(probeStages[name], { ...initialProbe, name, ...changes });
+  assert.deepEqual([initialProbe.hp, initialProbe.alive, initialProbe.out, initialProbe.hand, initialProbe.equip],
+    [1, true, false, true, true]);
+  const resting = { out: true, clock: ['round', 20], mark: true, undist: true };
+  expectedProbe('rest', resting);
+  expectedProbe('ordinary-die', resting);
+  expectedProbe('direct-revive', { ...resting, hp: 2 });
+  expectedProbe('event-revive', { ...resting, hp: 2 });
+  expectedProbe('include-out-die', { hp: 0, alive: false, clock: ['round', 20], undist: true,
+    hand: false, equip: false, handInDiscard: true, equipInDiscard: true,
+    players: [...'ACDEFGH'], dead: ['B'] });
+  expectedProbe('rest-end-after-death', { hp: 2, hand: false, equip: false, handInDiscard: true,
+    equipInDiscard: true, players: [...'ACDEFGHB'] });
+  const probeRows = probe.events.map(row => named(probe.columns, row));
+  for (const [name, timings] of Object.entries({
+    rest: ['rest'],
+    'ordinary-die': ['dieBefore', 'dieBegin', 'dieEnd', 'dieAfter'],
+    'event-revive': revival,
+    'include-out-die': ['dieBefore', 'dieBegin', 'die', 'dieEnd', 'dieAfter'],
+    'rest-end-after-death': [...revival, 'restEnd'],
+  })) {
+    for (const kind of ['request', 'callback']) {
+      assert.deepEqual(probeRows.filter(row => row.trial === name && row.kind === kind).map(row => row.timing), timings);
+    }
+  }
+  const deathRows = probeRows.filter(row => row.trial === 'include-out-die' && row.kind === 'request');
+  assert.ok(deathRows.every(row => row.includeOut));
+  const deathMain = deathRows.find(row => row.timing === 'die');
+  const deathEnd = deathRows.find(row => row.timing === 'dieEnd');
+  assert.deepEqual([deathMain.alive, deathMain.out, deathMain.mark, deathMain.undist, deathMain.hand, deathMain.equip],
+    [false, false, true, true, true, true]);
+  assert.deepEqual([deathEnd.mark, deathEnd.undist, deathEnd.hand, deathEnd.equip,
+    deathEnd.handInDiscard, deathEnd.equipInDiscard], [false, true, false, false, true, true]);
+  assert.ok(probeRows.filter(row => row.trial === 'rest-end-after-death' && row.timing.startsWith('revive'))
+    .every(row => row.parent === 'restEnd'));
 }
