@@ -119,7 +119,12 @@ try {
     await button(page, '确认').click()
     await page.clock.runFor(1000)
   }
-  assert.equal(await page.locator('[data-seat="1"] .health-count').innerText(), '3 / 9')
+  const points = page.locator('[data-seat="1"] .health-point')
+  assert.equal(await points.count(), 9)
+  const spent = page.locator('[data-seat="1"] .health-point.lost')
+  assert.equal(await spent.count(), 6)
+  assert.match(await points.first().evaluate(point => getComputedStyle(point).backgroundImage), /hp-full/)
+  assert.match(await spent.first().evaluate(point => getComputedStyle(point).backgroundImage), /hp-lost/)
   assert.equal(await page.locator('.game-error, vite-error-overlay').count(), 0)
   assert.deepEqual(errors, [])
   console.log(JSON.stringify({ seed: 317, hp: state.seats[1].hp, maxHp: state.seats[1].maxHp, evidence }))

@@ -29,6 +29,8 @@ try {
   await button('开始对局').click()
   const board = page.locator('[data-battle-table]')
   const zone = page.locator('.classic-self-equipment')
+  const weapon = zone.locator('.equipment-row').first()
+  assert.equal(await weapon.innerText(), '武器')
   const confirm = button('确认')
   let previous
   for (const [id, name] of [[69, '麒麟弓'], [65, '青龙偃月刀']]) {
@@ -43,7 +45,8 @@ try {
     await card.click()
     await confirm.click()
     await card.waitFor({ state: 'detached' })
-    assert.match(await zone.innerText(), new RegExp(name))
+    assert.match(await weapon.innerText(), new RegExp(name))
+    assert.doesNotMatch(await weapon.innerText(), /武器|空/)
     if (previous) assert.ok(!(await zone.innerText()).includes(previous))
     assert.equal(Number(await board.getAttribute('data-revision')), version + 1)
     previous = name

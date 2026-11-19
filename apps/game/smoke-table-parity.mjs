@@ -34,12 +34,18 @@ const measure = (page) => page.locator('[data-battle-table]').evaluate((board) =
   return {
     seats: [...board.querySelectorAll('.classic-seat[data-position]')].map((seat) => ({
       position: Number(seat.dataset.position), rect: rect(seat), face: rect(seat.querySelector('img')),
+      radius: getComputedStyle(seat).borderTopLeftRadius,
     })),
     hand: rect(board.querySelector('[data-hand-gallery]')),
+    handCard: rect(board.querySelector('[data-hand-gallery] .playing-card')),
     equipment: rect(board.querySelector('.classic-self-equipment')),
     equipmentRows: [...board.querySelectorAll('.classic-self-equipment .equipment-row')].map(rect),
     skills: rect(board.querySelector('.classic-own-skills')),
     self: rect(board.querySelector('.classic-self')),
+    selfRadius: getComputedStyle(board.querySelector('.classic-self')).borderTopLeftRadius,
+    clippedNames: [...board.querySelectorAll('.seat-name, .self-name')]
+      .filter(name => name.scrollWidth > name.clientWidth + 1)
+      .map(name => name.textContent),
     prompt: rect(board.querySelector('.classic-center h1')),
     controls: rect(board.querySelector('.classic-controls')),
     health: [...board.querySelectorAll('[data-seat] .health')].map((meter) => ({
@@ -80,8 +86,10 @@ try {
       assert.equal(await board.locator('[data-seat]').count(), 8, label)
       assert.deepEqual(opening.seats.map((seat) => seat.position), [1, 2, 3, 4, 5, 6, 7], label)
       const screen = [0, 0, viewport.width, viewport.height]
-      for (const [index, { position, rect }] of opening.seats.entries()) {
+      for (const [index, { position, rect, radius }] of opening.seats.entries()) {
         assert.ok(contains(screen, rect), `${label} seat ${position} visible [${rect}]`)
+        assert.deepEqual(rect.slice(2), opening.self.slice(2), `${label} seat ${position} uses the shared portrait size`)
+        assert.equal(radius, opening.selfRadius, `${label} seat ${position} uses the shared corner radius`)
         const previous = opening.seats[index - 1]
         if (previous) {
           assert.ok(right(rect) <= previous.rect[0] + 1,
@@ -97,6 +105,9 @@ try {
         `${label} prompt between opponents and hand`,
       )
       const { equipment, equipmentRows, skills, self, hand } = opening
+      assert.ok(Math.abs(self[2] / self[3] - opening.handCard[2] / opening.handCard[3]) < .005,
+        `${label} portrait and hand card use the same width-to-height ratio`)
+      assert.deepEqual(opening.clippedNames, [], `${label} all standard names fit`)
       assert.equal(equipmentRows.length, 4, label)
       assert.ok(contains(screen, equipment), `${label} equipment column visible [${equipment}]`)
       for (const row of equipmentRows) {
@@ -105,8 +116,8 @@ try {
       assert.ok(right(equipment) <= hand[0] + 1 && right(hand) <= skills[0] + 1 &&
         right(skills) <= self[0] + 1,
         `${label} equipment [${equipment}], hand [${hand}], skills [${skills}], self [${self}] ordered left to right`)
-      assert.ok(Math.abs(equipment[1] - self[1]) <= 1 && Math.abs(bottom(equipment) - bottom(self)) <= 1,
-        `${label} equipment [${equipment}] and self [${self}] fill the same dock height`)
+      assert.ok(Math.abs(bottom(equipment) - bottom(self)) <= 1,
+        `${label} equipment [${equipment}] and self [${self}] align at the bottom of the dock`)
       assert.ok(contains(screen, self) && contains(screen, hand), `${label} self and hand visible`)
       assert.ok(bottom(opening.controls) <= hand[1], `${label} controls above hand`)
       assert.equal(opening.health.length, 8, label)
@@ -129,6 +140,14 @@ try {
       })
       assert.ok(selectedRankVisible, `${label} lifted card rank stays inside the gallery`)
       assert.ok(await board.locator('[data-hand-rule]').isVisible(), `${label} selected card rule visible`)
+      const spacing = await board.evaluate(board => {
+        const prompt = board.querySelector('.classic-center h1').getBoundingClientRect()
+        const rule = board.querySelector('[data-hand-rule]').getBoundingClientRect()
+        const controls = board.querySelector('.classic-controls').getBoundingClientRect()
+        return [rule.top - prompt.bottom, controls.top - rule.bottom]
+      })
+      assert.ok(spacing[0] >= 4 && Math.abs(spacing[0] - spacing[1]) < 1,
+        `${label} prompt, rule and commands use equal vertical gaps [${spacing}]`)
       await button(page, '取消').click()
       assert.equal(await played.getAttribute('aria-pressed'), 'false', `${label} cancel clears selection`)
       assert.equal(await board.locator('[data-hand-rule]').count(), 0, `${label} cancel clears rule`)

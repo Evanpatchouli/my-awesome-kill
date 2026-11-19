@@ -272,6 +272,10 @@ const showConfirm = computed(() => {
 const showCancel = computed(() => !!selectedMode.value || selectedCard.value !== null ||
   selectedCards.value.length > 0 || selectedEquipmentButtons.value.length > 0)
 const selectionProgress = computed(() => {
+  if (equipmentButtons.value)
+    return `选择装备 ${selectedEquipmentButtons.value.length}/${equipmentButtons.value.required}`
+  if (choice.value?.kind === 'discard' && selectedCards.value.length)
+    return `已选 ${selectedCards.value.length} 张`
   if (!branch.value || privateBid.value) return ''
   const { minCards, maxCards, minTargets, maxTargets } = branch.value
   const progress = []
@@ -570,7 +574,12 @@ function canPickCard(id: number) {
           <img v-if="heroPortrait(seat.hero)" :src="heroPortrait(seat.hero)" :alt="`${seatName(view, seat.id)}立绘`" />
           <span class="classic-seat-badges">
             <span class="seat-faction">{{ factions[generalDefinition(view, seat.hero)?.faction ?? ''] ?? '' }}</span>
-            <span class="seat-identity" :data-role="seat.role">{{ seat.role ? roles[seat.role] : '身份未知' }}</span>
+            <span class="seat-identity" :data-role="seat.role">
+              <template v-if="seat.role">{{ roles[seat.role] }}</template>
+              <template v-else>
+                <span class="seat-identity-full">身份未知</span><span class="seat-identity-short" aria-hidden="true">未知</span>
+              </template>
+            </span>
           </span>
           <span v-if="!seat.alive || seat.hp <= 0" class="classic-seat-stamp">{{ seat.alive ? '濒死' : '阵亡' }}</span>
           <span class="classic-seat-nameplate">
@@ -678,7 +687,7 @@ function canPickCard(id: number) {
                 </button>
               </div>
             </div>
-            <h1 aria-live="polite"><span>{{ prompt }}</span></h1>
+            <h1 aria-live="polite">{{ prompt }}</h1>
           </template>
         </section>
         <p v-if="error && !moveChoice" role="alert" class="classic-save-error game-error">{{ error }}</p>
@@ -776,12 +785,7 @@ function canPickCard(id: number) {
         :mount-combined="view.mountCombined"
       />
       <div class="classic-hand-zone">
-        <div class="classic-hand-heading">
-          <span>手牌 · {{ hand.length }}</span>
-          <span v-if="equipmentButtons">选择装备 · {{ selectedEquipmentButtons.length }}/{{ equipmentButtons.required }}</span>
-          <span v-else-if="selectedCards.length && !privateBid">已选 {{ selectedCards.length }} 张</span>
-        </div>
-        <div class="classic-hand" data-hand data-hand-gallery>
+        <div class="classic-hand" role="group" aria-label="手牌" data-hand data-hand-gallery>
           <button
             v-for="card in galleryCards"
             :key="card.id"

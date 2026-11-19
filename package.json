@@ -1,5 +1,6 @@
 {
   "name": "my-awesome-kill",
+  "version": "0.0.1",
   "private": true,
   "packageManager": "pnpm@10.20.0",
   "scripts": {

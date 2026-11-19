@@ -112,7 +112,7 @@ function chooseFile(event: Event) {
 }
 .pick-heading h1,
 .pick-detail h2 {
-  font-family: 'Ink Brush', KaiTi, serif;
+  font-family: var(--font-kai);
   font-size: clamp(27px, 3vw, 46px);
   margin: 0;
 }
@@ -161,7 +161,8 @@ function chooseFile(event: Event) {
 }
 .pick-grid button {
   position: relative;
-  aspect-ratio: 3/4;
+  width: 100%;
+  aspect-ratio: var(--playing-card-ratio);
   overflow: hidden;
   border: 1px solid #97856c;
   border-radius: 5px;
@@ -225,7 +226,8 @@ function chooseFile(event: Event) {
     max-height: 41dvh;
   }
   .pick-grid button {
-    max-height: 94px;
+    width: min(100%, calc(94px * var(--playing-card-ratio)));
+    justify-self: center;
   }
 }
 </style>

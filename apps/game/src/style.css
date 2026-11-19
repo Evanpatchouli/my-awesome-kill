@@ -1,6 +1,14 @@
 @import 'tailwindcss';
+/* LXGW WenKai GB Lite Regular v1.530 converted to WOFF2. See public/licenses/MakKai-OFL.txt. */
+@font-face {
+  font-family: 'Mak Kai';
+  src: url('./assets/fonts/mak-kai.woff2') format('woff2');
+  font-display: swap;
+}
 :root {
-  font-family: 'Noto Serif SC', 'Songti SC', SimSun, serif;
+  --font-kai: 'Mak Kai', KaiTi, STKaiti, 'Kaiti SC', 'Noto Serif SC', SimSun, serif;
+  --playing-card-ratio: .735;
+  font-family: var(--font-kai);
   color: #26231f;
   background: #eee5d5;
   font-synthesis: none;
@@ -11,8 +19,10 @@
 body {
   margin: 0;
 }
-button {
+:is(button, input, select, textarea) {
   font: inherit;
+}
+button {
   cursor: pointer;
 }
 button:focus-visible {
@@ -86,7 +96,6 @@ button:focus-visible {
   color: #201e1b;
 }
 .home-title h1 {
-  font-family: KaiTi, STKaiti, serif;
   font-size: clamp(100px, 16vw, 220px);
   letter-spacing: 0.08em;
   line-height: 1;
@@ -185,7 +194,7 @@ button:focus-visible {
   align-self: center;
 }
 .mode-index {
-  font: 10px sans-serif;
+  font-size: 10px;
   letter-spacing: 0.2em;
   color: #a14232;
 }
@@ -470,7 +479,7 @@ button:focus-visible {
   color: #473b30;
 }
 .battle-log h3 span {
-  font: 9px sans-serif;
+  font-size: 9px;
   color: #a39483;
   margin-left: 5px;
 }
@@ -929,12 +938,6 @@ button:disabled {
     overflow-y: auto;
   }
 }
-/* 水墨资源统一承载标题、控件与牌面；正文保留清晰的阅读字体。 */
-@font-face {
-  font-family: 'Ink Brush';
-  src: url('./assets/ink/brush.woff2') format('woff2');
-  font-display: swap;
-}
 .sr-only {
   position: absolute;
   width: 1px;
@@ -968,7 +971,6 @@ button:disabled {
   background: url('./assets/ink/title.webp') left center/contain no-repeat;
 }
 .nav-item {
-  font-family: 'Ink Brush', KaiTi, serif;
   font-size: 16px;
   gap: 2px;
 }
@@ -1008,20 +1010,6 @@ button:disabled {
   border: 0;
   border-radius: 0;
   background: url('./assets/ink/back.webp') center/contain no-repeat;
-}
-.section-heading h1,
-.mode-copy h2,
-.hero-info h2,
-.combatant h2,
-.player-meta h2,
-.playing-card strong,
-.result h2,
-.primary-button,
-.action-row button,
-.mode-link,
-.nav-item,
-.turn-indicator {
-  font-family: 'Ink Brush', KaiTi, serif;
 }
 .section-heading {
   border-color: #b8a995;
@@ -1085,7 +1073,6 @@ button:disabled {
   position: relative;
   z-index: 1;
   font-weight: bold;
-  font-family: Georgia, serif;
 }
 .playing-card strong {
   position: relative;
@@ -1102,7 +1089,6 @@ button:disabled {
   pointer-events: none;
 }
 .battle-log summary {
-  font-family: 'Ink Brush', KaiTi, serif;
   cursor: pointer;
 }
 .latest-log {
@@ -1452,7 +1438,3 @@ button:disabled {
 .public-slot:first-child { grid-column: 1 / -1; }
 
 .health { display: flex; align-items: center; gap: 3px; margin: 5px 0; line-height: 1; }
-.health .health-point { display: block; width: 16px; height: 20px; background: url('./assets/standard/theme/glass1.png') center/100% 100% no-repeat; }
-.health.mid .health-point { background-image: url('./assets/standard/theme/glass2.png'); }
-.health.low .health-point { background-image: url('./assets/standard/theme/glass3.png'); }
-.health .health-point.lost { background-image: url('./assets/standard/theme/glass4.png'); }
