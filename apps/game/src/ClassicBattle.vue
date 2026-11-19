@@ -47,6 +47,13 @@ const selectedMode = ref<'card' | 'virtual' | 'skill' | 'active' | 'choice' | nu
 const selectedPlay = ref<number | null>(null)
 const me = computed(() => props.view.seats.find((seat) => seat.id === props.view.humanSeat))
 const others = computed(() => props.view.seats.filter((seat) => seat.id !== props.view.humanSeat))
+// Seat positions follow the physical order around the table, starting at the human player.
+function relativeSeat(id: number) {
+  const seats = props.view.seats
+  const human = seats.findIndex((seat) => seat.id === props.view.humanSeat)
+  const index = seats.findIndex((seat) => seat.id === id)
+  return human < 0 || index < 0 ? undefined : (index - human + seats.length) % seats.length
+}
 const inputReady = computed(
   () =>
     !props.locked &&
@@ -228,7 +235,9 @@ function chooseHand(id: number) {
   } else if (choice.value?.kind === 'shan' || choice.value?.kind === 'save') {
     if (handOptions.value.has(id)) selectedCard.value = selectedCard.value === id ? null : id
   } else if (!choice.value && playable.value.has(id)) {
+    const deselect = selectedMode.value === 'card' && selectedCard.value === id
     reset()
+    if (deselect) return
     selectedMode.value = 'card'
     selectedCard.value = id
     const options = cardActions.value.filter((action) => action.card === id)
@@ -342,6 +351,7 @@ function canPickCard(id: number) {
 <template>
   <section
     class="classic-board"
+    :class="{ 'classic-board-eight': view.seats.length === 8 }"
     :data-revision="view.version"
     :data-waiting-for="view.waitingFor"
     :data-phase="view.turn?.phase"
@@ -378,6 +388,7 @@ function canPickCard(id: number) {
           chosen: selectedTargets.includes(seat.id),
         }"
         :data-seat="seat.id"
+        :data-position="view.seats.length === 8 ? relativeSeat(seat.id) : undefined"
       >
         <button
           class="seat-select"

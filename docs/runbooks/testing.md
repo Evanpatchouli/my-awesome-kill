@@ -127,3 +127,13 @@ node apps/game/smoke-recast.mjs
 `8dad11d` 通过 308 项 Rust release 库测试、20 项集成测试、SQLite 重复写入用例、33 项 TypeScript 测试、WASM 一致性与重放、类型检查及生产构建。单独运行的 100 局八席全部终局并通过守恒检查，共 54,675 次决定。固定同一 P 核预热后测量三次，规则 p95 分别为 10.4、10.6、10.4 µs，投影及 JSON p95 分别为 12.6、12.8、12.6 µs。
 
 默认入口与 13 种单独构建的非默认规则均通过浏览器实跑；规则矩阵没有改写任何正式绑定。原生双端的结果见[开发手册](development.md)。严格 Clippy 检查仍不通过：对 `3208f89` 和本冻结版本分别执行 `cargo clippy --locked --all-targets --all-features -- -D warnings`，27 条诊断的类别与所属文件一致。
+
+### 八席牌桌的原版对照
+
+使用固定 noname 提交 `c7327094` 的默认 `long2` 布局、`simple` 主题作为桌面基准。两端均以关羽主公进入普通八人身份局的首个出牌阶段。原版的其他武将和洗牌结果可能不同。以普通应用绑定启动 Vite，设置 `MAK_SMOKE_URL` 指向这个实例，`MAK_QA_PLAYWRIGHT` 和 `MAK_QA_BROWSER` 指向已安装的 Playwright 与浏览器，然后运行：
+
+```powershell
+node apps/game/smoke-table-parity.mjs
+```
+
+在 1280×720 对照七个对手座位与立绘的实际矩形。在 1280×720、844×390 和 640×272 均真实选杀、撤选、重选合法目标并提交，检查实体离手和版本推进。通过 `MAK_SMOKE_SCREENSHOTS` 可保存三档画面到仓库外目录。这条测试只覆盖这组几何和操作。自己的武将区、手牌、装备槽、技能按钮、弹窗和动画仍需逐项对照。
