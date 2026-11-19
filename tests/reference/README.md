@@ -6,6 +6,8 @@
 
 `events` 的列名保存在 `eventColumns`。每行是对上游 `GameEvent.trigger` 的一次调用及当时状态：它记录被请求的时机，不表示一定存在或执行了对应技能。`A` 和 `B` 是被测角色，`other` 是其余角色；牌区 `h`、`o`、`d` 分别表示手牌区、处理区和弃牌堆。记录包含处理区清理前后的内部事件，便于核对顺序。
 
+`sha-exclusion.json` 在固定八席记录 14 个真实杀取消/排除场景、1222 条时机请求与实际回调。对 `useCard2`、`useCard`、`useCardToPlayered` 分别在 First/Normal/Last 通过原版 `cancel()` 取消根；记录事件与父 ID、finished/cancelled、实体手牌→处理区→弃牌及青釭标记。目标 First 的根取消请求在该目标 First-low 与后续 Normal/Last 回调前发出，而 Cancelled 实际回调在这些目标回调后执行并看到青釭标记。双目标分别排除 B、C、逐一排除和 `all_excluded` 均独立观察：逐一排除派发相应 `useCardToExcluded`，`all_excluded` 提前停止后续目标时机且不派发该事件。嵌套 C 对 B 的实体杀另有独立根，外层只排除 B，内层和外层另一目标均真实受伤。每个场景间以原版 `removeSkill` 清理前一场遗留的临时标记，清理不计入观察场景。
+
 `qinggang-sources.json` 记录独立技能来源与离场行为，包含 153 条时机请求/回调、28 个阶段和 22 条技能内容边界。预授无 token 的临时 `qinggang2` 时，无剑杀仍压制八卦，红判牌留在牌堆；普通 `addSkill` 与 `addAdditionalSkill` 预存来源在青釭命中并清除最后 token 后均随上游技能清理消失，对应 damage/useCardEnd hook 一并移除。预授临时技能后青釭生效时其默认到期项保持 `phaseAfter`/`phaseBeforeStart`，命中清 token 即移除；另以真实自然回合验证先经过阶段期限再被杀。目标在青釭目标时机后真实离场，返场后仍保留原杀标记；无剑角色的后续实体杀令其受伤，八卦未发动。脚本只调用真实技能与牌事件，不写 `qinggang2` 存储。
 
 `qinggang-expiry.json` 用真实装备与用牌记录青釭目标标记的 144 条请求和高/低优先级真实回调，观察技能优先级 13/11 夹住上游 `qinggang2` 的 12，按同一真实虚拟牌对象检查存储。双目标各自伤害时，高回调看到该目标标记、低回调看到其已清除；闪抵消后的 `shaMiss`、取消伤害的 `damageCancelled`、零伤的 `damageZero` 同样如此。闪后无剑角色再杀同一目标，八卦红判恢复。目标时机 First 取消时不产生青釭标记，八卦仍可执行。额外两项在青釭生效后由 Last 回调分别全排除目标与取消根 useCard：对应目标在流程结束后仍持有该杀标记；两项使用不同目标并检查各自开始前不含旧标记，不对 `qinggang2` 人为写入。局部事件 ID 仅用于本轨迹关联父子事件。
@@ -152,6 +154,7 @@
    node scripts/reference-trace.mjs --scenario sha-target-equipment --check tests/reference/sha-target-equipment.json
    node scripts/reference-trace.mjs --scenario qinggang-expiry --check tests/reference/qinggang-expiry.json
    node scripts/reference-trace.mjs --scenario qinggang-sources --check tests/reference/qinggang-sources.json
+   node scripts/reference-trace.mjs --scenario sha-exclusion --check tests/reference/sha-exclusion.json
    node scripts/reference-trace.mjs --scenario virtual-equip-discard-first --check tests/reference/virtual-equip-discard-first.json
    node scripts/reference-trace.mjs --scenario virtual-equip-lose-first --check tests/reference/virtual-equip-lose-first.json
    node scripts/reference-trace.mjs --scenario virtual-equip-combat --check tests/reference/virtual-equip-combat.json

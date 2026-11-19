@@ -25,6 +25,7 @@ import { checkMultiWeaponCombat, installMultiWeaponCombat } from './reference-mu
 import { checkShaTargetEquipment, installShaTargetEquipment } from './reference-sha-target-equipment.mjs';
 import { checkQinggangExpiry, installQinggangExpiry } from './reference-qinggang-expiry.mjs';
 import { checkQinggangSources, installQinggangSources } from './reference-qinggang-sources.mjs';
+import { checkShaExclusion, installShaExclusion } from './reference-sha-exclusion.mjs';
 import { checkVirtualEquipProbe, installVirtualEquipProbe } from './reference-virtual-equip-probe.mjs';
 import { checkVirtualEquipCombat, installVirtualEquipCombat } from './reference-virtual-equip-combat.mjs';
 import { checkVirtualJudgeProbe, installVirtualJudgeProbe } from './reference-virtual-judge-probe.mjs';
@@ -97,6 +98,7 @@ const descriptions = new Map([
   ['sha-target-equipment', 'sha target event identity and equipment trigger ordering'],
   ['qinggang-expiry', 'qinggang target mark lifecycle'],
   ['qinggang-sources', 'qinggang target skill sources and out-of-play behavior'],
+  ['sha-exclusion', 'sha cancellation and target exclusion'],
   ['virtual-equip-discard-first', 'virtual judgment material equipped during discard then loss'],
   ['virtual-equip-lose-first', 'virtual judgment material equipped during loss then discard'],
   ['virtual-equip-combat', 'black attack against armor with and without an orphaned weapon'],
@@ -202,6 +204,8 @@ try {
     await context.addInitScript(installJudgeInterruptions);
   } else if (scenario === 'judge-payment') {
     await context.addInitScript(installJudgePayment);
+  } else if (scenario === 'sha-exclusion') {
+    await context.addInitScript(installShaExclusion);
   } else if (scenario === 'qinggang-sources') {
     await context.addInitScript(installQinggangSources);
   } else if (scenario === 'qinggang-expiry') {
@@ -340,6 +344,11 @@ try {
           }
           if (scenario === 'judge-payment') {
             window.__referenceResult = await window.__runJudgePayment({ lib, game, ui, get, _status, actor });
+            game.pause();
+            return;
+          }
+          if (scenario === 'sha-exclusion') {
+            window.__referenceResult = await window.__runShaExclusion({ lib, game, ui, get, _status, actor });
             game.pause();
             return;
           }
@@ -600,6 +609,7 @@ try {
   if (scenario === 'sha-target-equipment') { captured.value.humanCixiongClick = humanCixiongClick; checkShaTargetEquipment(captured.value); }
   if (scenario === 'qinggang-expiry') checkQinggangExpiry(captured.value);
   if (scenario === 'qinggang-sources') checkQinggangSources(captured.value);
+  if (scenario === 'sha-exclusion') checkShaExclusion(captured.value);
   if (scenario === 'virtual-judge-probe') checkVirtualJudgeProbe(captured.value);
   else if (scenario === 'virtual-judge-tricks') checkVirtualJudgeTricks(captured.value);
   else if (scenario === 'virtual-equip-combat') checkVirtualEquipCombat(captured.value);
