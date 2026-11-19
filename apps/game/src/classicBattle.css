@@ -474,12 +474,19 @@
   overflow-x: auto;
   overflow-y: hidden;
   padding: 6px 4px 3px;
-  scrollbar-width: thin;
+  scrollbar-width: none;
+  touch-action: pan-x;
+  user-select: none;
 }
+.classic-pool::-webkit-scrollbar { display: none; }
+.classic-pool:focus-visible { outline: 1px solid var(--battle-copper); }
+.classic-pool[data-card-dragging],
+.classic-pool[data-card-dragging] button { cursor: grabbing; }
 .classic-pool > div { display: flex; flex: none; gap: inherit; }
 .classic-resolving:not(:last-child) { border-right: 1px solid var(--battle-line); margin-right: 3px; padding-right: 9px; }
 .classic-pool .playing-card:is(:hover, .selected) { transform: none; }
 .classic-pool button { pointer-events: auto; }
+.classic-pool button:disabled { pointer-events: none; }
 .classic-hand-toolbar {
   display: grid;
   flex: none;

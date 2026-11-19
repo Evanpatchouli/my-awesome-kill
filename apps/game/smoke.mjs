@@ -197,19 +197,22 @@ try {
     }
     if (kind === 'content') {
       const options = page.locator('.classic-options button:not([disabled]), .classic-random-hand button:not([disabled])')
-      if (!(await options.count())) {
+      if (await options.count()) {
+        const before = await board.getAttribute('data-revision')
+        await options.first().click()
+        content++
+        if (await board.getAttribute('data-revision') !== before) {
+          actions++
+          continue
+        }
+      } else {
+        const poolCards = page.locator('[data-card-choice] .classic-pool button[data-card-id]')
         assert.ok(
-          await page.locator('.classic-options button, .classic-random-hand button').count(),
-          `content choice has no branches: ${await page.locator('.classic-center').innerText()}`,
+          await poolCards.count() || await page.locator('.classic-options button, .classic-random-hand button').count(),
+          `content choice has no available route: ${await page.locator('.classic-center').innerText()}`,
         )
-        continue
-      }
-      const before = await board.getAttribute('data-revision')
-      await options.first().click()
-      content++
-      if (await board.getAttribute('data-revision') !== before) {
-        actions++
-        continue
+        if (!(await poolCards.and(page.locator(':enabled')).count())) continue
+        content++
       }
     } else if (kind === 'discard') {
       const cards = page.locator('[data-hand-gallery] .playing-card:enabled')
