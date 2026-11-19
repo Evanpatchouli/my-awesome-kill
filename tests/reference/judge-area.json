@@ -1,0 +1,953 @@
+{
+  "schema": "noname-reference-trace-v1",
+  "referenceCommit": "c73270948d72949aa80009536b9fd5400767d091",
+  "mode": "identity",
+  "scenario": "abolishing and restoring the judgment area, including interrupted card loss",
+  "eventColumns": [
+    "trial",
+    "kind",
+    "timing",
+    "event",
+    "parent",
+    "player",
+    "source",
+    "cards",
+    "disabled",
+    "placeholder",
+    "judge",
+    "zones",
+    "finished",
+    "cancelled"
+  ],
+  "events": [
+    ["ordinary","request","disableJudgeBefore","disableJudge","reference_fixture_use","B","A",[],false,0,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["ordinary","callback","disableJudgeBefore","disableJudge","reference_fixture_use","B","A",[],false,0,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["ordinary","request","disableJudgeBegin","disableJudge","reference_fixture_use","B","A",[],false,0,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["ordinary","callback","disableJudgeBegin","disableJudge","reference_fixture_use","B","A",[],false,0,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["ordinary","request","discardBefore","discard","disableJudge","B",null,["lightning","guose-material"],true,0,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["ordinary","callback","discardBefore","discard","disableJudge","B",null,["lightning","guose-material"],true,0,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["ordinary","request","discardBegin","discard","disableJudge","B",null,["lightning","guose-material"],true,0,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["ordinary","callback","discardBegin","discard","disableJudge","B",null,["lightning","guose-material"],true,0,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["ordinary","request","loseBefore","lose","discard","B",null,["lightning","guose-material"],true,0,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["ordinary","callback","loseBefore","lose","discard","B",null,["lightning","guose-material"],true,0,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["ordinary","request","loseBegin","lose","discard","B",null,["lightning","guose-material"],true,0,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["ordinary","callback","loseBegin","lose","discard","B",null,["lightning","guose-material"],true,0,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["ordinary","request","loseEnd","lose","discard","B",null,["lightning","guose-material"],true,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["ordinary","callback","loseEnd","lose","discard","B",null,["lightning","guose-material"],true,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["ordinary","request","loseAfter","lose","discard","B",null,["lightning","guose-material"],true,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["ordinary","callback","loseAfter","lose","discard","B",null,["lightning","guose-material"],true,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["ordinary","request","discard","discard","disableJudge","B",null,["lightning","guose-material"],true,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},false,false],
+    ["ordinary","callback","discard","discard","disableJudge","B",null,["lightning","guose-material"],true,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},false,false],
+    ["ordinary","request","discardEnd","discard","disableJudge","B",null,["lightning","guose-material"],true,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["ordinary","callback","discardEnd","discard","disableJudge","B",null,["lightning","guose-material"],true,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["ordinary","request","discardAfter","discard","disableJudge","B",null,["lightning","guose-material"],true,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["ordinary","callback","discardAfter","discard","disableJudge","B",null,["lightning","guose-material"],true,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["ordinary","request","disableJudgeEnd","disableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["ordinary","callback","disableJudgeEnd","disableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["ordinary","request","disableJudgeAfter","disableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["ordinary","callback","disableJudgeAfter","disableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["ordinary","request","disableJudgeBefore","disableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},false,false],
+    ["ordinary","callback","disableJudgeBefore","disableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},false,false],
+    ["ordinary","request","disableJudgeBegin","disableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},false,false],
+    ["ordinary","callback","disableJudgeBegin","disableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},false,false],
+    ["ordinary","request","disableJudgeEnd","disableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["ordinary","callback","disableJudgeEnd","disableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["ordinary","request","disableJudgeAfter","disableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["ordinary","callback","disableJudgeAfter","disableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["ordinary","request","enableJudgeBefore","enableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},false,false],
+    ["ordinary","callback","enableJudgeBefore","enableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},false,false],
+    ["ordinary","request","enableJudgeBegin","enableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},false,false],
+    ["ordinary","callback","enableJudgeBegin","enableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},false,false],
+    ["ordinary","request","enableJudgeEnd","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["ordinary","callback","enableJudgeEnd","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["ordinary","request","enableJudgeAfter","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["ordinary","callback","enableJudgeAfter","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["ordinary","request","enableJudgeBefore","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},false,false],
+    ["ordinary","callback","enableJudgeBefore","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},false,false],
+    ["ordinary","request","enableJudgeBegin","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},false,false],
+    ["ordinary","callback","enableJudgeBegin","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},false,false],
+    ["ordinary","request","enableJudgeEnd","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["ordinary","callback","enableJudgeEnd","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["ordinary","request","enableJudgeAfter","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["ordinary","callback","enableJudgeAfter","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-discard","request","disableJudgeBefore","disableJudge","reference_fixture_use","B","A",[],false,0,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-discard","callback","disableJudgeBefore","disableJudge","reference_fixture_use","B","A",[],false,0,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-discard","request","disableJudgeBegin","disableJudge","reference_fixture_use","B","A",[],false,0,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-discard","callback","disableJudgeBegin","disableJudge","reference_fixture_use","B","A",[],false,0,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-discard","request","discardBefore","discard","disableJudge","B",null,["lightning","guose-material"],true,0,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-discard","callback","discardBefore","discard","disableJudge","B",null,["lightning","guose-material"],true,0,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-discard","request","discardCancelled","discard","disableJudge","B",null,["lightning","guose-material"],true,0,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,true],
+    ["cancel-discard","callback","discardCancelled","discard","disableJudge","B",null,["lightning","guose-material"],true,0,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},true,true],
+    ["cancel-discard","request","disableJudgeEnd","disableJudge","reference_fixture_use","B","A",[],true,1,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},true,false],
+    ["cancel-discard","callback","disableJudgeEnd","disableJudge","reference_fixture_use","B","A",[],true,1,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},true,false],
+    ["cancel-discard","request","disableJudgeAfter","disableJudge","reference_fixture_use","B","A",[],true,1,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},true,false],
+    ["cancel-discard","callback","disableJudgeAfter","disableJudge","reference_fixture_use","B","A",[],true,1,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},true,false],
+    ["cancel-discard","request","disableJudgeBefore","disableJudge","reference_fixture_use","B","A",[],true,1,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-discard","callback","disableJudgeBefore","disableJudge","reference_fixture_use","B","A",[],true,1,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-discard","request","disableJudgeBegin","disableJudge","reference_fixture_use","B","A",[],true,1,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-discard","callback","disableJudgeBegin","disableJudge","reference_fixture_use","B","A",[],true,1,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-discard","request","discardBefore","discard","disableJudge","B",null,["lightning","guose-material"],true,1,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-discard","callback","discardBefore","discard","disableJudge","B",null,["lightning","guose-material"],true,1,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-discard","request","discardBegin","discard","disableJudge","B",null,["lightning","guose-material"],true,1,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-discard","callback","discardBegin","discard","disableJudge","B",null,["lightning","guose-material"],true,1,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-discard","request","loseBefore","lose","discard","B",null,["lightning","guose-material"],true,1,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-discard","callback","loseBefore","lose","discard","B",null,["lightning","guose-material"],true,1,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-discard","request","loseBegin","lose","discard","B",null,["lightning","guose-material"],true,1,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-discard","callback","loseBegin","lose","discard","B",null,["lightning","guose-material"],true,1,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-discard","request","loseEnd","lose","discard","B",null,["lightning","guose-material"],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-discard","callback","loseEnd","lose","discard","B",null,["lightning","guose-material"],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-discard","request","loseAfter","lose","discard","B",null,["lightning","guose-material"],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-discard","callback","loseAfter","lose","discard","B",null,["lightning","guose-material"],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-discard","request","discard","discard","disableJudge","B",null,["lightning","guose-material"],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},false,false],
+    ["cancel-discard","callback","discard","discard","disableJudge","B",null,["lightning","guose-material"],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},false,false],
+    ["cancel-discard","request","discardEnd","discard","disableJudge","B",null,["lightning","guose-material"],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-discard","callback","discardEnd","discard","disableJudge","B",null,["lightning","guose-material"],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-discard","request","discardAfter","discard","disableJudge","B",null,["lightning","guose-material"],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-discard","callback","discardAfter","discard","disableJudge","B",null,["lightning","guose-material"],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-discard","request","disableJudgeEnd","disableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-discard","callback","disableJudgeEnd","disableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-discard","request","disableJudgeAfter","disableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-discard","callback","disableJudgeAfter","disableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-discard","request","enableJudgeBefore","enableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},false,false],
+    ["cancel-discard","callback","enableJudgeBefore","enableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},false,false],
+    ["cancel-discard","request","enableJudgeBegin","enableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},false,false],
+    ["cancel-discard","callback","enableJudgeBegin","enableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},false,false],
+    ["cancel-discard","request","enableJudgeEnd","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-discard","callback","enableJudgeEnd","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-discard","request","enableJudgeAfter","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-discard","callback","enableJudgeAfter","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-discard","request","enableJudgeBefore","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},false,false],
+    ["cancel-discard","callback","enableJudgeBefore","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},false,false],
+    ["cancel-discard","request","enableJudgeBegin","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},false,false],
+    ["cancel-discard","callback","enableJudgeBegin","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},false,false],
+    ["cancel-discard","request","enableJudgeEnd","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-discard","callback","enableJudgeEnd","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-discard","request","enableJudgeAfter","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-discard","callback","enableJudgeAfter","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-lose","request","disableJudgeBefore","disableJudge","reference_fixture_use","B","A",[],false,0,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-lose","callback","disableJudgeBefore","disableJudge","reference_fixture_use","B","A",[],false,0,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-lose","request","disableJudgeBegin","disableJudge","reference_fixture_use","B","A",[],false,0,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-lose","callback","disableJudgeBegin","disableJudge","reference_fixture_use","B","A",[],false,0,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-lose","request","discardBefore","discard","disableJudge","B",null,["lightning","guose-material"],true,0,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-lose","callback","discardBefore","discard","disableJudge","B",null,["lightning","guose-material"],true,0,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-lose","request","discardBegin","discard","disableJudge","B",null,["lightning","guose-material"],true,0,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-lose","callback","discardBegin","discard","disableJudge","B",null,["lightning","guose-material"],true,0,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-lose","request","loseBefore","lose","discard","B",null,["lightning","guose-material"],true,0,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-lose","callback","loseBefore","lose","discard","B",null,["lightning","guose-material"],true,0,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-lose","request","loseCancelled","lose","discard","B",null,["lightning","guose-material"],true,0,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,true],
+    ["cancel-lose","callback","loseCancelled","lose","discard","B",null,["lightning","guose-material"],true,0,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},true,true],
+    ["cancel-lose","request","discard","discard","disableJudge","B",null,["lightning","guose-material"],true,0,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-lose","callback","discard","discard","disableJudge","B",null,["lightning","guose-material"],true,0,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-lose","request","discardEnd","discard","disableJudge","B",null,["lightning","guose-material"],true,0,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},true,false],
+    ["cancel-lose","callback","discardEnd","discard","disableJudge","B",null,["lightning","guose-material"],true,0,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},true,false],
+    ["cancel-lose","request","discardAfter","discard","disableJudge","B",null,["lightning","guose-material"],true,0,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},true,false],
+    ["cancel-lose","callback","discardAfter","discard","disableJudge","B",null,["lightning","guose-material"],true,0,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},true,false],
+    ["cancel-lose","request","disableJudgeEnd","disableJudge","reference_fixture_use","B","A",[],true,1,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},true,false],
+    ["cancel-lose","callback","disableJudgeEnd","disableJudge","reference_fixture_use","B","A",[],true,1,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},true,false],
+    ["cancel-lose","request","disableJudgeAfter","disableJudge","reference_fixture_use","B","A",[],true,1,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},true,false],
+    ["cancel-lose","callback","disableJudgeAfter","disableJudge","reference_fixture_use","B","A",[],true,1,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},true,false],
+    ["cancel-lose","request","disableJudgeBefore","disableJudge","reference_fixture_use","B","A",[],true,1,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-lose","callback","disableJudgeBefore","disableJudge","reference_fixture_use","B","A",[],true,1,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-lose","request","disableJudgeBegin","disableJudge","reference_fixture_use","B","A",[],true,1,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-lose","callback","disableJudgeBegin","disableJudge","reference_fixture_use","B","A",[],true,1,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-lose","request","discardBefore","discard","disableJudge","B",null,["lightning","guose-material"],true,1,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-lose","callback","discardBefore","discard","disableJudge","B",null,["lightning","guose-material"],true,1,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-lose","request","discardBegin","discard","disableJudge","B",null,["lightning","guose-material"],true,1,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-lose","callback","discardBegin","discard","disableJudge","B",null,["lightning","guose-material"],true,1,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-lose","request","loseBefore","lose","discard","B",null,["lightning","guose-material"],true,1,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-lose","callback","loseBefore","lose","discard","B",null,["lightning","guose-material"],true,1,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-lose","request","loseBegin","lose","discard","B",null,["lightning","guose-material"],true,1,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-lose","callback","loseBegin","lose","discard","B",null,["lightning","guose-material"],true,1,["lightning","lebu"],{"hand":"B:h","equip":"B:e","guose-material":"B:j","lightning":"B:j"},false,false],
+    ["cancel-lose","request","loseEnd","lose","discard","B",null,["lightning","guose-material"],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-lose","callback","loseEnd","lose","discard","B",null,["lightning","guose-material"],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-lose","request","loseAfter","lose","discard","B",null,["lightning","guose-material"],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-lose","callback","loseAfter","lose","discard","B",null,["lightning","guose-material"],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-lose","request","discard","discard","disableJudge","B",null,["lightning","guose-material"],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},false,false],
+    ["cancel-lose","callback","discard","discard","disableJudge","B",null,["lightning","guose-material"],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},false,false],
+    ["cancel-lose","request","discardEnd","discard","disableJudge","B",null,["lightning","guose-material"],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-lose","callback","discardEnd","discard","disableJudge","B",null,["lightning","guose-material"],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-lose","request","discardAfter","discard","disableJudge","B",null,["lightning","guose-material"],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-lose","callback","discardAfter","discard","disableJudge","B",null,["lightning","guose-material"],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-lose","request","disableJudgeEnd","disableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-lose","callback","disableJudgeEnd","disableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-lose","request","disableJudgeAfter","disableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-lose","callback","disableJudgeAfter","disableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-lose","request","enableJudgeBefore","enableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},false,false],
+    ["cancel-lose","callback","enableJudgeBefore","enableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},false,false],
+    ["cancel-lose","request","enableJudgeBegin","enableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},false,false],
+    ["cancel-lose","callback","enableJudgeBegin","enableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},false,false],
+    ["cancel-lose","request","enableJudgeEnd","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-lose","callback","enableJudgeEnd","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-lose","request","enableJudgeAfter","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-lose","callback","enableJudgeAfter","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-lose","request","enableJudgeBefore","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},false,false],
+    ["cancel-lose","callback","enableJudgeBefore","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},false,false],
+    ["cancel-lose","request","enableJudgeBegin","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},false,false],
+    ["cancel-lose","callback","enableJudgeBegin","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},false,false],
+    ["cancel-lose","request","enableJudgeEnd","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-lose","callback","enableJudgeEnd","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-lose","request","enableJudgeAfter","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["cancel-lose","callback","enableJudgeAfter","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e","guose-material":"d","lightning":"d"},true,false],
+    ["empty","request","disableJudgeBefore","disableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e"},false,false],
+    ["empty","callback","disableJudgeBefore","disableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e"},false,false],
+    ["empty","request","disableJudgeBegin","disableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e"},false,false],
+    ["empty","callback","disableJudgeBegin","disableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e"},false,false],
+    ["empty","request","disableJudgeEnd","disableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e"},true,false],
+    ["empty","callback","disableJudgeEnd","disableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e"},true,false],
+    ["empty","request","disableJudgeAfter","disableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e"},true,false],
+    ["empty","callback","disableJudgeAfter","disableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e"},true,false],
+    ["empty","request","disableJudgeBefore","disableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e"},false,false],
+    ["empty","callback","disableJudgeBefore","disableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e"},false,false],
+    ["empty","request","disableJudgeBegin","disableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e"},false,false],
+    ["empty","callback","disableJudgeBegin","disableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e"},false,false],
+    ["empty","request","disableJudgeEnd","disableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e"},true,false],
+    ["empty","callback","disableJudgeEnd","disableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e"},true,false],
+    ["empty","request","disableJudgeAfter","disableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e"},true,false],
+    ["empty","callback","disableJudgeAfter","disableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e"},true,false],
+    ["empty","request","enableJudgeBefore","enableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e"},false,false],
+    ["empty","callback","enableJudgeBefore","enableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e"},false,false],
+    ["empty","request","enableJudgeBegin","enableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e"},false,false],
+    ["empty","callback","enableJudgeBegin","enableJudge","reference_fixture_use","B","A",[],true,1,[],{"hand":"B:h","equip":"B:e"},false,false],
+    ["empty","request","enableJudgeEnd","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e"},true,false],
+    ["empty","callback","enableJudgeEnd","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e"},true,false],
+    ["empty","request","enableJudgeAfter","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e"},true,false],
+    ["empty","callback","enableJudgeAfter","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e"},true,false],
+    ["empty","request","enableJudgeBefore","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e"},false,false],
+    ["empty","callback","enableJudgeBefore","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e"},false,false],
+    ["empty","request","enableJudgeBegin","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e"},false,false],
+    ["empty","callback","enableJudgeBegin","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e"},false,false],
+    ["empty","request","enableJudgeEnd","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e"},true,false],
+    ["empty","callback","enableJudgeEnd","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e"},true,false],
+    ["empty","request","enableJudgeAfter","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e"},true,false],
+    ["empty","callback","enableJudgeAfter","enableJudge","reference_fixture_use","B","A",[],false,0,[],{"hand":"B:h","equip":"B:e"},true,false],
+    ["routing-disabled","request","addJudgeBefore","addJudge","reference_fixture_use","C",null,["lightning-blocked"],true,1,[],{"lightning-blocked":"A:j","lightning-allowed":"s","lebu-used":"s"},false,false],
+    ["routing-disabled","callback","addJudgeBefore","addJudge","reference_fixture_use","C",null,["lightning-blocked"],true,1,[],{"lightning-blocked":"A:j","lightning-allowed":"s","lebu-used":"s"},false,false],
+    ["routing-disabled","request","addJudgeBegin","addJudge","reference_fixture_use","C",null,["lightning-blocked"],true,1,[],{"lightning-blocked":"A:j","lightning-allowed":"s","lebu-used":"s"},false,false],
+    ["routing-disabled","callback","addJudgeBegin","addJudge","reference_fixture_use","C",null,["lightning-blocked"],true,1,[],{"lightning-blocked":"A:j","lightning-allowed":"s","lebu-used":"s"},false,false],
+    ["routing-disabled","request","loseBefore","lose","addJudge","A",null,["lightning-blocked"],true,1,[],{"lightning-blocked":"A:j","lightning-allowed":"s","lebu-used":"s"},false,false],
+    ["routing-disabled","callback","loseBefore","lose","addJudge","A",null,["lightning-blocked"],true,1,[],{"lightning-blocked":"A:j","lightning-allowed":"s","lebu-used":"s"},false,false],
+    ["routing-disabled","request","loseBegin","lose","addJudge","A",null,["lightning-blocked"],true,1,[],{"lightning-blocked":"A:j","lightning-allowed":"s","lebu-used":"s"},false,false],
+    ["routing-disabled","callback","loseBegin","lose","addJudge","A",null,["lightning-blocked"],true,1,[],{"lightning-blocked":"A:j","lightning-allowed":"s","lebu-used":"s"},false,false],
+    ["routing-disabled","request","loseEnd","lose","addJudge","A",null,["lightning-blocked"],true,1,[],{"lightning-blocked":"s","lightning-allowed":"s","lebu-used":"s"},true,false],
+    ["routing-disabled","callback","loseEnd","lose","addJudge","A",null,["lightning-blocked"],true,1,[],{"lightning-blocked":"s","lightning-allowed":"s","lebu-used":"s"},true,false],
+    ["routing-disabled","request","loseAfter","lose","addJudge","A",null,["lightning-blocked"],true,1,[],{"lightning-blocked":"s","lightning-allowed":"s","lebu-used":"s"},true,false],
+    ["routing-disabled","callback","loseAfter","lose","addJudge","A",null,["lightning-blocked"],true,1,[],{"lightning-blocked":"s","lightning-allowed":"s","lebu-used":"s"},true,false],
+    ["routing-disabled","request","addJudgeEnd","addJudge","reference_fixture_use","C",null,["lightning-blocked"],true,1,[],{"lightning-blocked":"C:j","lightning-allowed":"s","lebu-used":"s"},true,false],
+    ["routing-disabled","callback","addJudgeEnd","addJudge","reference_fixture_use","C",null,["lightning-blocked"],true,1,[],{"lightning-blocked":"C:j","lightning-allowed":"s","lebu-used":"s"},true,false],
+    ["routing-disabled","request","addJudgeAfter","addJudge","reference_fixture_use","C",null,["lightning-blocked"],true,1,[],{"lightning-blocked":"C:j","lightning-allowed":"s","lebu-used":"s"},true,false],
+    ["routing-disabled","callback","addJudgeAfter","addJudge","reference_fixture_use","C",null,["lightning-blocked"],true,1,[],{"lightning-blocked":"C:j","lightning-allowed":"s","lebu-used":"s"},true,false],
+    ["routing-enabled","request","addJudgeBefore","addJudge","reference_fixture_use","B",null,["lightning-allowed"],false,0,[],{"lightning-blocked":"C:j","lightning-allowed":"A:j","lebu-used":"s"},false,false],
+    ["routing-enabled","callback","addJudgeBefore","addJudge","reference_fixture_use","B",null,["lightning-allowed"],false,0,[],{"lightning-blocked":"C:j","lightning-allowed":"A:j","lebu-used":"s"},false,false],
+    ["routing-enabled","request","addJudgeBegin","addJudge","reference_fixture_use","B",null,["lightning-allowed"],false,0,[],{"lightning-blocked":"C:j","lightning-allowed":"A:j","lebu-used":"s"},false,false],
+    ["routing-enabled","callback","addJudgeBegin","addJudge","reference_fixture_use","B",null,["lightning-allowed"],false,0,[],{"lightning-blocked":"C:j","lightning-allowed":"A:j","lebu-used":"s"},false,false],
+    ["routing-enabled","request","loseBefore","lose","addJudge","A",null,["lightning-allowed"],false,0,[],{"lightning-blocked":"C:j","lightning-allowed":"A:j","lebu-used":"s"},false,false],
+    ["routing-enabled","callback","loseBefore","lose","addJudge","A",null,["lightning-allowed"],false,0,[],{"lightning-blocked":"C:j","lightning-allowed":"A:j","lebu-used":"s"},false,false],
+    ["routing-enabled","request","loseBegin","lose","addJudge","A",null,["lightning-allowed"],false,0,[],{"lightning-blocked":"C:j","lightning-allowed":"A:j","lebu-used":"s"},false,false],
+    ["routing-enabled","callback","loseBegin","lose","addJudge","A",null,["lightning-allowed"],false,0,[],{"lightning-blocked":"C:j","lightning-allowed":"A:j","lebu-used":"s"},false,false],
+    ["routing-enabled","request","loseEnd","lose","addJudge","A",null,["lightning-allowed"],false,0,[],{"lightning-blocked":"C:j","lightning-allowed":"s","lebu-used":"s"},true,false],
+    ["routing-enabled","callback","loseEnd","lose","addJudge","A",null,["lightning-allowed"],false,0,[],{"lightning-blocked":"C:j","lightning-allowed":"s","lebu-used":"s"},true,false],
+    ["routing-enabled","request","loseAfter","lose","addJudge","A",null,["lightning-allowed"],false,0,[],{"lightning-blocked":"C:j","lightning-allowed":"s","lebu-used":"s"},true,false],
+    ["routing-enabled","callback","loseAfter","lose","addJudge","A",null,["lightning-allowed"],false,0,[],{"lightning-blocked":"C:j","lightning-allowed":"s","lebu-used":"s"},true,false],
+    ["routing-enabled","request","addJudgeEnd","addJudge","reference_fixture_use","B",null,["lightning-allowed"],false,0,["lightning-allowed"],{"lightning-blocked":"C:j","lightning-allowed":"B:j","lebu-used":"s"},true,false],
+    ["routing-enabled","callback","addJudgeEnd","addJudge","reference_fixture_use","B",null,["lightning-allowed"],false,0,["lightning-allowed"],{"lightning-blocked":"C:j","lightning-allowed":"B:j","lebu-used":"s"},true,false],
+    ["routing-enabled","request","addJudgeAfter","addJudge","reference_fixture_use","B",null,["lightning-allowed"],false,0,["lightning-allowed"],{"lightning-blocked":"C:j","lightning-allowed":"B:j","lebu-used":"s"},true,false],
+    ["routing-enabled","callback","addJudgeAfter","addJudge","reference_fixture_use","B",null,["lightning-allowed"],false,0,["lightning-allowed"],{"lightning-blocked":"C:j","lightning-allowed":"B:j","lebu-used":"s"},true,false],
+    ["routing-enabled","request","loseBefore","lose","useCard","A",null,["lebu-used"],false,0,["lightning-allowed"],{"lightning-blocked":"C:j","lightning-allowed":"B:j","lebu-used":"A:h"},false,false],
+    ["routing-enabled","callback","loseBefore","lose","useCard","A",null,["lebu-used"],false,0,["lightning-allowed"],{"lightning-blocked":"C:j","lightning-allowed":"B:j","lebu-used":"A:h"},false,false],
+    ["routing-enabled","request","loseBegin","lose","useCard","A",null,["lebu-used"],false,0,["lightning-allowed"],{"lightning-blocked":"C:j","lightning-allowed":"B:j","lebu-used":"A:h"},false,false],
+    ["routing-enabled","callback","loseBegin","lose","useCard","A",null,["lebu-used"],false,0,["lightning-allowed"],{"lightning-blocked":"C:j","lightning-allowed":"B:j","lebu-used":"A:h"},false,false],
+    ["routing-enabled","request","loseEnd","lose","useCard","A",null,["lebu-used"],false,0,["lightning-allowed"],{"lightning-blocked":"C:j","lightning-allowed":"B:j","lebu-used":"o"},true,false],
+    ["routing-enabled","callback","loseEnd","lose","useCard","A",null,["lebu-used"],false,0,["lightning-allowed"],{"lightning-blocked":"C:j","lightning-allowed":"B:j","lebu-used":"o"},true,false],
+    ["routing-enabled","request","loseAfter","lose","useCard","A",null,["lebu-used"],false,0,["lightning-allowed"],{"lightning-blocked":"C:j","lightning-allowed":"B:j","lebu-used":"o"},true,false],
+    ["routing-enabled","callback","loseAfter","lose","useCard","A",null,["lebu-used"],false,0,["lightning-allowed"],{"lightning-blocked":"C:j","lightning-allowed":"B:j","lebu-used":"o"},true,false],
+    ["routing-enabled","request","addJudgeBefore","addJudge","lebu","B",null,["lebu-used"],false,0,["lightning-allowed"],{"lightning-blocked":"C:j","lightning-allowed":"B:j","lebu-used":"o"},false,false],
+    ["routing-enabled","callback","addJudgeBefore","addJudge","lebu","B",null,["lebu-used"],false,0,["lightning-allowed"],{"lightning-blocked":"C:j","lightning-allowed":"B:j","lebu-used":"o"},false,false],
+    ["routing-enabled","request","addJudgeBegin","addJudge","lebu","B",null,["lebu-used"],false,0,["lightning-allowed"],{"lightning-blocked":"C:j","lightning-allowed":"B:j","lebu-used":"o"},false,false],
+    ["routing-enabled","callback","addJudgeBegin","addJudge","lebu","B",null,["lebu-used"],false,0,["lightning-allowed"],{"lightning-blocked":"C:j","lightning-allowed":"B:j","lebu-used":"o"},false,false],
+    ["routing-enabled","request","addJudgeEnd","addJudge","lebu","B",null,["lebu-used"],false,0,["lebu-used","lightning-allowed"],{"lightning-blocked":"C:j","lightning-allowed":"B:j","lebu-used":"B:j"},true,false],
+    ["routing-enabled","callback","addJudgeEnd","addJudge","lebu","B",null,["lebu-used"],false,0,["lebu-used","lightning-allowed"],{"lightning-blocked":"C:j","lightning-allowed":"B:j","lebu-used":"B:j"},true,false],
+    ["routing-enabled","request","addJudgeAfter","addJudge","lebu","B",null,["lebu-used"],false,0,["lebu-used","lightning-allowed"],{"lightning-blocked":"C:j","lightning-allowed":"B:j","lebu-used":"B:j"},true,false],
+    ["routing-enabled","callback","addJudgeAfter","addJudge","lebu","B",null,["lebu-used"],false,0,["lebu-used","lightning-allowed"],{"lightning-blocked":"C:j","lightning-allowed":"B:j","lebu-used":"B:j"},true,false],
+    ["midu-disable","request","useSkillBefore","useSkill","reference_fixture_use","B",null,[],false,0,["lebu-used","lightning-allowed"],{"lightning-blocked":"C:j","lightning-allowed":"B:j","lebu-used":"B:j"},false,false],
+    ["midu-disable","callback","useSkillBefore","useSkill","reference_fixture_use","B",null,[],false,0,["lebu-used","lightning-allowed"],{"lightning-blocked":"C:j","lightning-allowed":"B:j","lebu-used":"B:j"},false,false],
+    ["midu-disable","request","useSkillBegin","useSkill","reference_fixture_use","B",null,[],false,0,["lebu-used","lightning-allowed"],{"lightning-blocked":"C:j","lightning-allowed":"B:j","lebu-used":"B:j"},false,false],
+    ["midu-disable","callback","useSkillBegin","useSkill","reference_fixture_use","B",null,[],false,0,["lebu-used","lightning-allowed"],{"lightning-blocked":"C:j","lightning-allowed":"B:j","lebu-used":"B:j"},false,false],
+    ["midu-disable","request","useSkill","useSkill","reference_fixture_use","B",null,[],false,0,["lebu-used","lightning-allowed"],{"lightning-blocked":"C:j","lightning-allowed":"B:j","lebu-used":"B:j"},false,false],
+    ["midu-disable","callback","useSkill","useSkill","reference_fixture_use","B",null,[],false,0,["lebu-used","lightning-allowed"],{"lightning-blocked":"C:j","lightning-allowed":"B:j","lebu-used":"B:j"},false,false],
+    ["midu-disable","request","disableJudgeBefore","disableJudge","midu_backup","B","B",[],false,0,["lebu-used","lightning-allowed"],{"lightning-blocked":"C:j","lightning-allowed":"B:j","lebu-used":"B:j"},false,false],
+    ["midu-disable","callback","disableJudgeBefore","disableJudge","midu_backup","B","B",[],false,0,["lebu-used","lightning-allowed"],{"lightning-blocked":"C:j","lightning-allowed":"B:j","lebu-used":"B:j"},false,false],
+    ["midu-disable","request","disableJudgeBegin","disableJudge","midu_backup","B","B",[],false,0,["lebu-used","lightning-allowed"],{"lightning-blocked":"C:j","lightning-allowed":"B:j","lebu-used":"B:j"},false,false],
+    ["midu-disable","callback","disableJudgeBegin","disableJudge","midu_backup","B","B",[],false,0,["lebu-used","lightning-allowed"],{"lightning-blocked":"C:j","lightning-allowed":"B:j","lebu-used":"B:j"},false,false],
+    ["midu-disable","request","discardBefore","discard","disableJudge","B",null,["lebu-used","lightning-allowed"],true,0,["lebu-used","lightning-allowed"],{"lightning-blocked":"C:j","lightning-allowed":"B:j","lebu-used":"B:j"},false,false],
+    ["midu-disable","callback","discardBefore","discard","disableJudge","B",null,["lebu-used","lightning-allowed"],true,0,["lebu-used","lightning-allowed"],{"lightning-blocked":"C:j","lightning-allowed":"B:j","lebu-used":"B:j"},false,false],
+    ["midu-disable","request","discardBegin","discard","disableJudge","B",null,["lebu-used","lightning-allowed"],true,0,["lebu-used","lightning-allowed"],{"lightning-blocked":"C:j","lightning-allowed":"B:j","lebu-used":"B:j"},false,false],
+    ["midu-disable","callback","discardBegin","discard","disableJudge","B",null,["lebu-used","lightning-allowed"],true,0,["lebu-used","lightning-allowed"],{"lightning-blocked":"C:j","lightning-allowed":"B:j","lebu-used":"B:j"},false,false],
+    ["midu-disable","request","loseBefore","lose","discard","B",null,["lebu-used","lightning-allowed"],true,0,["lebu-used","lightning-allowed"],{"lightning-blocked":"C:j","lightning-allowed":"B:j","lebu-used":"B:j"},false,false],
+    ["midu-disable","callback","loseBefore","lose","discard","B",null,["lebu-used","lightning-allowed"],true,0,["lebu-used","lightning-allowed"],{"lightning-blocked":"C:j","lightning-allowed":"B:j","lebu-used":"B:j"},false,false],
+    ["midu-disable","request","loseBegin","lose","discard","B",null,["lebu-used","lightning-allowed"],true,0,["lebu-used","lightning-allowed"],{"lightning-blocked":"C:j","lightning-allowed":"B:j","lebu-used":"B:j"},false,false],
+    ["midu-disable","callback","loseBegin","lose","discard","B",null,["lebu-used","lightning-allowed"],true,0,["lebu-used","lightning-allowed"],{"lightning-blocked":"C:j","lightning-allowed":"B:j","lebu-used":"B:j"},false,false],
+    ["midu-disable","request","loseEnd","lose","discard","B",null,["lebu-used","lightning-allowed"],true,0,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},true,false],
+    ["midu-disable","callback","loseEnd","lose","discard","B",null,["lebu-used","lightning-allowed"],true,0,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},true,false],
+    ["midu-disable","request","loseAfter","lose","discard","B",null,["lebu-used","lightning-allowed"],true,0,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},true,false],
+    ["midu-disable","callback","loseAfter","lose","discard","B",null,["lebu-used","lightning-allowed"],true,0,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},true,false],
+    ["midu-disable","request","discard","discard","disableJudge","B",null,["lebu-used","lightning-allowed"],true,0,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},false,false],
+    ["midu-disable","callback","discard","discard","disableJudge","B",null,["lebu-used","lightning-allowed"],true,0,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},false,false],
+    ["midu-disable","request","discardEnd","discard","disableJudge","B",null,["lebu-used","lightning-allowed"],true,0,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},true,false],
+    ["midu-disable","callback","discardEnd","discard","disableJudge","B",null,["lebu-used","lightning-allowed"],true,0,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},true,false],
+    ["midu-disable","request","discardAfter","discard","disableJudge","B",null,["lebu-used","lightning-allowed"],true,0,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},true,false],
+    ["midu-disable","callback","discardAfter","discard","disableJudge","B",null,["lebu-used","lightning-allowed"],true,0,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},true,false],
+    ["midu-disable","request","disableJudgeEnd","disableJudge","midu_backup","B","B",[],true,1,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},true,false],
+    ["midu-disable","callback","disableJudgeEnd","disableJudge","midu_backup","B","B",[],true,1,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},true,false],
+    ["midu-disable","request","disableJudgeAfter","disableJudge","midu_backup","B","B",[],true,1,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},true,false],
+    ["midu-disable","callback","disableJudgeAfter","disableJudge","midu_backup","B","B",[],true,1,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},true,false],
+    ["midu-disable","request","drawBefore","draw","midu_backup","A","B",[],true,1,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},false,false],
+    ["midu-disable","callback","drawBefore","draw","midu_backup","A","B",[],true,1,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},false,false],
+    ["midu-disable","request","drawBegin","draw","midu_backup","A","B",[],true,1,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},false,false],
+    ["midu-disable","callback","drawBegin","draw","midu_backup","A","B",[],true,1,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},false,false],
+    ["midu-disable","request","drawEnd","draw","midu_backup","A","B",[],true,1,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},true,false],
+    ["midu-disable","callback","drawEnd","draw","midu_backup","A","B",[],true,1,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},true,false],
+    ["midu-disable","request","drawAfter","draw","midu_backup","A","B",[],true,1,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},true,false],
+    ["midu-disable","callback","drawAfter","draw","midu_backup","A","B",[],true,1,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},true,false],
+    ["midu-disable","request","useSkillEnd","useSkill","reference_fixture_use","B",null,[],true,1,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},true,false],
+    ["midu-disable","callback","useSkillEnd","useSkill","reference_fixture_use","B",null,[],true,1,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},true,false],
+    ["midu-disable","request","useSkillAfter","useSkill","reference_fixture_use","B",null,[],true,1,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},true,false],
+    ["midu-disable","callback","useSkillAfter","useSkill","reference_fixture_use","B",null,[],true,1,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},true,false],
+    ["midu-enable","request","useSkillBefore","useSkill","reference_fixture_use","B",null,[],true,1,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},false,false],
+    ["midu-enable","callback","useSkillBefore","useSkill","reference_fixture_use","B",null,[],true,1,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},false,false],
+    ["midu-enable","request","useSkillBegin","useSkill","reference_fixture_use","B",null,[],true,1,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},false,false],
+    ["midu-enable","callback","useSkillBegin","useSkill","reference_fixture_use","B",null,[],true,1,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},false,false],
+    ["midu-enable","request","useSkill","useSkill","reference_fixture_use","B",null,[],true,1,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},false,false],
+    ["midu-enable","callback","useSkill","useSkill","reference_fixture_use","B",null,[],true,1,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},false,false],
+    ["midu-enable","request","enableJudgeBefore","enableJudge","midu_backup","B","B",[],true,1,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},false,false],
+    ["midu-enable","callback","enableJudgeBefore","enableJudge","midu_backup","B","B",[],true,1,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},false,false],
+    ["midu-enable","request","enableJudgeBegin","enableJudge","midu_backup","B","B",[],true,1,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},false,false],
+    ["midu-enable","callback","enableJudgeBegin","enableJudge","midu_backup","B","B",[],true,1,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},false,false],
+    ["midu-enable","request","enableJudgeEnd","enableJudge","midu_backup","B","B",[],false,0,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},true,false],
+    ["midu-enable","callback","enableJudgeEnd","enableJudge","midu_backup","B","B",[],false,0,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},true,false],
+    ["midu-enable","request","enableJudgeAfter","enableJudge","midu_backup","B","B",[],false,0,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},true,false],
+    ["midu-enable","callback","enableJudgeAfter","enableJudge","midu_backup","B","B",[],false,0,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},true,false],
+    ["midu-enable","request","useSkillEnd","useSkill","reference_fixture_use","B",null,[],false,0,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},true,false],
+    ["midu-enable","callback","useSkillEnd","useSkill","reference_fixture_use","B",null,[],false,0,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},true,false],
+    ["midu-enable","request","useSkillAfter","useSkill","reference_fixture_use","B",null,[],false,0,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},true,false],
+    ["midu-enable","callback","useSkillAfter","useSkill","reference_fixture_use","B",null,[],false,0,[],{"lightning-blocked":"C:j","lightning-allowed":"d","lebu-used":"d"},true,false]
+  ],
+  "trials": [
+    {
+      "name": "ordinary",
+      "stages": [
+        {
+          "name": "before",
+          "disabled": false,
+          "placeholder": 0,
+          "judge": [
+            "lightning",
+            "lebu"
+          ],
+          "virtual": [
+            "lebu",
+            "shandian"
+          ],
+          "hand": [
+            "hand"
+          ],
+          "equip": [
+            "equip"
+          ],
+          "cards": {
+            "hand": "B:h",
+            "equip": "B:e",
+            "guose-material": "B:j",
+            "lightning": "B:j"
+          },
+          "canAdd": [
+            false,
+            false,
+            true
+          ],
+          "canUseLebu": false
+        },
+        {
+          "name": "disabled",
+          "disabled": true,
+          "placeholder": 1,
+          "judge": [],
+          "virtual": [],
+          "hand": [
+            "hand"
+          ],
+          "equip": [
+            "equip"
+          ],
+          "cards": {
+            "hand": "B:h",
+            "equip": "B:e",
+            "guose-material": "d",
+            "lightning": "d"
+          },
+          "canAdd": [
+            false,
+            false,
+            false
+          ],
+          "canUseLebu": false
+        },
+        {
+          "name": "disabled-again",
+          "disabled": true,
+          "placeholder": 1,
+          "judge": [],
+          "virtual": [],
+          "hand": [
+            "hand"
+          ],
+          "equip": [
+            "equip"
+          ],
+          "cards": {
+            "hand": "B:h",
+            "equip": "B:e",
+            "guose-material": "d",
+            "lightning": "d"
+          },
+          "canAdd": [
+            false,
+            false,
+            false
+          ],
+          "canUseLebu": false
+        },
+        {
+          "name": "enabled",
+          "disabled": false,
+          "placeholder": 0,
+          "judge": [],
+          "virtual": [],
+          "hand": [
+            "hand"
+          ],
+          "equip": [
+            "equip"
+          ],
+          "cards": {
+            "hand": "B:h",
+            "equip": "B:e",
+            "guose-material": "d",
+            "lightning": "d"
+          },
+          "canAdd": [
+            true,
+            true,
+            true
+          ],
+          "canUseLebu": true
+        },
+        {
+          "name": "enabled-again",
+          "disabled": false,
+          "placeholder": 0,
+          "judge": [],
+          "virtual": [],
+          "hand": [
+            "hand"
+          ],
+          "equip": [
+            "equip"
+          ],
+          "cards": {
+            "hand": "B:h",
+            "equip": "B:e",
+            "guose-material": "d",
+            "lightning": "d"
+          },
+          "canAdd": [
+            true,
+            true,
+            true
+          ],
+          "canUseLebu": true
+        }
+      ]
+    },
+    {
+      "name": "cancel-discard",
+      "stages": [
+        {
+          "name": "before",
+          "disabled": false,
+          "placeholder": 0,
+          "judge": [
+            "lightning",
+            "lebu"
+          ],
+          "virtual": [
+            "lebu",
+            "shandian"
+          ],
+          "hand": [
+            "hand"
+          ],
+          "equip": [
+            "equip"
+          ],
+          "cards": {
+            "hand": "B:h",
+            "equip": "B:e",
+            "guose-material": "B:j",
+            "lightning": "B:j"
+          },
+          "canAdd": [
+            false,
+            false,
+            true
+          ],
+          "canUseLebu": false
+        },
+        {
+          "name": "disabled",
+          "disabled": true,
+          "placeholder": 1,
+          "judge": [
+            "lightning",
+            "lebu"
+          ],
+          "virtual": [
+            "lebu",
+            "shandian"
+          ],
+          "hand": [
+            "hand"
+          ],
+          "equip": [
+            "equip"
+          ],
+          "cards": {
+            "hand": "B:h",
+            "equip": "B:e",
+            "guose-material": "B:j",
+            "lightning": "B:j"
+          },
+          "canAdd": [
+            false,
+            false,
+            false
+          ],
+          "canUseLebu": false
+        },
+        {
+          "name": "disabled-again",
+          "disabled": true,
+          "placeholder": 1,
+          "judge": [],
+          "virtual": [],
+          "hand": [
+            "hand"
+          ],
+          "equip": [
+            "equip"
+          ],
+          "cards": {
+            "hand": "B:h",
+            "equip": "B:e",
+            "guose-material": "d",
+            "lightning": "d"
+          },
+          "canAdd": [
+            false,
+            false,
+            false
+          ],
+          "canUseLebu": false
+        },
+        {
+          "name": "enabled",
+          "disabled": false,
+          "placeholder": 0,
+          "judge": [],
+          "virtual": [],
+          "hand": [
+            "hand"
+          ],
+          "equip": [
+            "equip"
+          ],
+          "cards": {
+            "hand": "B:h",
+            "equip": "B:e",
+            "guose-material": "d",
+            "lightning": "d"
+          },
+          "canAdd": [
+            true,
+            true,
+            true
+          ],
+          "canUseLebu": true
+        },
+        {
+          "name": "enabled-again",
+          "disabled": false,
+          "placeholder": 0,
+          "judge": [],
+          "virtual": [],
+          "hand": [
+            "hand"
+          ],
+          "equip": [
+            "equip"
+          ],
+          "cards": {
+            "hand": "B:h",
+            "equip": "B:e",
+            "guose-material": "d",
+            "lightning": "d"
+          },
+          "canAdd": [
+            true,
+            true,
+            true
+          ],
+          "canUseLebu": true
+        }
+      ]
+    },
+    {
+      "name": "cancel-lose",
+      "stages": [
+        {
+          "name": "before",
+          "disabled": false,
+          "placeholder": 0,
+          "judge": [
+            "lightning",
+            "lebu"
+          ],
+          "virtual": [
+            "lebu",
+            "shandian"
+          ],
+          "hand": [
+            "hand"
+          ],
+          "equip": [
+            "equip"
+          ],
+          "cards": {
+            "hand": "B:h",
+            "equip": "B:e",
+            "guose-material": "B:j",
+            "lightning": "B:j"
+          },
+          "canAdd": [
+            false,
+            false,
+            true
+          ],
+          "canUseLebu": false
+        },
+        {
+          "name": "disabled",
+          "disabled": true,
+          "placeholder": 1,
+          "judge": [
+            "lightning",
+            "lebu"
+          ],
+          "virtual": [
+            "lebu",
+            "shandian"
+          ],
+          "hand": [
+            "hand"
+          ],
+          "equip": [
+            "equip"
+          ],
+          "cards": {
+            "hand": "B:h",
+            "equip": "B:e",
+            "guose-material": "B:j",
+            "lightning": "B:j"
+          },
+          "canAdd": [
+            false,
+            false,
+            false
+          ],
+          "canUseLebu": false
+        },
+        {
+          "name": "disabled-again",
+          "disabled": true,
+          "placeholder": 1,
+          "judge": [],
+          "virtual": [],
+          "hand": [
+            "hand"
+          ],
+          "equip": [
+            "equip"
+          ],
+          "cards": {
+            "hand": "B:h",
+            "equip": "B:e",
+            "guose-material": "d",
+            "lightning": "d"
+          },
+          "canAdd": [
+            false,
+            false,
+            false
+          ],
+          "canUseLebu": false
+        },
+        {
+          "name": "enabled",
+          "disabled": false,
+          "placeholder": 0,
+          "judge": [],
+          "virtual": [],
+          "hand": [
+            "hand"
+          ],
+          "equip": [
+            "equip"
+          ],
+          "cards": {
+            "hand": "B:h",
+            "equip": "B:e",
+            "guose-material": "d",
+            "lightning": "d"
+          },
+          "canAdd": [
+            true,
+            true,
+            true
+          ],
+          "canUseLebu": true
+        },
+        {
+          "name": "enabled-again",
+          "disabled": false,
+          "placeholder": 0,
+          "judge": [],
+          "virtual": [],
+          "hand": [
+            "hand"
+          ],
+          "equip": [
+            "equip"
+          ],
+          "cards": {
+            "hand": "B:h",
+            "equip": "B:e",
+            "guose-material": "d",
+            "lightning": "d"
+          },
+          "canAdd": [
+            true,
+            true,
+            true
+          ],
+          "canUseLebu": true
+        }
+      ]
+    },
+    {
+      "name": "empty",
+      "stages": [
+        {
+          "name": "before",
+          "disabled": false,
+          "placeholder": 0,
+          "judge": [],
+          "virtual": [],
+          "hand": [
+            "hand"
+          ],
+          "equip": [
+            "equip"
+          ],
+          "cards": {
+            "hand": "B:h",
+            "equip": "B:e"
+          },
+          "canAdd": [
+            true,
+            true,
+            true
+          ],
+          "canUseLebu": true
+        },
+        {
+          "name": "disabled",
+          "disabled": true,
+          "placeholder": 1,
+          "judge": [],
+          "virtual": [],
+          "hand": [
+            "hand"
+          ],
+          "equip": [
+            "equip"
+          ],
+          "cards": {
+            "hand": "B:h",
+            "equip": "B:e"
+          },
+          "canAdd": [
+            false,
+            false,
+            false
+          ],
+          "canUseLebu": false
+        },
+        {
+          "name": "disabled-again",
+          "disabled": true,
+          "placeholder": 1,
+          "judge": [],
+          "virtual": [],
+          "hand": [
+            "hand"
+          ],
+          "equip": [
+            "equip"
+          ],
+          "cards": {
+            "hand": "B:h",
+            "equip": "B:e"
+          },
+          "canAdd": [
+            false,
+            false,
+            false
+          ],
+          "canUseLebu": false
+        },
+        {
+          "name": "enabled",
+          "disabled": false,
+          "placeholder": 0,
+          "judge": [],
+          "virtual": [],
+          "hand": [
+            "hand"
+          ],
+          "equip": [
+            "equip"
+          ],
+          "cards": {
+            "hand": "B:h",
+            "equip": "B:e"
+          },
+          "canAdd": [
+            true,
+            true,
+            true
+          ],
+          "canUseLebu": true
+        },
+        {
+          "name": "enabled-again",
+          "disabled": false,
+          "placeholder": 0,
+          "judge": [],
+          "virtual": [],
+          "hand": [
+            "hand"
+          ],
+          "equip": [
+            "equip"
+          ],
+          "cards": {
+            "hand": "B:h",
+            "equip": "B:e"
+          },
+          "canAdd": [
+            true,
+            true,
+            true
+          ],
+          "canUseLebu": true
+        }
+      ]
+    }
+  ],
+  "routing": {
+    "disabledCanUse": false,
+    "blockedDestination": "C:j",
+    "enabledCanUse": true,
+    "allowedDestination": "B:j",
+    "lebuDestination": "B:j",
+    "afterUse": {
+      "name": "after-use",
+      "disabled": false,
+      "placeholder": 0,
+      "judge": [
+        "lebu-used",
+        "lightning-allowed"
+      ],
+      "virtual": [
+        "shandian",
+        "lebu"
+      ],
+      "hand": [],
+      "equip": [],
+      "cards": {
+        "lightning-blocked": "C:j",
+        "lightning-allowed": "B:j",
+        "lebu-used": "B:j"
+      },
+      "canAdd": [
+        false,
+        false,
+        true
+      ],
+      "canUseLebu": false
+    }
+  },
+  "midu": {
+    "disabled": {
+      "name": "midu-disabled",
+      "disabled": true,
+      "placeholder": 1,
+      "judge": [],
+      "virtual": [],
+      "hand": [],
+      "equip": [],
+      "cards": {
+        "lightning-blocked": "C:j",
+        "lightning-allowed": "d",
+        "lebu-used": "d"
+      },
+      "canAdd": [
+        false,
+        false,
+        false
+      ],
+      "canUseLebu": false
+    },
+    "drawn": 1,
+    "enabled": {
+      "name": "midu-enabled",
+      "disabled": false,
+      "placeholder": 0,
+      "judge": [],
+      "virtual": [],
+      "hand": [],
+      "equip": [],
+      "cards": {
+        "lightning-blocked": "C:j",
+        "lightning-allowed": "d",
+        "lebu-used": "d"
+      },
+      "canAdd": [
+        true,
+        true,
+        true
+      ],
+      "canUseLebu": true
+    },
+    "rehuomo": true
+  }
+}

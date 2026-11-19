@@ -16,6 +16,7 @@ import { checkReferenceMaxHp, installReferenceMaxHp } from './reference-max-hp.m
 import { checkReferenceRevival, installReferenceRevival } from './reference-revival.mjs';
 import { checkReferenceRest, installReferenceRest } from './reference-rest.mjs';
 import { checkRestInterruptions, installRestInterruptions } from './reference-rest-interruptions.mjs';
+import { checkJudgeArea, installJudgeArea } from './reference-judge-area.mjs';
 import { checkReferenceExpansion, installReferenceExpansion } from './reference-expansion.mjs';
 import { checkZhongyiBoundaries, installZhongyiBoundaries } from './reference-zhongyi-boundaries.mjs';
 import { checkZhongyiTransitDeath, installZhongyiTransitDeath } from './reference-zhongyi-transit-death.mjs';
@@ -75,6 +76,7 @@ const descriptions = new Map([
   ['revival', 'ordinary and event revival after real deaths, including max HP and cancellation boundaries'],
   ['rest', 'rest lifecycle, extra and natural turn countdowns, and the original mbmowang skill'],
   ['rest-interruptions', 'damage interrupted by rest and rest clocks after death and direct revival'],
+  ['judge-area', 'abolishing and restoring the judgment area, including interrupted card loss'],
 ]);
 let scenario = 'sha-no-shan';
 const scenarioIndex = argv.indexOf('--scenario');
@@ -88,7 +90,7 @@ if (argv.length && (argv.length !== 2 || !['--check', '--write'].includes(argv[0
 }
 const isRecast = scenario === 'tiesuo-recast' || scenario === 'recast-callbacks';
 const isBatchRecast = scenario === 'recast-batch' || scenario === 'recast-batch-boundaries';
-if (['zhongyi-expansion', 'zhongyi-boundaries', 'zhongyi-transit-death', 'qiaoshui-targets', 'judgment-zones', 'ordered-move'].includes(scenario)) {
+if (['zhongyi-expansion', 'zhongyi-boundaries', 'zhongyi-transit-death', 'qiaoshui-targets', 'judgment-zones', 'ordered-move', 'judge-area'].includes(scenario)) {
   sourceHashes['/character/standard/skill.js'] = 'ee769399395b93f3d8293cd5b880b8e708864329bd0d79a0b4f0d8bd6f855a9e';
 }
 if (scenario === 'ordered-move') {
@@ -114,6 +116,7 @@ if (scenario === 'zhongyi-boundaries') {
 if (['linked-damage', 'compare', 'qiaoshui-targets', 'phase-scheduling', 'max-hp'].includes(scenario)) sourceHashes['/character/yijiang/skill.js'] = '5b0eb965a8428535bf3cd7d369c261b8ad95cccbeac8d8c817cad3490643a54f';
 if (['max-hp', 'revival'].includes(scenario)) sourceHashes['/character/sp/skill.js'] = 'a63785adcf4c9518b58ca05f6ea85559f8eb6ea3d89ebcd782498f445cde85f9';
 if (scenario === 'rest') sourceHashes['/character/mobile/skill.js'] = 'eaef7605ae59d3e9c3996238d9ec790d0bc4eace1f56d3f602fee9b492086d3a';
+if (scenario === 'judge-area') sourceHashes['/character/huicui/skill.js'] = '343d2a1032861bf79cfd90fa8ca745916b911eb893de334e933c9fa1bd841085';
 if (scenario === 'phase-scheduling') {
   sourceHashes['/character/shenhua/skill.js'] = '7e87ec26c3f183b83878f886e3872bd78a0f69a5e51e7f46a64bfcc79362cd62';
 }
@@ -168,6 +171,8 @@ try {
     await context.addInitScript(installReferenceRest);
   } else if (scenario === 'rest-interruptions') {
     await context.addInitScript(installRestInterruptions);
+  } else if (scenario === 'judge-area') {
+    await context.addInitScript(installJudgeArea);
   } else if (scenario === 'zhongyi-expansion') {
     await context.addInitScript(installReferenceExpansion);
   } else if (scenario === 'zhongyi-boundaries') {
@@ -271,6 +276,11 @@ try {
           }
           if (scenario === 'rest-interruptions') {
             window.__referenceResult = await window.__runRestInterruptions({ lib, game, ui, _status, actor });
+            game.pause();
+            return;
+          }
+          if (scenario === 'judge-area') {
+            window.__referenceResult = await window.__runJudgeArea({ lib, game, ui, get, _status, actor });
             game.pause();
             return;
           }
@@ -454,6 +464,7 @@ try {
   if (scenario === 'revival') checkReferenceRevival(captured.value);
   if (scenario === 'rest') checkReferenceRest(captured.value);
   if (scenario === 'rest-interruptions') checkRestInterruptions(captured.value);
+  if (scenario === 'judge-area') checkJudgeArea(captured.value);
   if (scenario === 'compare') checkReferenceCompare(captured.value);
   if (scenario === 'qiaoshui-targets') checkQiaoshuiTargets(captured.value);
   if (scenario === 'compare-boundaries') checkCompareBoundaries(captured.value);
