@@ -2,12 +2,22 @@
 
 先按[开发手册](development.md)准备工具链并在仓库根运行 `pnpm install`。
 
-## Windows
+## 两个平台一起发布
 
-在仓库根运行 `pnpm tauri build --no-bundle`。可执行文件为 `apps/game/src-tauri/target/release/my-awesome-kill.exe`，内置 Vue 静态资源。验收时关闭 1420 上的开发服务，打开 exe，检查「随心杀」首页的「开始游玩」与画廊的「经典三国杀」入口。原生窗口使用系统 WebView2。
+在 Windows x64 主机的仓库根运行 `pnpm build:release`。需要 MSVC、Rust 的 `x86_64-pc-windows-msvc`、`aarch64-linux-android` 和 `wasm32-unknown-unknown` target、`wasm-bindgen`、JDK、Android SDK/NDK 和 Build Tools。`ANDROID_HOME`（或 `ANDROID_SDK_ROOT`）应指向 Android SDK。
 
-## Android ARM64
+版本只从根 `package.json` 的 `version` 读取，格式为 `MAJOR.MINOR.PATCH`，无需逐个修改 Tauri、Cargo 或 Gradle 的版本字段。Android 的版本号由同一值计算为 `MAJOR × 1000000 + MINOR × 1000 + PATCH`（minor、patch 均小于 1000）。
 
-在 `apps/game` 运行 `pnpm tauri android build --debug --apk --target aarch64`。该命令需要可用的 Java、SDK、NDK 和 ARM64 Rust target。P1 的本地调试签名制品位于 `src-tauri/gen/android/app/build/outputs/apk/arm64/debug/app-arm64-debug.apk`（相对游戏包）。
+在 `apps/game/src-tauri/gen/android/keystore.properties`（UTF-8）配置 `storeFile`、`storePassword`、`keyAlias`、`keyPassword`。密钥保存在仓库外，不提交密码文件；Windows 路径可写成 `C:/路径/文件.jks`。没有发布签名时，可以运行 `pnpm build:release --local`：仍以 release 模式构建，但 APK 使用 Android 调试密钥并带 `-local` 后缀，仅供本机安装测试。Windows 产物是可直接运行的 EXE，不生成安装包，也不做 Authenticode 签名。
 
-可用 SDK Build Tools 的 `apksigner verify --verbose` 检查签名，使用 `aapt dump badging` 检查包名 `com.mak.game`、应用名「随心杀」与入口 Activity。检查 manifest 的横屏声明、游戏分类和归档中的 `lib/arm64-v8a/libmy_awesome_kill_lib.so`。本次打包环境及设备验证边界见开发手册。
+完成后两份文件一起进入 `release/<version>/`：
+
+- `my-awesome-kill-<version>-windows-x64.exe`
+- `my-awesome-kill-<version>-android-arm64.apk`（本机签名为 `my-awesome-kill-<version>-android-arm64-local.apk`）
+
+脚本验证 EXE 的产品版本，以及 APK 的包名、版本、ARM64 架构、非调试模式和签名。构建失败不会留下仅包含一个平台的发布目录；不会覆盖已存在的版本目录。重新发布同一版本前，先移走原目录。若构建被强制终止，确认没有构建仍在运行后才可移除 `release/.build.lock`。Android 不允许普通安装覆盖签名不同或 versionCode 更高的旧包，可用干净的测试设备或用户配置验证新包。
+
+## 单平台开发验证
+
+- Windows：`pnpm tauri build --no-bundle`。关掉开发服务后运行原生 EXE，确认可以离线进入经典对局。
+- Android：`pnpm tauri android build --debug --apk --target aarch64`。这是独立的调试流程，不会输出到发布目录。

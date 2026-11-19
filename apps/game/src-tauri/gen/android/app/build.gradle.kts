@@ -14,6 +14,21 @@ val tauriProperties = Properties().apply {
     }
 }
 
+val localSigning = System.getenv("MAK_ANDROID_LOCAL_SIGNING") == "1"
+val keystoreFile = rootProject.file("keystore.properties")
+val keystoreProperties = if (!localSigning && keystoreFile.exists()) {
+    Properties().apply {
+        keystoreFile.reader(Charsets.UTF_8).use { load(it) }
+        val requiredKeys = listOf("storeFile", "storePassword", "keyAlias", "keyPassword")
+        val missingKeys = requiredKeys.filter { getProperty(it).isNullOrBlank() }
+        require(missingKeys.isEmpty()) {
+            "Missing required keystore.properties fields: ${missingKeys.joinToString()}"
+        }
+    }
+} else {
+    null
+}
+
 android {
     compileSdk = 37
     namespace = "com.mak.game"
@@ -24,6 +39,16 @@ android {
         targetSdk = 37
         versionCode = tauriProperties.getProperty("tauri.android.versionCode", "1").toInt()
         versionName = tauriProperties.getProperty("tauri.android.versionName", "1.0")
+    }
+    signingConfigs {
+        if (keystoreProperties != null) {
+            create("release") {
+                storeFile = rootProject.file(keystoreProperties.getProperty("storeFile"))
+                storePassword = keystoreProperties.getProperty("storePassword")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+            }
+        }
     }
     buildTypes {
         getByName("debug") {
@@ -39,6 +64,11 @@ android {
             }
         }
         getByName("release") {
+            if (localSigning) {
+                signingConfig = signingConfigs.getByName("debug")
+            } else if (keystoreProperties != null) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             optimization {
                enable = true
             }
