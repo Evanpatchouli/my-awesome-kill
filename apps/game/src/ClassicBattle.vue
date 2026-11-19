@@ -23,7 +23,7 @@ import {
   sides,
   skillName,
 } from './classicProtocol'
-import type { Action, Branch, Entity, MoveStep, SeatView, TableView } from './classicProtocol'
+import type { Action, Branch, CardPrint, DamageNature, Entity, MoveStep, SeatView, TableView } from './classicProtocol'
 import type { FeedbackEvent } from './battleMotion'
 import './classicBattle.css'
 
@@ -138,9 +138,26 @@ const branch = computed<Branch | null>(() => {
 })
 const handOptions = computed(() => new Set(choice.value?.cards ?? []))
 const branchCards = computed(() => new Set(branch.value?.cards ?? []))
-const resolving = computed(() => props.view.resolving
-  .filter((card) => !branchCards.value.has(card.id))
-  .map((card) => faceOf(props.view, card)))
+type PlayedFace = { id?: number; event?: number; face: CardPrint; nature?: DamageNature }
+const resolving = computed<PlayedFace[]>(() => {
+  const virtuals = props.view.resolvingVirtuals ?? []
+  const materials = new Set(virtuals.flatMap((card) => card.materials))
+  const exposed = props.view.resolving.filter((card) =>
+    !branchCards.value.has(card.id) && !materials.has(card.id),
+  )
+  return [
+    ...exposed.map((card) => ({
+      id: card.id,
+      face: faceOf(props.view, card),
+      nature: props.view.cardNatures?.[card.id],
+    })),
+    ...virtuals.map(({ event, kind, nature }) => ({
+      event,
+      face: { kind, name: cardName(kind, nature, props.view.content) },
+      nature,
+    })),
+  ]
+})
 const handControls = ref<HTMLElement | null>(null)
 const handResponse = computed(() => {
   const request = choice.value
@@ -596,19 +613,20 @@ function canPickCard(id: number) {
           <div v-if="resolving.length || randomHandCount || pool.length" class="classic-pool">
             <div v-if="resolving.length" class="classic-resolving" role="group" aria-label="已打出的牌">
               <div
-                v-for="card in resolving"
-                :key="card.id"
+                v-for="{ id, event, face, nature } in resolving"
+                :key="id ?? `virtual-${event}`"
                 class="playing-card classic-choice-card"
                 :class="{
-                  red: card.suit === 'heart' || card.suit === 'diamond',
-                  'long-name': card.name.length > 2,
+                  red: face.suit === 'heart' || face.suit === 'diamond',
+                  'long-name': face.name.length > 2,
                 }"
-                :data-resolving-card="card.id"
-                :data-nature="view.cardNatures?.[card.id]"
-                :aria-label="printedFace(card)"
+                :data-resolving-card="id"
+                :data-resolving-virtual="event"
+                :data-nature="nature"
+                :aria-label="printedFace(face)"
                 role="img"
               >
-                <CardFace :card="card" />
+                <CardFace :card="face" />
               </div>
             </div>
             <div v-if="randomHandCount" class="classic-random-hand" role="group" aria-label="手牌区（随机）">

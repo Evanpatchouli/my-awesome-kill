@@ -63,6 +63,7 @@ interface CompareResult {
 }
 export type DamageNature = 'fire' | 'thunder'
 export type TableCard = Omit<Card, 'suit' | 'rank'> & { suit?: Card['suit']; rank?: number }
+export type CardPrint = Pick<TableCard, 'kind' | 'name' | 'suit' | 'rank'>
 const damageNames: Record<DamageNature, string> = { fire: '火焰', thunder: '雷电' }
 const tiesuo = {
   name: '铁索连环',
@@ -183,6 +184,7 @@ export interface TableView {
   drawn: boolean
   deckCount: number
   resolving: Entity[]
+  resolvingVirtuals?: { event: number; kind: string; materials: number[]; nature?: DamageNature }[]
   knownSpecial?: Entity[]
   discard: Entity[]
   choice: Choice | null
@@ -219,7 +221,7 @@ export function seatName(view: TableView, id: number | undefined) {
   return seat ? (generalDefinition(view, seat.hero)?.name ?? seat.hero) : '牌堆'
 }
 const suits = { spade: '♠', heart: '♥', club: '♣', diamond: '♦' }
-export function printedFace(card: TableCard) {
+export function printedFace(card: CardPrint) {
   if (!card.suit || card.rank == null) return card.name
   const rank =
     ({ 1: 'A', 11: 'J', 12: 'Q', 13: 'K' } as Record<number, string>)[card.rank] ?? card.rank

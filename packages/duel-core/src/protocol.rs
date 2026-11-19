@@ -178,6 +178,9 @@ pub struct GameView {
     pub seats: Vec<SeatView>,
     pub deck_count: usize,
     pub resolving: Vec<Card>,
+    /// Active virtual card uses and the public resolving materials they represent.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub resolving_virtuals: Vec<ResolvingVirtualCard>,
     /// Identifiable physical cards in the unowned special zone, including transfers in flight.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub known_special: Vec<Card>,
@@ -197,6 +200,16 @@ pub struct GameView {
     pub card_natures: std::collections::BTreeMap<CardId, crate::DamageNature>,
     /// Lifecycle records emitted since the latest accepted command, or during setup.
     pub events: Vec<GameEvent>,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ResolvingVirtualCard {
+    pub event: EventId,
+    pub kind: CardKind,
+    pub materials: Vec<CardId>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub nature: Option<crate::DamageNature>,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Ord, PartialOrd, Serialize)]

@@ -191,6 +191,7 @@ fn zhangba_validates_two_distinct_costs_and_fangtian_orders_three_targets() {
     play_phase(&mut game);
     let opening = game.view(Some(0)).unwrap();
     assert_eq!(opening.virtual_plays[0].branch.min_cards, 2);
+    assert!(opening.resolving_virtuals.is_empty());
     let virtual_play = |cards| Command {
         version: opening.version,
         seat: 0,
@@ -206,9 +207,39 @@ fn zhangba_validates_two_distinct_costs_and_fangtian_orders_three_targets() {
     );
     assert_eq!(game.view(Some(0)).unwrap(), opening);
     game.submit(virtual_play(vec![1, 2])).unwrap();
-    assert_eq!(game.view(None).unwrap().resolving, cost);
+    let response = game.view(None).unwrap();
+    assert_eq!(response.resolving, cost);
+    let use_event = response
+        .events
+        .iter()
+        .find(|event| {
+            matches!(
+                event.kind,
+                EventKind::UseVirtual {
+                    kind: CardKind::Sha,
+                    ..
+                }
+            )
+        })
+        .unwrap()
+        .id;
+    let virtual_card = crate::ResolvingVirtualCard {
+        event: use_event,
+        kind: CardKind::Sha,
+        materials: vec![1, 2],
+        nature: None,
+    };
+    assert_eq!(response.resolving_virtuals, [virtual_card]);
+    for seat in 0..4 {
+        assert_eq!(
+            game.view(Some(seat)).unwrap().resolving_virtuals,
+            response.resolving_virtuals,
+        );
+    }
     defend(&mut game, 2, None);
-    assert_eq!(game.view(None).unwrap().discard, cost);
+    let done = game.view(None).unwrap();
+    assert_eq!(done.discard, cost);
+    assert!(done.resolving_virtuals.is_empty());
 
     let mut game = table();
     game.seat_mut(0).hand = vec![card(3, CardKind::Sha)];

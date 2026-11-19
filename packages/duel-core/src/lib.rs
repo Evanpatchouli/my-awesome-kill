@@ -869,6 +869,33 @@ impl Game {
             })
             .copied()
             .collect();
+        let resolving_virtuals = self
+            .scheduler
+            .open_events()
+            .filter_map(|(event, program)| {
+                let (kind, materials, nature) = match program {
+                    Program::Equipment(equipment::Flow::Attack(attack)) => {
+                        let (materials, nature) = attack.resolving_virtual()?;
+                        (CardKind::Sha, materials, nature)
+                    }
+                    Program::Trick(trick) => {
+                        let (kind, materials) = trick.resolving_virtual()?;
+                        (kind, materials, None)
+                    }
+                    _ => return None,
+                };
+                Some(ResolvingVirtualCard {
+                    event: event.id,
+                    kind,
+                    materials: materials
+                        .iter()
+                        .filter(|material| resolving.iter().any(|card| card.id == material.id))
+                        .map(|card| card.id)
+                        .collect(),
+                    nature,
+                })
+            })
+            .collect();
         let known_special: Vec<_> = self
             .transferring
             .iter()
@@ -945,6 +972,7 @@ impl Game {
             seats,
             deck_count: state.map_or(0, |state| state.deck.len()),
             resolving,
+            resolving_virtuals,
             known_special,
             discard: self.discard.clone(),
             waiting_for: self.decision.as_ref().map(Decision::seat),

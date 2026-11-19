@@ -912,26 +912,26 @@
   .classic-board-eight .classic-center.has-preview .classic-turn { display: none; }
   .classic-board-eight .classic-center.has-preview:not(.has-resolving) .classic-center-surface:not([data-card-choice]) { visibility: hidden; }
 
-  .page-header:has(+ .classic-board:not(.classic-board-eight) .has-move) {
+  .page-header:has(+ .classic-board:not(.classic-board-eight) :is(.has-move, .has-resolving)) {
     position: relative;
     z-index: 10;
     pointer-events: none;
   }
-  .page-header:has(+ .classic-board:not(.classic-board-eight) .has-move) .back-button { pointer-events: auto; }
-  .classic-board:not(.classic-board-eight):has(.has-move) {
+  .page-header:has(+ .classic-board:not(.classic-board-eight) :is(.has-move, .has-resolving)) .back-button { pointer-events: auto; }
+  .classic-board:not(.classic-board-eight):has(:is(.has-move, .has-resolving)) {
     height: 100dvh;
     min-height: 0;
     margin-top: -40px;
   }
-  .classic-board:not(.classic-board-eight):has(.has-move) .classic-topline {
+  .classic-board:not(.classic-board-eight):has(:is(.has-move, .has-resolving)) .classic-topline {
     min-height: 28px;
     padding-left: 60px;
   }
-  .classic-board:not(.classic-board-eight):has(.has-move) .classic-opponents {
+  .classic-board:not(.classic-board-eight):has(:is(.has-move, .has-resolving)) .classic-opponents {
     position: absolute;
     inset: 28px 0 auto;
   }
-  .classic-board:not(.classic-board-eight) .classic-center.has-move {
+  .classic-board:not(.classic-board-eight) .classic-center:is(.has-move, .has-resolving) {
     position: relative;
     z-index: 2;
     align-content: normal;

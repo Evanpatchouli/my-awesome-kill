@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { TableCard } from './classicProtocol'
+import type { CardPrint } from './classicProtocol'
 import { cardImage } from './battleArt'
 
-defineProps<{ card: TableCard }>()
+defineProps<{ card: CardPrint }>()
 const suits = { spade: '♠', heart: '♥', club: '♣', diamond: '♦' }
 function rankLabel(rank: number) {
   return ({ 1: 'A', 11: 'J', 12: 'Q', 13: 'K' } as Record<number, string>)[rank] ?? rank

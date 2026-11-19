@@ -89,6 +89,10 @@ impl Trick {
         matches!(self.stage, TrickStage::AfterUseCard2).then_some(&mut self.targets)
     }
 
+    pub(crate) fn resolving_virtual(&self) -> Option<(CardKind, &[Card])> {
+        (!self.judgment && self.card.is_none()).then_some((self.kind, &self.costs))
+    }
+
     pub(crate) fn kind(&self) -> EventKind {
         if matches!(self.stage, TrickStage::ApplyJudgment(_)) {
             return EventKind::TrickEffect {

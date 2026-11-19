@@ -10,7 +10,7 @@ const browser = await chromium.launch({ executablePath: process.env.MAK_QA_BROWS
 const button = (page, name) => page.getByRole('button', { name, exact: true })
 if (evidence) await fs.mkdir(evidence, { recursive: true })
 
-async function begin(page, seed, hero) {
+async function begin(page, seed, hero, seats = 8) {
   await page.addInitScript((gameSeed) => {
     Math.random = () => (gameSeed + 0.1) / 0x7fffffff
     localStorage.setItem('mak-reduced-motion', 'true')
@@ -20,7 +20,7 @@ async function begin(page, seed, hero) {
   await page.getByRole('button', { name: /开始\s*游玩/ }).click()
   await page.getByRole('button', { name: /经典三国杀/ }).click()
   await button(page, hero).click()
-  await page.locator('select').selectOption('8')
+  await page.locator('select').selectOption(String(seats))
   await button(page, '开始对局').click()
 }
 
@@ -32,10 +32,13 @@ async function assertToolbarPosition(board) {
       toolbarTop: rect('.classic-hand-toolbar').top,
       toolbarBottom: rect('.classic-hand-toolbar').bottom,
       galleryTop: rect('[data-hand-gallery]').top,
+      galleryBottom: rect('[data-hand-gallery]').bottom,
+      viewportBottom: window.innerHeight,
     }
   })
   assert.ok(bounds.centerBottom <= bounds.toolbarTop + 1, 'toolbar is below center')
   assert.ok(bounds.toolbarBottom <= bounds.galleryTop + 1, 'toolbar is above gallery')
+  assert.ok(bounds.galleryBottom <= bounds.viewportBottom + 1, 'gallery is visible without scrolling')
 }
 
 async function assertPlayedCard(board, id, name, rank) {
@@ -157,6 +160,22 @@ try {
         await page.close()
       }
     }
+  }
+
+  const shortPage = await browser.newPage({ viewport: { width: 640, height: 272 }, locale: 'zh-CN' })
+  try {
+    await begin(shortPage, 9, '赵云', 2)
+    const board = shortPage.locator('[data-battle-table]')
+    const toolbar = board.locator('.classic-hand-toolbar')
+    await button(toolbar, '龙胆').click()
+    await assertPlayedCard(board, 1, '杀', '8♠')
+    await assertToolbarPosition(board)
+    await board.locator('[data-hand-gallery] button:enabled').first().click()
+    await button(toolbar, '确认').click()
+    await board.locator('[data-resolving-card="1"]').waitFor({ state: 'detached' })
+    console.log('Two-seat short landscape played face and controls passed')
+  } finally {
+    await shortPage.close()
   }
 
   const page = await browser.newPage({ viewport: { width: 1280, height: 720 }, locale: 'zh-CN' })

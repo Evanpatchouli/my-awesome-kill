@@ -71,6 +71,14 @@ impl<P: Clone, R: Clone> Scheduler<P, R> {
             .map(|frame| (frame.event, &frame.program))
     }
 
+    pub fn open_events(&self) -> impl Iterator<Item = (EventRef, &P)> {
+        self.stack
+            .iter()
+            .rev()
+            .filter(|frame| !matches!(frame.state, State::After(_)))
+            .map(|frame| (frame.event, &frame.program))
+    }
+
     pub fn active_frame(&self, id: EventId) -> Option<(EventRef, &P)> {
         self.stack
             .iter()
@@ -204,7 +212,18 @@ mod tests {
                     scheduler.after("cleanup second");
                     scheduler.end(Outcome::Cancelled);
                 }
-                Work::Run(_, _, None) => scheduler.end(Outcome::Finished(())),
+                Work::Run(_, program, None) => {
+                    if program.starts_with("cleanup") {
+                        assert_eq!(
+                            scheduler
+                                .open_events()
+                                .map(|(_, program)| *program)
+                                .collect::<Vec<_>>(),
+                            [program],
+                        );
+                    }
+                    scheduler.end(Outcome::Finished(()));
+                }
                 Work::Run(_, _, Some(_)) => panic!("no event resumes after it ends"),
                 Work::Ended(event, program, Outcome::Finished(())) => {
                     lifecycle.push((program, event.parent, "finish"));

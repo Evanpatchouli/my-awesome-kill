@@ -718,6 +718,16 @@ fn lijian_ignores_wuxie_and_applies_wushuang_to_the_other_duelist() {
     play_phase(&mut game, 0);
     skill(&mut game, 0, SkillId::Lijian, vec![cost.id], vec![2]);
     select(&mut game, 0, 1, vec![], vec![1]);
+    let resolving_virtuals = game.view(None).unwrap().resolving_virtuals;
+    assert_eq!(resolving_virtuals.len(), 1);
+    assert_eq!(resolving_virtuals[0].kind, CardKind::Juedou);
+    assert!(resolving_virtuals[0].materials.is_empty());
+    for seat in 0..4 {
+        assert_eq!(
+            game.view(Some(seat)).unwrap().resolving_virtuals,
+            resolving_virtuals,
+        );
+    }
     assert!(game.events.iter().all(|event| !matches!(
         event.kind,
         EventKind::Respond {
@@ -727,7 +737,9 @@ fn lijian_ignores_wuxie_and_applies_wushuang_to_the_other_duelist() {
     )));
     supply(&mut game, 2, response.id);
     assert_eq!(game.view(None).unwrap().waiting_for, Some(2));
+    assert_eq!(game.view(None).unwrap().resolving_virtuals, resolving_virtuals);
     pass(&mut game, 2);
+    assert!(game.view(None).unwrap().resolving_virtuals.is_empty());
     assert_eq!(game.seat(2).unwrap().hp, 3);
     assert!(game.seat(2).unwrap().hand.contains(&counter));
     assert!(game.discard.contains(&cost));

@@ -84,6 +84,11 @@ impl Attack {
         matches!(self.step, AttackStep::TargetsChanged).then_some(&mut self.targets)
     }
 
+    pub(crate) fn resolving_virtual(&self) -> Option<(&[Card], Option<DamageNature>)> {
+        matches!(self.event(), EventKind::UseVirtual { .. })
+            .then_some((&self.cards, self.nature))
+    }
+
     pub(crate) fn event(&self) -> EventKind {
         match *self.cards.as_slice() {
             [card] if card.kind == CardKind::Sha => match self.announced_target {
