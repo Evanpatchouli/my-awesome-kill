@@ -132,13 +132,13 @@ function confirm() {
 </template>
 
 <style scoped>
-.move-choice-overlay { position: fixed; inset: 0; z-index: 40; display: flex; align-items: center; justify-content: center; padding: 8px; background: #1b130e99; }
-.move-choice { display: flex; flex-direction: column; width: min(760px, 100%); max-height: 100%; min-height: 0; color: #30271e; background: #f1e4d2; border: 2px solid #a4846a; box-shadow: 0 8px 28px #1b130e99; }
-.move-choice-header { flex: none; padding: 9px 14px 5px; border-bottom: 1px solid #c6aa8b; }
+.move-choice-overlay { position: fixed; inset: 0; z-index: 40; display: flex; align-items: center; justify-content: center; padding: 8px; background: #1b130e66; }
+.move-choice { display: flex; flex-direction: column; width: min(620px, 100%); max-height: 100%; min-height: 0; color: #f4dfb7; background: #231b16f5; border: 1px solid #bd9760; outline: 1px solid #3d2a1c; outline-offset: 2px; box-shadow: 0 6px 18px #26190e75; }
+.move-choice-header { flex: none; padding: 9px 14px 5px; border-bottom: 1px solid #76583b; }
 .move-choice-header h2 { margin: 0; font-size: 18px; }
 .move-choice-header p { margin: 3px 0 0; font-size: 12px; }
 .move-choice-rows { min-height: 0; overflow: auto; padding: 4px 12px; }
-.move-choice-row { padding: 5px 0; border-bottom: 1px solid #d3bda4; }
+.move-choice-row { padding: 5px 0; border-bottom: 1px solid #76583b; }
 .move-choice-row-heading { display: flex; gap: 8px; align-items: center; font-size: 12px; }
 .move-choice-row-heading strong { font-size: 14px; }
 .move-choice-row-heading button { margin-left: auto; }
@@ -155,12 +155,12 @@ function confirm() {
 .move-choice .move-choice-card.long-name :deep(strong) { font-size: 13px; }
 .move-choice-order { display: flex; gap: 2px; }
 .move-choice .move-choice-order button { flex: 1; padding: 2px; }
-.move-choice-empty { color: #765d4a; font-size: 12px; padding: 8px 2px; }
-.move-choice-actions { flex: none; display: flex; align-items: center; justify-content: flex-end; gap: 6px; padding: 7px 12px; border-top: 1px solid #c6aa8b; }
+.move-choice-empty { color: #d3b99c; font-size: 12px; padding: 8px 2px; }
+.move-choice-actions { flex: none; display: flex; align-items: center; justify-content: flex-end; gap: 6px; padding: 7px 12px; border-top: 1px solid #76583b; }
 .move-choice .move-choice-actions button { min-width: 76px; background: #903d2d; border-color: #903d2d; color: white; }
 .move-choice .move-choice-actions button.secondary { background: #f1e4d2; color: #513d30; border-color: #a4846a; }
-.move-choice-hint { margin-right: auto; color: #903d2d; font-size: 12px; }
-.move-choice-error { margin: 0; padding: 4px 12px; color: #903d2d; font-size: 12px; }
+.move-choice-hint { margin-right: auto; color: #e0a778; font-size: 12px; }
+.move-choice-error { margin: 0; padding: 4px 12px; color: #ffc5a6; font-size: 12px; }
 @media (max-height: 500px) {
   .move-choice-overlay { padding: 4px; }
   .move-choice-header { padding: 4px 10px; }

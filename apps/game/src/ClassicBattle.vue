@@ -5,9 +5,11 @@ import BattleEffects from './BattleEffects.vue'
 import CardFace from './CardFace.vue'
 import ClassicCompare from './ClassicCompare.vue'
 import HealthMeter from './HealthMeter.vue'
+import ClassicSelfEquipment from './ClassicSelfEquipment.vue'
 import ClassicSeatZones from './ClassicSeatZones.vue'
 import MoveChoice from './MoveChoice.vue'
 import { heroPortrait } from './battleArt'
+import drawBack from './assets/standard/table/draw-back.png'
 import {
   cardName,
   counterPrompt,
@@ -88,6 +90,40 @@ const virtuals = computed(() => props.view.virtualPlays ?? [])
 const skills = computed(() => props.view.skillPlays ?? [])
 const activePlays = computed(() => props.view.activePlays ?? [])
 const privateBid = computed(() => !!(choice.value?.compare || choice.value?.compareGroup))
+type SkillMode = 'choice' | 'virtual' | 'skill' | 'active'
+type SkillOption = { mode: SkillMode; index: number; label: string; skill: string }
+const skillStack = computed(() => {
+  const roster = generalById.get(me.value?.hero ?? '')?.skills ?? []
+  const byLabel = (label: string) => roster.find(({ name }) =>
+    label === name || label.startsWith(name + '：') ||
+    label.startsWith('发动' + name) || label.startsWith('发动【' + name + '】'),
+  )
+  const options: SkillOption[] = choice.value
+    ? branches.value.flatMap((item) => {
+        const skill = byLabel(item.label)
+        return skill ? [{ mode: 'choice', index: item.id, label: item.label, skill: skill.id }] : []
+      })
+    : [
+        ...virtuals.value.map((item, index) => ({
+          mode: 'virtual' as const, index, label: item.branch.label,
+          skill: byLabel(item.branch.label)?.id ?? item.branch.label,
+        })),
+        ...skills.value.map((item, index) => ({
+          mode: 'skill' as const, index, label: item.branch.label, skill: item.skill,
+        })),
+        ...activePlays.value.map((item, index) => ({
+          mode: 'active' as const, index, skill: item.skill,
+          label: item.branch.label === item.skill ? skillName(item.skill) : item.branch.label,
+        })),
+      ]
+  const stack = new Map(roster.map(({ id, name, description }) => [id, { name, description, options: [] as SkillOption[] }]))
+  for (const option of options) {
+    const entry = stack.get(option.skill) ?? { name: option.label, description: '', options: [] }
+    entry.options.push(option)
+    stack.set(option.skill, entry)
+  }
+  return [...stack.values()]
+})
 const branch = computed<Branch | null>(() => {
   if (privateBid.value) return choice.value?.branches[0] ?? null
   if (selectedMode.value === 'choice')
@@ -160,9 +196,10 @@ const canConfirm = computed(() => {
   return !!exactAction.value
 })
 const pool = computed(() => {
-  if (!branch.value) return []
+  const ids = branch.value?.cards ?? (choice.value?.kind !== 'content' ? choice.value?.cards : undefined) ?? []
   const own = new Set(hand.value.map((card) => card.id))
   const visible: Entity[] = [
+    ...(me.value?.hand ?? []),
     ...props.view.resolving,
     ...props.view.discard,
     ...props.view.seats.flatMap((seat) => [
@@ -170,13 +207,21 @@ const pool = computed(() => {
     ]),
     ...(props.view.privateChoiceCards ?? []),
   ]
-  return branch.value.cards
-    .filter((id) => !own.has(id))
-    .map((id) => {
-      const entity = visible.find((card) => card.id === id)
-      return entity ? faceOf(props.view, entity) : { id, name: '未知牌', rank: undefined }
-    })
+  return ids.map((id) => {
+    const entity = visible.find((card) => card.id === id)
+    return { id, card: entity ? faceOf(props.view, entity) : undefined, own: own.has(id) }
+  })
 })
+const centerHandIds = computed(() => new Set(pool.value.filter((entry) => entry.own).map(({ id }) => id)))
+const centerChoice = computed(() => !moveChoice.value && (!!choice.value || pool.value.length > 0))
+const randomHandBranch = computed(() =>
+  branches.value.find((item) => item.label === '手牌区（随机）' && item.maxCards === 0),
+)
+const randomHandCount = computed(() => randomHandBranch.value
+  ? props.view.seats.find((seat) => seat.id === choice.value?.target)?.handCount ?? 0
+  : 0)
+const selectedRandomBack = ref<number | null>(null)
+const selectedPreview = computed(() => selectedHand.value ?? hand.value.find((card) => selectedCards.value.includes(card.id)))
 const prompt = computed(() => {
   if (props.view.drawn) return '牌堆耗尽，本局平局'
   if (props.view.winner) return `${sides[props.view.winner]}获胜`
@@ -201,7 +246,8 @@ const prompt = computed(() => {
   if (choice.value?.kind === 'shan') return '请打出闪，或选择放弃'
   if (choice.value?.kind === 'save')
     return `是否救援 ${seatName(props.view, choice.value.target ?? undefined)}？`
-  if (choice.value?.kind === 'content') return '请选择一项并完成所需选择'
+  if (randomHandCount.value) return `选择${seatName(props.view, choice.value?.target ?? undefined)}的牌（暗牌随机结算）`
+  if (choice.value?.kind === 'content') return branch.value?.label ?? '请选择一项并完成所需选择'
   if (selfEquipAction.value) return `确认装备${selectedHand.value!.name}`
   if (branch.value) return branch.value.label
   if (selectedRecast.value) {
@@ -220,14 +266,28 @@ function reset() {
   selectedBranch.value = null
   selectedMode.value = null
   selectedPlay.value = null
+  selectedRandomBack.value = null
 }
 watch(() => props.view.version, reset)
 watch(() => JSON.stringify([choice.value?.event, choice.value?.equipmentButtons]), reset)
-function setMode(mode: 'choice' | 'virtual' | 'skill' | 'active', index: number) {
+function setMode(mode: SkillMode, index: number) {
   reset()
   selectedMode.value = mode
   if (mode === 'choice') selectedBranch.value = index
   else selectedPlay.value = index
+}
+function isModeSelected(option: SkillOption) {
+  return selectedMode.value === option.mode &&
+    (option.mode === 'choice' ? selectedBranch.value : selectedPlay.value) === option.index
+}
+function chooseRandomBack(index: number) {
+  if (!active.value || !randomHandBranch.value) return
+  if (selectedRandomBack.value === index) {
+    reset()
+    return
+  }
+  setMode('choice', randomHandBranch.value.id)
+  selectedRandomBack.value = index
 }
 function toggle(list: number[], id: number, max: number): number[] {
   if (list.includes(id)) return list.filter((item) => item !== id)
@@ -256,7 +316,8 @@ function chooseHand(id: number) {
   }
 }
 function choosePool(id: number) {
-  if (active.value && branch.value && branchCards.value.has(id))
+  if (centerHandIds.value.has(id)) chooseHand(id)
+  else if (active.value && branch.value && branchCards.value.has(id))
     selectedCards.value = toggle(selectedCards.value, id, branch.value.maxCards)
 }
 function chooseSeat(id: number) {
@@ -385,6 +446,16 @@ function canPickCard(id: number) {
         </ol>
       </details>
       <ClassicCompare :view="view" />
+      <details class="classic-roster-skills">
+        <summary>武将技能</summary>
+        <ol>
+          <li v-for="seat in view.seats" :key="seat.id">
+            {{ seatName(view, seat.id) }}：{{
+              generalById.get(seat.hero)?.skills.map((skill) => `${skill.name}：${skill.description}`).join(' ')
+            }}
+          </li>
+        </ol>
+      </details>
     </div>
     <div class="classic-opponents" aria-label="其他角色">
       <div
@@ -438,8 +509,8 @@ function canPickCard(id: number) {
         />
       </div>
     </div>
-    <div class="classic-center">
-      <p class="classic-turn">
+    <div class="classic-center" :class="{ 'has-choice': centerChoice, 'has-preview': selectedPreview && !choice && !centerChoice }">
+      <p v-if="!centerChoice" class="classic-turn">
         {{
           view.turn?.seat === view.humanSeat
             ? '你的回合'
@@ -447,8 +518,19 @@ function canPickCard(id: number) {
         }}
         · {{ phases[view.turn?.phase ?? ''] ?? view.turn?.phase }}
       </p>
-      <h1>{{ prompt }}</h1>
-      <div v-if="resolving.length" class="classic-revealed" aria-label="公开结算牌">
+      <section
+        class="classic-center-surface"
+        :data-card-choice="centerChoice ? '' : undefined"
+        aria-label="当前操作"
+      >
+        <h1 aria-live="polite">{{ prompt }}</h1>
+        <div v-if="resolving.length && centerChoice" class="classic-revealed classic-choice-context" aria-label="公开结算牌">
+          <span>结算区</span>
+          <span v-for="card in resolving" :key="card.id">{{ printedFace(card) }}</span>
+        </div>
+        <div id="classic-choice-controls"></div>
+      </section>
+      <div v-if="resolving.length && !centerChoice" class="classic-revealed" aria-label="公开结算牌">
         <span>结算区</span
         ><span v-for="card in resolving" :key="card.id"
           >{{ card.name }} {{ card.rank }}</span
@@ -462,6 +544,65 @@ function canPickCard(id: number) {
       </button>
     </div>
     <div class="classic-bottom">
+      <ClassicSelfEquipment
+        v-if="me"
+        :seat="me"
+        :equipment="seatCards(me, 'equipment')"
+        :mount-combined="view.mountCombined"
+      />
+      <div class="classic-hand-zone">
+        <div class="classic-hand-toolbar">
+          <div v-if="selectedPreview && !centerChoice" class="classic-card-rule" data-hand-rule>
+            <strong>{{ selectedPreview.name }}</strong>
+            <span>{{ selectedPreview.description }}</span>
+          </div>
+          <div id="classic-hand-controls"></div>
+        </div>
+        <div class="classic-hand-heading">
+          <span>手牌 · {{ hand.length }}</span>
+          <span v-if="selectedCards.length && !choice">已选 {{ selectedCards.length }} 张</span>
+        </div>
+        <div class="classic-hand" data-hand data-hand-gallery>
+          <button
+            v-for="card in hand"
+            :key="card.id"
+            :data-card-id="centerHandIds.has(card.id) ? undefined : card.id"
+            :data-nature="view.cardNatures?.[card.id]"
+            class="playing-card"
+            :class="{
+              red: card.suit === 'heart' || card.suit === 'diamond',
+              'long-name': card.name.length > 2,
+              selected: !centerHandIds.has(card.id) && isCardSelected(card.id),
+              playable: !centerHandIds.has(card.id) && canPickCard(card.id),
+            }"
+            :disabled="centerHandIds.has(card.id) || !canPickCard(card.id)"
+            :aria-pressed="!centerHandIds.has(card.id) && isCardSelected(card.id)"
+            :aria-label="[card.name, card.rank, card.description].filter(Boolean).join(' ')"
+            @click="chooseHand(card.id)"
+          >
+            <CardFace :card="card" />
+          </button>
+        </div>
+      </div>
+      <div v-if="me" class="classic-own-skills" aria-label="自己的技能">
+        <template v-for="entry in skillStack" :key="entry.name">
+          <button
+            v-for="option in entry.options"
+            :key="`${option.mode}-${option.index}`"
+            type="button"
+            :title="entry.description || option.label"
+            :aria-label="option.mode === 'choice' ? `技能：${option.label}` : option.label"
+            :aria-pressed="isModeSelected(option)"
+            :disabled="!active || (privateBid && option.mode === 'choice')"
+            @click="setMode(option.mode, option.index)"
+          >
+            {{ option.label }}
+          </button>
+          <button v-if="!entry.options.length" type="button" :title="entry.description" disabled>
+            {{ entry.name }}
+          </button>
+        </template>
+      </div>
       <div
         v-if="me"
         class="classic-self"
@@ -475,7 +616,8 @@ function canPickCard(id: number) {
           @click="chooseSeat(me.id)"
         >
           <img :src="heroPortrait(me.hero)" :alt="`${seatName(view, me.id)}立绘`" />
-          <span>{{ seatName(view, me.id) }} · {{ me.role ? roles[me.role] : '身份未知' }}</span>
+          <span class="self-identity">{{ me.role ? roles[me.role] : '身份未知' }}</span>
+          <span class="self-name">{{ seatName(view, me.id) }}</span>
           <HealthMeter :hp="me.hp" :max-hp="me.maxHp" />
           <span v-if="selectedTargets.includes(me.id)" class="target-number">{{
             targetOrder.indexOf(me.id) + 1
@@ -487,54 +629,13 @@ function canPickCard(id: number) {
           :mount-combined="view.mountCombined"
           :seat-names="view.seats.map((item) => seatName(view, item.id))"
           :equipment="seatCards(me, 'equipment')"
+          hide-equipment
           :judges="seatCards(me, 'judges')"
           :expansions="me.expansions?.map((item) => ({ ...item, card: faceOf(view, item.card) }))"
         />
       </div>
-      <div class="classic-hand-zone">
-        <details class="classic-skills">
-          <summary>武将技能与场上牌</summary>
-          <p v-for="seat in view.seats" :key="seat.id">
-            {{ seatName(view, seat.id) }}：{{
-              generalById
-                .get(seat.hero)
-                ?.skills.map((skill) => `${skill.name}：${skill.description}`)
-                .join(' ')
-            }}
-          </p>
-        </details>
-        <div class="classic-hand-heading">
-          <span>手牌 {{ hand.length }}</span
-          ><span>{{
-            selectedCards.length
-              ? `已选 ${selectedCards.length} 张`
-              : selectedHand
-                ? selectedHand.description
-                : '选择可用手牌'
-          }}</span>
-        </div>
-        <div class="classic-hand" data-hand>
-          <button
-            v-for="card in hand"
-            :key="card.id"
-            :data-card-id="card.id"
-            :data-nature="view.cardNatures?.[card.id]"
-            class="playing-card"
-            :class="{
-              red: card.suit === 'heart' || card.suit === 'diamond',
-              'long-name': card.name.length > 2,
-              selected: isCardSelected(card.id),
-              playable: canPickCard(card.id),
-            }"
-            :disabled="!canPickCard(card.id)"
-            :aria-pressed="isCardSelected(card.id)"
-            :aria-label="[card.name, card.rank, card.description].filter(Boolean).join(' ')"
-            @click="chooseHand(card.id)"
-          >
-            <CardFace :card="card" />
-          </button>
-        </div>
-      </div>
+    </div>
+    <Teleport defer :to="centerChoice ? '#classic-choice-controls' : '#classic-hand-controls'">
       <div class="classic-controls" aria-label="对局操作">
         <div v-if="equipmentButtons" class="classic-pool" aria-label="选择装备登记">
           <button
@@ -542,19 +643,27 @@ function canPickCard(id: number) {
             :key="option.id"
             type="button"
             :data-equipment-button="option.id"
-            :class="{ selected: selectedEquipmentButtons.includes(option.id) }"
+            class="playing-card classic-choice-card"
+            :class="{
+              selected: selectedEquipmentButtons.includes(option.id),
+              'long-name': cardName(option.kind).length > 2,
+            }"
+            :aria-label="cardName(option.kind) + (option.card === undefined ? '（效果仍生效）' : '')"
             :aria-pressed="selectedEquipmentButtons.includes(option.id)"
             :disabled="!active"
             @click="selectedEquipmentButtons = toggle(selectedEquipmentButtons, option.id, equipmentButtons.required)"
           >
-            {{ option.card === undefined ? cardName(option.kind) : printedFace(faceOf(view, { id: option.card, kind: option.kind })) }}
-            <span v-if="option.card === undefined">（效果仍生效）</span>
+            <CardFace v-if="option.card !== undefined" :card="faceOf(view, { id: option.card, kind: option.kind })" />
+            <template v-else>
+              <strong>{{ cardName(option.kind) }}</strong>
+              <small>效果仍生效</small>
+            </template>
           </button>
           <span>已选 {{ selectedEquipmentButtons.length }}/{{ equipmentButtons.required }}</span>
         </div>
-        <div v-if="branches.length && !privateBid" class="classic-options">
+        <div v-if="branches.length > Number(!!randomHandCount) && !privateBid" class="classic-options">
           <button
-            v-for="item in branches"
+            v-for="item in branches.filter(item => !randomHandCount || item.id !== randomHandBranch?.id)"
             :key="item.id"
             :class="{ selected: selectedMode === 'choice' && selectedBranch === item.id }"
             :disabled="!active"
@@ -563,50 +672,72 @@ function canPickCard(id: number) {
             {{ item.label }}
           </button>
         </div>
-        <div v-if="!choice && (virtuals.length || skills.length || activePlays.length)" class="classic-options">
+        <div v-if="randomHandCount" class="classic-pool classic-random-hand" aria-label="手牌区（随机）">
           <button
-            v-for="(item, i) in virtuals"
-            :key="`v${i}`"
-            :class="{ selected: selectedMode === 'virtual' && selectedPlay === i }"
+            v-for="index in randomHandCount"
+            :key="index"
+            type="button"
+            class="playing-card classic-choice-card card-back"
+            :class="{ selected: selectedRandomBack === index }"
+            :aria-label="`暗牌 ${index}（随机结算）`"
+            :aria-pressed="selectedRandomBack === index"
             :disabled="!active"
-            @click="setMode('virtual', i)"
+            @click="chooseRandomBack(index)"
           >
-            {{ item.branch.label }}</button
-          ><button
-            v-for="(item, i) in skills"
-            :key="`s${i}`"
-            :class="{ selected: selectedMode === 'skill' && selectedPlay === i }"
-            :disabled="!active"
-            @click="setMode('skill', i)"
-          >
-            {{ item.branch.label }}
-          </button><button
-            v-for="(item, i) in activePlays"
-            :key="`a${item.registration}`"
-            :class="{ selected: selectedMode === 'active' && selectedPlay === i }"
-            :disabled="!active"
-            @click="setMode('active', i)"
-          >
-            {{ item.branch.label === item.skill ? skillName(item.skill) : item.branch.label }}
+            <img :src="drawBack" alt="" />
           </button>
         </div>
-        <div v-if="pool.length" class="classic-pool">
+        <div v-if="pool.length" class="classic-pool" aria-label="候选牌" :data-hand="centerHandIds.size ? '' : undefined">
           <button
-            v-for="card in pool"
-            :key="card.id"
-            :data-card-id="card.id"
-            :class="{ selected: selectedCards.includes(card.id) }"
-            :aria-pressed="selectedCards.includes(card.id)"
-            @click="choosePool(card.id)"
+            v-for="({ id, card }, index) in pool"
+            :key="id"
+            type="button"
+            class="playing-card classic-choice-card"
+            :data-card-id="id"
+            :data-nature="card ? view.cardNatures?.[id] : undefined"
+            :class="{
+              selected: isCardSelected(id),
+              'card-back': !card,
+              red: card?.suit === 'heart' || card?.suit === 'diamond',
+              'long-name': (card?.name.length ?? 0) > 2,
+            }"
+            :aria-label="card ? printedFace(card) : `暗牌 ${index + 1}`"
+            :aria-pressed="isCardSelected(id)"
+            :title="card?.description"
+            :disabled="!active"
+            @click="choosePool(id)"
           >
-            {{ card.name }} {{ card.rank }}
+            <CardFace v-if="card" :card="card" />
+            <img v-else :src="drawBack" alt="" />
           </button>
         </div>
-        <p v-if="branch && !privateBid">
+        <div v-if="centerChoice && branch?.maxTargets" class="classic-options classic-choice-targets" aria-label="选择目标">
+          <button
+            v-for="target in branch.targets"
+            :key="target"
+            type="button"
+            :class="{ selected: selectedTargets.includes(target) }"
+            :aria-pressed="selectedTargets.includes(target)"
+            :disabled="!active"
+            @click="chooseSeat(target)"
+          >
+            {{ seatName(view, target) }}
+          </button>
+        </div>
+        <p v-if="branch && !privateBid && (branch.maxCards || branch.maxTargets)">
           选牌 {{ selectedCards.length }}/{{ branch.minCards }}–{{ branch.maxCards }} · 目标
           {{ selectedTargets.length }}/{{ branch.minTargets }}–{{ branch.maxTargets }}
         </p>
-        <div class="classic-control-row">
+        <div v-if="!moveChoice && !view.winner && !view.drawn" class="classic-control-row">
+          <button
+            v-if="!choice && selectedMode"
+            type="button"
+            class="secondary"
+            :disabled="!active"
+            @click="reset"
+          >
+            取消
+          </button>
           <button
             v-if="choice?.kind === 'shan' || choice?.kind === 'save'"
             class="secondary"
@@ -615,7 +746,7 @@ function canPickCard(id: number) {
           >
             放弃</button
           ><button
-            v-if="!choice && view.actions.some((a) => a.type === 'endPlay')"
+            v-if="!choice && !selectedMode && view.actions.some((a) => a.type === 'endPlay')"
             class="secondary whitespace-nowrap"
             :disabled="!active"
             @click="emit('act', { type: 'endPlay' }, view.version)"
@@ -637,7 +768,7 @@ function canPickCard(id: number) {
           </button>
         </div>
       </div>
-    </div>
+    </Teleport>
   </section>
   <Teleport to="body">
     <MoveChoice

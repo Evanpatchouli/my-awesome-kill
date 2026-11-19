@@ -12,6 +12,7 @@ const props = defineProps<{
   label: string
   seatNames: string[]
   mountCombined?: boolean
+  hideEquipment?: boolean
 }>()
 const labels = { weapon: '武', armor: '防', plus: '+马', minus: '−马' }
 const slotLabels = { weapon: '武器', armor: '防具', defenseHorse: '防御马', attackHorse: '进攻马', treasure: '宝物' }
@@ -48,7 +49,7 @@ const known = computed(() => props.knownHand?.map(printedFace).join(' · '))
     <div v-if="state" class="classic-seat-state" :data-rest-seat="seat.rest ? seat.id : undefined" :aria-label="label + '的状态'" :title="state">
       {{ state }}
     </div>
-    <div :title="equipped || '无装备'"><span>装备</span> {{ equipped || '—' }}</div>
+    <div v-if="!hideEquipment" :title="equipped || '无装备'"><span>装备</span> {{ equipped || '—' }}</div>
     <div v-if="seat.equipmentDisabledMarkers?.length" :data-disabled-equipment="seat.id" title="已废除的装备栏">
       <span>废栏</span> {{ seat.equipmentDisabledMarkers.map(slot => mountCombined && slot === 'defenseHorse' ? '坐骑栏' : slotLabels[slot]).join(' · ') }}
     </div>

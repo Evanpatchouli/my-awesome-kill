@@ -84,7 +84,7 @@ try {
   await page.clock.runFor(1000)
   await shot('eight-seats-landscape')
   const dimensions = await page.evaluate(() => {
-    const hand = document.querySelector('.classic-hand').getBoundingClientRect(),
+    const hand = document.querySelector('[data-hand-gallery]').getBoundingClientRect(),
       controls = document.querySelector('.classic-controls').getBoundingClientRect()
     return {
       width: innerWidth,
@@ -92,8 +92,7 @@ try {
       height: innerHeight,
       handTop: hand.top,
       handBottom: hand.bottom,
-      controlLeft: controls.left,
-      handRight: hand.right,
+      controlBottom: controls.bottom,
     }
   })
   assert.equal(dimensions.scrollWidth, dimensions.width)
@@ -101,13 +100,13 @@ try {
     dimensions.handTop >= 0 && dimensions.handBottom <= dimensions.height + 1,
     'hand fits landscape',
   )
-  assert.ok(dimensions.handRight <= dimensions.controlLeft + 1, 'actions do not cover hand')
+  assert.ok(dimensions.controlBottom <= dimensions.handTop + 1, 'actions are above hand')
   for (let i = 0; i < 20 && (await board.getAttribute('data-waiting-for')) === '0'; i++) {
     await page.clock.runFor(500)
     const kind = await board.getAttribute('data-choice-kind')
     const confirm = page.locator('.classic-control-row button').filter({ hasText: '确认' })
     if (kind === 'discard') {
-      const cards = page.locator('.classic-hand .playing-card:not([disabled])')
+      const cards = page.locator('[data-card-choice] .classic-pool .playing-card:not([disabled])')
       for (let n = 0; n < (await cards.count()) && (await confirm.isDisabled()); n++)
         await cards.nth(n).click()
       if (await confirm.isEnabled()) await confirm.click()
@@ -197,10 +196,10 @@ try {
       continue
     }
     if (kind === 'content') {
-      const options = page.locator('.classic-options button:not([disabled])')
+      const options = page.locator('.classic-options button:not([disabled]), .classic-random-hand button:not([disabled])')
       if (!(await options.count())) {
         assert.ok(
-          await page.locator('.classic-options button').count(),
+          await page.locator('.classic-options button, .classic-random-hand button').count(),
           `content choice has no branches: ${await page.locator('.classic-center').innerText()}`,
         )
         continue
@@ -208,8 +207,10 @@ try {
       await options.first().click()
       content++
     } else if (kind === 'discard') {
-      const cards = page.locator('.classic-hand .playing-card:not([disabled])')
+      const cards = page.locator('[data-card-choice] .classic-pool .playing-card:not([disabled])')
       if (!(await cards.count())) continue
+      assert.equal(await page.locator('[data-hand-gallery] .playing-card:enabled').count(), 0, 'footer hand is disabled during discard')
+      assert.equal(await page.locator('[data-card-choice] .classic-controls').count(), 1)
       assert.equal(await confirm.isDisabled(), true)
       const first = cards.first()
       await first.click()
@@ -226,7 +227,7 @@ try {
       actions++
       continue
     } else if (!kind && phase === 'play') {
-      const playable = page.locator('.classic-hand .playing-card:not([disabled])')
+      const playable = page.locator('[data-hand-gallery] .playing-card:not([disabled])')
       const end = page.locator('.classic-control-row button').filter({ hasText: '结束出牌' })
       if (!(await playable.count()) || turns % 3 === 2) {
         if (await end.isDisabled()) continue
@@ -238,7 +239,7 @@ try {
       await playable.first().click()
     } else continue
     const availableCards = page.locator(
-      '.classic-hand .playing-card:not([disabled]), .classic-pool button:not([disabled])',
+      '[data-hand-gallery] .playing-card:not([disabled]), [data-card-choice] .classic-pool button:not([disabled])',
     )
     for (let i = 0; i < (await availableCards.count()) && (await confirm.isDisabled()); i++) {
       if ((await availableCards.nth(i).getAttribute('aria-pressed')) !== 'true')
@@ -372,12 +373,12 @@ try {
   await board.waitFor()
   await page.clock.runFor(1000)
   const revision = Number(await board.getAttribute('data-revision'))
-  await page.locator('.classic-options button').filter({ hasText: '仁德' }).click()
+  await page.locator('.classic-own-skills').getByRole('button', { name: '仁德', exact: true }).click()
   const skillConfirm = page.locator('.classic-control-row button').filter({ hasText: '确认' })
   assert.equal(await skillConfirm.isDisabled(), true)
-  await page.locator('.classic-hand .playing-card:not([disabled])').first().click()
+  await page.locator('[data-card-choice] [data-hand] .playing-card:not([disabled])').first().click()
   assert.equal(await skillConfirm.isDisabled(), true, 'skill requires a legal target')
-  await page.locator('.targetable .seat-select:not([disabled])').first().click()
+  await page.locator('.classic-choice-targets button:enabled').first().click()
   assert.equal(await skillConfirm.isEnabled(), true)
   await shot('skill-target')
   await skillConfirm.click()

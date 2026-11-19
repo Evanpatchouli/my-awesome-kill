@@ -47,7 +47,7 @@ function present(view: MatchView) {
         el,
         { ...origin, xPercent: -50, yPercent: -50, opacity: 0, scale: 0.7 },
         {
-          ...destination,
+          ...(event.type === 'draw' ? middle : destination),
           scale: 1,
           opacity: 1,
           duration: 0.23,
@@ -56,7 +56,10 @@ function present(view: MatchView) {
         },
         at,
       )
-      sequence.to(el, { opacity: 0, y: destination.y - 17, duration: 0.18 }, at + 0.44)
+      if (event.type === 'draw')
+        sequence.to(el, { ...destination, scale: 0.45, opacity: 0, duration: 0.35, ease: 'power2.in' }, at + 0.28)
+      else
+        sequence.to(el, { opacity: 0, y: destination.y - 17, duration: 0.18 }, at + 0.44)
       if (event.type === 'damage') {
         const portrait = seat.querySelector('img') ?? seat
         sequence.fromTo(
@@ -97,7 +100,7 @@ onBeforeUnmount(() => effects?.revert())
       </template>
       <template v-else-if="event.type === 'draw'">
         <img v-for="n in Math.min(event.amount, 3)" :key="n" :src="drawBack" alt="" />
-        <span>摸 {{ event.amount }} 张</span>
+        <span>{{ labels.draw }} · {{ event.amount }} 张</span>
       </template>
       <strong v-else>{{ event.type === 'heal' ? '+' : '−' }}{{ event.amount }}</strong>
     </div>
@@ -133,6 +136,19 @@ onBeforeUnmount(() => effects?.revert())
 }
 .effect-cue img + img {
   margin-left: -22px;
+}
+[data-effect='draw'] {
+  gap: 5px;
+  padding: 22px 9px 8px;
+  border: 1px solid #bd9760;
+  background: #231b16f5;
+}
+[data-effect='draw'] img + img { margin-left: 0; }
+[data-effect='draw'] span {
+  top: 2px;
+  background: transparent;
+  color: #f4dfb7;
+  font-size: 11px;
 }
 .effect-cue span,
 .effect-cue strong {
