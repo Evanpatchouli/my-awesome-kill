@@ -1,0 +1,1394 @@
+{
+  "schema": "noname-reference-trace-v1",
+  "referenceCommit": "c73270948d72949aa80009536b9fd5400767d091",
+  "mode": "identity",
+  "scenario": "damage interrupted by rest and rest clocks after death and direct revival",
+  "target": "B",
+  "eventColumns": [
+    "trial",
+    "kind",
+    "timing",
+    "event",
+    "parent",
+    "hp",
+    "alive",
+    "out",
+    "in",
+    "clock",
+    "history",
+    "finished",
+    "cancelled"
+  ],
+  "events": [
+    ["damageBefore","request","damageBefore","damage","reference_fixture_use",4,true,false,true,null,false,false,false],
+    ["damageBefore","callback","damageBefore","damage","reference_fixture_use",4,true,false,true,null,false,false,false],
+    ["damageBefore","request","rest","rest","reference_rest_interrupt",4,true,true,false,{"type":"phase","count":-1},false,false,false],
+    ["damageBefore","callback","rest","rest","reference_rest_interrupt",4,true,true,false,{"type":"phase","count":-1},false,false,false],
+    ["damageBefore","request","damageBegin","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},false,false,false],
+    ["damageBefore","callback","damageBegin","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},false,false,false],
+    ["damageBefore","request","damageEnd","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},false,true,false],
+    ["damageBefore","callback","damageEnd","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},false,true,false],
+    ["damageBefore","request","damageAfter","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},false,true,false],
+    ["damageBefore","callback","damageAfter","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},false,true,false],
+    ["damageBegin","request","damageBefore","damage","reference_fixture_use",4,true,false,true,null,false,false,false],
+    ["damageBegin","callback","damageBefore","damage","reference_fixture_use",4,true,false,true,null,false,false,false],
+    ["damageBegin","request","damageBegin","damage","reference_fixture_use",4,true,false,true,null,false,false,false],
+    ["damageBegin","callback","damageBegin","damage","reference_fixture_use",4,true,false,true,null,false,false,false],
+    ["damageBegin","request","rest","rest","reference_rest_interrupt",4,true,true,false,{"type":"phase","count":-1},false,false,false],
+    ["damageBegin","callback","rest","rest","reference_rest_interrupt",4,true,true,false,{"type":"phase","count":-1},false,false,false],
+    ["damageBegin","request","damageEnd","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},false,true,false],
+    ["damageBegin","callback","damageEnd","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},false,true,false],
+    ["damageBegin","request","damageAfter","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},false,true,false],
+    ["damageBegin","callback","damageAfter","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},false,true,false],
+    ["damageBegin1","request","damageBefore","damage","reference_fixture_use",4,true,false,true,null,false,false,false],
+    ["damageBegin1","callback","damageBefore","damage","reference_fixture_use",4,true,false,true,null,false,false,false],
+    ["damageBegin1","request","damageBegin","damage","reference_fixture_use",4,true,false,true,null,false,false,false],
+    ["damageBegin1","callback","damageBegin","damage","reference_fixture_use",4,true,false,true,null,false,false,false],
+    ["damageBegin1","request","damageBegin1","damage","reference_fixture_use",4,true,false,true,null,false,false,false],
+    ["damageBegin1","callback","damageBegin1","damage","reference_fixture_use",4,true,false,true,null,false,false,false],
+    ["damageBegin1","request","rest","rest","reference_rest_interrupt",4,true,true,false,{"type":"phase","count":-1},false,false,false],
+    ["damageBegin1","callback","rest","rest","reference_rest_interrupt",4,true,true,false,{"type":"phase","count":-1},false,false,false],
+    ["damageBegin1","request","damageBegin2","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},false,false,false],
+    ["damageBegin1","callback","damageBegin2","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},false,false,false],
+    ["damageBegin1","request","damageBegin3","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},false,false,false],
+    ["damageBegin1","callback","damageBegin3","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},false,false,false],
+    ["damageBegin1","request","damageBegin4","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},false,false,false],
+    ["damageBegin1","callback","damageBegin4","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},false,false,false],
+    ["damageBegin1","request","damage","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},true,false,false],
+    ["damageBegin1","request","changeHpBefore","changeHp","damage",4,true,true,false,{"type":"phase","count":-1},true,false,false],
+    ["damageBegin1","callback","changeHpBefore","changeHp","damage",4,true,true,false,{"type":"phase","count":-1},true,false,false],
+    ["damageBegin1","request","changeHpBegin","changeHp","damage",4,true,true,false,{"type":"phase","count":-1},true,false,false],
+    ["damageBegin1","callback","changeHpBegin","changeHp","damage",4,true,true,false,{"type":"phase","count":-1},true,false,false],
+    ["damageBegin1","request","changeHpEnd","changeHp","damage",4,true,true,false,{"type":"phase","count":-1},true,true,false],
+    ["damageBegin1","callback","changeHpEnd","changeHp","damage",4,true,true,false,{"type":"phase","count":-1},true,true,false],
+    ["damageBegin1","request","changeHpAfter","changeHp","damage",4,true,true,false,{"type":"phase","count":-1},true,true,false],
+    ["damageBegin1","callback","changeHpAfter","changeHp","damage",4,true,true,false,{"type":"phase","count":-1},true,true,false],
+    ["damageBegin1","callback","damage","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},true,false,false],
+    ["damageBegin1","request","damageSource","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},true,false,false],
+    ["damageBegin1","callback","damageSource","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},true,false,false],
+    ["damageBegin1","request","damageEnd","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},true,true,false],
+    ["damageBegin1","callback","damageEnd","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},true,true,false],
+    ["damageBegin1","request","damageAfter","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},true,true,false],
+    ["damageBegin1","callback","damageAfter","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},true,true,false],
+    ["damageBegin4","request","damageBefore","damage","reference_fixture_use",4,true,false,true,null,false,false,false],
+    ["damageBegin4","callback","damageBefore","damage","reference_fixture_use",4,true,false,true,null,false,false,false],
+    ["damageBegin4","request","damageBegin","damage","reference_fixture_use",4,true,false,true,null,false,false,false],
+    ["damageBegin4","callback","damageBegin","damage","reference_fixture_use",4,true,false,true,null,false,false,false],
+    ["damageBegin4","request","damageBegin1","damage","reference_fixture_use",4,true,false,true,null,false,false,false],
+    ["damageBegin4","callback","damageBegin1","damage","reference_fixture_use",4,true,false,true,null,false,false,false],
+    ["damageBegin4","request","damageBegin2","damage","reference_fixture_use",4,true,false,true,null,false,false,false],
+    ["damageBegin4","callback","damageBegin2","damage","reference_fixture_use",4,true,false,true,null,false,false,false],
+    ["damageBegin4","request","damageBegin3","damage","reference_fixture_use",4,true,false,true,null,false,false,false],
+    ["damageBegin4","callback","damageBegin3","damage","reference_fixture_use",4,true,false,true,null,false,false,false],
+    ["damageBegin4","request","damageBegin4","damage","reference_fixture_use",4,true,false,true,null,false,false,false],
+    ["damageBegin4","callback","damageBegin4","damage","reference_fixture_use",4,true,false,true,null,false,false,false],
+    ["damageBegin4","request","rest","rest","reference_rest_interrupt",4,true,true,false,{"type":"phase","count":-1},false,false,false],
+    ["damageBegin4","callback","rest","rest","reference_rest_interrupt",4,true,true,false,{"type":"phase","count":-1},false,false,false],
+    ["damageBegin4","request","damage","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},true,false,false],
+    ["damageBegin4","request","changeHpBefore","changeHp","damage",4,true,true,false,{"type":"phase","count":-1},true,false,false],
+    ["damageBegin4","callback","changeHpBefore","changeHp","damage",4,true,true,false,{"type":"phase","count":-1},true,false,false],
+    ["damageBegin4","request","changeHpBegin","changeHp","damage",4,true,true,false,{"type":"phase","count":-1},true,false,false],
+    ["damageBegin4","callback","changeHpBegin","changeHp","damage",4,true,true,false,{"type":"phase","count":-1},true,false,false],
+    ["damageBegin4","request","changeHpEnd","changeHp","damage",4,true,true,false,{"type":"phase","count":-1},true,true,false],
+    ["damageBegin4","callback","changeHpEnd","changeHp","damage",4,true,true,false,{"type":"phase","count":-1},true,true,false],
+    ["damageBegin4","request","changeHpAfter","changeHp","damage",4,true,true,false,{"type":"phase","count":-1},true,true,false],
+    ["damageBegin4","callback","changeHpAfter","changeHp","damage",4,true,true,false,{"type":"phase","count":-1},true,true,false],
+    ["damageBegin4","callback","damage","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},true,false,false],
+    ["damageBegin4","request","damageSource","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},true,false,false],
+    ["damageBegin4","callback","damageSource","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},true,false,false],
+    ["damageBegin4","request","damageEnd","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},true,true,false],
+    ["damageBegin4","callback","damageEnd","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},true,true,false],
+    ["damageBegin4","request","damageAfter","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},true,true,false],
+    ["damageBegin4","callback","damageAfter","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},true,true,false],
+    ["changeHpBefore","request","damageBefore","damage","reference_fixture_use",4,true,false,true,null,false,false,false],
+    ["changeHpBefore","callback","damageBefore","damage","reference_fixture_use",4,true,false,true,null,false,false,false],
+    ["changeHpBefore","request","damageBegin","damage","reference_fixture_use",4,true,false,true,null,false,false,false],
+    ["changeHpBefore","callback","damageBegin","damage","reference_fixture_use",4,true,false,true,null,false,false,false],
+    ["changeHpBefore","request","damageBegin1","damage","reference_fixture_use",4,true,false,true,null,false,false,false],
+    ["changeHpBefore","callback","damageBegin1","damage","reference_fixture_use",4,true,false,true,null,false,false,false],
+    ["changeHpBefore","request","damageBegin2","damage","reference_fixture_use",4,true,false,true,null,false,false,false],
+    ["changeHpBefore","callback","damageBegin2","damage","reference_fixture_use",4,true,false,true,null,false,false,false],
+    ["changeHpBefore","request","damageBegin3","damage","reference_fixture_use",4,true,false,true,null,false,false,false],
+    ["changeHpBefore","callback","damageBegin3","damage","reference_fixture_use",4,true,false,true,null,false,false,false],
+    ["changeHpBefore","request","damageBegin4","damage","reference_fixture_use",4,true,false,true,null,false,false,false],
+    ["changeHpBefore","callback","damageBegin4","damage","reference_fixture_use",4,true,false,true,null,false,false,false],
+    ["changeHpBefore","request","damage","damage","reference_fixture_use",4,true,false,true,null,true,false,false],
+    ["changeHpBefore","request","changeHpBefore","changeHp","damage",4,true,false,true,null,true,false,false],
+    ["changeHpBefore","callback","changeHpBefore","changeHp","damage",4,true,false,true,null,true,false,false],
+    ["changeHpBefore","request","rest","rest","reference_rest_interrupt",4,true,true,false,{"type":"phase","count":-1},true,false,false],
+    ["changeHpBefore","callback","rest","rest","reference_rest_interrupt",4,true,true,false,{"type":"phase","count":-1},true,false,false],
+    ["changeHpBefore","request","changeHpBegin","changeHp","damage",4,true,true,false,{"type":"phase","count":-1},true,false,false],
+    ["changeHpBefore","callback","changeHpBegin","changeHp","damage",4,true,true,false,{"type":"phase","count":-1},true,false,false],
+    ["changeHpBefore","request","changeHpEnd","changeHp","damage",4,true,true,false,{"type":"phase","count":-1},true,true,false],
+    ["changeHpBefore","callback","changeHpEnd","changeHp","damage",4,true,true,false,{"type":"phase","count":-1},true,true,false],
+    ["changeHpBefore","request","changeHpAfter","changeHp","damage",4,true,true,false,{"type":"phase","count":-1},true,true,false],
+    ["changeHpBefore","callback","changeHpAfter","changeHp","damage",4,true,true,false,{"type":"phase","count":-1},true,true,false],
+    ["changeHpBefore","callback","damage","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},true,false,false],
+    ["changeHpBefore","request","damageSource","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},true,false,false],
+    ["changeHpBefore","callback","damageSource","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},true,false,false],
+    ["changeHpBefore","request","damageEnd","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},true,true,false],
+    ["changeHpBefore","callback","damageEnd","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},true,true,false],
+    ["changeHpBefore","request","damageAfter","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},true,true,false],
+    ["changeHpBefore","callback","damageAfter","damage","reference_fixture_use",4,true,true,false,{"type":"phase","count":-1},true,true,false]
+  ],
+  "trials": [
+    {
+      "timing": "damageBefore",
+      "afterDamage": {
+        "hp": 4,
+        "alive": true,
+        "out": true,
+        "in": false,
+        "clock": {
+          "type": "phase",
+          "count": -1
+        },
+        "history": false
+      },
+      "finished": true,
+      "cancelled": false,
+      "afterRestEnd": {
+        "hp": 4,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": null,
+        "history": false
+      }
+    },
+    {
+      "timing": "damageBegin",
+      "afterDamage": {
+        "hp": 4,
+        "alive": true,
+        "out": true,
+        "in": false,
+        "clock": {
+          "type": "phase",
+          "count": -1
+        },
+        "history": false
+      },
+      "finished": true,
+      "cancelled": false,
+      "afterRestEnd": {
+        "hp": 4,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": null,
+        "history": false
+      }
+    },
+    {
+      "timing": "damageBegin1",
+      "afterDamage": {
+        "hp": 4,
+        "alive": true,
+        "out": true,
+        "in": false,
+        "clock": {
+          "type": "phase",
+          "count": -1
+        },
+        "history": true
+      },
+      "finished": true,
+      "cancelled": false,
+      "afterRestEnd": {
+        "hp": 4,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": null,
+        "history": true
+      }
+    },
+    {
+      "timing": "damageBegin4",
+      "afterDamage": {
+        "hp": 4,
+        "alive": true,
+        "out": true,
+        "in": false,
+        "clock": {
+          "type": "phase",
+          "count": -1
+        },
+        "history": true
+      },
+      "finished": true,
+      "cancelled": false,
+      "afterRestEnd": {
+        "hp": 4,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": null,
+        "history": true
+      }
+    },
+    {
+      "timing": "changeHpBefore",
+      "afterDamage": {
+        "hp": 4,
+        "alive": true,
+        "out": true,
+        "in": false,
+        "clock": {
+          "type": "phase",
+          "count": -1
+        },
+        "history": true
+      },
+      "finished": true,
+      "cancelled": false,
+      "afterRestEnd": {
+        "hp": 4,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": null,
+        "history": true
+      }
+    }
+  ],
+  "clockTrials": [
+    {
+      "type": "phase",
+      "count": 2,
+      "afterRevive": {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "phase",
+          "count": 2
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      },
+      "afterOtherExtra": {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": null,
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      },
+      "afterOwnExtra": {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": null,
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      },
+      "afterOwnNatural": {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": null,
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      },
+      "afterRestAgain": {
+        "hp": 2,
+        "alive": true,
+        "out": true,
+        "in": false,
+        "clock": {
+          "type": "phase",
+          "count": 9
+        },
+        "mark": true,
+        "undist": true,
+        "candidate": false,
+        "previousNext": "C"
+      }
+    },
+    {
+      "type": "round",
+      "count": 2,
+      "afterRevive": {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "round",
+          "count": 2
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      },
+      "afterOtherExtra": {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "round",
+          "count": 2
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      },
+      "afterOwnExtra": {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "round",
+          "count": 2
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      },
+      "afterOwnNatural": {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": null,
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      },
+      "afterRestAgain": {
+        "hp": 2,
+        "alive": true,
+        "out": true,
+        "in": false,
+        "clock": {
+          "type": "phase",
+          "count": 9
+        },
+        "mark": true,
+        "undist": true,
+        "candidate": false,
+        "previousNext": "C"
+      }
+    },
+    {
+      "type": "phase",
+      "count": 0,
+      "afterRevive": {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "phase",
+          "count": 0
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      },
+      "afterOtherExtra": {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "phase",
+          "count": 0
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      },
+      "afterOwnExtra": {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "phase",
+          "count": 0
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      },
+      "afterOwnNatural": {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "phase",
+          "count": 0
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      },
+      "afterRestAgain": {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "phase",
+          "count": 0
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    },
+    {
+      "type": "round",
+      "count": 0,
+      "afterRevive": {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "round",
+          "count": 0
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      },
+      "afterOtherExtra": {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "round",
+          "count": 0
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      },
+      "afterOwnExtra": {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "round",
+          "count": 0
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      },
+      "afterOwnNatural": {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "round",
+          "count": 0
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      },
+      "afterRestAgain": {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "round",
+          "count": 0
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    },
+    {
+      "type": "phase",
+      "count": -1,
+      "afterRevive": {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "phase",
+          "count": -1
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      },
+      "afterOtherExtra": {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "phase",
+          "count": -1
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      },
+      "afterOwnExtra": {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "phase",
+          "count": -1
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      },
+      "afterOwnNatural": {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "phase",
+          "count": -1
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      },
+      "afterRestAgain": {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "phase",
+          "count": -1
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    },
+    {
+      "type": "round",
+      "count": -1,
+      "afterRevive": {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "round",
+          "count": -1
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      },
+      "afterOtherExtra": {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "round",
+          "count": -1
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      },
+      "afterOwnExtra": {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "round",
+          "count": -1
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      },
+      "afterOwnNatural": {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "round",
+          "count": -1
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      },
+      "afterRestAgain": {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "round",
+          "count": -1
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    }
+  ],
+  "phaseEvents": [
+    [
+      "phase:2",
+      "phaseBefore",
+      "A",
+      "reference_extra",
+      {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "phase",
+          "count": 2
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    ],
+    [
+      "phase:2",
+      "phaseBeforeStart",
+      "A",
+      "reference_extra",
+      {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": null,
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    ],
+    [
+      "phase:2",
+      "phaseBefore",
+      "B",
+      "reference_extra",
+      {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": null,
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    ],
+    [
+      "phase:2",
+      "phaseBeforeStart",
+      "B",
+      "reference_extra",
+      {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": null,
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    ],
+    [
+      "phase:2",
+      "phaseBefore",
+      "B",
+      null,
+      {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": null,
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    ],
+    [
+      "phase:2",
+      "phaseBeforeStart",
+      "B",
+      null,
+      {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": null,
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    ],
+    [
+      "round:2",
+      "phaseBefore",
+      "A",
+      "reference_extra",
+      {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "round",
+          "count": 2
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    ],
+    [
+      "round:2",
+      "phaseBeforeStart",
+      "A",
+      "reference_extra",
+      {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "round",
+          "count": 2
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    ],
+    [
+      "round:2",
+      "phaseBefore",
+      "B",
+      "reference_extra",
+      {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "round",
+          "count": 2
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    ],
+    [
+      "round:2",
+      "phaseBeforeStart",
+      "B",
+      "reference_extra",
+      {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "round",
+          "count": 2
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    ],
+    [
+      "round:2",
+      "phaseBefore",
+      "B",
+      null,
+      {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "round",
+          "count": 2
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    ],
+    [
+      "round:2",
+      "phaseBeforeStart",
+      "B",
+      null,
+      {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": null,
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    ],
+    [
+      "phase:0",
+      "phaseBefore",
+      "A",
+      "reference_extra",
+      {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "phase",
+          "count": 0
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    ],
+    [
+      "phase:0",
+      "phaseBeforeStart",
+      "A",
+      "reference_extra",
+      {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "phase",
+          "count": 0
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    ],
+    [
+      "phase:0",
+      "phaseBefore",
+      "B",
+      "reference_extra",
+      {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "phase",
+          "count": 0
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    ],
+    [
+      "phase:0",
+      "phaseBeforeStart",
+      "B",
+      "reference_extra",
+      {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "phase",
+          "count": 0
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    ],
+    [
+      "phase:0",
+      "phaseBefore",
+      "B",
+      null,
+      {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "phase",
+          "count": 0
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    ],
+    [
+      "phase:0",
+      "phaseBeforeStart",
+      "B",
+      null,
+      {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "phase",
+          "count": 0
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    ],
+    [
+      "round:0",
+      "phaseBefore",
+      "A",
+      "reference_extra",
+      {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "round",
+          "count": 0
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    ],
+    [
+      "round:0",
+      "phaseBeforeStart",
+      "A",
+      "reference_extra",
+      {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "round",
+          "count": 0
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    ],
+    [
+      "round:0",
+      "phaseBefore",
+      "B",
+      "reference_extra",
+      {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "round",
+          "count": 0
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    ],
+    [
+      "round:0",
+      "phaseBeforeStart",
+      "B",
+      "reference_extra",
+      {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "round",
+          "count": 0
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    ],
+    [
+      "round:0",
+      "phaseBefore",
+      "B",
+      null,
+      {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "round",
+          "count": 0
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    ],
+    [
+      "round:0",
+      "phaseBeforeStart",
+      "B",
+      null,
+      {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "round",
+          "count": 0
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    ],
+    [
+      "phase:-1",
+      "phaseBefore",
+      "A",
+      "reference_extra",
+      {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "phase",
+          "count": -1
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    ],
+    [
+      "phase:-1",
+      "phaseBeforeStart",
+      "A",
+      "reference_extra",
+      {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "phase",
+          "count": -1
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    ],
+    [
+      "phase:-1",
+      "phaseBefore",
+      "B",
+      "reference_extra",
+      {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "phase",
+          "count": -1
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    ],
+    [
+      "phase:-1",
+      "phaseBeforeStart",
+      "B",
+      "reference_extra",
+      {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "phase",
+          "count": -1
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    ],
+    [
+      "phase:-1",
+      "phaseBefore",
+      "B",
+      null,
+      {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "phase",
+          "count": -1
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    ],
+    [
+      "phase:-1",
+      "phaseBeforeStart",
+      "B",
+      null,
+      {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "phase",
+          "count": -1
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    ],
+    [
+      "round:-1",
+      "phaseBefore",
+      "A",
+      "reference_extra",
+      {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "round",
+          "count": -1
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    ],
+    [
+      "round:-1",
+      "phaseBeforeStart",
+      "A",
+      "reference_extra",
+      {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "round",
+          "count": -1
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    ],
+    [
+      "round:-1",
+      "phaseBefore",
+      "B",
+      "reference_extra",
+      {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "round",
+          "count": -1
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    ],
+    [
+      "round:-1",
+      "phaseBeforeStart",
+      "B",
+      "reference_extra",
+      {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "round",
+          "count": -1
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    ],
+    [
+      "round:-1",
+      "phaseBefore",
+      "B",
+      null,
+      {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "round",
+          "count": -1
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    ],
+    [
+      "round:-1",
+      "phaseBeforeStart",
+      "B",
+      null,
+      {
+        "hp": 2,
+        "alive": true,
+        "out": false,
+        "in": true,
+        "clock": {
+          "type": "round",
+          "count": -1
+        },
+        "mark": false,
+        "undist": true,
+        "candidate": true,
+        "previousNext": "C"
+      }
+    ]
+  ]
+}
