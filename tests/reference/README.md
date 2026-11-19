@@ -109,6 +109,12 @@
 - **取消与直接死亡。** 取消获得的 Before 或失去的 Begin 保留原值；取消 End 保留已应用的变化；均发各自的 Cancelled 而不发 After。1/1 失去 1 上限时，先变为 0/0，再直接进行 `die` 子事件，不请求濒死或体力变化；该样例死亡无来源。1/1 失去 2 时，先变为 -1/-1，再带来源 A 直接死亡；死亡内部请求 `changeHp(1)`，但再次受上限夹断而维持 -1/-1。两次死亡均在父事件 End/After 之前完成。取消子 `dieBefore` 时角色仍以 0/0 存活，父事件继续 End 和 After。
 - **真实跨包技能。** 独立授予威重后，八席均无手牌的并列最少触发一次摸两张；随后持有者两张、其他席均无手牌时触发一次摸一张。摸牌发生在上限事件 End 的实际技能回调内、After 之前。独立授予恃勇后，真实红桃杀的伤害令 B 由 4/4 变成 3/4，`damageEnd` 内的恃勇调用 `loseMaxHp` 后变为 3/3，然后才请求 `damageAfter`。本样例不涵盖恃勇的酒杀条件。
 
+`revival.json` 在八席身份局用原版 `die` 和 `loseMaxHp` 令同一非主公 AI 死亡，再分别调用普通 `revive` 与事件版 `reviveEvent`。B 初始有一张手牌、一张装备、两个标记，处于横置和背面状态。死亡公开身份、弃置两张实体牌、解除横置和翻面，并移除标记显示；该样例的标记存储数仍为 2。`revive(2, false)` 使 B 以 2/4 存活，角色、身份、空牌区和标记状态保持死亡后的结果。B 从死亡名单移回存活名单末尾，但存活角色的座次环回到原来的位置。普通复活是同步调用，不创建体力或复活事件。
+
+`character` 的三个布尔值分别表示 `name`、`name1`、`name2` 是否与该次对局初始值相同，避免将跨进程随机选取的武将名写入金样。`events` 区分时机请求与观察技能回调，死亡和体力子事件均记录父事件。
+
+对已存活的 B 再次调用普通复活，传入 9、0、-2 依次得到 4/4、1/4、-2/4，负体力时仍存活且没有濒死事件。1/1 失去 2 点上限后直接死亡，在死亡子事件中请求 `changeHp(1)`，但受负上限夹断而仍为 -1/-1；普通 `revive(5)` 将上限抬至 1，最终为 1/1。1/1 失去 1 点上限时以 0/0 死亡，没有体力子事件；取消 `reviveEvent(2)` 的 Before 后角色仍死亡，随后的 `reviveEvent(0)` 以默认的 1 点体力复活，依次请求 Before、Begin、End、After。此轨迹没有覆盖休整计数或自然跨轮返回。
+
 1. 在独立临时目录检出上述上游提交，保留 `apps/core`、`packages/fs`、`packages/jit` 和根目录的 `scripts`；可从本机 `.reference/noname` 用 `git clone --shared --sparse` 复用已有对象。通过 `git rev-parse HEAD` 确认提交。不要在项目运行时依赖该参考检出。
 2. 在临时检出中安装上游依赖并执行 `pnpm dev`。上游当前 Vite 配置使用 `127.0.0.1:8081`，文件服务使用 `127.0.0.1:8089`。本次采集使用 Node 24 和 pnpm 10.20.0；如果本机 Windows 链接限制阻止安装，可使用 WSL 的原生文件系统。
 3. 在项目外准备 Playwright 和可执行的 Chromium。设置 `REFERENCE_PLAYWRIGHT_PATH` 指向 Playwright 包目录；若使用现有浏览器，设置 `REFERENCE_CHROMIUM_EXECUTABLE_PATH` 指向其可执行文件。默认 URL 为 `http://127.0.0.1:8081`，可通过 `REFERENCE_URL` 覆盖。
@@ -120,6 +126,7 @@
    node scripts/reference-trace.mjs --scenario damage-callback-cancel --check tests/reference/damage-callback-cancel.json
    node scripts/reference-trace.mjs --scenario hp-cancel --check tests/reference/hp-cancel.json
    node scripts/reference-trace.mjs --scenario max-hp --check tests/reference/max-hp.json
+   node scripts/reference-trace.mjs --scenario revival --check tests/reference/revival.json
    node scripts/reference-trace.mjs --scenario tiesuo-recast --check tests/reference/tiesuo-recast.json
    node scripts/reference-trace.mjs --scenario recast-callbacks --check tests/reference/recast-callbacks.json
    node scripts/reference-trace.mjs --scenario recast-batch --check tests/reference/recast-batch.json

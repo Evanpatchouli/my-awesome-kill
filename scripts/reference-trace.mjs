@@ -13,6 +13,7 @@ import { checkCompareBoundaries, installCompareBoundaries } from './reference-co
 import { checkCompareMultiple, installCompareMultiple } from './reference-compare-multiple.mjs';
 import { checkReferenceHp, installReferenceHp } from './reference-hp.mjs';
 import { checkReferenceMaxHp, installReferenceMaxHp } from './reference-max-hp.mjs';
+import { checkReferenceRevival, installReferenceRevival } from './reference-revival.mjs';
 import { checkReferenceExpansion, installReferenceExpansion } from './reference-expansion.mjs';
 import { checkZhongyiBoundaries, installZhongyiBoundaries } from './reference-zhongyi-boundaries.mjs';
 import { checkZhongyiTransitDeath, installZhongyiTransitDeath } from './reference-zhongyi-transit-death.mjs';
@@ -69,6 +70,7 @@ const descriptions = new Map([
   ['damage-callback-cancel', 'damage callback cancellation after HP change for physical sha'],
   ['hp-cancel', 'cancelling changeHpBefore and changeHpEnd during a linked armored fire sha'],
   ['max-hp', 'max HP lifecycles, cancellation, death, and real cross-pack skills'],
+  ['revival', 'ordinary and event revival after real deaths, including max HP and cancellation boundaries'],
 ]);
 let scenario = 'sha-no-shan';
 const scenarioIndex = argv.indexOf('--scenario');
@@ -155,6 +157,8 @@ try {
     await context.addInitScript(installReferenceHp);
   } else if (scenario === 'max-hp') {
     await context.addInitScript(installReferenceMaxHp);
+  } else if (scenario === 'revival') {
+    await context.addInitScript(installReferenceRevival);
   } else if (scenario === 'zhongyi-expansion') {
     await context.addInitScript(installReferenceExpansion);
   } else if (scenario === 'zhongyi-boundaries') {
@@ -248,6 +252,11 @@ try {
           }
           if (scenario === 'max-hp') {
             window.__referenceResult = await window.__runReferenceMaxHp({ lib, game, ui, get, _status, actor });
+            game.pause();
+            return;
+          }
+          if (scenario === 'revival') {
+            window.__referenceResult = await window.__runReferenceRevival({ lib, game, ui, get, _status, actor });
             game.pause();
             return;
           }
@@ -427,6 +436,7 @@ try {
   if (scenario === 'linked-damage') checkReferenceLinkedDamage(captured.value);
   if (scenario === 'hp-cancel') checkReferenceHp(captured.value);
   if (scenario === 'max-hp') checkReferenceMaxHp(captured.value);
+  if (scenario === 'revival') checkReferenceRevival(captured.value);
   if (scenario === 'compare') checkReferenceCompare(captured.value);
   if (scenario === 'qiaoshui-targets') checkQiaoshuiTargets(captured.value);
   if (scenario === 'compare-boundaries') checkCompareBoundaries(captured.value);
