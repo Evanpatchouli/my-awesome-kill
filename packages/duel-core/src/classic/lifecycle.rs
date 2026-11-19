@@ -327,6 +327,12 @@ impl Game {
                     self.finish();
                     return;
                 }
+                if let Some(source) = source {
+                    let killer = self.seat_mut(source);
+                    killer.turn_kills = killer.turn_kills.saturating_add(1);
+                }
+                self.living_seats.retain(|&seat| seat != target);
+                self.dead_seats.push(target);
                 let player = self.seat_mut(target);
                 player.alive = false;
                 player.linked = false;
@@ -338,6 +344,7 @@ impl Game {
                 }
             }
             DeathStage::Announce => {
+                self.seat_mut(target).role_shown = true;
                 if let Some(table) = self.classic.as_mut() {
                     let alive: Vec<_> = self
                         .seats
@@ -353,11 +360,16 @@ impl Game {
                 self.queue_timing("die", Some(target), source, None, 0, &[]);
             }
             DeathStage::Cleanup => {
-                self.remove_temporary_for_seat(target);
-                self.clear_marks_on_death(target);
-                self.queue_zone_discards(target, &[Zone::Hand, Zone::Equipment, Zone::Judgment]);
-                if let Some(discard) = self.discard_all_expansions_program(target) {
-                    self.scheduler.next(discard);
+                if !self.is_alive(target) {
+                    self.clear_marks_on_death(target);
+                    self.remove_temporary_for_seat(target);
+                    self.queue_zone_discards(
+                        target,
+                        &[Zone::Hand, Zone::Equipment, Zone::Judgment],
+                    );
+                    if let Some(discard) = self.discard_all_expansions_program(target) {
+                        self.scheduler.next(discard);
+                    }
                 }
                 self.scheduler.replace_current(next(DeathStage::Reward));
                 return;
@@ -392,11 +404,10 @@ impl Game {
             .filter(|seat| seat.alive)
         {
             match role {
-                Role::Rebel => self.next(EventKind::Draw {
-                    seat: killer.id,
-                    amount: 3,
-                    reason: DrawReason::RebelReward,
-                }),
+                Role::Rebel => {
+                    let draw = self.draw_many_program(killer.id, 3, DrawReason::RebelReward);
+                    self.scheduler.next(draw);
+                }
                 Role::Loyalist if killer.role == Some(Role::Lord) => {
                     self.next(EventKind::Penalty { lord: killer.id })
                 }

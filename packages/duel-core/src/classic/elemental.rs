@@ -153,7 +153,9 @@ impl ContentAction {
             } => Some(game.elemental_damage_program(source, target, amount, card, false)),
             Self::LoseHp { amount, .. } => Some(game.lose_hp_program(seat, amount)),
             Self::Draw { .. } => Some(game.draw_one_program(seat)),
-            Self::DrawMany { count, .. } => Some(game.draw_many_program(seat, count)),
+            Self::DrawMany { count, .. } => {
+                Some(game.draw_many_program(seat, count, crate::DrawReason::CardEffect))
+            }
             Self::GainCreated { card, .. } => Some(game.created_gain_program(seat, card)),
         }
     }

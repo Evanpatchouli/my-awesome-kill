@@ -286,7 +286,9 @@ impl Recasting {
             }
             (RecastTerms::Batch(cards, rule), RecastPayment::Batch(loss)) => {
                 let movement = match (rule.gain)(state, seat, cards, loss) {
-                    RecastBatchGain::Draw => BatchMovement::draw(seat, cards.len() as u16),
+                    RecastBatchGain::Draw => {
+                        BatchMovement::draw(seat, cards.len() as u16, DrawReason::CardEffect)
+                    }
                     RecastBatchGain::FromDeck { cards } => BatchMovement::gain_from_pile(
                         seat,
                         CardZone::DrawPile,
@@ -646,8 +648,15 @@ impl Game {
         Program::Recast(Flow::Movement(Movement::new(seat, MoveKind::Draw)))
     }
 
-    pub(crate) fn draw_many_program(&self, seat: SeatId, count: u16) -> Program {
-        Program::Recast(Flow::BatchMovement(BatchMovement::draw(seat, count)))
+    pub(crate) fn draw_many_program(
+        &self,
+        seat: SeatId,
+        count: u16,
+        reason: DrawReason,
+    ) -> Program {
+        Program::Recast(Flow::BatchMovement(BatchMovement::draw(
+            seat, count, reason,
+        )))
     }
 
     pub(crate) fn created_gain_program(&self, seat: SeatId, card: Card) -> Program {

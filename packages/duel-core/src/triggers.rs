@@ -78,7 +78,9 @@ impl TriggerEvent {
         use crate::EventKind::*;
         match game.event_kind(self.subject)? {
             Damage { .. } | LoseHp { .. } | Draw { .. } => Some(i64::from(self.amount)),
-            GainMaxHp { num, .. } | LoseMaxHp { num, .. } => Some(i64::from(num)),
+            GainMaxHp { num, .. } | LoseMaxHp { num, .. } | Revive { hp: num, .. } => {
+                Some(i64::from(num))
+            }
             Lose { .. } | LoseToDiscardpile { .. } | ActivateSkill { .. } => Some(0),
             Turn { .. } if self.timing == "roundStart" => Some(0),
             _ => self.delta,
@@ -183,6 +185,19 @@ impl TriggerContext<'_> {
         }
         self.operations
             .push_back(TriggerOperation::Death { target, source });
+        Ok(())
+    }
+
+    /// Revive immediately, including when called from a death timing callback.
+    pub fn revive(&mut self, seat: SeatId, hp: Option<i32>) -> Result<(), RuleError> {
+        self.game.revive_now(seat, hp)
+    }
+
+    /// Queue a cancellable revival event after this callback returns.
+    pub fn revive_event(&mut self, seat: SeatId, hp: Option<i32>) -> Result<(), RuleError> {
+        self.game.seat(seat)?;
+        self.operations
+            .push_back(TriggerOperation::Revive { seat, hp });
         Ok(())
     }
 
@@ -645,6 +660,7 @@ impl TriggerContext<'_> {
                 TriggerOperation::PreviewPile { .. }
                 | TriggerOperation::MaxHp { .. }
                 | TriggerOperation::Death { .. }
+                | TriggerOperation::Revive { .. }
                 | TriggerOperation::CompareMany { .. }
                 | TriggerOperation::VirtualSha { .. }
                 | TriggerOperation::Emit(_)
@@ -707,6 +723,10 @@ enum TriggerOperation {
     Death {
         target: SeatId,
         source: Option<SeatId>,
+    },
+    Revive {
+        seat: SeatId,
+        hp: Option<i32>,
     },
     CompareMany {
         initiator: SeatId,
@@ -1141,6 +1161,7 @@ impl Game {
                     }
                     self.death_program(target, source)
                 }
+                TriggerOperation::Revive { seat, hp } => self.revive_program(seat, hp),
                 TriggerOperation::MaxHp {
                     seat,
                     source,

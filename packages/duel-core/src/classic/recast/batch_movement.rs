@@ -24,7 +24,7 @@ pub(crate) struct BatchMovement {
 enum BatchKind {
     Discard,
     Lose { destination: BatchDestination },
-    Draw { amount: u16 },
+    Draw { amount: u16, reason: DrawReason },
     GainPile(CardZone),
     GainDrawn,
     GainGive { from: SeatId, visible: bool },
@@ -51,8 +51,8 @@ impl BatchMovement {
     pub(super) fn discard(seat: SeatId, cards: Arc<[Card]>) -> Self {
         Self::new(seat, BatchKind::Discard, cards)
     }
-    pub(super) fn draw(seat: SeatId, amount: u16) -> Self {
-        Self::new(seat, BatchKind::Draw { amount }, Arc::from([]))
+    pub(super) fn draw(seat: SeatId, amount: u16, reason: DrawReason) -> Self {
+        Self::new(seat, BatchKind::Draw { amount, reason }, Arc::from([]))
     }
     pub(super) fn gain_from_pile(seat: SeatId, pile: CardZone, cards: Arc<[Card]>) -> Self {
         Self::new(seat, BatchKind::GainPile(pile), cards)
@@ -84,14 +84,14 @@ impl BatchMovement {
                     amount
                 },
             },
-            BatchKind::Draw { amount } => EventKind::Draw {
+            BatchKind::Draw { amount, reason } => EventKind::Draw {
                 seat,
                 amount: if finished {
                     self.committed.len() as u16
                 } else {
                     amount
                 },
-                reason: DrawReason::CardEffect,
+                reason,
             },
             kind => EventKind::Gain {
                 seat,
@@ -217,7 +217,7 @@ impl Game {
                     };
                     let amount = if matches!(movement.kind, BatchKind::Draw { .. }) && !settled {
                         match movement.kind {
-                            BatchKind::Draw { amount } => amount,
+                            BatchKind::Draw { amount, .. } => amount,
                             _ => unreachable!(),
                         }
                     } else {
@@ -252,20 +252,22 @@ impl Game {
                             },
                             movement.cards.clone(),
                         )),
-                        BatchKind::Draw { amount } => match self.draw_from_piles(amount as usize) {
-                            Some(cards) => {
-                                self.reserved_draws.extend(cards.iter().copied());
-                                Some(BatchMovement::new(
-                                    seat,
-                                    BatchKind::GainDrawn,
-                                    Arc::from(cards),
-                                ))
+                        BatchKind::Draw { amount, .. } => {
+                            match self.draw_from_piles(amount as usize) {
+                                Some(cards) => {
+                                    self.reserved_draws.extend(cards.iter().copied());
+                                    Some(BatchMovement::new(
+                                        seat,
+                                        BatchKind::GainDrawn,
+                                        Arc::from(cards),
+                                    ))
+                                }
+                                None => {
+                                    movement.stage = Cancel(MoveCancellation::InvalidMovement);
+                                    continue;
+                                }
                             }
-                            None => {
-                                movement.stage = Cancel(MoveCancellation::InvalidMovement);
-                                continue;
-                            }
-                        },
+                        }
                         BatchKind::GainGive { from, visible } => Some(BatchMovement::new(
                             from,
                             BatchKind::Lose {

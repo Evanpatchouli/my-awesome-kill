@@ -104,6 +104,7 @@ enum Resolution {
         cancelled: bool,
     },
     DeathCancelled,
+    ReviveCancelled,
     Responded,
     Judged(Card),
     HpChanged {
@@ -188,6 +189,7 @@ enum Program {
     MoveChoice(move_choice::Flow),
     PileOrder(classic::pile_order::Flow),
     MaxHp(classic::max_hp::Flow),
+    Revive(classic::revival::Flow),
     Expansion(classic::expansion::Flow),
     BasicUse(classic::basic_use::Flow),
     Compare(classic::compare::Flow),
@@ -285,6 +287,7 @@ impl Program {
             Self::MoveChoice(flow) => flow.kind(),
             Self::PileOrder(flow) => flow.kind(),
             Self::MaxHp(flow) => flow.kind(),
+            Self::Revive(flow) => flow.kind(),
             Self::Expansion(flow) => flow.kind(),
             Self::BasicUse(flow) => flow.kind(),
             Self::Event(kind) => *kind,
@@ -340,6 +343,8 @@ struct Seat {
     armor: u16,
     hero: Option<&'static General>,
     role: Option<Role>,
+    role_shown: bool,
+    turn_kills: u64,
     hand: Vec<Card>,
     equipment: Vec<Card>,
     judges: Vec<Card>,
@@ -377,6 +382,8 @@ impl From<SeatSetup> for Seat {
             armor: 0,
             hero: None,
             role: None,
+            role_shown: false,
+            turn_kills: 0,
             hand: setup.hand,
             equipment: Vec::new(),
             judges: Vec::new(),
@@ -409,6 +416,8 @@ pub struct Game {
     known_to_all: HashSet<CardId>,
     known_to_seats: HashMap<CardId, Vec<SeatId>>,
     seats: Vec<Seat>,
+    living_seats: Vec<SeatId>,
+    dead_seats: Vec<SeatId>,
     active_seat: SeatId,
     version: u32,
     resolving: Vec<Card>,
@@ -456,6 +465,8 @@ impl Game {
     }
 
     fn with_seats(seats: Vec<Seat>, active_seat: SeatId) -> Self {
+        let living_seats = seats.iter().filter(|s| s.alive).map(|s| s.id).collect();
+        let dead_seats = seats.iter().filter(|s| !s.alive).map(|s| s.id).collect();
         Self {
             group_compares: classic::multi_compare::State::default(),
             group_updates: Vec::new(),
@@ -480,6 +491,8 @@ impl Game {
             known_to_all: HashSet::new(),
             known_to_seats: HashMap::new(),
             seats,
+            living_seats,
+            dead_seats,
             active_seat,
             version: 0,
             resolving: Vec::new(),
@@ -521,6 +534,30 @@ impl Game {
 
     pub fn is_alive(&self, seat: SeatId) -> bool {
         self.seat(seat).is_ok_and(|player| player.alive)
+    }
+
+    /// Living players in membership order; revival appends a previously dead player.
+    pub fn living_seats(&self) -> &[SeatId] {
+        &self.living_seats
+    }
+
+    /// Dead players in the order in which they died.
+    pub fn dead_seats(&self) -> &[SeatId] {
+        &self.dead_seats
+    }
+
+    /// Living players in physical seat order, starting from the given seat.
+    pub fn living_seat_ring(&self, start: SeatId) -> Result<Vec<SeatId>, RuleError> {
+        Ok(self
+            .seat_order_from(start)?
+            .into_iter()
+            .filter(|&id| self.is_alive(id))
+            .collect())
+    }
+
+    /// Kills attributed to a seat during the current turn.
+    pub fn turn_kills(&self, seat: SeatId) -> Result<u64, RuleError> {
+        Ok(self.seat(seat)?.turn_kills)
     }
 
     pub fn health(&self, seat: SeatId) -> Option<(i32, i32)> {
@@ -636,7 +673,7 @@ impl Game {
             .map(|seat| {
                 let own = viewer == Some(seat.id);
                 let role_visible =
-                    own || !seat.alive || seat.role == Some(Role::Lord) || result.is_some();
+                    own || seat.role_shown || seat.role == Some(Role::Lord) || result.is_some();
                 SeatView {
                     marks: self.skill_marks(seat.id),
                     expansions: seat
@@ -1099,6 +1136,7 @@ impl Game {
                             cancelled: true,
                             ..
                         }))
+                        | Outcome::Finished(Resolution::ReviveCancelled)
                         | Outcome::Finished(Resolution::MovedCards(MoveResult {
                             cancelled: true,
                             ..
@@ -1143,6 +1181,7 @@ impl Game {
                 stage,
             } => return self.resolve_death(source, target, role, stage, child),
             Program::MaxHp(flow) => return self.resolve_max_hp(event, flow, child),
+            Program::Revive(flow) => return self.resolve_revive(flow, child),
             Program::ActiveSkill(flow) => return self.resolve_active_skill(flow, child),
             Program::PileOrder(flow) => return self.resolve_pile_order(event, flow, child),
             Program::MoveChoice(flow) => {
@@ -1342,7 +1381,7 @@ impl Game {
                         role,
                         ..
                     },
-                ) if self.is_alive(*target)
+                ) if !self.seat(*target).is_ok_and(|seat| seat.role_shown)
                     && *role != Some(Role::Lord)
                     && self.match_result().is_none() =>
                 {

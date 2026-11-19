@@ -13,6 +13,7 @@ pub(crate) mod multi_compare;
 pub(crate) mod phases;
 pub(crate) mod pile_order;
 pub(crate) mod recast;
+pub(crate) mod revival;
 pub(crate) mod skills;
 pub(crate) mod target_timing;
 #[cfg(test)]
@@ -141,6 +142,8 @@ impl Game {
                     armor: 0,
                     hero: Some(general),
                     role: Some(role),
+                    role_shown: role == Role::Lord,
+                    turn_kills: 0,
                     hand: Vec::new(),
                     equipment: Vec::new(),
                     judges: Vec::new(),

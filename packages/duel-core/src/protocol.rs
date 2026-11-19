@@ -660,6 +660,10 @@ pub enum EventKind {
         seat: SeatId,
         target: SeatId,
     },
+    Revive {
+        seat: SeatId,
+        hp: i32,
+    },
     Death {
         source: Option<SeatId>,
         target: SeatId,

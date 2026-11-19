@@ -470,6 +470,12 @@ impl Game {
                     Some("phaseBefore")
                 }
                 TurnStage::Count => {
+                    for player in &mut self.seats {
+                        player.turn_kills = 0;
+                    }
+                    for player in &mut self.seats {
+                        player.turn_kills = 0;
+                    }
                     let state = self.classic.as_mut().expect("classic turn");
                     state.turn = Some(TurnView {
                         seat,
