@@ -1,47 +1,40 @@
 # 随心杀 P1 直接接棒
 
-## 第一项开发工作
+## 接棒后先做
 
-用本任完整 `CODEX_THREAD_ID` 在桌面查自己的 chat，核对 hostId、projectId、cwd，再用 `list_projects` 核实 `local / 56a3f74c-1f60-47c5-8e25-30ee6f6375cb / E:\my-awesome-kill` 和实际 shell 目录。若归属错误，停止写入并报告。主分支为 `master`。交班前收口所有写入和测试。无需翻旧聊天；项目规范入口、用户授权和原样传递的项目绑定规则在 `.agents/current-task.md`。
+用本任完整 `CODEX_THREAD_ID` 在 Codex 桌面端匹配自己的 chat，核实 hostId、projectId 和 cwd，并用 `list_projects` 对照登记项目，再检查 shell 实际目录。固定绑定为 local / `56a3f74c-1f60-47c5-8e25-30ee6f6375cb` / `E:\my-awesome-kill`。核实后读 `.agents/current-task.md`、适用的用户指令，检查 `git status --short --branch`。用户最新的 AGENTS 指令入口为 `C:\Users\evanpatchouli\.agents\AGENTS.md`。接力协议与逐字传递的项目绑定规则在当前任务文件末尾。
 
-**下一项是 R3b 的批量重铸根及其移动。** 先在独立固定上游复跑以下命令，再给 Rust 八人桌的可信主动技能写最小失败用例。使用真实 `Game::submit(Action::ActivateSkill)` 同时选择两张手牌和一件装备。
+本任 `01a1f06a-3e4d-75e1-8413-ce32e97cc306` 从 `9351a7d` 接手本地 `master`。交接前所有产品、测试和说明写入均已本地提交，工作区没有用户独立修改。本任创建的应用、测试页面服务、固定上游服务、专属 ADB、模拟器和 Gradle daemon 均已关闭。项目事实以代码、固定样本和可重复运行结果为准。
+
+**下一项是同步复活与事件版复活。** 首先在固定上游 `c73270948d72949aa80009536b9fd5400767d091` 的独立检出重跑：
 
 ```powershell
-node scripts/reference-trace.mjs --scenario recast-batch --check tests/reference/recast-batch.json
-node scripts/reference-trace.mjs --scenario recast-batch-boundaries --check tests/reference/recast-batch-boundaries.json
+node scripts/reference-trace.mjs --scenario revival --check tests/reference/revival.json
 ```
 
-- 在失牌前把原数组第二张暗手牌交给 B。两个工厂各只调用一次，均收到原来的三张。失牌包装保留原选择，实际内层 `loseAfter` 只有第一张手牌与原装备，保持输入顺序和实际 h/e 来源。随后建一个 `draw(3)` 及一个 `gain`。物理实体、活动座选择、他席知情和终态一起核对。
-- 整个失牌包装取消时没有内层失牌历史。若三张全在内层失牌前被转走，原内层以空的实际 cards 正常执行 End/After，stockcards 仍是原三张，且有失牌历史。两者都能完成重铸并按原数量摸牌。取消 `drawBefore` 不改变顶牌顺序。显式 `gain2` 与普通暗摸应分别验证。两个时机请求夹着工厂调用，实际技能回调与子移动依原先的队列顺序执行。
-- 实现从 `packages/duel-core/src/classic/recast.rs` 的 `Recasting`、`RecastRule`、`RecastMovement`、`Movement`，以及 `classic/expansion.rs` 的批量弃置入手。单张 `can_recast` / `plan_recast` 与注册工厂继续可用，原 377 条单张轨迹是回归线。可信批量入口可接受获授权的一张或多张 h/e 实体，原有严格玩家入口继续按其规则筛选。批量公告可公开所选牌面，同时保持保密的手牌知情记录；一般暗给的移牌后清除已由 `509a9a8` 实现。
-- 通过非默认 feature 的正常首页、选将、牌桌多选和 AI 验证；真实名典样例已证明两张普通基本牌通过实际技能提交。名典其他技能效果和不同规则族沿覆盖盘点分别验收。不要把逐张调用或只写协议类型算作批量重铸完成。详细行为证据在 `docs/exec-plans/active/p1-engine-migration.md` 的 R3 小节。
+1. 用普通八席注册技能和 `Game::submit(Action::ActivateSkill)` 建立第一个 Rust 失败用例。让非主公 B 带手牌、装备、已显示的七个鼓舌标记，横置并翻面，由另一席的真实操作令其死亡。完整死亡后应能分别读取存储计数 7 和空的公开标记。现有 `clear_marks_on_death` 删除计数，`compare_content/tests.rs` 中也有一个依据旧实现写成 0 的断言。按实测修正存储及投影，并保留临时技能明确清理的语义。
+2. 在同一测试中加入同步复活。复活后 B 实际为 2/4，已公开身份和武将延续，弃掉的实体仍在弃牌堆。B 追加到存活名单末尾，按座位索引的存活环则再次接通原邻座。重复调用传入 9、0、-2，在四点上限下分别得到 4、1、-2 体力，最后仍存活。原上限为负时先把上限恢复到至少 1。同步调用在当前回调立即生效，事件入口另走 Before/Begin/End/After 和可取消流程。
+3. 检验 `reviveBefore` 取消后仍死亡，`reviveEvent(0)` 正常恢复到 1/1。另有真正的 `die` 主时机内同步复活样例。该反贼保留手牌、装备、七个标记及临时技能，身份已明，来源的击杀数增加 1，且在 `dieEnd` 前摸三张。现有死亡清理仍按“已进入死亡”的旧边界执行，需要在真实后继步骤重新读取生死状态。注意正常死亡奖惩、终局及各实体守恒。
+4. 源证据为 `d357024` 及 `17c64d6`。后者保留原 78 条，另加真实鼓舌和死亡主回调复活的独立结果，连续三次上游复跑匹配。实现后按行为复核并用独立非默认内容在正常牌桌验证。跨轮休整另起单元，核对 `rest`、`restEnd`、出局状态、自然回合倒计时及额外回合。详见 `docs/exec-plans/active/p1-engine-migration.md` 和 `docs/exec-plans/active/noname-coverage.md`。
 
-## 本任交付
+## 本任已交付
 
-- **Q2b 巧说。** 在上游 commit `c73270948d72949aa80009536b9fd5400767d091` 实际复跑 `compare`。平、负在 `phaseAfter` 请求时仍见限制，首个实际回调已恢复决斗。获胜时只为下一次合格使用改目标。真实用牌先支付，原本超范围的 D 进入额外候选，B/D 分别受伤，下一次决斗只作用于 B。借刀的原版按位配对、减目标、取消和主动/被动响应另有 105 条观测。核心 `24f5334`、`c34fcb5`、`8a46ebb`；牌桌 `6263020`。
-- **X2 忠义。** 真实主动技能、限定状态、实体与标签、模式队伍和可修改伤害进入底座，普通关羽保留武圣。自然跨度两轮的 42 行逐列对齐；另有 47 行取消/移交/双持有者，以及 17 行持有者在失牌回调死亡的实测。此时已公开装备保留在无主特殊区，使用和扩展的后续时机照常完成。核心 `8779367`、`3d9a69e`、`bb5006c`；牌桌 `b06c8fb`。
-- **P3 阶段、回合与判定。** 当先/放权、普通跳过与取消、额外回合全局号/自然游标、前插和嵌套队尾均经上游验证。普通阶段场景比较 494 行中的 154 条共同请求和回调，队列场景比较 112 行的共同字段。根、各层目标、标记、每段用量及索引激活均在实际牌桌结算。另有判定区六例 158/158 行，包含乐不思蜀、闪电、无懈、天妒和双实体独立清理。67 行补充说明无懈在选中后转手与已进入失牌步骤再被截走时的差别。核心 `cab5823`、`12916b3`、`042c6df`；牌桌 `e65557e`。
-- **Q3 多席拼点。** `f67b98b` 复用两席和多席的密封收牌、批付与按根清理。逐对和共同两种根、可信查询与真实鼓舌/胆烈在 `9a493ca`；客户端 `b215b9d`。五局 323 条中逐行比对 173 条请求和 118 条首回调，其余 32 条展示、内容、探针和后续伤害类时点未计入 291。另验证点数变化、胜者、逐对暂停、对手私选、单席/批量支付取消和真正根取消，独立复核已通过。
-- **R3 取证与起点。** `cd9ffe4` 的 190 条及 `5edeadb` 的 62 条都已独立 write/check。普通暗给隐去出资席剩余手牌的旧知情有 5 项定向回归（`509a9a8`）。批量重铸根、整批工厂及正式提交验收尚未实施。
+- **批量重铸与明典。** `af59798` 共用重铸根并支持整批工厂、真实 h/e 实体、一个失牌和一个摸牌/获得、可取消包装、已知手牌和局部/整批截获。七个非明典场景逐行核对 211 条共同请求、执行回调与工厂观测。`5ec0446` 补充 23 条给牌中转死亡观测。`d654a09` 验证给牌者与旁观者的独立知情。`e82c45b` 在明典的出牌和受伤入口使用真实多选。种子 317 在实际 UI 选普通杀 28、11，暗摸 92、33，随后 1 号 AI 亦发动。原有单张重铸 377 条已复跑。
+- **有序分区与私有牌堆。** `d519f4c` 固定 82 条上游请求。`b713bf1`、`145824b` 实现逐步校验、AI、取消、私有处理区、牌堆还原与实际清理。`4cc42a2` 在牌桌支持位置插入、行内重排、撤销与短横屏。`0f082cc` 实现恂恂，核对该局 25 条中的 21 条共同请求及五张实体的位置，在真人操作和 AI 路径验收。Rust 对严重边界另验局终不再开选择、无法求解的强制 AI 选择、子选择与清理均取消时释放原实体和所有权。
+- **确定性命令回放。** `89b50b5` 的 `RecordedGame` / `RecordedDuel` 从指定初始局面或经典种子录制接受的命令并恢复任意前缀。自定义内容按同一版本标识重新安装独立工厂，索引触发器按注册顺序采样。完整八席 AI 对局、发布 WASM 的 10 条人机指令和两个独立浏览器上下文的六个检查点均通过。完整命令属于离线可信宿主数据。全局通用事件历史、录像呈现等仍列在覆盖表。
+- **体力上限与死亡。** `587b5b5` 固定 20 局 226 条。`9c56549` 的真实八席对照全部 220 条请求与回调，另外 6 条上游技能内容首尾单列。包含正负数、零、直接夹断、两处取消、带来源或无来源死亡、威重和红色实体杀触发的恃勇分支。实际死亡可取消，取消后隐藏身份受保护；非主公救援者或濒死者在桃的嵌套回调中阵亡都有回归。`f160124` 的真实牌桌验证 4/4 → 4/5 → 4/4 → 3/3，威重分别暗摸 2、1、1 张，较高上限用数字表示。酒杀触发条件仍待酒的规则族验收。
 
-目标仍是固定上游整套对局机制与可观察行为。普通标准模式、单张重铸和两席拼点等既有结果不能代替整体验收。128 个 content 入口之外还需覆盖 player、gameEvent、game、模式和其他调度职责。额外联合选择、批量移动、禁用/扩展区域、角色上限/明暗/休整/复生、关系和修饰、通用历史及确定性回放都要逐族检验，见 `docs/exec-plans/active/noname-coverage.md`。
+既有能力包含普通经典身份局、25 将/40 技/104 张、动态触发与费用、可取消伤害、属性与连环、巧说、忠义、当先/放权、判定与多席拼点。目标仍是参考版本整套对局机制及可观察行为。继续逐族核对区域权限、剩余联合选择、角色生命周期和修饰、完整历史与模式接口。普通模式已可玩只是其中一项验收。
 
-## 验收与本机环境
+## 发行、原生与本机环境
 
-最新功能提交 `509a9a8` 的普通发布 WASM SHA-256 为 `41400E8D9638D99ADDEC94F8B9EE47C061C0ADD21EAA747A65FFAA9E12FEDEC2`。257 项常规 Rust release 测试（238 单元、19 集成）、单独 100 局八席（55,283 次决定、全终局守恒）、33 项 TS 测试、`pnpm engine:test`、`pnpm typecheck`、`pnpm build`、标准内容与美术校验全部通过。末轮三次 100 局重测，规则 p95 为 9.5 / 9.8 / 9.7 µs，投影与 JSON p95 为 12.5 / 12.7 / 12.7 µs。生产首页、选将、出牌/响应、动效、终局和重开，以及重铸、属性、两席拼点、巧说、忠义、阶段、多人拼点七个各自编译的非默认 WASM 工厂均经浏览器实跑。新版 Q3 行为以 Rust/WASM 和这些真实浏览器场景验收。
-
-Windows 和 Android 的独立原生验收对应 `042c6df`，当时的默认发布 WASM SHA-256 为 `E04FF567BABC6D2CAC7E015FDF2451B3285EDD185436AF2EDC3F00C41A8223B3`。在两端实际 WebView 内重新读取的字节与该文件一致，均离线从首页选张飞进入八人局并提交过河拆桥。Windows 版本 0→1，Android 版本 0→5，均无 JS 异常。
-
-- Windows 程序 `E:\Temp\my-awesome-kill-042c6df.exe`，SHA-256 `3470DC8E3AE33B4DB2A2ABC9348D2188CBA05A03F1B4424EAC249A5FDF9EFF1A`。
-- ARM64 debug APK `E:\Temp\my-awesome-kill-042c6df-arm64-debug.apk`，135,172,351 字节，SHA-256 `A6AF768146548523FE7ABBD9212D2AE3AE5CEA0ECA383F2E0626FF385E2EE2E0`。v2 验签、16 KiB 对齐、原生库及设备 base.apk 均已核对。设备为隔离 API 36 x86_64 AVD 的 ARM64 兼容环境，飞行模式、640×320 横屏。曾有一次将盘符路径解释成 URL 的失败包，最终包已改用相对 frontendDist 并完成设备实测。
-- 本任浏览器截图及两个 native verification.json 位于 `C:\Users\evanpatchouli\.codex\visualizations\2026\11\18\01a1efb0-eb04-7982-be52-e6674b8e18e7`。原生证据在 `native-042c6df\windows`、`native-042c6df\android`。
-
-本机已有 Node/pnpm、Rust toolchain 和 wasm-bindgen，路径见 `docs/runbooks/development.md`。pnpm 10.20.0 / wasm-bindgen 0.2.130 在 `%LOCALAPPDATA%\my-awesome-kill\tools`，Rust 在 `%USERPROFILE%\.rustup\toolchains\stable-x86_64-pc-windows-msvc\bin`。复用现有 target、SDK 和 Gradle 缓存；本任使用 `CARGO_INCREMENTAL=0`、`CARGO_BUILD_JOBS=2`。C 盘承载 `C:\Work\Work.vhdx`，大型构建/模拟器启动前检查宿主盘，错开高负载。
-
-WSL Ubuntu 的独立检出为 `/tmp/mak-oracle-noname-c7327094`，Node 为 `/home/evanpatchouli/.vite-plus/js_runtime/node/24.16.0/bin`。从 packages/fs 启动 `../../node_modules/.bin/tsx src/entry.ts --debug --dirname=../../apps/core`（8089），从 apps/core 启动 `node node_modules/vite/bin/vite.js dev --strictPort`（8081）。Windows Playwright 位于 `E:\Temp\mak-oracle-tools-1.65.1\node_modules\playwright`，Chrome 为 `C:\Program Files\Google\Chrome\Application\chrome.exe`。脚本环境变量和所有场景见 `tests/reference/README.md`、`docs/runbooks/testing.md`。交接时已收掉本任浏览器服务、上游服务、测试进程和隔离模拟器/专属 ADB。
-
-本地 `master`，最后一项功能提交 `509a9a8`，R3 补充取证 `5edeadb`。交接前用户没有独立未提交改动。源码增量 bundle 位于 `C:\Users\evanpatchouli\.codex\backups\my-awesome-kill\p1-20261119-01a1efb0-source.bundle`，要求已有 `be0c9c6`。先核对代码、测试、Git 状态和本任 chat 归属再继续。
+- 冻结功能提交 `f160124` 通过 278 项常规 Rust release 测试（259 单元、19 集成）、100 局八席终局与守恒、33 项 TS、WASM conformance、typecheck、生产构建、标准数据与 55 张原图校验。100 局 55,216 次决定。三次测量的规则 p95 为 10.2 / 10.0 / 10.1 µs，投影与 JSON p95 为 13.0 / 12.9 / 13.0 µs。普通生产入口和十个单独编译的规则 feature 均通过浏览器实跑。忠义和明典的独立动态导入初始化已在 `74b384a` 修正并重跑。
+- 默认发行 WASM SHA-256 为 `23C64D2FC44DF8109E1C9A16E9C632089AD1470E5125FD5735B7076A0DE1B9AD`，1,340,410 字节。冻结资源为 `E:\Temp\mak-p1-dist-f160124-01a1f06a`。Windows release 程序 `E:\Temp\my-awesome-kill-f160124.exe`，SHA-256 `62FF61FDD9333A013E04BFEAA07552682AF4ADE14CA5AEE25F1CB7AB90E1A39B`。
+- 最终 ARM64 debug APK 为 `E:\Temp\my-awesome-kill-f160124-arm64-debug.apk`，大小 144,642,295 字节，SHA-256 `7D21BC45FFD8FABFABB3BCC3CFBBA7933D5BC441B2EA6111B9AF26D8B0D9CE93`。v2、16 KiB 对齐、设备 base.apk 和原生库均核对。复用的 WSL 工程起初留有旧 Activity，第一候选的系统栏占位异常。最终包使用与目标版本核对过的原生源码，API 36 x86_64 隔离模拟器经 ARM64 兼容运行，横屏设备 640×320，WebView 可用区 640×272。
+- 两端均已离线从运行中的 WebView 读回相同冻结 WASM。选张飞进八席并提交过河拆桥，版本均 0→1。返回后选诸葛亮进八席，观星将 28 放底，86、85 自然进入手牌。Windows 1280×720、Android 640×272，均无 JS 异常。证据在 `C:\Users\evanpatchouli\.codex\visualizations\2026\11\18\01a1f06a-3e4d-75e1-8413-ce32e97cc306\f160124`，包含 `native\windows`、`native\android`、`production`、`features` 及测试与测量日志。
+- 复用现有 Rust target、pnpm 10.20.0、wasm-bindgen 0.2.130 和 SDK。Windows 工具目录见 `docs/runbooks/development.md`。本任使用 `CARGO_INCREMENTAL=0`、`CARGO_BUILD_JOBS=2`。E 盘由 `C:\Work\Work.vhdx` 承载，大型构建与模拟器需检查 C/E 空间并错峰。WSL Gradle 临时工程 `/tmp/mak-apk-fast/project`，其受控 Android 文件应先与待测提交核对。两端可复用的 CDP 脚本为 `E:\Temp\mak-p1-native-01a1f06a\native-verify.cjs`。
+- 上游独立检出在 WSL Ubuntu 的 `/tmp/mak-oracle-noname-c7327094`，Node 目录为 `/home/evanpatchouli/.vite-plus/js_runtime/node/24.16.0/bin`。将此目录置于 WSL PATH，在 `packages/fs` 运行 `../../node_modules/.bin/tsx src/entry.ts --debug --dirname=../../apps/core`（8089），在 `apps/core` 运行 `node node_modules/vite/bin/vite.js dev --strictPort`（8081）。Windows 设置 `REFERENCE_PLAYWRIGHT_PATH=E:\Temp\mak-oracle-tools-1.65.1\node_modules\playwright`、`REFERENCE_CHROMIUM_EXECUTABLE_PATH=C:\Program Files\Google\Chrome\Application\chrome.exe`。命令与样本说明见 `tests/reference/README.md`。
 
 ## 交接原因
 
-本任最新有效采样为 2026-11-18T20:44:26.444Z，last_token_usage.total_tokens = 636,054，model_context_window = 828,400，占 76.78%。距 80% 留有 26,666 个 token。 两份上游批量轨迹、兼容基线、独立暗给修复及整轮验收已分别完成。下一项可实际验收的 R3b 用例需要同一根内的有序多实体失牌、按原数组的一次批量获得、取消后的结果、知情与旧单张工厂兼容。本任最近的多席收牌到完整算分和复核已跨越十万余 token 的上下文增长；再启动这项跨层工作可能挤占交接空间。本次在工作区干净、无在途写入的边界交班。
+本任最新有效采样为 2026-11-19T03:04:02.695Z，last_token_usage.total_tokens = 637,209，model_context_window = 828,400，占 76.92%。距 80% 余 25,511 个 token。 从体力上限工作仍在进行时的 513,956 到本次收口，实际增长了 123,253 个 token。下一项要同时处理同步与事件复活、公开身份、标记存储、两种名单顺序、死亡中途回调和奖惩，并完成输入和牌桌复验。再开这一单元可能挤占交接空间。本任在完整发行和原生验收后交班。
