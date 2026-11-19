@@ -13,8 +13,30 @@ export function installReferenceRevival() {
     game.players.push(...game.players.splice(0, start));
     if (game.players.some((player, index) => player !== seats[index])) throw new Error('Expected a seat-ordered live array');
     const label = player => player ? 'ABCDEFGH'[seats.indexOf(player)] || null : null;
-    const B = seats.find(player => player !== A && player !== game.me && player !== game.zhu);
-    if (!B || _status.currentPhase !== A) throw new Error('Expected a non-lord AI target in the current turn');
+    // Fix the hidden inputs while preserving the identity distribution. The
+    // seeded startup can consume random values in a different order, so its
+    // initial identity shuffle alone does not fix these two physical seats.
+    const B = seats[1], C = seats[3];
+    if (_status.currentPhase !== A || B === game.zhu || C === game.zhu) {
+      throw new Error('Expected B and D to be non-lord seats in the current turn');
+    }
+    if (game.me === B || game.me === C) {
+      const previousHuman = game.me;
+      game.swapPlayer(A);
+      previousHuman.setIdentity('cai');
+    }
+    const fixIdentity = (player, identity, fixed) => {
+      if (player.identity === identity) return;
+      const donor = seats.find(other => other !== player && other !== A && other !== game.me &&
+        other !== game.zhu && !fixed.includes(other) && !other.identityShown && other.identity === identity);
+      if (!donor || player.identityShown) throw new Error(`Cannot arrange hidden ${identity} identity`);
+      [player.identity, donor.identity] = [donor.identity, player.identity];
+      player.setIdentity('cai');
+      donor.setIdentity('cai');
+    };
+    fixIdentity(B, 'zhong', []);
+    fixIdentity(C, 'fan', [B]);
+    if (B === game.me || C === game.me) throw new Error('Expected two non-lord AI targets');
     // Character selection is random; retain whether each field survives rather
     // than persisting an unrelated randomly selected name in the golden file.
     const originalCharacter = [B.name || null, B.name1 || null, B.name2 || null];
@@ -143,8 +165,7 @@ export function installReferenceRevival() {
 
       // A different non-lord AI is revived inside the real die trigger, before
       // the death content's cleanup and mode reward steps have completed.
-      const C = seats.find(player => player !== A && player !== B && player !== game.me && player.identity === 'fan');
-      if (!C || C === game.zhu) throw new Error('Expected a second non-lord AI rebel');
+      if (C.identity !== 'fan') throw new Error('Expected the arranged non-lord AI rebel');
       const existingC = C.getCards('he');
       if (existingC.length) await C.discard(existingC);
       C.hp = C.maxHp = 4;
