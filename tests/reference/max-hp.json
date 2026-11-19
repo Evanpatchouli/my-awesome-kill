@@ -1,0 +1,901 @@
+{
+  "schema": "noname-reference-trace-v1",
+  "referenceCommit": "c73270948d72949aa80009536b9fd5400767d091",
+  "mode": "identity",
+  "scenario": "max HP lifecycles, cancellation, death, and real cross-pack skills",
+  "setup": {
+    "players": 8,
+    "actorCurrent": true,
+    "nonLordAI": true,
+    "roles": {
+      "A": "zhu",
+      "B": "zhong",
+      "C": "zhong",
+      "D": "fan"
+    }
+  },
+  "remaining": 6,
+  "dead": 2,
+  "trials": [
+    {
+      "name": "gain",
+      "method": "gainMaxHp",
+      "requested": 1,
+      "before": [
+        4,
+        4,
+        true,
+        0
+      ],
+      "after": [
+        4,
+        5,
+        true,
+        0
+      ],
+      "event": {
+        "num": 1,
+        "source": "A",
+        "originalHp": 4,
+        "originalMaxHp": 4,
+        "changedHp": 0,
+        "changedMaxHp": 1,
+        "loseHp": null,
+        "finished": true,
+        "cancelled": false
+      },
+      "cancelAt": null,
+      "gameOver": false
+    },
+    {
+      "name": "lose-full",
+      "method": "loseMaxHp",
+      "requested": 1,
+      "before": [
+        4,
+        4,
+        true,
+        0
+      ],
+      "after": [
+        3,
+        3,
+        true,
+        0
+      ],
+      "event": {
+        "num": 1,
+        "source": "A",
+        "originalHp": 4,
+        "originalMaxHp": 4,
+        "changedHp": -1,
+        "changedMaxHp": -1,
+        "loseHp": 1,
+        "finished": true,
+        "cancelled": false
+      },
+      "cancelAt": null,
+      "gameOver": false
+    },
+    {
+      "name": "lose-injured",
+      "method": "loseMaxHp",
+      "requested": 1,
+      "before": [
+        2,
+        4,
+        true,
+        0
+      ],
+      "after": [
+        2,
+        3,
+        true,
+        0
+      ],
+      "event": {
+        "num": 1,
+        "source": "A",
+        "originalHp": 2,
+        "originalMaxHp": 4,
+        "changedHp": 0,
+        "changedMaxHp": -1,
+        "loseHp": 0,
+        "finished": true,
+        "cancelled": false
+      },
+      "cancelAt": null,
+      "gameOver": false
+    },
+    {
+      "name": "gain-zero",
+      "method": "gainMaxHp",
+      "requested": 0,
+      "before": [
+        3,
+        4,
+        true,
+        0
+      ],
+      "after": [
+        3,
+        4,
+        true,
+        0
+      ],
+      "event": {
+        "num": 0,
+        "source": "A",
+        "originalHp": 3,
+        "originalMaxHp": 4,
+        "changedHp": 0,
+        "changedMaxHp": 0,
+        "loseHp": null,
+        "finished": true,
+        "cancelled": false
+      },
+      "cancelAt": null,
+      "gameOver": false
+    },
+    {
+      "name": "lose-zero",
+      "method": "loseMaxHp",
+      "requested": 0,
+      "before": [
+        3,
+        4,
+        true,
+        0
+      ],
+      "after": [
+        3,
+        4,
+        true,
+        0
+      ],
+      "event": {
+        "num": 0,
+        "source": "A",
+        "originalHp": 3,
+        "originalMaxHp": 4,
+        "changedHp": 0,
+        "changedMaxHp": 0,
+        "loseHp": 0,
+        "finished": true,
+        "cancelled": false
+      },
+      "cancelAt": null,
+      "gameOver": false
+    },
+    {
+      "name": "gain-negative",
+      "method": "gainMaxHp",
+      "requested": -2,
+      "before": [
+        3,
+        4,
+        true,
+        0
+      ],
+      "after": [
+        2,
+        2,
+        true,
+        0
+      ],
+      "event": {
+        "num": -2,
+        "source": "A",
+        "originalHp": 3,
+        "originalMaxHp": 4,
+        "changedHp": 0,
+        "changedMaxHp": -2,
+        "loseHp": null,
+        "finished": true,
+        "cancelled": false
+      },
+      "cancelAt": null,
+      "gameOver": false
+    },
+    {
+      "name": "lose-negative",
+      "method": "loseMaxHp",
+      "requested": -2,
+      "before": [
+        3,
+        4,
+        true,
+        0
+      ],
+      "after": [
+        3,
+        6,
+        true,
+        0
+      ],
+      "event": {
+        "num": -2,
+        "source": "A",
+        "originalHp": 3,
+        "originalMaxHp": 4,
+        "changedHp": 0,
+        "changedMaxHp": 2,
+        "loseHp": 0,
+        "finished": true,
+        "cancelled": false
+      },
+      "cancelAt": null,
+      "gameOver": false
+    },
+    {
+      "name": "gain-negative-below-zero",
+      "method": "gainMaxHp",
+      "requested": -5,
+      "before": [
+        4,
+        4,
+        true,
+        0
+      ],
+      "after": [
+        -1,
+        -1,
+        true,
+        0
+      ],
+      "event": {
+        "num": -5,
+        "source": "A",
+        "originalHp": 4,
+        "originalMaxHp": 4,
+        "changedHp": 0,
+        "changedMaxHp": -5,
+        "loseHp": null,
+        "finished": true,
+        "cancelled": false
+      },
+      "cancelAt": null,
+      "gameOver": false
+    },
+    {
+      "name": "gain-from-negative-hp",
+      "method": "gainMaxHp",
+      "requested": 1,
+      "before": [
+        -1,
+        4,
+        true,
+        0
+      ],
+      "after": [
+        -1,
+        5,
+        true,
+        0
+      ],
+      "event": {
+        "num": 1,
+        "source": "A",
+        "originalHp": 0,
+        "originalMaxHp": 4,
+        "changedHp": 0,
+        "changedMaxHp": 1,
+        "loseHp": null,
+        "finished": true,
+        "cancelled": false
+      },
+      "cancelAt": null,
+      "gameOver": false
+    },
+    {
+      "name": "lose-from-negative-hp",
+      "method": "loseMaxHp",
+      "requested": 1,
+      "before": [
+        -1,
+        4,
+        true,
+        0
+      ],
+      "after": [
+        -1,
+        3,
+        true,
+        0
+      ],
+      "event": {
+        "num": 1,
+        "source": "A",
+        "originalHp": 0,
+        "originalMaxHp": 4,
+        "changedHp": 0,
+        "changedMaxHp": -1,
+        "loseHp": 0,
+        "finished": true,
+        "cancelled": false
+      },
+      "cancelAt": null,
+      "gameOver": false
+    },
+    {
+      "name": "gain-cancel-before",
+      "method": "gainMaxHp",
+      "requested": 1,
+      "before": [
+        4,
+        4,
+        true,
+        0
+      ],
+      "after": [
+        4,
+        4,
+        true,
+        0
+      ],
+      "event": {
+        "num": 1,
+        "source": "A",
+        "originalHp": null,
+        "originalMaxHp": null,
+        "changedHp": null,
+        "changedMaxHp": null,
+        "loseHp": null,
+        "finished": true,
+        "cancelled": true
+      },
+      "cancelAt": "gainMaxHpBefore",
+      "gameOver": false
+    },
+    {
+      "name": "gain-cancel-end",
+      "method": "gainMaxHp",
+      "requested": 1,
+      "before": [
+        4,
+        4,
+        true,
+        0
+      ],
+      "after": [
+        4,
+        5,
+        true,
+        0
+      ],
+      "event": {
+        "num": 1,
+        "source": "A",
+        "originalHp": 4,
+        "originalMaxHp": 4,
+        "changedHp": 0,
+        "changedMaxHp": 1,
+        "loseHp": null,
+        "finished": true,
+        "cancelled": true
+      },
+      "cancelAt": "gainMaxHpEnd",
+      "gameOver": false
+    },
+    {
+      "name": "lose-cancel-begin",
+      "method": "loseMaxHp",
+      "requested": 1,
+      "before": [
+        4,
+        4,
+        true,
+        0
+      ],
+      "after": [
+        4,
+        4,
+        true,
+        0
+      ],
+      "event": {
+        "num": 1,
+        "source": "A",
+        "originalHp": null,
+        "originalMaxHp": null,
+        "changedHp": null,
+        "changedMaxHp": null,
+        "loseHp": null,
+        "finished": true,
+        "cancelled": true
+      },
+      "cancelAt": "loseMaxHpBegin",
+      "gameOver": false
+    },
+    {
+      "name": "lose-cancel-end",
+      "method": "loseMaxHp",
+      "requested": 1,
+      "before": [
+        4,
+        4,
+        true,
+        0
+      ],
+      "after": [
+        3,
+        3,
+        true,
+        0
+      ],
+      "event": {
+        "num": 1,
+        "source": "A",
+        "originalHp": 4,
+        "originalMaxHp": 4,
+        "changedHp": -1,
+        "changedMaxHp": -1,
+        "loseHp": 1,
+        "finished": true,
+        "cancelled": true
+      },
+      "cancelAt": "loseMaxHpEnd",
+      "gameOver": false
+    },
+    {
+      "name": "die-cancel-before",
+      "method": "loseMaxHp",
+      "requested": 1,
+      "before": [
+        1,
+        1,
+        true,
+        0
+      ],
+      "after": [
+        0,
+        0,
+        true,
+        0
+      ],
+      "event": {
+        "num": 1,
+        "source": "A",
+        "originalHp": 1,
+        "originalMaxHp": 1,
+        "changedHp": -1,
+        "changedMaxHp": -1,
+        "loseHp": 1,
+        "finished": true,
+        "cancelled": false
+      },
+      "cancelAt": "dieBefore",
+      "gameOver": false
+    },
+    {
+      "name": "weizhong-tied-min",
+      "method": "gainMaxHp",
+      "requested": 1,
+      "before": [
+        4,
+        4,
+        true,
+        0
+      ],
+      "after": [
+        4,
+        5,
+        true,
+        2
+      ],
+      "event": {
+        "num": 1,
+        "source": "A",
+        "originalHp": 4,
+        "originalMaxHp": 4,
+        "changedHp": 0,
+        "changedMaxHp": 1,
+        "loseHp": null,
+        "finished": true,
+        "cancelled": false
+      },
+      "cancelAt": null,
+      "gameOver": false,
+      "handCounts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "minimum": true,
+      "drawn": [
+        [
+          "tao",
+          "heart",
+          7
+        ],
+        [
+          "tao",
+          "heart",
+          8
+        ]
+      ]
+    },
+    {
+      "name": "weizhong-not-min",
+      "method": "loseMaxHp",
+      "requested": 1,
+      "before": [
+        4,
+        4,
+        true,
+        2
+      ],
+      "after": [
+        3,
+        3,
+        true,
+        3
+      ],
+      "event": {
+        "num": 1,
+        "source": "A",
+        "originalHp": 4,
+        "originalMaxHp": 4,
+        "changedHp": -1,
+        "changedMaxHp": -1,
+        "loseHp": 1,
+        "finished": true,
+        "cancelled": false
+      },
+      "cancelAt": null,
+      "gameOver": false,
+      "handCounts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        2
+      ],
+      "minimum": false,
+      "drawn": [
+        [
+          "tao",
+          "heart",
+          9
+        ]
+      ]
+    },
+    {
+      "name": "shiyong-red-sha",
+      "before": [
+        4,
+        4,
+        true,
+        0
+      ],
+      "after": [
+        3,
+        3,
+        true,
+        0
+      ],
+      "canUse": true,
+      "shaInDiscard": true,
+      "gameOver": false
+    },
+    {
+      "name": "death-zero-no-source",
+      "method": "loseMaxHp",
+      "requested": 1,
+      "before": [
+        1,
+        1,
+        true,
+        0
+      ],
+      "after": [
+        0,
+        0,
+        false,
+        0
+      ],
+      "event": {
+        "num": 1,
+        "source": null,
+        "originalHp": 1,
+        "originalMaxHp": 1,
+        "changedHp": -1,
+        "changedMaxHp": -1,
+        "loseHp": 1,
+        "finished": true,
+        "cancelled": false
+      },
+      "cancelAt": null,
+      "gameOver": false
+    },
+    {
+      "name": "death-negative-source",
+      "method": "loseMaxHp",
+      "requested": 2,
+      "before": [
+        1,
+        1,
+        true,
+        0
+      ],
+      "after": [
+        -1,
+        -1,
+        false,
+        0
+      ],
+      "event": {
+        "num": 2,
+        "source": "A",
+        "originalHp": 1,
+        "originalMaxHp": 1,
+        "changedHp": -1,
+        "changedMaxHp": -2,
+        "loseHp": 2,
+        "finished": true,
+        "cancelled": false
+      },
+      "cancelAt": null,
+      "gameOver": false
+    }
+  ],
+  "eventColumns": [
+    "trial",
+    "kind",
+    "timing",
+    "subject",
+    "parent",
+    "player",
+    "source",
+    "num",
+    "hp",
+    "maxHp",
+    "alive",
+    "hand",
+    "originalHp",
+    "originalMaxHp",
+    "changedHp",
+    "changedMaxHp",
+    "loseHp",
+    "finished",
+    "cancelled",
+    "reason",
+    "reasonSource"
+  ],
+  "events": [
+    ["gain","request","gainMaxHpBefore","gainMaxHp","reference_fixture_use","B","A",1,4,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["gain","callback","gainMaxHpBefore","gainMaxHp","reference_fixture_use","B","A",1,4,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["gain","request","gainMaxHpBegin","gainMaxHp","reference_fixture_use","B","A",1,4,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["gain","callback","gainMaxHpBegin","gainMaxHp","reference_fixture_use","B","A",1,4,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["gain","request","gainMaxHpEnd","gainMaxHp","reference_fixture_use","B","A",1,4,5,true,0,4,4,0,1,null,true,false,null,null],
+    ["gain","callback","gainMaxHpEnd","gainMaxHp","reference_fixture_use","B","A",1,4,5,true,0,4,4,0,1,null,true,false,null,null],
+    ["gain","request","gainMaxHpAfter","gainMaxHp","reference_fixture_use","B","A",1,4,5,true,0,4,4,0,1,null,true,false,null,null],
+    ["gain","callback","gainMaxHpAfter","gainMaxHp","reference_fixture_use","B","A",1,4,5,true,0,4,4,0,1,null,true,false,null,null],
+    ["lose-full","request","loseMaxHpBefore","loseMaxHp","reference_fixture_use","B","A",1,4,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["lose-full","callback","loseMaxHpBefore","loseMaxHp","reference_fixture_use","B","A",1,4,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["lose-full","request","loseMaxHpBegin","loseMaxHp","reference_fixture_use","B","A",1,4,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["lose-full","callback","loseMaxHpBegin","loseMaxHp","reference_fixture_use","B","A",1,4,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["lose-full","request","loseMaxHpEnd","loseMaxHp","reference_fixture_use","B","A",1,3,3,true,0,4,4,-1,-1,1,true,false,null,null],
+    ["lose-full","callback","loseMaxHpEnd","loseMaxHp","reference_fixture_use","B","A",1,3,3,true,0,4,4,-1,-1,1,true,false,null,null],
+    ["lose-full","request","loseMaxHpAfter","loseMaxHp","reference_fixture_use","B","A",1,3,3,true,0,4,4,-1,-1,1,true,false,null,null],
+    ["lose-full","callback","loseMaxHpAfter","loseMaxHp","reference_fixture_use","B","A",1,3,3,true,0,4,4,-1,-1,1,true,false,null,null],
+    ["lose-injured","request","loseMaxHpBefore","loseMaxHp","reference_fixture_use","B","A",1,2,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["lose-injured","callback","loseMaxHpBefore","loseMaxHp","reference_fixture_use","B","A",1,2,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["lose-injured","request","loseMaxHpBegin","loseMaxHp","reference_fixture_use","B","A",1,2,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["lose-injured","callback","loseMaxHpBegin","loseMaxHp","reference_fixture_use","B","A",1,2,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["lose-injured","request","loseMaxHpEnd","loseMaxHp","reference_fixture_use","B","A",1,2,3,true,0,2,4,0,-1,0,true,false,null,null],
+    ["lose-injured","callback","loseMaxHpEnd","loseMaxHp","reference_fixture_use","B","A",1,2,3,true,0,2,4,0,-1,0,true,false,null,null],
+    ["lose-injured","request","loseMaxHpAfter","loseMaxHp","reference_fixture_use","B","A",1,2,3,true,0,2,4,0,-1,0,true,false,null,null],
+    ["lose-injured","callback","loseMaxHpAfter","loseMaxHp","reference_fixture_use","B","A",1,2,3,true,0,2,4,0,-1,0,true,false,null,null],
+    ["gain-zero","request","gainMaxHpBefore","gainMaxHp","reference_fixture_use","B","A",0,3,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["gain-zero","callback","gainMaxHpBefore","gainMaxHp","reference_fixture_use","B","A",0,3,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["gain-zero","request","gainMaxHpBegin","gainMaxHp","reference_fixture_use","B","A",0,3,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["gain-zero","callback","gainMaxHpBegin","gainMaxHp","reference_fixture_use","B","A",0,3,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["gain-zero","request","gainMaxHpEnd","gainMaxHp","reference_fixture_use","B","A",0,3,4,true,0,3,4,0,0,null,true,false,null,null],
+    ["gain-zero","callback","gainMaxHpEnd","gainMaxHp","reference_fixture_use","B","A",0,3,4,true,0,3,4,0,0,null,true,false,null,null],
+    ["gain-zero","request","gainMaxHpAfter","gainMaxHp","reference_fixture_use","B","A",0,3,4,true,0,3,4,0,0,null,true,false,null,null],
+    ["gain-zero","callback","gainMaxHpAfter","gainMaxHp","reference_fixture_use","B","A",0,3,4,true,0,3,4,0,0,null,true,false,null,null],
+    ["lose-zero","request","loseMaxHpBefore","loseMaxHp","reference_fixture_use","B","A",0,3,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["lose-zero","callback","loseMaxHpBefore","loseMaxHp","reference_fixture_use","B","A",0,3,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["lose-zero","request","loseMaxHpBegin","loseMaxHp","reference_fixture_use","B","A",0,3,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["lose-zero","callback","loseMaxHpBegin","loseMaxHp","reference_fixture_use","B","A",0,3,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["lose-zero","request","loseMaxHpEnd","loseMaxHp","reference_fixture_use","B","A",0,3,4,true,0,3,4,0,0,0,true,false,null,null],
+    ["lose-zero","callback","loseMaxHpEnd","loseMaxHp","reference_fixture_use","B","A",0,3,4,true,0,3,4,0,0,0,true,false,null,null],
+    ["lose-zero","request","loseMaxHpAfter","loseMaxHp","reference_fixture_use","B","A",0,3,4,true,0,3,4,0,0,0,true,false,null,null],
+    ["lose-zero","callback","loseMaxHpAfter","loseMaxHp","reference_fixture_use","B","A",0,3,4,true,0,3,4,0,0,0,true,false,null,null],
+    ["gain-negative","request","gainMaxHpBefore","gainMaxHp","reference_fixture_use","B","A",-2,3,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["gain-negative","callback","gainMaxHpBefore","gainMaxHp","reference_fixture_use","B","A",-2,3,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["gain-negative","request","gainMaxHpBegin","gainMaxHp","reference_fixture_use","B","A",-2,3,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["gain-negative","callback","gainMaxHpBegin","gainMaxHp","reference_fixture_use","B","A",-2,3,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["gain-negative","request","gainMaxHpEnd","gainMaxHp","reference_fixture_use","B","A",-2,2,2,true,0,3,4,0,-2,null,true,false,null,null],
+    ["gain-negative","callback","gainMaxHpEnd","gainMaxHp","reference_fixture_use","B","A",-2,2,2,true,0,3,4,0,-2,null,true,false,null,null],
+    ["gain-negative","request","gainMaxHpAfter","gainMaxHp","reference_fixture_use","B","A",-2,2,2,true,0,3,4,0,-2,null,true,false,null,null],
+    ["gain-negative","callback","gainMaxHpAfter","gainMaxHp","reference_fixture_use","B","A",-2,2,2,true,0,3,4,0,-2,null,true,false,null,null],
+    ["lose-negative","request","loseMaxHpBefore","loseMaxHp","reference_fixture_use","B","A",-2,3,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["lose-negative","callback","loseMaxHpBefore","loseMaxHp","reference_fixture_use","B","A",-2,3,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["lose-negative","request","loseMaxHpBegin","loseMaxHp","reference_fixture_use","B","A",-2,3,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["lose-negative","callback","loseMaxHpBegin","loseMaxHp","reference_fixture_use","B","A",-2,3,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["lose-negative","request","loseMaxHpEnd","loseMaxHp","reference_fixture_use","B","A",-2,3,6,true,0,3,4,0,2,0,true,false,null,null],
+    ["lose-negative","callback","loseMaxHpEnd","loseMaxHp","reference_fixture_use","B","A",-2,3,6,true,0,3,4,0,2,0,true,false,null,null],
+    ["lose-negative","request","loseMaxHpAfter","loseMaxHp","reference_fixture_use","B","A",-2,3,6,true,0,3,4,0,2,0,true,false,null,null],
+    ["lose-negative","callback","loseMaxHpAfter","loseMaxHp","reference_fixture_use","B","A",-2,3,6,true,0,3,4,0,2,0,true,false,null,null],
+    ["gain-negative-below-zero","request","gainMaxHpBefore","gainMaxHp","reference_fixture_use","B","A",-5,4,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["gain-negative-below-zero","callback","gainMaxHpBefore","gainMaxHp","reference_fixture_use","B","A",-5,4,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["gain-negative-below-zero","request","gainMaxHpBegin","gainMaxHp","reference_fixture_use","B","A",-5,4,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["gain-negative-below-zero","callback","gainMaxHpBegin","gainMaxHp","reference_fixture_use","B","A",-5,4,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["gain-negative-below-zero","request","gainMaxHpEnd","gainMaxHp","reference_fixture_use","B","A",-5,-1,-1,true,0,4,4,0,-5,null,true,false,null,null],
+    ["gain-negative-below-zero","callback","gainMaxHpEnd","gainMaxHp","reference_fixture_use","B","A",-5,-1,-1,true,0,4,4,0,-5,null,true,false,null,null],
+    ["gain-negative-below-zero","request","gainMaxHpAfter","gainMaxHp","reference_fixture_use","B","A",-5,-1,-1,true,0,4,4,0,-5,null,true,false,null,null],
+    ["gain-negative-below-zero","callback","gainMaxHpAfter","gainMaxHp","reference_fixture_use","B","A",-5,-1,-1,true,0,4,4,0,-5,null,true,false,null,null],
+    ["gain-from-negative-hp","request","gainMaxHpBefore","gainMaxHp","reference_fixture_use","B","A",1,-1,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["gain-from-negative-hp","callback","gainMaxHpBefore","gainMaxHp","reference_fixture_use","B","A",1,-1,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["gain-from-negative-hp","request","gainMaxHpBegin","gainMaxHp","reference_fixture_use","B","A",1,-1,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["gain-from-negative-hp","callback","gainMaxHpBegin","gainMaxHp","reference_fixture_use","B","A",1,-1,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["gain-from-negative-hp","request","gainMaxHpEnd","gainMaxHp","reference_fixture_use","B","A",1,-1,5,true,0,0,4,0,1,null,true,false,null,null],
+    ["gain-from-negative-hp","callback","gainMaxHpEnd","gainMaxHp","reference_fixture_use","B","A",1,-1,5,true,0,0,4,0,1,null,true,false,null,null],
+    ["gain-from-negative-hp","request","gainMaxHpAfter","gainMaxHp","reference_fixture_use","B","A",1,-1,5,true,0,0,4,0,1,null,true,false,null,null],
+    ["gain-from-negative-hp","callback","gainMaxHpAfter","gainMaxHp","reference_fixture_use","B","A",1,-1,5,true,0,0,4,0,1,null,true,false,null,null],
+    ["lose-from-negative-hp","request","loseMaxHpBefore","loseMaxHp","reference_fixture_use","B","A",1,-1,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["lose-from-negative-hp","callback","loseMaxHpBefore","loseMaxHp","reference_fixture_use","B","A",1,-1,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["lose-from-negative-hp","request","loseMaxHpBegin","loseMaxHp","reference_fixture_use","B","A",1,-1,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["lose-from-negative-hp","callback","loseMaxHpBegin","loseMaxHp","reference_fixture_use","B","A",1,-1,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["lose-from-negative-hp","request","loseMaxHpEnd","loseMaxHp","reference_fixture_use","B","A",1,-1,3,true,0,0,4,0,-1,0,true,false,null,null],
+    ["lose-from-negative-hp","callback","loseMaxHpEnd","loseMaxHp","reference_fixture_use","B","A",1,-1,3,true,0,0,4,0,-1,0,true,false,null,null],
+    ["lose-from-negative-hp","request","loseMaxHpAfter","loseMaxHp","reference_fixture_use","B","A",1,-1,3,true,0,0,4,0,-1,0,true,false,null,null],
+    ["lose-from-negative-hp","callback","loseMaxHpAfter","loseMaxHp","reference_fixture_use","B","A",1,-1,3,true,0,0,4,0,-1,0,true,false,null,null],
+    ["gain-cancel-before","request","gainMaxHpBefore","gainMaxHp","reference_fixture_use","B","A",1,4,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["gain-cancel-before","callback","gainMaxHpBefore","gainMaxHp","reference_fixture_use","B","A",1,4,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["gain-cancel-before","request","gainMaxHpCancelled","gainMaxHp","reference_fixture_use","B","A",1,4,4,true,0,null,null,null,null,null,false,true,null,null],
+    ["gain-cancel-before","callback","gainMaxHpCancelled","gainMaxHp","reference_fixture_use","B","A",1,4,4,true,0,null,null,null,null,null,true,true,null,null],
+    ["gain-cancel-end","request","gainMaxHpBefore","gainMaxHp","reference_fixture_use","B","A",1,4,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["gain-cancel-end","callback","gainMaxHpBefore","gainMaxHp","reference_fixture_use","B","A",1,4,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["gain-cancel-end","request","gainMaxHpBegin","gainMaxHp","reference_fixture_use","B","A",1,4,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["gain-cancel-end","callback","gainMaxHpBegin","gainMaxHp","reference_fixture_use","B","A",1,4,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["gain-cancel-end","request","gainMaxHpEnd","gainMaxHp","reference_fixture_use","B","A",1,4,5,true,0,4,4,0,1,null,true,false,null,null],
+    ["gain-cancel-end","callback","gainMaxHpEnd","gainMaxHp","reference_fixture_use","B","A",1,4,5,true,0,4,4,0,1,null,true,false,null,null],
+    ["gain-cancel-end","request","gainMaxHpCancelled","gainMaxHp","reference_fixture_use","B","A",1,4,5,true,0,4,4,0,1,null,true,true,null,null],
+    ["gain-cancel-end","callback","gainMaxHpCancelled","gainMaxHp","reference_fixture_use","B","A",1,4,5,true,0,4,4,0,1,null,true,true,null,null],
+    ["lose-cancel-begin","request","loseMaxHpBefore","loseMaxHp","reference_fixture_use","B","A",1,4,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["lose-cancel-begin","callback","loseMaxHpBefore","loseMaxHp","reference_fixture_use","B","A",1,4,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["lose-cancel-begin","request","loseMaxHpBegin","loseMaxHp","reference_fixture_use","B","A",1,4,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["lose-cancel-begin","callback","loseMaxHpBegin","loseMaxHp","reference_fixture_use","B","A",1,4,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["lose-cancel-begin","request","loseMaxHpCancelled","loseMaxHp","reference_fixture_use","B","A",1,4,4,true,0,null,null,null,null,null,false,true,null,null],
+    ["lose-cancel-begin","callback","loseMaxHpCancelled","loseMaxHp","reference_fixture_use","B","A",1,4,4,true,0,null,null,null,null,null,true,true,null,null],
+    ["lose-cancel-end","request","loseMaxHpBefore","loseMaxHp","reference_fixture_use","B","A",1,4,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["lose-cancel-end","callback","loseMaxHpBefore","loseMaxHp","reference_fixture_use","B","A",1,4,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["lose-cancel-end","request","loseMaxHpBegin","loseMaxHp","reference_fixture_use","B","A",1,4,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["lose-cancel-end","callback","loseMaxHpBegin","loseMaxHp","reference_fixture_use","B","A",1,4,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["lose-cancel-end","request","loseMaxHpEnd","loseMaxHp","reference_fixture_use","B","A",1,3,3,true,0,4,4,-1,-1,1,true,false,null,null],
+    ["lose-cancel-end","callback","loseMaxHpEnd","loseMaxHp","reference_fixture_use","B","A",1,3,3,true,0,4,4,-1,-1,1,true,false,null,null],
+    ["lose-cancel-end","request","loseMaxHpCancelled","loseMaxHp","reference_fixture_use","B","A",1,3,3,true,0,4,4,-1,-1,1,true,true,null,null],
+    ["lose-cancel-end","callback","loseMaxHpCancelled","loseMaxHp","reference_fixture_use","B","A",1,3,3,true,0,4,4,-1,-1,1,true,true,null,null],
+    ["die-cancel-before","request","loseMaxHpBefore","loseMaxHp","reference_fixture_use","B","A",1,1,1,true,0,null,null,null,null,null,false,false,null,null],
+    ["die-cancel-before","callback","loseMaxHpBefore","loseMaxHp","reference_fixture_use","B","A",1,1,1,true,0,null,null,null,null,null,false,false,null,null],
+    ["die-cancel-before","request","loseMaxHpBegin","loseMaxHp","reference_fixture_use","B","A",1,1,1,true,0,null,null,null,null,null,false,false,null,null],
+    ["die-cancel-before","callback","loseMaxHpBegin","loseMaxHp","reference_fixture_use","B","A",1,1,1,true,0,null,null,null,null,null,false,false,null,null],
+    ["die-cancel-before","request","dieBefore","die","loseMaxHp","B","A",null,0,0,true,0,null,null,null,null,null,false,false,"loseMaxHp","A"],
+    ["die-cancel-before","callback","dieBefore","die","loseMaxHp","B","A",null,0,0,true,0,null,null,null,null,null,false,false,"loseMaxHp","A"],
+    ["die-cancel-before","request","dieCancelled","die","loseMaxHp","B","A",null,0,0,true,0,null,null,null,null,null,false,true,"loseMaxHp","A"],
+    ["die-cancel-before","callback","dieCancelled","die","loseMaxHp","B","A",null,0,0,true,0,null,null,null,null,null,true,true,"loseMaxHp","A"],
+    ["die-cancel-before","request","loseMaxHpEnd","loseMaxHp","reference_fixture_use","B","A",1,0,0,true,0,1,1,-1,-1,1,true,false,null,null],
+    ["die-cancel-before","callback","loseMaxHpEnd","loseMaxHp","reference_fixture_use","B","A",1,0,0,true,0,1,1,-1,-1,1,true,false,null,null],
+    ["die-cancel-before","request","loseMaxHpAfter","loseMaxHp","reference_fixture_use","B","A",1,0,0,true,0,1,1,-1,-1,1,true,false,null,null],
+    ["die-cancel-before","callback","loseMaxHpAfter","loseMaxHp","reference_fixture_use","B","A",1,0,0,true,0,1,1,-1,-1,1,true,false,null,null],
+    ["weizhong-tied-min","request","gainMaxHpBefore","gainMaxHp","reference_fixture_use","B","A",1,4,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["weizhong-tied-min","callback","gainMaxHpBefore","gainMaxHp","reference_fixture_use","B","A",1,4,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["weizhong-tied-min","request","gainMaxHpBegin","gainMaxHp","reference_fixture_use","B","A",1,4,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["weizhong-tied-min","callback","gainMaxHpBegin","gainMaxHp","reference_fixture_use","B","A",1,4,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["weizhong-tied-min","request","gainMaxHpEnd","gainMaxHp","reference_fixture_use","B","A",1,4,5,true,0,4,4,0,1,null,true,false,null,null],
+    ["weizhong-tied-min","callback","gainMaxHpEnd","gainMaxHp","reference_fixture_use","B","A",1,4,5,true,0,4,4,0,1,null,true,false,null,null],
+    ["weizhong-tied-min","content-begin","weizhong","weizhong","trigger","B",null,null,4,5,true,0,null,null,null,null,null,false,false,null,null],
+    ["weizhong-tied-min","request","drawBefore","draw","weizhong","B","B",2,4,5,true,0,null,null,null,null,null,false,false,null,null],
+    ["weizhong-tied-min","callback","drawBefore","draw","weizhong","B","B",2,4,5,true,0,null,null,null,null,null,false,false,null,null],
+    ["weizhong-tied-min","request","drawEnd","draw","weizhong","B","B",2,4,5,true,2,null,null,null,null,null,true,false,null,null],
+    ["weizhong-tied-min","callback","drawEnd","draw","weizhong","B","B",2,4,5,true,2,null,null,null,null,null,true,false,null,null],
+    ["weizhong-tied-min","request","drawAfter","draw","weizhong","B","B",2,4,5,true,2,null,null,null,null,null,true,false,null,null],
+    ["weizhong-tied-min","callback","drawAfter","draw","weizhong","B","B",2,4,5,true,2,null,null,null,null,null,true,false,null,null],
+    ["weizhong-tied-min","content-end","weizhong","weizhong","trigger","B",null,null,4,5,true,2,null,null,null,null,null,false,false,null,null],
+    ["weizhong-tied-min","request","gainMaxHpAfter","gainMaxHp","reference_fixture_use","B","A",1,4,5,true,2,4,4,0,1,null,true,false,null,null],
+    ["weizhong-tied-min","callback","gainMaxHpAfter","gainMaxHp","reference_fixture_use","B","A",1,4,5,true,2,4,4,0,1,null,true,false,null,null],
+    ["weizhong-not-min","request","loseMaxHpBefore","loseMaxHp","reference_fixture_use","B","A",1,4,4,true,2,null,null,null,null,null,false,false,null,null],
+    ["weizhong-not-min","callback","loseMaxHpBefore","loseMaxHp","reference_fixture_use","B","A",1,4,4,true,2,null,null,null,null,null,false,false,null,null],
+    ["weizhong-not-min","request","loseMaxHpBegin","loseMaxHp","reference_fixture_use","B","A",1,4,4,true,2,null,null,null,null,null,false,false,null,null],
+    ["weizhong-not-min","callback","loseMaxHpBegin","loseMaxHp","reference_fixture_use","B","A",1,4,4,true,2,null,null,null,null,null,false,false,null,null],
+    ["weizhong-not-min","request","loseMaxHpEnd","loseMaxHp","reference_fixture_use","B","A",1,3,3,true,2,4,4,-1,-1,1,true,false,null,null],
+    ["weizhong-not-min","callback","loseMaxHpEnd","loseMaxHp","reference_fixture_use","B","A",1,3,3,true,2,4,4,-1,-1,1,true,false,null,null],
+    ["weizhong-not-min","content-begin","weizhong","weizhong","trigger","B",null,null,3,3,true,2,null,null,null,null,null,false,false,null,null],
+    ["weizhong-not-min","request","drawBefore","draw","weizhong","B","B",1,3,3,true,2,null,null,null,null,null,false,false,null,null],
+    ["weizhong-not-min","callback","drawBefore","draw","weizhong","B","B",1,3,3,true,2,null,null,null,null,null,false,false,null,null],
+    ["weizhong-not-min","request","drawEnd","draw","weizhong","B","B",1,3,3,true,3,null,null,null,null,null,true,false,null,null],
+    ["weizhong-not-min","callback","drawEnd","draw","weizhong","B","B",1,3,3,true,3,null,null,null,null,null,true,false,null,null],
+    ["weizhong-not-min","request","drawAfter","draw","weizhong","B","B",1,3,3,true,3,null,null,null,null,null,true,false,null,null],
+    ["weizhong-not-min","callback","drawAfter","draw","weizhong","B","B",1,3,3,true,3,null,null,null,null,null,true,false,null,null],
+    ["weizhong-not-min","content-end","weizhong","weizhong","trigger","B",null,null,3,3,true,3,null,null,null,null,null,false,false,null,null],
+    ["weizhong-not-min","request","loseMaxHpAfter","loseMaxHp","reference_fixture_use","B","A",1,3,3,true,3,4,4,-1,-1,1,true,false,null,null],
+    ["weizhong-not-min","callback","loseMaxHpAfter","loseMaxHp","reference_fixture_use","B","A",1,3,3,true,3,4,4,-1,-1,1,true,false,null,null],
+    ["shiyong-red-sha","request","damageBefore","damage","sha","B","A",1,4,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["shiyong-red-sha","callback","damageBefore","damage","sha","B","A",1,4,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["shiyong-red-sha","request","damageBegin4","damage","sha","B","A",1,4,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["shiyong-red-sha","callback","damageBegin4","damage","sha","B","A",1,4,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["shiyong-red-sha","request","damage","damage","sha","B","A",1,4,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["shiyong-red-sha","request","changeHpBefore","changeHp","damage","B",null,-1,4,4,true,0,4,null,null,null,null,false,false,null,null],
+    ["shiyong-red-sha","callback","changeHpBefore","changeHp","damage","B",null,-1,4,4,true,0,4,null,null,null,null,false,false,null,null],
+    ["shiyong-red-sha","request","changeHpBegin","changeHp","damage","B",null,-1,4,4,true,0,4,null,null,null,null,false,false,null,null],
+    ["shiyong-red-sha","callback","changeHpBegin","changeHp","damage","B",null,-1,4,4,true,0,4,null,null,null,null,false,false,null,null],
+    ["shiyong-red-sha","request","changeHp","changeHp","damage","B",null,-1,3,4,true,0,4,4,-1,0,null,false,false,null,null],
+    ["shiyong-red-sha","callback","changeHp","changeHp","damage","B",null,-1,3,4,true,0,4,4,-1,0,null,false,false,null,null],
+    ["shiyong-red-sha","request","changeHpEnd","changeHp","damage","B",null,-1,3,4,true,0,4,4,-1,0,null,true,false,null,null],
+    ["shiyong-red-sha","callback","changeHpEnd","changeHp","damage","B",null,-1,3,4,true,0,4,4,-1,0,null,true,false,null,null],
+    ["shiyong-red-sha","request","changeHpAfter","changeHp","damage","B",null,-1,3,4,true,0,4,4,-1,0,null,true,false,null,null],
+    ["shiyong-red-sha","callback","changeHpAfter","changeHp","damage","B",null,-1,3,4,true,0,4,4,-1,0,null,true,false,null,null],
+    ["shiyong-red-sha","callback","damage","damage","sha","B","A",1,3,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["shiyong-red-sha","request","damageEnd","damage","sha","B","A",1,3,4,true,0,null,null,null,null,null,true,false,null,null],
+    ["shiyong-red-sha","callback","damageEnd","damage","sha","B","A",1,3,4,true,0,null,null,null,null,null,true,false,null,null],
+    ["shiyong-red-sha","content-begin","shiyong","shiyong","trigger","B",null,null,3,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["shiyong-red-sha","request","loseMaxHpBefore","loseMaxHp","shiyong","B",null,1,3,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["shiyong-red-sha","callback","loseMaxHpBefore","loseMaxHp","shiyong","B",null,1,3,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["shiyong-red-sha","request","loseMaxHpBegin","loseMaxHp","shiyong","B",null,1,3,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["shiyong-red-sha","callback","loseMaxHpBegin","loseMaxHp","shiyong","B",null,1,3,4,true,0,null,null,null,null,null,false,false,null,null],
+    ["shiyong-red-sha","request","loseMaxHpEnd","loseMaxHp","shiyong","B",null,1,3,3,true,0,3,4,0,-1,0,true,false,null,null],
+    ["shiyong-red-sha","callback","loseMaxHpEnd","loseMaxHp","shiyong","B",null,1,3,3,true,0,3,4,0,-1,0,true,false,null,null],
+    ["shiyong-red-sha","request","loseMaxHpAfter","loseMaxHp","shiyong","B",null,1,3,3,true,0,3,4,0,-1,0,true,false,null,null],
+    ["shiyong-red-sha","callback","loseMaxHpAfter","loseMaxHp","shiyong","B",null,1,3,3,true,0,3,4,0,-1,0,true,false,null,null],
+    ["shiyong-red-sha","content-end","shiyong","shiyong","trigger","B",null,null,3,3,true,0,null,null,null,null,null,false,false,null,null],
+    ["shiyong-red-sha","request","damageAfter","damage","sha","B","A",1,3,3,true,0,null,null,null,null,null,true,false,null,null],
+    ["shiyong-red-sha","callback","damageAfter","damage","sha","B","A",1,3,3,true,0,null,null,null,null,null,true,false,null,null],
+    ["death-zero-no-source","request","loseMaxHpBefore","loseMaxHp","reference_fixture_use","C",null,1,1,1,true,0,null,null,null,null,null,false,false,null,null],
+    ["death-zero-no-source","callback","loseMaxHpBefore","loseMaxHp","reference_fixture_use","C",null,1,1,1,true,0,null,null,null,null,null,false,false,null,null],
+    ["death-zero-no-source","request","loseMaxHpBegin","loseMaxHp","reference_fixture_use","C",null,1,1,1,true,0,null,null,null,null,null,false,false,null,null],
+    ["death-zero-no-source","callback","loseMaxHpBegin","loseMaxHp","reference_fixture_use","C",null,1,1,1,true,0,null,null,null,null,null,false,false,null,null],
+    ["death-zero-no-source","request","dieBefore","die","loseMaxHp","C",null,null,0,0,true,0,null,null,null,null,null,false,false,"loseMaxHp",null],
+    ["death-zero-no-source","callback","dieBefore","die","loseMaxHp","C",null,null,0,0,true,0,null,null,null,null,null,false,false,"loseMaxHp",null],
+    ["death-zero-no-source","request","dieBegin","die","loseMaxHp","C",null,null,0,0,true,0,null,null,null,null,null,false,false,"loseMaxHp",null],
+    ["death-zero-no-source","callback","dieBegin","die","loseMaxHp","C",null,null,0,0,true,0,null,null,null,null,null,false,false,"loseMaxHp",null],
+    ["death-zero-no-source","request","die","die","loseMaxHp","C",null,null,0,0,false,0,null,null,null,null,null,false,false,"loseMaxHp",null],
+    ["death-zero-no-source","callback","die","die","loseMaxHp","C",null,null,0,0,false,0,null,null,null,null,null,false,false,"loseMaxHp",null],
+    ["death-zero-no-source","request","dieEnd","die","loseMaxHp","C",null,null,0,0,false,0,null,null,null,null,null,true,false,"loseMaxHp",null],
+    ["death-zero-no-source","callback","dieEnd","die","loseMaxHp","C",null,null,0,0,false,0,null,null,null,null,null,true,false,"loseMaxHp",null],
+    ["death-zero-no-source","request","dieAfter","die","loseMaxHp","C",null,null,0,0,false,0,null,null,null,null,null,true,false,"loseMaxHp",null],
+    ["death-zero-no-source","callback","dieAfter","die","loseMaxHp","C",null,null,0,0,false,0,null,null,null,null,null,true,false,"loseMaxHp",null],
+    ["death-zero-no-source","request","loseMaxHpEnd","loseMaxHp","reference_fixture_use","C",null,1,0,0,false,0,1,1,-1,-1,1,true,false,null,null],
+    ["death-zero-no-source","callback","loseMaxHpEnd","loseMaxHp","reference_fixture_use","C",null,1,0,0,false,0,1,1,-1,-1,1,true,false,null,null],
+    ["death-zero-no-source","request","loseMaxHpAfter","loseMaxHp","reference_fixture_use","C",null,1,0,0,false,0,1,1,-1,-1,1,true,false,null,null],
+    ["death-zero-no-source","callback","loseMaxHpAfter","loseMaxHp","reference_fixture_use","C",null,1,0,0,false,0,1,1,-1,-1,1,true,false,null,null],
+    ["death-negative-source","request","loseMaxHpBefore","loseMaxHp","reference_fixture_use","D","A",2,1,1,true,0,null,null,null,null,null,false,false,null,null],
+    ["death-negative-source","callback","loseMaxHpBefore","loseMaxHp","reference_fixture_use","D","A",2,1,1,true,0,null,null,null,null,null,false,false,null,null],
+    ["death-negative-source","request","loseMaxHpBegin","loseMaxHp","reference_fixture_use","D","A",2,1,1,true,0,null,null,null,null,null,false,false,null,null],
+    ["death-negative-source","callback","loseMaxHpBegin","loseMaxHp","reference_fixture_use","D","A",2,1,1,true,0,null,null,null,null,null,false,false,null,null],
+    ["death-negative-source","request","dieBefore","die","loseMaxHp","D","A",null,-1,-1,true,0,null,null,null,null,null,false,false,"loseMaxHp","A"],
+    ["death-negative-source","callback","dieBefore","die","loseMaxHp","D","A",null,-1,-1,true,0,null,null,null,null,null,false,false,"loseMaxHp","A"],
+    ["death-negative-source","request","dieBegin","die","loseMaxHp","D","A",null,-1,-1,true,0,null,null,null,null,null,false,false,"loseMaxHp","A"],
+    ["death-negative-source","callback","dieBegin","die","loseMaxHp","D","A",null,-1,-1,true,0,null,null,null,null,null,false,false,"loseMaxHp","A"],
+    ["death-negative-source","request","changeHpBefore","changeHp","die","D",null,1,-1,-1,false,0,-1,null,null,null,null,false,false,null,null],
+    ["death-negative-source","callback","changeHpBefore","changeHp","die","D",null,1,-1,-1,false,0,-1,null,null,null,null,false,false,null,null],
+    ["death-negative-source","request","changeHpBegin","changeHp","die","D",null,1,-1,-1,false,0,-1,null,null,null,null,false,false,null,null],
+    ["death-negative-source","callback","changeHpBegin","changeHp","die","D",null,1,-1,-1,false,0,-1,null,null,null,null,false,false,null,null],
+    ["death-negative-source","request","changeHp","changeHp","die","D",null,1,-1,-1,false,0,-1,-1,0,0,null,false,false,null,null],
+    ["death-negative-source","callback","changeHp","changeHp","die","D",null,1,-1,-1,false,0,-1,-1,0,0,null,false,false,null,null],
+    ["death-negative-source","request","changeHpEnd","changeHp","die","D",null,1,-1,-1,false,0,-1,-1,0,0,null,true,false,null,null],
+    ["death-negative-source","callback","changeHpEnd","changeHp","die","D",null,1,-1,-1,false,0,-1,-1,0,0,null,true,false,null,null],
+    ["death-negative-source","request","changeHpAfter","changeHp","die","D",null,1,-1,-1,false,0,-1,-1,0,0,null,true,false,null,null],
+    ["death-negative-source","callback","changeHpAfter","changeHp","die","D",null,1,-1,-1,false,0,-1,-1,0,0,null,true,false,null,null],
+    ["death-negative-source","request","die","die","loseMaxHp","D","A",null,-1,-1,false,0,null,null,null,null,null,false,false,"loseMaxHp","A"],
+    ["death-negative-source","callback","die","die","loseMaxHp","D","A",null,-1,-1,false,0,null,null,null,null,null,false,false,"loseMaxHp","A"],
+    ["death-negative-source","request","dieEnd","die","loseMaxHp","D","A",null,-1,-1,false,0,null,null,null,null,null,true,false,"loseMaxHp","A"],
+    ["death-negative-source","callback","dieEnd","die","loseMaxHp","D","A",null,-1,-1,false,0,null,null,null,null,null,true,false,"loseMaxHp","A"],
+    ["death-negative-source","request","dieAfter","die","loseMaxHp","D","A",null,-1,-1,false,0,null,null,null,null,null,true,false,"loseMaxHp","A"],
+    ["death-negative-source","callback","dieAfter","die","loseMaxHp","D","A",null,-1,-1,false,0,null,null,null,null,null,true,false,"loseMaxHp","A"],
+    ["death-negative-source","request","loseMaxHpEnd","loseMaxHp","reference_fixture_use","D","A",2,-1,-1,false,0,1,1,-1,-2,2,true,false,null,null],
+    ["death-negative-source","callback","loseMaxHpEnd","loseMaxHp","reference_fixture_use","D","A",2,-1,-1,false,0,1,1,-1,-2,2,true,false,null,null],
+    ["death-negative-source","request","loseMaxHpAfter","loseMaxHp","reference_fixture_use","D","A",2,-1,-1,false,0,1,1,-1,-2,2,true,false,null,null],
+    ["death-negative-source","callback","loseMaxHpAfter","loseMaxHp","reference_fixture_use","D","A",2,-1,-1,false,0,1,1,-1,-2,2,true,false,null,null]
+  ]
+}

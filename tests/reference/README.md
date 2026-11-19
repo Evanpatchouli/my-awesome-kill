@@ -103,6 +103,12 @@
 
 `hp-cancel.json` 在八席身份局用红桃 4 火杀对两名横置角色验证体力子事件。B 有 1 点护甲，伤害为 2。取消 `changeHpBefore` 保留 B 的 4 点体力、护甲和横置状态，伤害历史仍记录 A 对 B 的 2 点伤害。取消 `changeHpEnd` 时 B 已降到 3 点体力、消耗护甲并解除横置，之后 C 受到 2 点传导伤害。两次取消都触发 `changeHpCancelled`，父伤害的 `damage`、`damageSource`、`damageEnd`、`damageAfter` 继续执行。76 条记录同时包含时机请求、实际回调、实体伤害历史是否已存在及当时的护甲吸收值。
 
+`max-hp.json` 记录同一固定版本的八席身份局 20 次样例，含 110 次时机请求、110 次实际观察回调和 6 条真实技能内容首尾。夹具移除随机武将技能、固定初始体力和手牌，直接调用原版 `gainMaxHp` / `loseMaxHp`，并按样例设置事件的 `source`。`events` 记录事件及父事件、角色、数值、体力/上限/存活/手牌快照、原值、变化值、取消与死亡原因；请求和回调是不同观察点。
+
+- **基本变化和参数。** 4/4 获得一点上限后是 4/5；4/4 失去一点后直接变 3/3，2/4 失去一点后为 2/3，这两次变化没有 `changeHp` 子事件。零值仍经过 Before、Begin、End、After。3/4 的 `gainMaxHp(-2)` 得到 2/2，但该事件的 `changedHp` 是 0；`loseMaxHp(-2)` 得到 3/6。4/4 的 `gainMaxHp(-5)` 得到 -1/-1，角色仍存活，没有濒死或死亡。角色原始体力为 -1 时，两种事件的 `originalHp` 都是 0。
+- **取消与直接死亡。** 取消获得的 Before 或失去的 Begin 保留原值；取消 End 保留已应用的变化；均发各自的 Cancelled 而不发 After。1/1 失去 1 上限时，先变为 0/0，再直接进行 `die` 子事件，不请求濒死或体力变化；该样例死亡无来源。1/1 失去 2 时，先变为 -1/-1，再带来源 A 直接死亡；死亡内部请求 `changeHp(1)`，但再次受上限夹断而维持 -1/-1。两次死亡均在父事件 End/After 之前完成。取消子 `dieBefore` 时角色仍以 0/0 存活，父事件继续 End 和 After。
+- **真实跨包技能。** 独立授予威重后，八席均无手牌的并列最少触发一次摸两张；随后持有者两张、其他席均无手牌时触发一次摸一张。摸牌发生在上限事件 End 的实际技能回调内、After 之前。独立授予恃勇后，真实红桃杀的伤害令 B 由 4/4 变成 3/4，`damageEnd` 内的恃勇调用 `loseMaxHp` 后变为 3/3，然后才请求 `damageAfter`。本样例不涵盖恃勇的酒杀条件。
+
 1. 在独立临时目录检出上述上游提交，保留 `apps/core`、`packages/fs`、`packages/jit` 和根目录的 `scripts`；可从本机 `.reference/noname` 用 `git clone --shared --sparse` 复用已有对象。通过 `git rev-parse HEAD` 确认提交。不要在项目运行时依赖该参考检出。
 2. 在临时检出中安装上游依赖并执行 `pnpm dev`。上游当前 Vite 配置使用 `127.0.0.1:8081`，文件服务使用 `127.0.0.1:8089`。本次采集使用 Node 24 和 pnpm 10.20.0；如果本机 Windows 链接限制阻止安装，可使用 WSL 的原生文件系统。
 3. 在项目外准备 Playwright 和可执行的 Chromium。设置 `REFERENCE_PLAYWRIGHT_PATH` 指向 Playwright 包目录；若使用现有浏览器，设置 `REFERENCE_CHROMIUM_EXECUTABLE_PATH` 指向其可执行文件。默认 URL 为 `http://127.0.0.1:8081`，可通过 `REFERENCE_URL` 覆盖。
@@ -113,6 +119,7 @@
    node scripts/reference-trace.mjs --scenario trigger-order-cancel --check tests/reference/trigger-order-cancel.json
    node scripts/reference-trace.mjs --scenario damage-callback-cancel --check tests/reference/damage-callback-cancel.json
    node scripts/reference-trace.mjs --scenario hp-cancel --check tests/reference/hp-cancel.json
+   node scripts/reference-trace.mjs --scenario max-hp --check tests/reference/max-hp.json
    node scripts/reference-trace.mjs --scenario tiesuo-recast --check tests/reference/tiesuo-recast.json
    node scripts/reference-trace.mjs --scenario recast-callbacks --check tests/reference/recast-callbacks.json
    node scripts/reference-trace.mjs --scenario recast-batch --check tests/reference/recast-batch.json
@@ -133,4 +140,4 @@
    node scripts/reference-trace.mjs --scenario zhongyi-transit-death --check tests/reference/zhongyi-transit-death.json
    ```
 
-运行器在隔离浏览器内核对八个共同上游源文件的 LF 归一化 SHA-256。重铸、批量给牌死亡、连环伤害和巧说目标场景还校验 `card/extra.js`，重铸知情状态、批量给牌死亡、拼点和额外忠义场景另核对 `element/card.js`，连环伤害、巧说拼点和巧说目标另校验 `character/yijiang/skill.js`，忠义和巧说目标另校验 `character/standard/skill.js`。有序移动场景另核对标准与界限突破技能包、牌实体及牌区查询。多人拼点另外校验鼓舌和胆烈所在的两个技能包、牌区查询和事件步骤编译器。忠义边界同时核对牌区和知情查询、出牌选择及标记弹层涉及的源文件。忠义中转死亡和批量给牌死亡核对牌区查询和负责中断事件步骤的编译器源文件。阶段调度另外校验当先和放权所在的两个技能包、牌区查询和事件步骤编译器。随后执行场景并逐项比较事件和结果。整个检出的版本由第 1 步确认。`--write <path>` 用于重新采集，默认将结果写至标准输出。
+运行器在隔离浏览器内核对八个共同上游源文件的 LF 归一化 SHA-256。重铸、批量给牌死亡、连环伤害和巧说目标场景还校验 `card/extra.js`，重铸知情状态、批量给牌死亡、拼点和额外忠义场景另核对 `element/card.js`，连环伤害、巧说拼点和巧说目标另校验 `character/yijiang/skill.js`，忠义和巧说目标另校验 `character/standard/skill.js`。体力上限场景核对 `character/yijiang/skill.js` 和 `character/sp/skill.js`。有序移动场景另核对标准与界限突破技能包、牌实体及牌区查询。多人拼点另外校验鼓舌和胆烈所在的两个技能包、牌区查询和事件步骤编译器。忠义边界同时核对牌区和知情查询、出牌选择及标记弹层涉及的源文件。忠义中转死亡和批量给牌死亡核对牌区查询和负责中断事件步骤的编译器源文件。阶段调度另外校验当先和放权所在的两个技能包、牌区查询和事件步骤编译器。随后执行场景并逐项比较事件和结果。整个检出的版本由第 1 步确认。`--write <path>` 用于重新采集，默认将结果写至标准输出。

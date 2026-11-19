@@ -12,6 +12,7 @@ import { checkQiaoshuiTargets, installQiaoshuiTargets } from './reference-qiaosh
 import { checkCompareBoundaries, installCompareBoundaries } from './reference-compare-boundaries.mjs';
 import { checkCompareMultiple, installCompareMultiple } from './reference-compare-multiple.mjs';
 import { checkReferenceHp, installReferenceHp } from './reference-hp.mjs';
+import { checkReferenceMaxHp, installReferenceMaxHp } from './reference-max-hp.mjs';
 import { checkReferenceExpansion, installReferenceExpansion } from './reference-expansion.mjs';
 import { checkZhongyiBoundaries, installZhongyiBoundaries } from './reference-zhongyi-boundaries.mjs';
 import { checkZhongyiTransitDeath, installZhongyiTransitDeath } from './reference-zhongyi-transit-death.mjs';
@@ -67,6 +68,7 @@ const descriptions = new Map([
   ['ordered-move', 'natural guanxing and xunxun ordered choices, privacy, and cancellation'],
   ['damage-callback-cancel', 'damage callback cancellation after HP change for physical sha'],
   ['hp-cancel', 'cancelling changeHpBefore and changeHpEnd during a linked armored fire sha'],
+  ['max-hp', 'max HP lifecycles, cancellation, death, and real cross-pack skills'],
 ]);
 let scenario = 'sha-no-shan';
 const scenarioIndex = argv.indexOf('--scenario');
@@ -103,7 +105,8 @@ if (scenario === 'zhongyi-boundaries') {
   sourceHashes['/noname/ui/create/index.js'] = '460073e1c3a230a0c78daa4ada32c468b0c616fa3d13c633cc8519a41d582b44';
   sourceHashes['/noname/library/element/dialog.js'] = '24893150df03829703e56c3156f63c784d536f42d1168d77674a167124521b03';
 }
-if (['linked-damage', 'compare', 'qiaoshui-targets', 'phase-scheduling'].includes(scenario)) sourceHashes['/character/yijiang/skill.js'] = '5b0eb965a8428535bf3cd7d369c261b8ad95cccbeac8d8c817cad3490643a54f';
+if (['linked-damage', 'compare', 'qiaoshui-targets', 'phase-scheduling', 'max-hp'].includes(scenario)) sourceHashes['/character/yijiang/skill.js'] = '5b0eb965a8428535bf3cd7d369c261b8ad95cccbeac8d8c817cad3490643a54f';
+if (scenario === 'max-hp') sourceHashes['/character/sp/skill.js'] = 'a63785adcf4c9518b58ca05f6ea85559f8eb6ea3d89ebcd782498f445cde85f9';
 if (scenario === 'phase-scheduling') {
   sourceHashes['/character/shenhua/skill.js'] = '7e87ec26c3f183b83878f886e3872bd78a0f69a5e51e7f46a64bfcc79362cd62';
 }
@@ -150,6 +153,8 @@ try {
     await context.addInitScript(installReferenceLinkedDamage);
   } else if (scenario === 'hp-cancel') {
     await context.addInitScript(installReferenceHp);
+  } else if (scenario === 'max-hp') {
+    await context.addInitScript(installReferenceMaxHp);
   } else if (scenario === 'zhongyi-expansion') {
     await context.addInitScript(installReferenceExpansion);
   } else if (scenario === 'zhongyi-boundaries') {
@@ -238,6 +243,11 @@ try {
           if (!target || target === game.me || target === actor) throw new Error('No adjacent AI target');
           if (scenario === 'hp-cancel') {
             window.__referenceResult = await window.__runReferenceHp({ lib, game, ui, actor, target, human: game.me });
+            game.pause();
+            return;
+          }
+          if (scenario === 'max-hp') {
+            window.__referenceResult = await window.__runReferenceMaxHp({ lib, game, ui, get, _status, actor });
             game.pause();
             return;
           }
@@ -416,6 +426,7 @@ try {
   assert.deepEqual(errors, [], 'Upstream page errors occurred');
   if (scenario === 'linked-damage') checkReferenceLinkedDamage(captured.value);
   if (scenario === 'hp-cancel') checkReferenceHp(captured.value);
+  if (scenario === 'max-hp') checkReferenceMaxHp(captured.value);
   if (scenario === 'compare') checkReferenceCompare(captured.value);
   if (scenario === 'qiaoshui-targets') checkQiaoshuiTargets(captured.value);
   if (scenario === 'compare-boundaries') checkCompareBoundaries(captured.value);
