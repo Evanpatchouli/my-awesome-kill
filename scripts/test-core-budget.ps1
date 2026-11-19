@@ -47,6 +47,7 @@ $start.RedirectStandardOutput = $true
 $start.RedirectStandardError = $true
 $start.WorkingDirectory = Split-Path $manifest
 $start.Environment['CARGO_TARGET_DIR'] = $target
+$start.Environment['CARGO_BUILD_BUILD_DIR'] = $target
 $start.Environment['CARGO_INCREMENTAL'] = '0'
 $start.Environment['CARGO_BUILD_JOBS'] = '2'
 foreach ($arg in @('test','--locked','--offline','--release','--manifest-path',$manifest)) { $start.ArgumentList.Add($arg) }
@@ -56,18 +57,42 @@ if ($IncludeIgnored) {
     foreach ($arg in @('--','--ignored','--nocapture')) { $start.ArgumentList.Add($arg) }
 }
 $peak = $initialCache
+Add-Type -TypeDefinition @'
+using System;
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
+
+public static class BudgetOutputTail {
+    public static async Task<string> ReadAsync(StreamReader reader) {
+        const int limit = 32768;
+        var buffer = new char[4096];
+        var tail = new StringBuilder();
+        bool truncated = false;
+        int count;
+        while ((count = await reader.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false)) != 0) {
+            tail.Append(buffer, 0, count);
+            if (tail.Length > limit) {
+                tail.Remove(0, tail.Length - limit);
+                truncated = true;
+            }
+        }
+        return (truncated ? "[earlier output truncated]\n" : "") + tail.ToString();
+    }
+}
+'@
 $process = [Diagnostics.Process]::Start($start)
+$outText = [BudgetOutputTail]::ReadAsync($process.StandardOutput)
+$errText = [BudgetOutputTail]::ReadAsync($process.StandardError)
 try {
-    $outText = $process.StandardOutput.ReadToEndAsync()
-    $errText = $process.StandardError.ReadToEndAsync()
     while (!$process.WaitForExit(1000)) { $peak = [math]::Max($peak, (Measure-Budget)) }
-    [Console]::Out.Write($outText.GetAwaiter().GetResult())
-    [Console]::Error.Write($errText.GetAwaiter().GetResult())
     $final = Measure-Budget
     $peak = [math]::Max($peak, $final)
     Write-Host ("Cargo cache MiB: start={0:N1} sampled peak={1:N1} end={2:N1}; C: free={3:N2} GiB; VHDX growth={4:N1} MiB" -f ($initialCache/1MB),($peak/1MB),($final/1MB),($drive.AvailableFreeSpace/1GB),(((Get-ImageBytes)-$initialImage)/1MB))
     exit $process.ExitCode
 } finally {
     if (!$process.HasExited) { $process.Kill($true); $process.WaitForExit() }
+    [Console]::Out.Write($outText.GetAwaiter().GetResult())
+    [Console]::Error.Write($errText.GetAwaiter().GetResult())
     $process.Dispose()
 }
