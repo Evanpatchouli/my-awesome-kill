@@ -386,6 +386,7 @@ struct Seat {
     rest_mark_shown: bool,
     rest_undist: bool,
     rest_trigger: Option<TriggerId>,
+    qinggang_uses: Vec<EventId>,
     linked: bool,
     turned_over: bool,
     armor: u16,
@@ -439,6 +440,7 @@ impl From<SeatSetup> for Seat {
             rest_mark_shown: false,
             rest_undist: false,
             rest_trigger: None,
+            qinggang_uses: Vec::new(),
             linked: false,
             turned_over: false,
             armor: 0,
@@ -460,6 +462,7 @@ impl From<SeatSetup> for Seat {
 }
 
 pub struct Game {
+    mount_slots: MountSlots,
     group_compares: classic::multi_compare::State,
     group_updates: Vec<GroupAnnouncement>,
     ordering_owners: HashMap<CardId, EventId>,
@@ -502,6 +505,13 @@ pub struct Game {
 
 impl Game {
     pub fn new(setup: GameSetup) -> Result<Self, RuleError> {
+        Self::new_with_mount_slots(setup, MountSlots::Separate)
+    }
+
+    pub fn new_with_mount_slots(
+        setup: GameSetup,
+        mount_slots: MountSlots,
+    ) -> Result<Self, RuleError> {
         if setup.seats.len() < 2 {
             return Err(RuleError::NotEnoughSeats);
         }
@@ -527,16 +537,19 @@ impl Game {
         if active.hp == 0 {
             return Err(RuleError::InactiveSeat { seat: active.id });
         }
-        Ok(Self::with_seats(
+        let mut game = Self::with_seats(
             setup.seats.into_iter().map(Seat::from).collect(),
             setup.active_seat,
-        ))
+        );
+        game.mount_slots = mount_slots;
+        Ok(game)
     }
 
     fn with_seats(seats: Vec<Seat>, active_seat: SeatId) -> Self {
         let living_seats = seats.iter().filter(|s| s.alive).map(|s| s.id).collect();
         let dead_seats = seats.iter().filter(|s| !s.alive).map(|s| s.id).collect();
         Self {
+            mount_slots: MountSlots::Separate,
             group_compares: classic::multi_compare::State::default(),
             group_updates: Vec::new(),
             ordering_owners: HashMap::new(),
@@ -732,15 +745,10 @@ impl Game {
         }
         length += i32::from(!self.seat_has_skill(rider, "undist"));
         let raw = clockwise.min(length - clockwise);
-        let adjustment = i32::from(equipment::has_slot(
-            target,
-            equipment::Slot::DefenseHorse,
-            None,
-        )) - i32::from(equipment::has_slot(
-            rider,
-            equipment::Slot::AttackHorse,
-            ignored,
-        )) + self.hero_distance_modifier(rider);
+        let adjustment = equipment::count_slot(target, equipment::Slot::DefenseHorse, ignored)
+            as i32
+            - equipment::count_slot(rider, equipment::Slot::AttackHorse, ignored) as i32
+            + self.hero_distance_modifier(rider);
         Ok((raw + adjustment).max(1) as usize)
     }
 
@@ -759,8 +767,18 @@ impl Game {
                 let own = viewer == Some(seat.id);
                 let role_visible =
                     own || seat.role_shown || seat.role == Some(Role::Lord) || result.is_some();
+                let mut marks = self.skill_marks(seat.id);
+                if !seat.qinggang_uses.is_empty()
+                    && !marks.iter().any(|mark| mark.skill == "qinggang2")
+                {
+                    marks.push(SkillMark {
+                        skill: "qinggang2".into(),
+                        count: 1,
+                        source: None,
+                    });
+                }
                 SeatView {
-                    marks: self.skill_marks(seat.id),
+                    marks,
                     expansions: seat
                         .expansions
                         .iter()
@@ -882,6 +900,7 @@ impl Game {
             .map(|(&id, &nature)| (id, nature))
             .collect();
         Ok(GameView {
+            mount_combined: self.mount_slots == MountSlots::Combined,
             round_suspended: self.round_suspended(),
             group_updates: self.group_updates.clone(),
             turn_reason: self
@@ -1348,7 +1367,9 @@ impl Game {
             Program::Recast(flow) => return self.resolve_recast(event, flow, child),
             Program::Equipment(flow) => return self.resolve_equipment(event, flow, child),
             Program::Trick(flow) => return self.resolve_trick(event, flow, child),
-            Program::TargetTiming(flow) => return self.resolve_card_target_timing(flow, child),
+            Program::TargetTiming(flow) => {
+                return self.resolve_card_target_timing(event, flow, child)
+            }
             Program::Hero(flow) => return self.resolve_hero(event, flow, child),
             Program::Dispatch(flow) => return self.resolve_dispatch(flow, child),
             Program::Registered(flow) => return self.resolve_registered(flow, child),
@@ -1616,6 +1637,13 @@ impl Game {
         } else {
             Self::remove_card(self.seat_mut(seat).zone_mut(zone), id)
         };
+        if zone == Zone::Equipment {
+            if let Some(skill) = crate::equipment_registry::sha_equipment_skill(card.kind) {
+                if !self.has_skill(seat, skill) {
+                    self.seat_mut(seat).equipment.remove_hook(skill);
+                }
+            }
+        }
         if matches!(zone, Zone::Hand) {
             self.known_to_all.remove(&id);
             self.known_to_seats.remove(&id);

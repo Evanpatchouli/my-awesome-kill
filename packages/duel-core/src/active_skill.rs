@@ -25,6 +25,7 @@ pub struct ActiveSkillRegistration {
 pub(crate) struct State {
     next_id: ActiveSkillId,
     registrations: BTreeMap<ActiveSkillId, ActiveSkillRegistration>,
+    revoked: BTreeSet<ActiveSkillId>,
     spent: BTreeSet<(SeatId, String)>,
     last_attempt: BTreeMap<ActiveSkillId, crate::EventId>,
     phase_uses: BTreeMap<(SeatId, String), (crate::EventId, u32)>,
@@ -111,13 +112,28 @@ impl Game {
             .checked_add(1)
             .ok_or(RuleError::VersionExhausted)?;
         self.active_skills.next_id = id;
+        self.seat_mut(registration.owner)
+            .equipment
+            .register_hook(&registration.skill);
         self.active_skills.registrations.insert(id, registration);
         Ok(id)
     }
 
     pub fn unregister_active_skill(&mut self, id: ActiveSkillId) -> bool {
         self.active_skills.last_attempt.remove(&id);
-        self.active_skills.registrations.remove(&id).is_some()
+        self.active_skills.revoked.remove(&id);
+        let Some(registration) = self.active_skills.registrations.remove(&id) else {
+            return false;
+        };
+        if !self.has_skill(registration.owner, &registration.skill) {
+            if registration.skill == "qinggang2" {
+                self.seat_mut(registration.owner).qinggang_uses.clear();
+            }
+            self.seat_mut(registration.owner)
+                .equipment
+                .remove_hook(&registration.skill);
+        }
+        true
     }
 
     pub fn active_skill(&self, id: ActiveSkillId) -> Option<&ActiveSkillRegistration> {
@@ -142,10 +158,18 @@ impl Game {
     }
 
     pub(crate) fn owns_active_skill(&self, seat: SeatId, skill: &str) -> bool {
-        self.active_skills
-            .registrations
-            .values()
-            .any(|r| r.owner == seat && r.skill == skill)
+        self.active_skills.registrations.iter().any(|(id, r)| {
+            !self.active_skills.revoked.contains(id) && r.owner == seat && r.skill == skill
+        })
+    }
+
+    pub(crate) fn revoke_active_ownership(&mut self, owner: SeatId, skill: &str) {
+        self.active_skills.revoked.extend(
+            self.active_skills
+                .registrations
+                .iter()
+                .filter_map(|(&id, r)| (r.owner == owner && r.skill == skill).then_some(id)),
+        );
     }
 
     pub fn active_plays(&self, seat: SeatId) -> Vec<ActivePlay> {
@@ -156,7 +180,10 @@ impl Game {
             .registrations
             .iter()
             .filter_map(|(&id, r)| {
-                if r.owner != seat || (r.limited && self.limited_skill_used(seat, &r.skill)) {
+                if self.active_skills.revoked.contains(&id)
+                    || r.owner != seat
+                    || (r.limited && self.limited_skill_used(seat, &r.skill))
+                {
                     return None;
                 }
                 (r.choice)(self, seat).map(|branch| ActivePlay {
@@ -178,6 +205,9 @@ impl Game {
         self.checked_play_seat(seat)?;
         if !self.is_in(seat) {
             return Err(RuleError::InactiveSeat { seat });
+        }
+        if self.active_skills.revoked.contains(&registration) {
+            return Err(RuleError::InvalidSelection);
         }
         let r = self
             .active_skills
@@ -240,6 +270,11 @@ impl Game {
             }
             Stage::Accepted => {
                 if matches!(child, Some(Outcome::Cancelled))
+                    || self.active_skills.revoked.contains(&flow.registration)
+                    || !self
+                        .active_skills
+                        .registrations
+                        .contains_key(&flow.registration)
                     || !self.is_in(flow.owner)
                     || self.match_result().is_some()
                 {

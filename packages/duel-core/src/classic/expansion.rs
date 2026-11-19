@@ -40,6 +40,8 @@ pub(crate) enum DiscardStage {
     Before,
     Begin,
     Lose,
+    End,
+    EndWithoutLoss,
     After,
     Finish,
 }
@@ -308,15 +310,14 @@ impl Game {
                 let owner = *owner;
                 match *stage {
                     DiscardStage::Before => {
-                        cards.retain(|card| {
-                            self.seat(owner).is_ok_and(|p| p.expansions.contains(card))
-                                && tag.as_ref().is_none_or(|tag| {
-                                    self.expansion_tags(card.id).iter().any(|t| t == tag)
-                                })
-                        });
-                        if cards.is_empty() {
-                            self.finish();
-                            return;
+                        if tag.is_none() {
+                            cards.retain(|card| {
+                                self.seat(owner).is_ok_and(|p| p.expansions.contains(card))
+                            });
+                            if cards.is_empty() {
+                                self.finish();
+                                return;
+                            }
                         }
                         *stage = DiscardStage::Begin;
                         let queued = tag.is_some()
@@ -359,29 +360,62 @@ impl Game {
                             return;
                         }
                         if tag.is_some() && !self.seat(owner).is_ok_and(|p| p.alive) {
-                            *stage = DiscardStage::After;
+                            *stage = DiscardStage::End;
+                            self.scheduler.replace_current(Program::Expansion(flow));
+                            return;
+                        }
+                        let eligible: Vec<_> = cards
+                            .iter()
+                            .copied()
+                            .filter(|card| {
+                                self.seat(owner).is_ok_and(|p| p.expansions.contains(card))
+                                    && tag.as_ref().is_none_or(|tag| {
+                                        self.expansion_tags(card.id).iter().any(|t| t == tag)
+                                    })
+                            })
+                            .collect();
+                        if tag.is_some() && eligible.is_empty() {
+                            *stage = DiscardStage::EndWithoutLoss;
                             self.scheduler.replace_current(Program::Expansion(flow));
                             return;
                         }
                         let loss = Flow::Lose {
                             owner,
-                            cards: cards.clone(),
+                            cards: eligible,
                             tag: tag.clone(),
                             moved: vec![],
                             stage: LoseStage::Before,
                         };
-                        *stage = DiscardStage::After;
+                        *stage = DiscardStage::End;
                         self.scheduler.replace_current(Program::Expansion(flow));
                         self.scheduler.next(Program::Expansion(loss));
                         return;
                     }
-                    DiscardStage::After => {
-                        match child {
-                            Some(Outcome::Finished(Resolution::ExpansionDiscarded(actual))) => {
-                                *cards = actual
+                    DiscardStage::End | DiscardStage::EndWithoutLoss => {
+                        if matches!(*stage, DiscardStage::End) {
+                            match child {
+                                Some(Outcome::Finished(Resolution::ExpansionDiscarded(actual))) => {
+                                    *cards = actual
+                                }
+                                _ => cards.clear(),
                             }
-                            _ => cards.clear(),
                         }
+                        *stage = DiscardStage::After;
+                        let queued = tag.is_some()
+                            && self.queue_timing(
+                                "loseToDiscardpileEnd",
+                                Some(owner),
+                                None,
+                                None,
+                                0,
+                                cards,
+                            );
+                        self.scheduler.replace_current(Program::Expansion(flow));
+                        if queued {
+                            return;
+                        }
+                    }
+                    DiscardStage::After => {
                         *stage = DiscardStage::Finish;
                         let queued = tag.is_some()
                             && self.queue_timing(

@@ -1,3 +1,8 @@
+#[path = "equipment_hook_tests.rs"]
+mod equipment_hook_tests;
+#[path = "qinggang_expiry_tests.rs"]
+mod qinggang_expiry_tests;
+
 use super::{
     equipment,
     tests::{card, scene},
@@ -1496,7 +1501,7 @@ fn equipment_slot_expand_timing_and_cancellation() {
         };
         assert_eq!(
             (state.enabled, state.empty, state.equipable, state.disabled),
-            (expected, expected, expected, 0)
+            (expected as i64, expected, expected, 0)
         );
         assert_eq!(game.seat(1).unwrap().equipment, [horse]);
         assert!(game.view(None).unwrap().seats[1]
@@ -1614,7 +1619,7 @@ fn equipment_slot_expand_repeats_and_preserves_disabled_state() {
         };
         assert_eq!(
             (state.enabled, state.empty, state.equipable, state.disabled),
-            (enabled, enabled, enabled, disabled)
+            (enabled as i64, enabled, enabled, disabled)
         );
         assert_eq!(
             game.view(None).unwrap().seats[1]
@@ -2534,4 +2539,1485 @@ fn replace_equip_timing_has_card_kind_without_material_cards() {
         assert_eq!(*kind, Some(weapons[2].kind));
     }
     assert_weapon_choice_conservation(&game, &weapons);
+}
+
+fn multi_weapon_fixture() -> (Game, [Card; 7], Vec<u64>) {
+    use crate::EquipmentSlot::Weapon;
+    let mut game = scene(
+        &[
+            Role::Lord,
+            Role::Loyalist,
+            Role::Rebel,
+            Role::Loyalist,
+            Role::Rebel,
+            Role::Loyalist,
+            Role::Rebel,
+            Role::Rebel,
+        ],
+        0,
+    );
+    let cards = [
+        card(301, CardKind::Zhuge),
+        card(302, CardKind::Qinggang),
+        card(303, CardKind::Qinggang),
+        card(304, CardKind::Sha),
+        card(305, CardKind::Sha),
+        card(306, CardKind::Sha),
+        card(307, CardKind::Tao),
+    ];
+    game.seat_mut(0).hand = cards[..6].to_vec();
+    game.classic.as_mut().unwrap().faces.push(CardFace {
+        id: cards[6].id,
+        suit: Suit::Heart,
+        rank: 9,
+    });
+    game.classic.as_mut().unwrap().deck.push(cards[6]);
+    game.seat_mut(2).hp = 12;
+    game.seat_mut(2).max_hp = 12;
+    let armor = card(308, CardKind::Bagua);
+    game.seat_mut(2).hand.push(armor);
+    game.mark_known_to(armor.id, 0);
+    let actions: Vec<_> = (0..7)
+        .map(|op| {
+            game.register_active_skill(ActiveSkillRegistration {
+                owner: 0,
+                skill: format!("multi_weapon_fixture_{op}"),
+                limited: false,
+                choice: Arc::new(|_, _| {
+                    Some(ChoiceBranch {
+                        id: 0,
+                        label: "fixture".into(),
+                        cards: vec![],
+                        min_cards: 0,
+                        max_cards: 0,
+                        targets: vec![],
+                        min_targets: 0,
+                        max_targets: 0,
+                    })
+                }),
+                effect: Arc::new(move |ctx, _, _| {
+                    match op {
+                        0 => ctx.expand_equip(0, vec![Weapon, Weapon]).unwrap(),
+                        1..=3 => ctx.equip_from_hand(0, cards[(op - 1) as usize].id).unwrap(),
+                        4 => ctx.equip_from_hand(2, armor.id).unwrap(),
+                        5 => ctx.gain_owned_card(0, 1, cards[1].id).unwrap(),
+                        _ => ctx.gain_owned_card(0, 1, cards[0].id).unwrap(),
+                    }
+                    TriggerStep::Done
+                }),
+            })
+            .unwrap()
+        })
+        .collect();
+    play_phase(&mut game);
+    for &registration in &actions[..5] {
+        game.submit(Command {
+            version: game.version,
+            seat: 0,
+            action: Action::ActivateSkill {
+                registration,
+                cards: vec![],
+                targets: vec![],
+            },
+        })
+        .unwrap();
+    }
+    (game, cards, actions)
+}
+
+fn multi_weapon_activate(game: &mut Game, registration: u64) {
+    game.submit(Command {
+        version: game.version,
+        seat: 0,
+        action: Action::ActivateSkill {
+            registration,
+            cards: vec![],
+            targets: vec![],
+        },
+    })
+    .unwrap();
+}
+
+fn multi_weapon_conservation(game: &Game, cards: &[Card]) {
+    for &card in cards {
+        let count = game
+            .seats
+            .iter()
+            .map(|seat| {
+                seat.hand
+                    .iter()
+                    .chain(&seat.equipment)
+                    .chain(&seat.judges)
+                    .chain(&seat.expansions)
+                    .filter(|&&item| item == card)
+                    .count()
+            })
+            .sum::<usize>()
+            + game
+                .discard
+                .iter()
+                .chain(&game.resolving)
+                .chain(&game.transferring)
+                .chain(&game.classic.as_ref().unwrap().deck)
+                .filter(|&&item| item == card)
+                .count();
+        assert_eq!(count, 1, "physical card conserved: {card:?}");
+    }
+}
+
+#[test]
+fn multiple_weapons_match_reference_range_armor_and_live_zhuge_limit() {
+    let golden: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../../tests/reference/multi-weapon-combat.json"
+    ))
+    .unwrap();
+    let (mut game, cards, actions) = multi_weapon_fixture();
+    let stages = golden["stages"].as_array().unwrap();
+    let reference = |name| stages.iter().find(|stage| stage["name"] == name).unwrap();
+    assert_eq!(game.distance(0, 2), Ok(2));
+    assert_eq!(game.equipment_registrations(0, CardKind::Zhuge), cards[..3]);
+    assert_eq!(reference("armed")["distance"], 2);
+    let action = |card: Card| Action::PlayCard {
+        card: card.id,
+        targets: vec![2],
+    };
+    assert!(game
+        .view(Some(0))
+        .unwrap()
+        .actions
+        .contains(&action(cards[3])));
+    let reference_damage = golden["events"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|row| row[0] == "phase" && row[1] == "request" && row[2] == "damageEnd")
+        .count();
+    let mut finished_damage = 0;
+    for (attack, remove) in [(cards[3], actions[5]), (cards[4], actions[6])] {
+        game.submit(Command {
+            version: game.version,
+            seat: 0,
+            action: action(attack),
+        })
+        .unwrap();
+        let choice = game.view(Some(2)).unwrap().choice.unwrap();
+        assert_eq!(choice.kind, ChoiceKind::Shan, "qinggang bypasses bagua");
+        game.submit(Command {
+            version: game.version,
+            seat: 2,
+            action: Action::Choose {
+                event: choice.event,
+                card: None,
+            },
+        })
+        .unwrap();
+        let count = game
+            .events
+            .iter()
+            .filter(|event| {
+                matches!(event.kind, EventKind::Damage { target: 2, .. })
+                    && event.status == EventStatus::Finished
+            })
+            .count();
+        assert_eq!(count, 1, "each attack finishes one damage event");
+        finished_damage += count;
+        multi_weapon_activate(&mut game, remove);
+    }
+    let after = reference("phase-after");
+    assert_eq!(
+        game.seat(2).unwrap().hp,
+        after["hp"].as_i64().unwrap() as i32
+    );
+    assert_eq!(
+        game.discard
+            .iter()
+            .filter(|&&c| c == cards[3] || c == cards[4])
+            .count(),
+        2
+    );
+    assert!(game.seat(0).unwrap().hand.contains(&cards[5]));
+    assert!(!game
+        .view(Some(0))
+        .unwrap()
+        .actions
+        .contains(&action(cards[5])));
+    assert!(game.classic.as_ref().unwrap().deck.contains(&cards[6]));
+    assert_eq!(finished_damage, reference_damage);
+    multi_weapon_conservation(&game, &cards);
+}
+
+#[test]
+fn multiple_weapon_range_rechecks_remaining_registration_after_material_payment() {
+    let (game, cards, _) = multi_weapon_fixture();
+    assert!(
+        game.in_sha_range_without(0, 2, Some(cards[0].id)),
+        "paying short-range crossbow leaves both swords"
+    );
+    assert!(
+        game.in_sha_range_without(0, 2, Some(cards[1].id)),
+        "paying one sword leaves another sword"
+    );
+    multi_weapon_conservation(&game, &cards);
+}
+
+#[test]
+fn detached_weapon_remains_effective_when_an_attached_weapon_is_payment() {
+    use crate::EquipmentSlot::Weapon;
+    let (mut game, cards, actions) = multi_weapon_fixture();
+    multi_weapon_activate(&mut game, actions[5]);
+    let sword = card(309, CardKind::Qinggang);
+    let remove_second = game
+        .register_active_skill(ActiveSkillRegistration {
+            owner: 0,
+            skill: "remove_second_sword".into(),
+            limited: false,
+            choice: Arc::new(|_, _| {
+                Some(ChoiceBranch {
+                    id: 0,
+                    label: "fixture".into(),
+                    cards: vec![],
+                    min_cards: 0,
+                    max_cards: 0,
+                    targets: vec![],
+                    min_targets: 0,
+                    max_targets: 0,
+                })
+            }),
+            effect: Arc::new(move |ctx, _, _| {
+                ctx.gain_owned_card(0, 1, cards[2].id).unwrap();
+                TriggerStep::Done
+            }),
+        })
+        .unwrap();
+    multi_weapon_activate(&mut game, remove_second);
+    game.put_in_judgment(0, sword, CardKind::Lebu);
+    let detach = game
+        .register_active_skill(ActiveSkillRegistration {
+            owner: 0,
+            skill: "detach_range_weapon".into(),
+            limited: false,
+            choice: Arc::new(|_, _| {
+                Some(ChoiceBranch {
+                    id: 0,
+                    label: "fixture".into(),
+                    cards: vec![],
+                    min_cards: 0,
+                    max_cards: 0,
+                    targets: vec![],
+                    min_targets: 0,
+                    max_targets: 0,
+                })
+            }),
+            effect: Arc::new(|ctx, _, _| {
+                ctx.disable_judge(0).unwrap();
+                TriggerStep::Done
+            }),
+        })
+        .unwrap();
+    let handled = Arc::new(Mutex::new(false));
+    let flag = handled.clone();
+    game.register_trigger(TriggerRegistration {
+        owner: 0,
+        skill: "detach_range_material".into(),
+        timing: "discardBefore".into(),
+        role: TriggerRole::Global,
+        order: TriggerOrder::First,
+        priority: 0,
+        label: None,
+        silent: true,
+        filter: Arc::new(|_, e, _| e.player == Some(0)),
+        effect: Arc::new(move |ctx, step, _| {
+            if step == 0 {
+                if *flag.lock().unwrap() {
+                    return TriggerStep::Done;
+                }
+                *flag.lock().unwrap() = true;
+                ctx.gain_owned_card(0, 0, sword.id).unwrap();
+                return TriggerStep::Continue(1);
+            }
+            if step == 1 {
+                ctx.equip_from_hand(0, sword.id).unwrap();
+                return TriggerStep::Continue(2);
+            }
+            TriggerStep::Done
+        }),
+    })
+    .unwrap();
+    multi_weapon_activate(&mut game, detach);
+    assert!(*handled.lock().unwrap());
+    assert!(game.discard.contains(&sword));
+    assert_eq!(
+        game.equipment_registrations(0, CardKind::Qinggang),
+        [cards[0], sword]
+    );
+    assert_eq!(game.equipment_slot_state(0, Weapon).enabled, 3);
+    assert!(
+        game.in_sha_range_without(0, 2, Some(cards[0].id)),
+        "detached sword must retain its range"
+    );
+    game.seat_mut(0).hero = classic_data::roster()
+        .iter()
+        .find(|hero| hero.id == "daqiao");
+    let provoke = game
+        .register_active_skill(ActiveSkillRegistration {
+            owner: 0,
+            skill: "detached_liuli".into(),
+            limited: false,
+            choice: Arc::new(|_, _| {
+                Some(ChoiceBranch {
+                    id: 0,
+                    label: "fixture".into(),
+                    cards: vec![],
+                    min_cards: 0,
+                    max_cards: 0,
+                    targets: vec![],
+                    min_targets: 0,
+                    max_targets: 0,
+                })
+            }),
+            effect: Arc::new(|ctx, _, _| {
+                ctx.gain_owned_card(2, 1, 308).unwrap();
+                ctx.use_virtual_sha(1, 0, None).unwrap();
+                TriggerStep::Done
+            }),
+        })
+        .unwrap();
+    multi_weapon_activate(&mut game, provoke);
+    let choice = game
+        .view(Some(0))
+        .unwrap()
+        .choice
+        .expect("liuli must prompt");
+    let branch = choice
+        .branches
+        .iter()
+        .find(|branch| branch.cards.contains(&cards[0].id) && branch.targets.contains(&2))
+        .expect("detached sword allows redirect after crossbow payment");
+    game.submit(Command {
+        version: game.version,
+        seat: 0,
+        action: Action::Select {
+            event: choice.event,
+            branch: branch.id,
+            cards: vec![cards[0].id],
+            targets: vec![2],
+        },
+    })
+    .unwrap();
+    assert!(game.discard.contains(&cards[0]));
+    let choice = game
+        .view(Some(2))
+        .unwrap()
+        .choice
+        .expect("redirected attack must reach seat 2");
+    assert_eq!(choice.kind, ChoiceKind::Shan);
+    game.submit(Command {
+        version: game.version,
+        seat: 2,
+        action: Action::Choose {
+            event: choice.event,
+            card: None,
+        },
+    })
+    .unwrap();
+    assert_eq!(game.seat(2).unwrap().hp, 11);
+    multi_weapon_conservation(&game, &cards);
+    multi_weapon_conservation(&game, &[sword]);
+}
+
+#[test]
+fn liuli_pays_one_weapon_and_uses_remaining_registration_for_target_range() {
+    let (mut game, cards, _) = multi_weapon_fixture();
+    game.seat_mut(0).hero = classic_data::roster()
+        .iter()
+        .find(|hero| hero.id == "daqiao");
+    let provoke = game
+        .register_active_skill(ActiveSkillRegistration {
+            owner: 0,
+            skill: "provoke_liuli".into(),
+            limited: false,
+            choice: Arc::new(|_, _| {
+                Some(ChoiceBranch {
+                    id: 0,
+                    label: "fixture".into(),
+                    cards: vec![],
+                    min_cards: 0,
+                    max_cards: 0,
+                    targets: vec![],
+                    min_targets: 0,
+                    max_targets: 0,
+                })
+            }),
+            effect: Arc::new(|ctx, _, _| {
+                ctx.gain_owned_card(2, 1, 308).unwrap();
+                ctx.use_virtual_sha(1, 0, None).unwrap();
+                TriggerStep::Done
+            }),
+        })
+        .unwrap();
+    multi_weapon_activate(&mut game, provoke);
+    let choice = game
+        .view(Some(0))
+        .unwrap()
+        .choice
+        .expect("liuli must prompt");
+    let branch = choice
+        .branches
+        .iter()
+        .find(|branch| branch.cards.contains(&cards[0].id) && branch.targets.contains(&2))
+        .expect("paying crossbow must retain sword range");
+    game.submit(Command {
+        version: game.version,
+        seat: 0,
+        action: Action::Select {
+            event: choice.event,
+            branch: branch.id,
+            cards: vec![cards[0].id],
+            targets: vec![2],
+        },
+    })
+    .unwrap();
+    assert!(game.discard.contains(&cards[0]));
+    let redirected = game
+        .view(Some(2))
+        .unwrap()
+        .choice
+        .expect("redirected attack must reach seat 2");
+    assert_eq!(redirected.kind, ChoiceKind::Shan);
+    game.submit(Command {
+        version: game.version,
+        seat: 2,
+        action: Action::Choose {
+            event: redirected.event,
+            card: None,
+        },
+    })
+    .unwrap();
+    assert_eq!(game.seat(2).unwrap().hp, 11);
+    multi_weapon_conservation(&game, &cards);
+}
+
+fn duplicate_material_fixture(
+    kind: CardKind,
+    reattach: bool,
+    extra: Option<CardKind>,
+    independent: bool,
+) -> (Game, Card, Option<Card>, Card) {
+    use crate::{CardZone, EquipmentSlot};
+    let mut game = scene(
+        &[
+            Role::Lord,
+            Role::Loyalist,
+            Role::Rebel,
+            Role::Loyalist,
+            Role::Rebel,
+            Role::Loyalist,
+            Role::Rebel,
+            Role::Rebel,
+        ],
+        0,
+    );
+    let material = card(320, kind);
+    let other = extra.map(|kind| card(321, kind));
+    let sha = card(322, CardKind::Sha);
+    let red = card(323, CardKind::Tao);
+    game.seat_mut(0).hero = classic_data::roster()
+        .iter()
+        .find(|hero| hero.id == "guanyu");
+    game.seat_mut(0).hand.extend([sha, red]);
+    game.classic.as_mut().unwrap().faces.extend([
+        CardFace {
+            id: material.id,
+            suit: Suit::Heart,
+            rank: 1,
+        },
+        CardFace {
+            id: red.id,
+            suit: Suit::Heart,
+            rank: 2,
+        },
+    ]);
+    if let Some(other) = other {
+        game.seat_mut(0).hand.push(other);
+        game.classic.as_mut().unwrap().faces.push(CardFace {
+            id: other.id,
+            suit: Suit::Heart,
+            rank: 3,
+        });
+    }
+    let register = |game: &mut Game, op| {
+        game.register_active_skill(ActiveSkillRegistration {
+            owner: 0,
+            skill: format!("duplicate_material_{op}"),
+            limited: false,
+            choice: Arc::new(|_, _| {
+                Some(ChoiceBranch {
+                    id: 0,
+                    label: "fixture".into(),
+                    cards: vec![],
+                    min_cards: 0,
+                    max_cards: 0,
+                    targets: vec![],
+                    min_targets: 0,
+                    max_targets: 0,
+                })
+            }),
+            effect: Arc::new(move |ctx, _, _| {
+                match op {
+                    0 => ctx
+                        .expand_equip(0, vec![EquipmentSlot::Weapon, EquipmentSlot::Weapon])
+                        .unwrap(),
+                    1 => ctx.disable_judge(0).unwrap(),
+                    2 => ctx
+                        .gain_public_pile_card(0, CardZone::DiscardPile, material.id)
+                        .unwrap(),
+                    3 => ctx.equip_from_hand(0, material.id).unwrap(),
+                    _ => ctx.equip_from_hand(0, other.unwrap().id).unwrap(),
+                }
+                TriggerStep::Done
+            }),
+        })
+        .unwrap()
+    };
+    let operations: Vec<_> = (0..5).map(|op| register(&mut game, op)).collect();
+    game.put_in_judgment(0, material, CardKind::Lebu);
+    let handled = Arc::new(Mutex::new(false));
+    let flag = handled.clone();
+    game.register_trigger(TriggerRegistration {
+        owner: 0,
+        skill: "duplicate_detach".into(),
+        timing: "discardBefore".into(),
+        role: TriggerRole::Global,
+        order: TriggerOrder::First,
+        priority: 0,
+        label: None,
+        silent: true,
+        filter: Arc::new(|_, e, _| e.player == Some(0)),
+        effect: Arc::new(move |ctx, step, _| {
+            if step == 0 {
+                if *flag.lock().unwrap() {
+                    return TriggerStep::Done;
+                }
+                *flag.lock().unwrap() = true;
+                ctx.gain_owned_card(0, 0, material.id).unwrap();
+                return TriggerStep::Continue(1);
+            }
+            if step == 1 {
+                ctx.equip_from_hand(0, material.id).unwrap();
+                return TriggerStep::Continue(2);
+            }
+            TriggerStep::Done
+        }),
+    })
+    .unwrap();
+    play_phase(&mut game);
+    if independent {
+        game.grant_temporary(0, crate::TemporarySkill::until_removed("zhuge_skill"))
+            .unwrap();
+    }
+    multi_weapon_activate(&mut game, operations[0]);
+    multi_weapon_activate(&mut game, operations[1]);
+    assert!(*handled.lock().unwrap());
+    assert!(game.discard.contains(&material));
+    if reattach {
+        multi_weapon_activate(&mut game, operations[2]);
+        multi_weapon_activate(&mut game, operations[3]);
+    }
+    if other.is_some() {
+        multi_weapon_activate(&mut game, operations[4]);
+    }
+    (game, material, other, red)
+}
+
+#[test]
+fn liuli_payment_filters_all_registrations_sharing_the_same_material() {
+    for extra in [true, false] {
+        let (mut game, sword, other, red) = duplicate_material_fixture(
+            CardKind::Qinggang,
+            true,
+            extra.then_some(CardKind::Qinggang),
+            false,
+        );
+        game.seat_mut(0).hero = classic_data::roster()
+            .iter()
+            .find(|hero| hero.id == "daqiao");
+        let provoke = game
+            .register_active_skill(ActiveSkillRegistration {
+                owner: 0,
+                skill: "duplicate_liuli".into(),
+                limited: false,
+                choice: Arc::new(|_, _| {
+                    Some(ChoiceBranch {
+                        id: 0,
+                        label: "fixture".into(),
+                        cards: vec![],
+                        min_cards: 0,
+                        max_cards: 0,
+                        targets: vec![],
+                        min_targets: 0,
+                        max_targets: 0,
+                    })
+                }),
+                effect: Arc::new(|ctx, _, _| {
+                    ctx.use_virtual_sha(1, 0, None).unwrap();
+                    TriggerStep::Done
+                }),
+            })
+            .unwrap();
+        multi_weapon_activate(&mut game, provoke);
+        let choice = game.view(Some(0)).unwrap().choice.unwrap();
+        let option = choice
+            .branches
+            .iter()
+            .find(|branch| branch.cards.contains(&sword.id));
+        assert_eq!(
+            option.is_some_and(|branch| branch.targets.contains(&2)),
+            extra
+        );
+        if extra {
+            let branch = option.unwrap();
+            game.submit(Command {
+                version: game.version,
+                seat: 0,
+                action: Action::Select {
+                    event: choice.event,
+                    branch: branch.id,
+                    cards: vec![sword.id],
+                    targets: vec![2],
+                },
+            })
+            .unwrap();
+            assert!(game.discard.contains(&sword));
+            let response = game.view(Some(2)).unwrap().choice.unwrap();
+            game.submit(Command {
+                version: game.version,
+                seat: 2,
+                action: Action::Choose {
+                    event: response.event,
+                    card: None,
+                },
+            })
+            .unwrap();
+            assert_eq!(game.seat(2).unwrap().hp, 3);
+        }
+        let mut tracked = vec![sword, red];
+        if let Some(card) = other {
+            tracked.push(card);
+        }
+        multi_weapon_conservation(&game, &tracked);
+    }
+}
+
+#[test]
+fn wusheng_payment_filters_all_zhuge_registrations_for_same_material() {
+    for (reattach, extra, allowed) in [
+        (true, false, false),
+        (false, false, true),
+        (true, true, true),
+    ] {
+        let (mut game, crossbow, other, red) = duplicate_material_fixture(
+            CardKind::Zhuge,
+            reattach,
+            extra.then_some(CardKind::Zhuge),
+            false,
+        );
+        play(&mut game, 322, &[1]);
+        defend(&mut game, 1, None);
+        let payment = if reattach { crossbow } else { red };
+        let view = game.view(Some(0)).unwrap();
+        let eligible = view
+            .virtual_plays
+            .iter()
+            .any(|play| play.kind == CardKind::Sha && play.branch.cards.contains(&payment.id));
+        assert_eq!(eligible, allowed, "reattach={reattach}, extra={extra}");
+        if allowed {
+            game.submit(Command {
+                version: game.version,
+                seat: 0,
+                action: Action::PlayVirtual {
+                    kind: CardKind::Sha,
+                    cards: vec![payment.id],
+                    targets: vec![1],
+                },
+            })
+            .unwrap();
+            defend(&mut game, 1, None);
+            assert!(game.discard.contains(&payment));
+        } else {
+            assert!(game
+                .submit(Command {
+                    version: game.version,
+                    seat: 0,
+                    action: Action::PlayVirtual {
+                        kind: CardKind::Sha,
+                        cards: vec![payment.id],
+                        targets: vec![1]
+                    }
+                })
+                .is_err());
+            assert!(game.seat(0).unwrap().equipment.contains(&payment));
+        }
+        let mut tracked = vec![crossbow, red, card(322, CardKind::Sha)];
+        if let Some(card) = other {
+            tracked.push(card);
+        }
+        multi_weapon_conservation(&game, &tracked);
+    }
+}
+
+#[test]
+fn qinggang_is_checked_per_target_after_first_timing_callback_moves_it() {
+    use crate::EquipmentSlot::Weapon;
+    for move_at in [2, 1] {
+        let mut game = scene(
+            &[
+                Role::Lord,
+                Role::Loyalist,
+                Role::Rebel,
+                Role::Loyalist,
+                Role::Rebel,
+                Role::Loyalist,
+                Role::Rebel,
+                Role::Rebel,
+            ],
+            0,
+        );
+        let sword = card(330, CardKind::Qinggang);
+        let fangtian = card(331, CardKind::Fangtian);
+        let sha = card(332, CardKind::Sha);
+        let armor = [card(333, CardKind::Bagua), card(334, CardKind::Bagua)];
+        let judged = [card(335, CardKind::Tao), card(336, CardKind::Tao)];
+        game.seat_mut(0).hand.extend([sword, fangtian, sha]);
+        for (seat, item) in [(1, armor[0]), (2, armor[1])] {
+            game.seat_mut(seat).hand.push(item);
+            game.mark_known_to(item.id, 0);
+        }
+        game.classic.as_mut().unwrap().deck.extend(judged);
+        for c in judged {
+            game.classic.as_mut().unwrap().faces.push(CardFace {
+                id: c.id,
+                suit: Suit::Heart,
+                rank: 9,
+            });
+        }
+        let setup = game
+            .register_active_skill(ActiveSkillRegistration {
+                owner: 0,
+                skill: "target_timing_equipment".into(),
+                limited: false,
+                choice: Arc::new(|_, _| {
+                    Some(ChoiceBranch {
+                        id: 0,
+                        label: "fixture".into(),
+                        cards: vec![],
+                        min_cards: 0,
+                        max_cards: 0,
+                        targets: vec![],
+                        min_targets: 0,
+                        max_targets: 0,
+                    })
+                }),
+                effect: Arc::new(move |ctx, _, _| {
+                    ctx.expand_equip(0, vec![Weapon]).unwrap();
+                    ctx.equip_from_hand(0, sword.id).unwrap();
+                    ctx.equip_from_hand(0, fangtian.id).unwrap();
+                    ctx.equip_from_hand(1, armor[0].id).unwrap();
+                    ctx.equip_from_hand(2, armor[1].id).unwrap();
+                    TriggerStep::Done
+                }),
+            })
+            .unwrap();
+        let seen = Arc::new(Mutex::new(Vec::new()));
+        let captured = seen.clone();
+        game.register_trigger(TriggerRegistration {
+            owner: 0,
+            skill: "move_qinggang_on_playered".into(),
+            timing: "useCardToPlayered".into(),
+            role: TriggerRole::Player,
+            order: TriggerOrder::First,
+            priority: 0,
+            label: None,
+            silent: true,
+            filter: Arc::new(move |_, e, _| e.target == Some(move_at)),
+            effect: Arc::new(move |ctx, _, _| {
+                assert_eq!(
+                    ctx.event().cards,
+                    [sha],
+                    "target timing must expose actual Sha material"
+                );
+                captured.lock().unwrap().push(ctx.event().target);
+                ctx.gain_owned_card(0, 3, sword.id).unwrap();
+                TriggerStep::Done
+            }),
+        })
+        .unwrap();
+        play_phase(&mut game);
+        multi_weapon_activate(&mut game, setup);
+        play(&mut game, sha.id, &[1, 2]);
+        assert_eq!(
+            *seen.lock().unwrap(),
+            [Some(move_at)],
+            "sha must dispatch useCardToPlayered to its source"
+        );
+        assert!(game.seat(3).unwrap().hand.contains(&sword));
+        for target in [1, 2] {
+            let choice = game.view(Some(target)).unwrap().choice.unwrap();
+            if target < move_at {
+                assert_eq!(choice.kind, ChoiceKind::Shan);
+                game.submit(Command {
+                    version: game.version,
+                    seat: target,
+                    action: Action::Choose {
+                        event: choice.event,
+                        card: None,
+                    },
+                })
+                .unwrap();
+            } else {
+                assert_eq!(
+                    choice.kind,
+                    ChoiceKind::Content,
+                    "bagua must be offered after sword loss"
+                );
+                game.submit(Command {
+                    version: game.version,
+                    seat: target,
+                    action: Action::Select {
+                        event: choice.event,
+                        branch: 1,
+                        cards: vec![],
+                        targets: vec![],
+                    },
+                })
+                .unwrap();
+            }
+        }
+        assert_eq!(game.seat(1).unwrap().hp, if move_at == 2 { 3 } else { 4 });
+        assert_eq!(game.seat(2).unwrap().hp, 4);
+        assert_eq!(
+            judged
+                .iter()
+                .filter(|&&c| game.discard.contains(&c))
+                .count(),
+            if move_at == 2 { 1 } else { 2 }
+        );
+        multi_weapon_conservation(
+            &game,
+            &[
+                sword, fangtian, sha, armor[0], armor[1], judged[0], judged[1],
+            ],
+        );
+    }
+}
+
+#[test]
+fn wusheng_may_pay_only_equipped_zhuge_with_independent_temporary_skill() {
+    let (mut game, crossbow, _, red) =
+        duplicate_material_fixture(CardKind::Zhuge, true, None, true);
+    play(&mut game, 322, &[1]);
+    defend(&mut game, 1, None);
+    assert!(game.seat_has_non_equipment_skill(game.seat(0).unwrap(), "zhuge_skill"));
+    assert!(game.may_play_sha_without(0, Some(crossbow.id)));
+    assert!(game.in_sha_range_without(0, 1, Some(crossbow.id)));
+    let view = game.view(Some(0)).unwrap();
+    assert!(view
+        .virtual_plays
+        .iter()
+        .any(|play| play.kind == CardKind::Sha && play.branch.cards.contains(&crossbow.id)));
+    game.submit(Command {
+        version: game.version,
+        seat: 0,
+        action: Action::PlayVirtual {
+            kind: CardKind::Sha,
+            cards: vec![crossbow.id],
+            targets: vec![1],
+        },
+    })
+    .unwrap();
+    defend(&mut game, 1, None);
+    assert!(game.discard.contains(&crossbow));
+    multi_weapon_conservation(&game, &[crossbow, red, card(322, CardKind::Sha)]);
+}
+
+fn sha_target_dispatch_fixture(two: bool) -> (Game, [Card; 5]) {
+    use crate::EquipmentSlot::Weapon;
+    let mut game = scene(
+        &[
+            Role::Lord,
+            Role::Loyalist,
+            Role::Rebel,
+            Role::Loyalist,
+            Role::Rebel,
+            Role::Loyalist,
+            Role::Rebel,
+            Role::Rebel,
+        ],
+        0,
+    );
+    game.seat_mut(0).hero = classic_data::roster()
+        .iter()
+        .find(|hero| hero.id == "liubei");
+    game.seat_mut(1).hero = classic_data::roster()
+        .iter()
+        .find(|hero| hero.id == "diaochan");
+    let cards = [
+        card(340, CardKind::Qinggang),
+        card(341, CardKind::Cixiong),
+        card(342, CardKind::Sha),
+        card(343, CardKind::Bagua),
+        card(344, CardKind::Tao),
+    ];
+    game.seat_mut(0).hand.extend([cards[0], cards[1], cards[2]]);
+    game.seat_mut(1).hand.push(cards[3]);
+    game.mark_known_to(cards[3].id, 0);
+    game.classic.as_mut().unwrap().deck.push(cards[4]);
+    game.classic.as_mut().unwrap().faces.push(CardFace {
+        id: cards[4].id,
+        suit: Suit::Heart,
+        rank: 9,
+    });
+    let setup = game
+        .register_active_skill(ActiveSkillRegistration {
+            owner: 0,
+            skill: "dispatch_setup".into(),
+            limited: false,
+            choice: Arc::new(|_, _| {
+                Some(ChoiceBranch {
+                    id: 0,
+                    label: "fixture".into(),
+                    cards: vec![],
+                    min_cards: 0,
+                    max_cards: 0,
+                    targets: vec![],
+                    min_targets: 0,
+                    max_targets: 0,
+                })
+            }),
+            effect: Arc::new(move |ctx, _, _| {
+                ctx.expand_equip(0, vec![Weapon]).unwrap();
+                if two {
+                    ctx.equip_from_hand(0, cards[0].id).unwrap();
+                    ctx.equip_from_hand(0, cards[1].id).unwrap();
+                }
+                ctx.equip_from_hand(1, cards[3].id).unwrap();
+                TriggerStep::Done
+            }),
+        })
+        .unwrap();
+    play_phase(&mut game);
+    multi_weapon_activate(&mut game, setup);
+    (game, cards)
+}
+
+#[test]
+fn sha_target_first_callback_equips_qinggang_before_candidate_scan() {
+    let (mut game, cards) = sha_target_dispatch_fixture(false);
+    game.register_trigger(TriggerRegistration {
+        owner: 0,
+        skill: "first_equips_qinggang".into(),
+        timing: "useCardToPlayered".into(),
+        role: TriggerRole::Player,
+        order: TriggerOrder::First,
+        priority: 0,
+        label: None,
+        silent: true,
+        filter: Arc::new(|_, e, _| e.target == Some(1)),
+        effect: Arc::new(move |ctx, _, _| {
+            ctx.equip_from_hand(0, cards[0].id).unwrap();
+            TriggerStep::Done
+        }),
+    })
+    .unwrap();
+    play(&mut game, cards[2].id, &[1]);
+    let choice = game.view(Some(1)).unwrap().choice.unwrap();
+    assert_eq!(
+        choice.kind,
+        ChoiceKind::Shan,
+        "freshly equipped Qinggang bypasses Bagua without a trigger-order prompt"
+    );
+    let effects: Vec<_> = game
+        .events
+        .iter()
+        .filter(|event| {
+            matches!(
+                event.kind,
+                EventKind::EquipmentEffect {
+                    seat: 0,
+                    target: 1,
+                    kind: CardKind::Qinggang
+                }
+            ) && event.status == EventStatus::Started
+        })
+        .collect();
+    assert_eq!(effects.len(), 1);
+    let parent = effects[0].parent.expect("equipment effect has a parent");
+    assert!(
+        game.events.iter().any(|event| event.id == parent),
+        "parent {parent}, events {:?}",
+        game.events
+    );
+    game.submit(Command {
+        version: game.version,
+        seat: 1,
+        action: Action::Choose {
+            event: choice.event,
+            card: None,
+        },
+    })
+    .unwrap();
+    assert_eq!(game.seat(1).unwrap().hp, 3);
+    assert!(game.classic.as_ref().unwrap().deck.contains(&cards[4]));
+    multi_weapon_conservation(&game, &cards);
+}
+
+#[test]
+fn sha_target_qinggang_and_cixiong_allow_each_human_trigger_order() {
+    for first in ["青釭剑", "雌雄双股剑"] {
+        let (mut game, cards) = sha_target_dispatch_fixture(true);
+        play(&mut game, cards[2].id, &[1]);
+        let mut effects = Vec::new();
+        let collect = |game: &Game, effects: &mut Vec<_>| {
+            effects.extend(
+                game.events
+                    .iter()
+                    .filter(|event| {
+                        matches!(event.kind, EventKind::EquipmentEffect { .. })
+                            && event.status == EventStatus::Started
+                    })
+                    .map(|event| (event.kind, event.parent)),
+            );
+        };
+        collect(&game, &mut effects);
+        let choice = game.view(Some(0)).unwrap().choice.unwrap();
+        let branch = choice
+            .branches
+            .iter()
+            .find(|branch| branch.label.contains(first))
+            .unwrap();
+        game.submit(Command {
+            version: game.version,
+            seat: 0,
+            action: Action::Select {
+                event: choice.event,
+                branch: branch.id,
+                cards: vec![],
+                targets: vec![],
+            },
+        })
+        .unwrap();
+        collect(&game, &mut effects);
+        let choice = game
+            .view(Some(0))
+            .unwrap()
+            .choice
+            .expect("cixiong prompts attacker");
+        let decline = choice
+            .branches
+            .iter()
+            .find(|branch| branch.id == 0)
+            .unwrap();
+        game.submit(Command {
+            version: game.version,
+            seat: 0,
+            action: Action::Select {
+                event: choice.event,
+                branch: decline.id,
+                cards: vec![],
+                targets: vec![],
+            },
+        })
+        .unwrap();
+        collect(&game, &mut effects);
+        let expected = if first == "青釭剑" {
+            [CardKind::Qinggang, CardKind::Cixiong]
+        } else {
+            [CardKind::Cixiong, CardKind::Qinggang]
+        };
+        let kinds: Vec<_> = effects
+            .iter()
+            .map(|(kind, _)| match kind {
+                EventKind::EquipmentEffect { kind, .. } => *kind,
+                _ => unreachable!(),
+            })
+            .collect();
+        assert_eq!(kinds, expected);
+        assert!(effects.iter().all(|(_, parent)| parent.is_some()));
+        let choice = game.view(Some(1)).unwrap().choice.unwrap();
+        assert_eq!(choice.kind, ChoiceKind::Shan);
+        game.submit(Command {
+            version: game.version,
+            seat: 1,
+            action: Action::Choose {
+                event: choice.event,
+                card: None,
+            },
+        })
+        .unwrap();
+        assert_eq!(game.seat(1).unwrap().hp, 3);
+        multi_weapon_conservation(&game, &cards);
+    }
+}
+
+#[test]
+fn virtual_sha_target_timing_exposes_no_physical_material() {
+    let mut game = scene(
+        &[
+            Role::Lord,
+            Role::Loyalist,
+            Role::Rebel,
+            Role::Loyalist,
+            Role::Rebel,
+            Role::Loyalist,
+            Role::Rebel,
+            Role::Rebel,
+        ],
+        0,
+    );
+    let seen = Arc::new(Mutex::new(Vec::new()));
+    let captured = seen.clone();
+    game.register_trigger(TriggerRegistration {
+        owner: 1,
+        skill: "virtual_target_cards".into(),
+        timing: "useCardToPlayered".into(),
+        role: TriggerRole::Player,
+        order: TriggerOrder::First,
+        priority: 0,
+        label: None,
+        silent: true,
+        filter: Arc::new(|_, event, _| event.target == Some(0)),
+        effect: Arc::new(move |ctx, _, _| {
+            captured.lock().unwrap().push(ctx.event().cards.clone());
+            TriggerStep::Done
+        }),
+    })
+    .unwrap();
+    let provoke = game
+        .register_active_skill(ActiveSkillRegistration {
+            owner: 0,
+            skill: "virtual_target_use".into(),
+            limited: false,
+            choice: Arc::new(|_, _| {
+                Some(ChoiceBranch {
+                    id: 0,
+                    label: "fixture".into(),
+                    cards: vec![],
+                    min_cards: 0,
+                    max_cards: 0,
+                    targets: vec![],
+                    min_targets: 0,
+                    max_targets: 0,
+                })
+            }),
+            effect: Arc::new(|ctx, _, _| {
+                ctx.use_virtual_sha(1, 0, None).unwrap();
+                TriggerStep::Done
+            }),
+        })
+        .unwrap();
+    play_phase(&mut game);
+    multi_weapon_activate(&mut game, provoke);
+    assert_eq!(*seen.lock().unwrap(), [Vec::<Card>::new()]);
+    defend(&mut game, 0, None);
+    assert_eq!(game.seat(0).unwrap().hp, 3);
+}
+
+#[test]
+fn sha_target_dynamic_priority_equip_and_cancellation_control_candidates() {
+    for cancel in [None, Some(TriggerOrder::First), Some(TriggerOrder::Last)] {
+        let (mut game, cards) = sha_target_dispatch_fixture(false);
+        let captured = Arc::new(Mutex::new(Vec::new()));
+        let log = captured.clone();
+        game.register_trigger(TriggerRegistration {
+            owner: 0,
+            skill: "dynamic_sword".into(),
+            timing: "useCardToPlayered".into(),
+            role: TriggerRole::Player,
+            order: TriggerOrder::Normal,
+            priority: 100,
+            label: None,
+            silent: true,
+            filter: Arc::new(|_, e, _| e.target == Some(1)),
+            effect: Arc::new(move |ctx, _, _| {
+                log.lock().unwrap().push("equip");
+                ctx.equip_from_hand(0, cards[0].id).unwrap();
+                TriggerStep::Done
+            }),
+        })
+        .unwrap();
+        let log = captured.clone();
+        game.register_trigger(TriggerRegistration {
+            owner: 0,
+            skill: "low_priority_after_sword".into(),
+            timing: "useCardToPlayered".into(),
+            role: TriggerRole::Player,
+            order: TriggerOrder::Normal,
+            priority: -100,
+            label: None,
+            silent: true,
+            filter: Arc::new(|_, e, _| e.target == Some(1)),
+            effect: Arc::new(move |_, _, _| {
+                log.lock().unwrap().push("low");
+                TriggerStep::Done
+            }),
+        })
+        .unwrap();
+        if let Some(order) = cancel {
+            game.register_trigger(TriggerRegistration {
+                owner: 0,
+                skill: "cancel_target_dispatch".into(),
+                timing: "useCardToPlayered".into(),
+                role: TriggerRole::Player,
+                order,
+                priority: 0,
+                label: None,
+                silent: true,
+                filter: Arc::new(|_, e, _| e.target == Some(1)),
+                effect: Arc::new(|_, _, _| TriggerStep::CancelSubject),
+            })
+            .unwrap();
+        }
+        play(&mut game, cards[2].id, &[1]);
+        let effects: Vec<_> = game
+            .events
+            .iter()
+            .filter(|e| {
+                matches!(
+                    e.kind,
+                    EventKind::EquipmentEffect {
+                        kind: CardKind::Qinggang,
+                        ..
+                    }
+                ) && e.status == EventStatus::Started
+            })
+            .collect();
+        if cancel == Some(TriggerOrder::First) {
+            assert!(effects.is_empty());
+            assert!(captured.lock().unwrap().is_empty());
+        } else {
+            assert_eq!(effects.len(), 1);
+            assert_eq!(*captured.lock().unwrap(), ["equip", "low"]);
+        }
+        let view = game.view(Some(1)).unwrap();
+        if let Some(choice) = view.choice {
+            if cancel == Some(TriggerOrder::First) {
+                assert_eq!(choice.kind, ChoiceKind::Content);
+            } else {
+                assert_eq!(choice.kind, ChoiceKind::Shan);
+            }
+        }
+        multi_weapon_conservation(&game, &cards);
+    }
+}
+
+#[test]
+fn physical_multi_target_sha_has_distinct_playered_events_with_real_parent_and_material() {
+    let (mut game, cards) = sha_target_dispatch_fixture(false);
+    let fangtian = card(345, CardKind::Fangtian);
+    game.seat_mut(0).hand.push(fangtian);
+    let setup = game
+        .register_active_skill(ActiveSkillRegistration {
+            owner: 0,
+            skill: "target_event_fangtian".into(),
+            limited: false,
+            choice: Arc::new(|_, _| {
+                Some(ChoiceBranch {
+                    id: 0,
+                    label: "fixture".into(),
+                    cards: vec![],
+                    min_cards: 0,
+                    max_cards: 0,
+                    targets: vec![],
+                    min_targets: 0,
+                    max_targets: 0,
+                })
+            }),
+            effect: Arc::new(move |ctx, _, _| {
+                ctx.equip_from_hand(0, cards[0].id).unwrap();
+                ctx.equip_from_hand(0, fangtian.id).unwrap();
+                ctx.discard_hand(0, &[cards[1].id]).unwrap();
+                TriggerStep::Done
+            }),
+        })
+        .unwrap();
+    multi_weapon_activate(&mut game, setup);
+    let seen = Arc::new(Mutex::new(Vec::new()));
+    let captured = seen.clone();
+    game.register_trigger(TriggerRegistration {
+        owner: 0,
+        skill: "target_event_identity".into(),
+        timing: "useCardToPlayered".into(),
+        role: TriggerRole::Player,
+        order: TriggerOrder::First,
+        priority: 0,
+        label: None,
+        silent: true,
+        filter: Arc::new(|_, _, _| true),
+        effect: Arc::new(move |ctx, _, _| {
+            let event = ctx.event();
+            captured.lock().unwrap().push((
+                event.subject,
+                event.parent,
+                event.target,
+                ctx.game().event_kind(event.subject),
+                event.parent.and_then(|id| ctx.game().event_kind(id)),
+                event.cards.clone(),
+            ));
+            TriggerStep::Done
+        }),
+    })
+    .unwrap();
+    play(&mut game, cards[2].id, &[1, 2]);
+    let rows = seen.lock().unwrap();
+    assert_eq!(rows.len(), 2);
+    assert_ne!(rows[0].0, rows[1].0);
+    for (index, row) in rows.iter().enumerate() {
+        let target = (index + 1) as SeatId;
+        assert_eq!(row.2, Some(target));
+        assert_eq!(
+            row.3,
+            Some(EventKind::CardTargetTiming {
+                timing: crate::CardTargetTiming::UseCardToPlayered,
+                seat: 0,
+                target,
+                card_kind: CardKind::Sha
+            })
+        );
+        assert!(
+            matches!(row.4, Some(EventKind::UseShaTargets { seat: 0, card }) if card == cards[2])
+        );
+        assert_eq!(row.5, [cards[2]]);
+    }
+    assert_eq!(rows[0].1, rows[1].1);
+    drop(rows);
+    for target in [1, 2] {
+        let choice = game.view(Some(target)).unwrap().choice.unwrap();
+        assert_eq!(choice.kind, ChoiceKind::Shan);
+        game.submit(Command {
+            version: game.version,
+            seat: target,
+            action: Action::Choose {
+                event: choice.event,
+                card: None,
+            },
+        })
+        .unwrap();
+    }
+    multi_weapon_conservation(
+        &game,
+        &[cards[0], cards[1], cards[2], cards[3], cards[4], fangtian],
+    );
+}
+
+#[test]
+fn red_tieji_does_not_skip_later_equipment_effect() {
+    let (mut game, cards) = sha_target_dispatch_fixture(false);
+    game.seat_mut(0).hero = classic_data::roster()
+        .iter()
+        .find(|hero| hero.id == "machao");
+    let setup = game
+        .register_active_skill(ActiveSkillRegistration {
+            owner: 0,
+            skill: "tieji_sword".into(),
+            limited: false,
+            choice: Arc::new(|_, _| {
+                Some(ChoiceBranch {
+                    id: 0,
+                    label: "fixture".into(),
+                    cards: vec![],
+                    min_cards: 0,
+                    max_cards: 0,
+                    targets: vec![],
+                    min_targets: 0,
+                    max_targets: 0,
+                })
+            }),
+            effect: Arc::new(move |ctx, _, _| {
+                ctx.equip_from_hand(0, cards[0].id).unwrap();
+                TriggerStep::Done
+            }),
+        })
+        .unwrap();
+    multi_weapon_activate(&mut game, setup);
+    play(&mut game, cards[2].id, &[1]);
+    let choice = game
+        .view(Some(0))
+        .unwrap()
+        .choice
+        .expect("tieji must prompt");
+    let yes = choice
+        .branches
+        .iter()
+        .find(|branch| branch.id == 1)
+        .unwrap();
+    game.submit(Command {
+        version: game.version,
+        seat: 0,
+        action: Action::Select {
+            event: choice.event,
+            branch: yes.id,
+            cards: vec![],
+            targets: vec![],
+        },
+    })
+    .unwrap();
+    let effect = game
+        .events
+        .iter()
+        .filter(|e| {
+            matches!(
+                e.kind,
+                EventKind::EquipmentEffect {
+                    seat: 0,
+                    target: 1,
+                    kind: CardKind::Qinggang
+                }
+            ) && e.status == EventStatus::Started
+        })
+        .count();
+    assert_eq!(effect, 1, "Qinggang still executes after red tieji");
+    assert!(game.discard.contains(&cards[4]));
+    assert_eq!(game.seat(1).unwrap().hp, 3);
+    multi_weapon_conservation(&game, &cards);
+}
+
+#[test]
+fn bot_legally_resolves_sha_target_equipment_trigger_order_once_each() {
+    let (mut game, cards) = sha_target_dispatch_fixture(true);
+    game.classic.as_mut().unwrap().human = 7;
+    play(&mut game, cards[2].id, &[1]);
+    let mut effects = Vec::new();
+    for _ in 0..8 {
+        effects.extend(game.events.iter().filter_map(|event| match event.kind {
+            EventKind::EquipmentEffect {
+                seat: 0,
+                target: 1,
+                kind,
+            } if event.status == EventStatus::Started => Some((kind, event.parent)),
+            _ => None,
+        }));
+        if game.seat(1).unwrap().hp == 3 {
+            break;
+        }
+        let command = game
+            .bot_command()
+            .expect("bot must choose a legal trigger or response");
+        game.submit(command).unwrap();
+    }
+    assert_eq!(game.seat(1).unwrap().hp, 3);
+    assert_eq!(
+        effects
+            .iter()
+            .filter(|(kind, _)| *kind == CardKind::Qinggang)
+            .count(),
+        1
+    );
+    assert_eq!(
+        effects
+            .iter()
+            .filter(|(kind, _)| *kind == CardKind::Cixiong)
+            .count(),
+        1
+    );
+    assert!(effects.iter().all(|(_, parent)| parent.is_some()));
+    multi_weapon_conservation(&game, &cards);
 }

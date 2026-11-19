@@ -30,7 +30,6 @@ pub(crate) enum ResponseContext {
 pub(crate) struct Response {
     pub(super) seat: SeatId,
     pub(super) kind: CardKind,
-    ignore_armor: bool,
     pub(super) context: ResponseContext,
     allow_lord: bool,
     step: Step,
@@ -41,11 +40,10 @@ pub(crate) struct Response {
 }
 
 impl Response {
-    pub(super) fn new(seat: SeatId, kind: CardKind, ignore_armor: bool) -> Self {
+    pub(super) fn new(seat: SeatId, kind: CardKind, _ignore_armor: bool) -> Self {
         Self {
             seat,
             kind,
-            ignore_armor,
             context: ResponseContext::Use,
             allow_lord: true,
             step: Step::Begin,
@@ -201,7 +199,7 @@ impl Game {
                     .expect("the responding seat exists")
                     .registered_equipment()
                     .any(|card| card.kind == CardKind::Bagua);
-                if armor && !response.ignore_armor {
+                if armor && !self.has_skill(seat, "qinggang2") {
                     response.step = Step::OfferArmor;
                     self.continue_equipment(Flow::Response(response));
                     self.choose_equipment(

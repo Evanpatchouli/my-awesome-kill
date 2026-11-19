@@ -15,6 +15,7 @@ pub(crate) struct Skill {
     pub(super) target: SeatId,
     pub(super) kind: CardKind,
     step: Step,
+    sha_subject: Option<crate::EventId>,
 }
 
 impl Skill {
@@ -24,7 +25,18 @@ impl Skill {
             target,
             kind,
             step: Step::Start,
+            sha_subject: None,
         }
+    }
+    pub(super) fn sha_equipment(
+        seat: SeatId,
+        target: SeatId,
+        kind: CardKind,
+        subject: crate::EventId,
+    ) -> Self {
+        let mut skill = Self::new(seat, target, kind);
+        skill.sha_subject = Some(subject);
+        skill
     }
 }
 
@@ -84,6 +96,21 @@ impl Game {
         let target = skill.target;
         if !self.is_in(seat) || !self.is_in(target) {
             self.scheduler.end(Outcome::Cancelled);
+            return;
+        }
+        if matches!(skill.step, Step::Start)
+            && skill.sha_subject.is_some()
+            && !self.sha_equipment_eligible(seat, target, skill.kind)
+        {
+            self.finish();
+            return;
+        }
+        if matches!(skill.step, Step::Start) && skill.kind == CardKind::Qinggang {
+            self.add_qinggang_use(
+                target,
+                skill.sha_subject.expect("Qinggang belongs to a Sha"),
+            );
+            self.finish();
             return;
         }
         match (skill.step, child) {

@@ -155,6 +155,8 @@ pub enum Action {
 #[serde(rename_all = "camelCase")]
 pub struct GameView {
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub mount_combined: bool,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub round_suspended: bool,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub group_updates: Vec<crate::GroupAnnouncement>,
@@ -204,8 +206,16 @@ pub enum EquipmentSlot {
 
 #[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
+pub enum MountSlots {
+    #[default]
+    Separate,
+    Combined,
+}
+
+#[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct EquipmentSlotState {
-    pub enabled: usize,
+    pub enabled: i64,
     pub empty: usize,
     pub equipable: usize,
     pub disabled: usize,
@@ -459,6 +469,7 @@ pub enum CardTargetTiming {
     UseCardToTarget,
     UseCardToPlayered,
     UseCardToTargeted,
+    UseCardToExcluded,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]

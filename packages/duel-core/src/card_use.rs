@@ -43,7 +43,12 @@ impl Program {
 impl Game {
     /// Current primary targets of an active use. A borrowed-sword victim is a dependent choice.
     pub fn use_targets(&self, subject: EventId) -> Option<&[SeatId]> {
-        self.scheduler.active_frame(subject)?.1.use_targets()
+        let (frame, program) = self.scheduler.active_frame(subject)?;
+        if matches!(program, Program::TargetTiming(_)) {
+            self.scheduler.active_frame(frame.parent?)?.1.use_targets()
+        } else {
+            program.use_targets()
+        }
     }
 
     /// Legal additions to this use without its ordinary distance or initial target-count limit.

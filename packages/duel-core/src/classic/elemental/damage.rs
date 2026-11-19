@@ -28,6 +28,7 @@ enum Stage {
 pub(crate) struct CardDamage {
     source: Option<SeatId>,
     target: SeatId,
+    pub(crate) sha_use: Option<EventId>,
     amount: u16,
     pub(crate) card: DamageCard,
     lose_hp: bool,
@@ -141,6 +142,7 @@ impl Game {
         Program::CardDamage(CardDamage {
             source: self.live_damage_source(source),
             target,
+            sha_use: None,
             amount,
             card,
             lose_hp: false,
@@ -156,6 +158,7 @@ impl Game {
         Program::CardDamage(CardDamage {
             source: None,
             target,
+            sha_use: None,
             amount,
             card: DamageCard::default(),
             lose_hp: true,
@@ -210,13 +213,15 @@ impl Game {
             let queued = match damage.stage {
                 Before(0) if !damage.lose_hp && amount == 0 => {
                     damage.stage = Finish;
-                    self.queue_timing(
+                    self.queue_qinggang_timing(
                         "damageZero",
                         Some(target),
                         source,
                         None,
                         amount,
                         &damage.card.cards,
+                        damage.sha_use,
+                        Some(&[target].into_iter().chain(source).collect::<Vec<_>>()),
                     )
                 }
                 // The damage subject has not yet opted into processing an out player
@@ -260,13 +265,15 @@ impl Game {
                     // A damage request precedes its queued HP change. The callbacks run
                     // after that child has settled, including its armor loss and unlink.
                     if !damage.lose_hp {
-                        damage.on_damage = self.prepare_timing(
+                        damage.on_damage = self.prepare_qinggang_timing(
                             "damage",
                             Some(target),
                             source,
                             None,
                             amount,
                             &damage.card.cards,
+                            damage.sha_use,
+                            Some(&[target].into_iter().chain(source).collect::<Vec<_>>()),
                         );
                     }
                     damage.stage = Hp;
@@ -361,13 +368,15 @@ impl Game {
                 }
                 Cancel => {
                     damage.stage = FinishCancelled;
-                    self.queue_timing(
+                    self.queue_qinggang_timing(
                         "damageCancelled",
                         Some(target),
                         source,
                         None,
                         amount,
                         &damage.card.cards,
+                        damage.sha_use,
+                        Some(&[target].into_iter().chain(source).collect::<Vec<_>>()),
                     )
                 }
                 FinishCancelled => {

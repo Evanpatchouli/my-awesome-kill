@@ -1,5 +1,5 @@
 use crate::classic::equipment::slot;
-use crate::{Card, CardId, SeatId};
+use crate::{Card, CardId, CardKind, SeatId};
 use std::ops::Deref;
 
 #[cfg(test)]
@@ -22,8 +22,40 @@ pub(crate) struct EquipmentArea {
     physical: Vec<Card>,
     entries: Vec<EquipmentRegistration>,
     next_serial: u64,
+    next_hook: u64,
+    qinggang_hook: Option<u64>,
+    cixiong_hook: Option<u64>,
 }
 impl EquipmentArea {
+    pub(crate) fn hook(&self, skill: &str) -> Option<u64> {
+        match skill {
+            "qinggang_skill" => self.qinggang_hook,
+            "cixiong_skill" => self.cixiong_hook,
+            _ => None,
+        }
+    }
+    pub(crate) fn register_hook(&mut self, skill: &str) {
+        if self.hook(skill).is_some() || !matches!(skill, "qinggang_skill" | "cixiong_skill") {
+            return;
+        }
+        let serial = self.next_hook;
+        self.next_hook = self
+            .next_hook
+            .checked_add(1)
+            .expect("equipment hook serial exhausted");
+        match skill {
+            "qinggang_skill" => self.qinggang_hook = Some(serial),
+            "cixiong_skill" => self.cixiong_hook = Some(serial),
+            _ => unreachable!(),
+        }
+    }
+    pub(crate) fn remove_hook(&mut self, skill: &str) {
+        match skill {
+            "qinggang_skill" => self.qinggang_hook = None,
+            "cixiong_skill" => self.cixiong_hook = None,
+            _ => {}
+        }
+    }
     pub(crate) fn as_slice(&self) -> &[Card] {
         &self.physical
     }
@@ -33,6 +65,9 @@ impl EquipmentArea {
             physical: Vec::new(),
             entries: Vec::new(),
             next_serial: 0,
+            next_hook: 0,
+            qinggang_hook: None,
+            cixiong_hook: None,
         }
     }
     pub(crate) fn registrations(&self) -> &[EquipmentRegistration] {
@@ -45,6 +80,9 @@ impl EquipmentArea {
             .map(|entry| entry.card)
     }
     pub(crate) fn install(&mut self, card: Card) {
+        if let Some(skill) = sha_equipment_skill(card.kind) {
+            self.register_hook(skill);
+        }
         let key = EquipmentRegistrationKey {
             seat: self.owner,
             serial: self.next_serial,
@@ -101,6 +139,8 @@ impl EquipmentArea {
     pub(crate) fn set_test(&mut self, cards: Vec<Card>) {
         self.physical.clear();
         self.entries.clear();
+        self.qinggang_hook = None;
+        self.cixiong_hook = None;
         for &card in &cards {
             self.install(card);
         }
@@ -110,6 +150,8 @@ impl EquipmentArea {
     pub(crate) fn clear_test(&mut self) {
         self.physical.clear();
         self.entries.clear();
+        self.qinggang_hook = None;
+        self.cixiong_hook = None;
     }
     #[cfg(test)]
     pub(crate) fn detach_test(&mut self, card: Card) {
@@ -138,5 +180,13 @@ impl<const N: usize> PartialEq<[Card; N]> for EquipmentArea {
 impl PartialEq<Vec<Card>> for EquipmentArea {
     fn eq(&self, other: &Vec<Card>) -> bool {
         self.physical == *other
+    }
+}
+
+pub(crate) fn sha_equipment_skill(kind: CardKind) -> Option<&'static str> {
+    match kind {
+        CardKind::Qinggang => Some("qinggang_skill"),
+        CardKind::Cixiong => Some("cixiong_skill"),
+        _ => None,
     }
 }

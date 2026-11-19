@@ -122,6 +122,7 @@ pub(crate) enum HeroMoment {
     ShaTarget {
         seat: SeatId,
         target: SeatId,
+        attack: crate::EventId,
     },
     LostCards {
         seat: SeatId,

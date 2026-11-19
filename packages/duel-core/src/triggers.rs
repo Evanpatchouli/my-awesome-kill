@@ -1,4 +1,4 @@
-use crate::scheduler::Outcome;
+use crate::scheduler::{EventRef, Outcome};
 use crate::{
     Card, CardId, CardZone, ChoiceBranch, ChoiceRequest, EventId, Game, JudgmentKey, Program,
     Resolution, RuleError, SeatId, Zone,
@@ -513,6 +513,34 @@ impl TriggerContext<'_> {
         self.game.edit_use_target(self.event, target, false)
     }
 
+    /// Cancel the current trusted Sha use at a supported use or target timing.
+    pub fn cancel_card_use(&mut self) -> Result<(), RuleError> {
+        let mut cleanup = Vec::new();
+        let result = self.game.change_sha_use_with_cleanup(
+            self.event,
+            crate::classic::equipment::attack::UseChange::Cancel,
+            &mut cleanup,
+        );
+        self.operations.extend(
+            cleanup
+                .into_iter()
+                .map(|program| TriggerOperation::Cleanup(Box::new(program))),
+        );
+        result
+    }
+    pub fn exclude_card_use_target(&mut self, target: SeatId) -> Result<(), RuleError> {
+        self.game.change_sha_use(
+            self.event,
+            crate::classic::equipment::attack::UseChange::Exclude(target),
+        )
+    }
+    pub fn exclude_all_card_use_targets(&mut self) -> Result<(), RuleError> {
+        self.game.change_sha_use(
+            self.event,
+            crate::classic::equipment::attack::UseChange::ExcludeAll,
+        )
+    }
+
     pub fn game(&self) -> &Game {
         self.game
     }
@@ -548,7 +576,16 @@ impl TriggerContext<'_> {
 
     /// Remove just this temporary skill and its owned callbacks and modifiers.
     pub fn remove_temporary(&mut self, owner: SeatId, name: &str) -> bool {
-        self.game.remove_temporary(owner, name)
+        let mut cleanup = Vec::new();
+        let removed = self
+            .game
+            .remove_temporary_with_cleanup(owner, name, &mut cleanup);
+        self.operations.extend(
+            cleanup
+                .into_iter()
+                .map(|program| TriggerOperation::Cleanup(Box::new(program))),
+        );
+        removed
     }
     pub fn owner(&self) -> SeatId {
         self.owner
@@ -877,6 +914,7 @@ impl TriggerContext<'_> {
                 | TriggerOperation::CompareMany { .. }
                 | TriggerOperation::VirtualSha { .. }
                 | TriggerOperation::Emit(_)
+                | TriggerOperation::Cleanup(_)
                 | TriggerOperation::Elemental(_)
                 | TriggerOperation::Compare { .. } => {}
             }
@@ -909,10 +947,22 @@ impl TriggerContext<'_> {
         amount: u16,
         cards: &[Card],
     ) -> bool {
-        let Some(event) = self
-            .game
-            .prepare_timing(timing, player, source, target, amount, cards)
-        else {
+        let mut cleanup = Vec::new();
+        let event = self.game.prepare_timing_with_cleanup(
+            timing,
+            player,
+            source,
+            target,
+            amount,
+            cards,
+            &mut cleanup,
+        );
+        self.operations.extend(
+            cleanup
+                .into_iter()
+                .map(|program| TriggerOperation::Cleanup(Box::new(program))),
+        );
+        let Some(event) = event else {
             return false;
         };
         self.operations.push_back(TriggerOperation::Emit(event));
@@ -922,6 +972,7 @@ impl TriggerContext<'_> {
 
 #[derive(Clone)]
 enum TriggerOperation {
+    Cleanup(Box<Program>),
     Rest(crate::classic::rest::Flow),
     JudgeArea(crate::classic::judge_area::Flow),
     EquipArea(crate::classic::equipment::AreaFlow),
@@ -1199,6 +1250,77 @@ impl Game {
         true
     }
 
+    pub(crate) fn queue_qinggang_timing(
+        &mut self,
+        timing: &'static str,
+        player: Option<SeatId>,
+        source: Option<SeatId>,
+        target: Option<SeatId>,
+        amount: u16,
+        cards: &[Card],
+        use_event: Option<EventId>,
+        owners: Option<&[SeatId]>,
+    ) -> bool {
+        if let Some(queue) = self.prepare_qinggang_timing(
+            timing, player, source, target, amount, cards, use_event, owners,
+        ) {
+            self.scheduler.next(Program::Dispatch(queue));
+            true
+        } else {
+            false
+        }
+    }
+    pub(crate) fn prepare_qinggang_timing(
+        &mut self,
+        timing: &'static str,
+        player: Option<SeatId>,
+        source: Option<SeatId>,
+        target: Option<SeatId>,
+        amount: u16,
+        cards: &[Card],
+        use_event: Option<EventId>,
+        owners: Option<&[SeatId]>,
+    ) -> Option<crate::classic::skills::Dispatch> {
+        let mut selected = Vec::new();
+        if let Some(id) = use_event {
+            if let Some(owners) = owners {
+                for &owner in owners {
+                    if self.has_skill(owner, "qinggang2")
+                        && self.has_qinggang_use(owner, id)
+                        && !selected.contains(&owner)
+                    {
+                        selected.push(owner);
+                    }
+                }
+            } else {
+                selected.extend(
+                    self.seats
+                        .iter()
+                        .filter(|seat| {
+                            self.has_skill(seat.id, "qinggang2") && seat.qinggang_uses.contains(&id)
+                        })
+                        .map(|seat| seat.id),
+                );
+            }
+        }
+        if selected.is_empty() && !self.wants_timing(timing) {
+            return None;
+        }
+        let mut event = self.subject_timing(timing, player, source, target, amount, cards);
+        if matches!(timing, "shaMiss" | "useCardToExcluded") {
+            event.card_kind = Some(crate::CardKind::Sha);
+        }
+        if !self.begin_timing_request(&event) && selected.is_empty() {
+            return None;
+        }
+        let queue = self.dispatch_for_timing(event);
+        Some(if let Some(id) = use_event {
+            queue.with_qinggang_cleanup(&selected, id)
+        } else {
+            queue
+        })
+    }
+
     pub(crate) fn prepare_timing(
         &mut self,
         timing: &'static str,
@@ -1208,11 +1330,37 @@ impl Game {
         amount: u16,
         cards: &[Card],
     ) -> Option<crate::classic::skills::Dispatch> {
+        let mut cleanup = Vec::new();
+        let result = self.prepare_timing_with_cleanup(
+            timing,
+            player,
+            source,
+            target,
+            amount,
+            cards,
+            &mut cleanup,
+        );
+        for program in cleanup {
+            self.scheduler.next_cleanup(program);
+        }
+        result
+    }
+
+    fn prepare_timing_with_cleanup(
+        &mut self,
+        timing: &'static str,
+        player: Option<SeatId>,
+        source: Option<SeatId>,
+        target: Option<SeatId>,
+        amount: u16,
+        cards: &[Card],
+        cleanup: &mut Vec<Program>,
+    ) -> Option<crate::classic::skills::Dispatch> {
         if !self.wants_timing(timing) {
             return None;
         }
         let event = self.subject_timing(timing, player, source, target, amount, cards);
-        if self.begin_timing_request(&event) {
+        if self.begin_timing_request_with_cleanup(&event, cleanup) {
             Some(self.dispatch_for_timing(event))
         } else {
             None
@@ -1248,6 +1396,35 @@ impl Game {
         cards: &[Card],
     ) -> TriggerEvent {
         let subject = self.scheduler.current_id();
+        let parent = self
+            .scheduler
+            .active_frame(subject)
+            .and_then(|(event, _)| event.parent);
+        self.subject_timing_at(
+            EventRef {
+                id: subject,
+                parent,
+            },
+            timing,
+            player,
+            source,
+            target,
+            amount,
+            cards,
+        )
+    }
+
+    pub(crate) fn subject_timing_at(
+        &self,
+        subject_frame: EventRef,
+        timing: &'static str,
+        player: Option<SeatId>,
+        source: Option<SeatId>,
+        target: Option<SeatId>,
+        amount: u16,
+        cards: &[Card],
+    ) -> TriggerEvent {
+        let subject = subject_frame.id;
         let frame = self.scheduler.active_frame(subject);
         let target = target.or_else(
             || match (timing, frame.map(|(_, program)| program.kind())) {
@@ -1261,6 +1438,7 @@ impl Game {
         let (card_kind, nature) = match frame {
             Some((_, Program::CardDamage(hit))) => (hit.card.kind, hit.card.nature),
             Some((_, Program::AddJudge(flow))) => (Some(flow.card_kind()), None),
+            Some((_, Program::TargetTiming(flow))) => (Some(flow.card_kind), None),
             Some((_, program)) => (
                 match program.kind() {
                     crate::EventKind::UseSha { .. } | crate::EventKind::UseShaTargets { .. } => {
@@ -1280,7 +1458,7 @@ impl Game {
         TriggerEvent {
             timing: timing.into(),
             subject,
-            parent: frame.and_then(|(event, _)| event.parent),
+            parent: subject_frame.parent,
             player,
             source,
             target,
@@ -1342,6 +1520,7 @@ impl Game {
             RegisteredState::Activate(selection) => (0, Some(selection)),
             RegisteredState::Operations {
                 require_success: true,
+                remaining,
                 ..
             } if matches!(
                 &child,
@@ -1354,8 +1533,7 @@ impl Game {
                 Some(Outcome::Finished(Resolution::BatchMove { cards, .. })) if cards.is_empty()
             ) =>
             {
-                self.finish();
-                return;
+                return self.drain_registered_cleanup(flow, remaining);
             }
             RegisteredState::Operations {
                 remaining, then, ..
@@ -1403,6 +1581,15 @@ impl Game {
         self.advance_registered(flow, operations, then);
     }
 
+    fn drain_registered_cleanup(
+        &mut self,
+        flow: Registered,
+        mut operations: VecDeque<TriggerOperation>,
+    ) {
+        operations.retain(|operation| matches!(operation, TriggerOperation::Cleanup(_)));
+        self.advance_registered(flow, operations, TriggerStep::Done);
+    }
+
     fn advance_registered(
         &mut self,
         mut flow: Registered,
@@ -1426,14 +1613,23 @@ impl Game {
                     | TriggerOperation::GainCompare { .. }
                     | TriggerOperation::GainPublicPile { .. }
             );
+            if let TriggerOperation::Cleanup(program) = operation {
+                flow.state = RegisteredState::Operations {
+                    remaining: operations,
+                    then,
+                    require_success: false,
+                };
+                self.scheduler.replace_current(Program::Registered(flow));
+                self.scheduler.next_cleanup(*program);
+                return;
+            }
             let program = match operation {
                 TriggerOperation::PreviewPile { seat, count } => {
                     flow.preview_started = true;
                     let Some(program) =
                         self.preview_pile_program(self.scheduler.current_id(), seat, count)
                     else {
-                        self.finish();
-                        return;
+                        return self.drain_registered_cleanup(flow, operations);
                     };
                     program
                 }
@@ -1484,8 +1680,7 @@ impl Game {
                 } => {
                     let Ok(program) = self.compare_many_program(initiator, targets, mode, callback)
                     else {
-                        self.finish();
-                        return;
+                        return self.drain_registered_cleanup(flow, operations);
                     };
                     program
                 }
@@ -1495,47 +1690,40 @@ impl Game {
                     nature,
                 } => {
                     let Ok(program) = self.content_sha_program(source, target, nature) else {
-                        self.finish();
-                        return;
+                        return self.drain_registered_cleanup(flow, operations);
                     };
                     program
                 }
                 TriggerOperation::Expand { owner, card, tag } => {
                     let Ok(program) = self.expansion_program(owner, card, tag) else {
-                        self.finish();
-                        return;
+                        return self.drain_registered_cleanup(flow, operations);
                     };
                     program
                 }
                 TriggerOperation::GainExpansion { from, to, card } => {
                     let Ok(program) = self.gain_expansion_program(from, to, card) else {
-                        self.finish();
-                        return;
+                        return self.drain_registered_cleanup(flow, operations);
                     };
                     program
                 }
                 TriggerOperation::GainOwnedCard { from, to, id } => {
                     let Ok(program) = self.gain_owned_card_program(from, to, id) else {
-                        self.finish();
-                        return;
+                        return self.drain_registered_cleanup(flow, operations);
                     };
                     program
                 }
                 TriggerOperation::EquipFromHand { seat, id } => {
                     if seat != flow.owner && !self.is_known_by(id, Some(flow.owner)) {
-                        self.finish();
-                        return;
+                        return self.drain_registered_cleanup(flow, operations);
                     }
                     let Ok(program) = self.equip_from_hand_program(seat, id) else {
-                        self.finish();
-                        return;
+                        return self.drain_registered_cleanup(flow, operations);
                     };
                     program
                 }
                 TriggerOperation::Compare { initiator, target } => {
                     let Ok(program) = self.compare_program(initiator, target) else {
-                        self.finish();
-                        return;
+                        return self.drain_registered_cleanup(flow, operations);
                     };
                     program
                 }
@@ -1545,8 +1733,7 @@ impl Game {
                     card,
                 } => {
                     let Ok(program) = self.compare_gain_program(subject, seat, card) else {
-                        self.finish();
-                        return;
+                        return self.drain_registered_cleanup(flow, operations);
                     };
                     program
                 }
@@ -1560,22 +1747,19 @@ impl Game {
                             .iter()
                             .all(|(zone, card)| player.zone(*zone).contains(card))
                     }) {
-                        self.finish();
-                        return;
+                        return self.drain_registered_cleanup(flow, operations);
                     }
                     Program::DiscardGroup { seat, cards }
                 }
                 TriggerOperation::Recast { seat, card } => {
                     let Ok(program) = self.recast_program(seat, card, false) else {
-                        self.finish();
-                        return;
+                        return self.drain_registered_cleanup(flow, operations);
                     };
                     program
                 }
                 TriggerOperation::RecastBatch { seat, cards, rule } => {
                     let Ok(program) = self.recast_batch_program(seat, &cards, rule) else {
-                        self.finish();
-                        return;
+                        return self.drain_registered_cleanup(flow, operations);
                     };
                     program
                 }
@@ -1586,26 +1770,24 @@ impl Game {
                     visible,
                 } => {
                     let Ok(program) = self.give_cards_program(from, to, &cards, visible) else {
-                        self.finish();
-                        return;
+                        return self.drain_registered_cleanup(flow, operations);
                     };
                     program
                 }
                 TriggerOperation::GainPublicPile { seat, pile, card } => {
                     let Ok(program) = self.gain_public_pile_program(seat, pile, card) else {
-                        self.finish();
-                        return;
+                        return self.drain_registered_cleanup(flow, operations);
                     };
                     program
                 }
                 TriggerOperation::GiveHand { from, to, card } => {
                     let Ok(program) = self.give_hand_program(from, to, card) else {
-                        self.finish();
-                        return;
+                        return self.drain_registered_cleanup(flow, operations);
                     };
                     program
                 }
                 TriggerOperation::Emit(queue) => Program::Dispatch(queue),
+                TriggerOperation::Cleanup(_) => unreachable!(),
             };
             flow.state = RegisteredState::Operations {
                 remaining: operations,
@@ -1618,7 +1800,15 @@ impl Game {
         }
         match then {
             TriggerStep::Done => self.finish(),
-            TriggerStep::CancelSubject => self.scheduler.end(Outcome::Cancelled),
+            TriggerStep::CancelSubject => {
+                if matches!(flow.event.timing.as_str(), "useCard2" | "useCard") {
+                    let _ = self.change_sha_use(
+                        &flow.event,
+                        crate::classic::equipment::attack::UseChange::Cancel,
+                    );
+                }
+                self.scheduler.end(Outcome::Cancelled);
+            }
             TriggerStep::Continue(next) => {
                 flow.state = RegisteredState::Call(next);
                 self.scheduler.replace_current(Program::Registered(flow));

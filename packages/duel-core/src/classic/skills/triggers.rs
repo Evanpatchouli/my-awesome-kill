@@ -14,21 +14,91 @@ pub(crate) struct Queue {
     anchor: SeatId,
     scanned_registrations: std::collections::HashSet<crate::TriggerId>,
     index_snapshot: std::collections::HashMap<crate::TriggerId, u32>,
-    completed: std::collections::HashSet<(SeatId, String)>,
+    completed: std::collections::HashSet<Identity>,
     cursor: Option<(u8, usize)>,
+    initial_registration_snapshot: Option<Vec<DeferredRegistration>>,
+    deferred_order: std::collections::HashMap<crate::TriggerId, DeferredOrder>,
+}
+#[derive(Clone)]
+struct DeferredOrder {
+    owner: SeatId,
+    order: crate::TriggerOrder,
+    priority: i32,
+    silent: bool,
+}
+#[derive(Clone)]
+struct DeferredRegistration {
+    id: crate::TriggerId,
+    owner: SeatId,
+    skill: String,
+    timing: String,
+    role: crate::TriggerRole,
+    order: crate::TriggerOrder,
+    priority: i32,
+    silent: bool,
+    count: u32,
+}
+#[derive(Clone, PartialEq, Eq, Hash)]
+enum Identity {
+    Named(SeatId, String),
+    QinggangCleanup(SeatId, crate::EventId),
 }
 #[derive(Clone)]
 enum Candidate {
     Elemental(crate::elemental::Rule),
+    QinggangCleanup {
+        owner: SeatId,
+        use_event: crate::EventId,
+    },
     Native(SeatId, SkillId),
     Registered(crate::TriggerId, u32),
-    Qilin { source: SeatId, target: SeatId },
+    Qilin {
+        source: SeatId,
+        target: SeatId,
+    },
+    ShaEquipment {
+        source: SeatId,
+        target: SeatId,
+        kind: CardKind,
+    },
+}
+impl Candidate {
+    fn identity(&self, game: &Game) -> Identity {
+        match self {
+            Self::Elemental(rule) => Identity::Named(rule.owner(game), rule.skill().to_owned()),
+            Self::QinggangCleanup { owner, use_event } => {
+                Identity::QinggangCleanup(*owner, *use_event)
+            }
+            Self::Native(owner, skill) => Identity::Named(*owner, skill.as_str().to_owned()),
+            Self::Qilin { source, .. } => Identity::Named(*source, "qilin_skill".to_owned()),
+            Self::ShaEquipment { source, kind, .. } => {
+                Identity::Named(*source, sha_equipment_id(*kind).to_owned())
+            }
+            Self::Registered(id, _) => {
+                let registration = &game.trigger_registrations[id];
+                Identity::Named(registration.owner, registration.skill.clone())
+            }
+        }
+    }
 }
 impl Queue {
     pub(crate) fn with_elemental_rule(mut self, rule: Option<crate::elemental::Rule>) -> Self {
         if let Some(rule) = rule {
             self.pending = Some(vec![Candidate::Elemental(rule)]);
         }
+        self
+    }
+    pub(crate) fn with_qinggang_cleanup(
+        mut self,
+        owners: &[SeatId],
+        use_event: crate::EventId,
+    ) -> Self {
+        self.pending = Some(
+            owners
+                .iter()
+                .map(|&owner| Candidate::QinggangCleanup { owner, use_event })
+                .collect(),
+        );
         self
     }
     pub(crate) fn kind(&self) -> EventKind {
@@ -102,7 +172,7 @@ impl Game {
                 0,
                 vec![],
             ),
-            ShaTarget { seat, target } => (
+            ShaTarget { seat, target, .. } => (
                 "useCardToPlayered",
                 Some(*seat),
                 None,
@@ -122,6 +192,14 @@ impl Game {
         self.subject_timing(timing, player, source, target, amount, &cards)
     }
     pub(crate) fn has_hero_triggers(&self, moment: &HeroMoment) -> bool {
+        if let HeroMoment::ShaTarget { seat, target, .. } = moment {
+            if [CardKind::Qinggang, CardKind::Cixiong]
+                .into_iter()
+                .any(|kind| self.sha_equipment_eligible(*seat, *target, kind))
+            {
+                return true;
+            }
+        }
         if !self.register_hero_triggers(moment).is_empty() {
             return true;
         }
@@ -150,6 +228,15 @@ impl Game {
         queue.adjustment = adjustment;
         Program::Dispatch(queue)
     }
+    pub(crate) fn dispatch_hero_timing(
+        &self,
+        event: crate::TriggerEvent,
+        moment: HeroMoment,
+    ) -> Queue {
+        let mut queue = self.dispatch_for_timing(event);
+        queue.moment = Some(moment);
+        queue
+    }
     fn snapshot_trigger_indices(
         &self,
         event: &crate::TriggerEvent,
@@ -165,6 +252,14 @@ impl Game {
     }
     pub(crate) fn dispatch_for_timing(&self, event: crate::TriggerEvent) -> Queue {
         let index_snapshot = self.snapshot_trigger_indices(&event);
+        self.dispatch_with_indices(event, index_snapshot)
+    }
+
+    fn dispatch_with_indices(
+        &self,
+        event: crate::TriggerEvent,
+        index_snapshot: std::collections::HashMap<crate::TriggerId, u32>,
+    ) -> Queue {
         // Before a new turn the previous active seat is still recorded for its statistics.
         let anchor = if event.timing == "phaseBefore" {
             self.current_phase_player()
@@ -185,7 +280,49 @@ impl Game {
             index_snapshot,
             completed: Default::default(),
             cursor: None,
+            initial_registration_snapshot: None,
+            deferred_order: Default::default(),
         }
+    }
+
+    pub(crate) fn dispatch_for_deferred_request(
+        &self,
+        event: crate::TriggerEvent,
+    ) -> Option<Queue> {
+        let mut ids: Vec<_> = self.trigger_registrations.keys().copied().collect();
+        ids.sort_unstable();
+        let seeds: Vec<_> = ids
+            .into_iter()
+            .filter_map(|id| {
+                let registration = &self.trigger_registrations[&id];
+                if registration.timing != event.timing
+                    || !registration.role.matches(registration.owner, &event)
+                {
+                    return None;
+                }
+                let count = self
+                    .indexed_triggers
+                    .get(&id)
+                    .map_or(1, |index| index(self, &event, registration.owner));
+                Some(DeferredRegistration {
+                    id,
+                    owner: registration.owner,
+                    skill: registration.skill.clone(),
+                    timing: registration.timing.clone(),
+                    role: registration.role,
+                    order: registration.order,
+                    priority: registration.priority,
+                    silent: registration.silent,
+                    count,
+                })
+            })
+            .collect();
+        if seeds.is_empty() {
+            return None;
+        }
+        let mut queue = self.dispatch_with_indices(event, Default::default());
+        queue.initial_registration_snapshot = Some(seeds);
+        Some(queue)
     }
     pub(crate) fn queue_sha_damage_begin2(
         &mut self,
@@ -238,6 +375,12 @@ impl Game {
         mut queue: Queue,
         child: Option<Outcome<Resolution>>,
     ) {
+        if matches!(queue.event.timing.as_str(), "useCard2" | "useCard")
+            && matches!(self.scheduler.active_frame(queue.event.subject), Some((_, Program::Equipment(crate::classic::equipment::Flow::Attack(attack)))) if attack.cancellation_requested())
+        {
+            self.finish_hero(queue.adjustment);
+            return;
+        }
         if let Some((_, Program::CardDamage(damage))) =
             self.scheduler.active_frame(queue.event.subject)
         {
@@ -277,6 +420,13 @@ impl Game {
                     }
                     queue.adjustment = *adjustment;
                 }
+                HeroAdjustment::DirectHit
+                    if matches!(queue.moment, Some(HeroMoment::ShaTarget { .. })) =>
+                {
+                    if let Some(HeroMoment::ShaTarget { target, attack, .. }) = queue.moment {
+                        self.mark_sha_target(attack, target, true);
+                    }
+                }
                 _ => {
                     self.finish_hero(*adjustment);
                     return;
@@ -305,10 +455,100 @@ impl Game {
             }
             queue.pending = Some(candidates);
         }
+        if let Some(seeds) = queue.initial_registration_snapshot.take() {
+            let mut ids: Vec<_> = self.trigger_registrations.keys().copied().collect();
+            ids.sort_unstable();
+            queue.scanned_registrations.extend(ids.iter().copied());
+            let mut used = std::collections::HashSet::new();
+            let reserved: std::collections::HashSet<_> = seeds
+                .iter()
+                .filter_map(|seed| {
+                    self.trigger_registrations
+                        .contains_key(&seed.id)
+                        .then_some(seed.id)
+                })
+                .collect();
+            for seed in seeds {
+                let binding = if self.trigger_registrations.contains_key(&seed.id)
+                    && !used.contains(&seed.id)
+                {
+                    Some(seed.id)
+                } else {
+                    ids.iter().copied().find(|id| {
+                        !used.contains(id)
+                            && !reserved.contains(id)
+                            && self.trigger_registrations.get(id).is_some_and(|r| {
+                                r.owner == seed.owner
+                                    && r.skill == seed.skill
+                                    && r.timing == seed.timing
+                                    && r.role == seed.role
+                                    && r.order == seed.order
+                            })
+                    })
+                };
+                if let Some(id) = binding {
+                    used.insert(id);
+                    queue.deferred_order.insert(
+                        id,
+                        DeferredOrder {
+                            owner: seed.owner,
+                            order: seed.order,
+                            priority: seed.priority,
+                            silent: seed.silent,
+                        },
+                    );
+                    if seed.count > 0 {
+                        queue
+                            .pending
+                            .as_mut()
+                            .unwrap()
+                            .push(Candidate::Registered(id, seed.count));
+                    }
+                }
+            }
+        }
         let order = self.seat_order_from(queue.anchor).unwrap_or_default();
         // A suspended choice uses stable indexes. Newly registered content is merged
         // after that choice resumes, into groups which have not yet closed.
         if !queue.choosing {
+            if let Some(HeroMoment::ShaTarget {
+                seat: source,
+                target,
+                ..
+            }) = queue.moment
+            {
+                let group = (
+                    1,
+                    order
+                        .iter()
+                        .position(|s| *s == source)
+                        .unwrap_or(usize::MAX),
+                );
+                let pending = queue.pending.as_mut().unwrap();
+                pending.retain(|c| !matches!(c, Candidate::ShaEquipment { .. }));
+                if !queue.cursor.is_some_and(|cursor| group < cursor) {
+                    let mut kinds = [CardKind::Qinggang, CardKind::Cixiong];
+                    kinds.sort_by_key(|kind| {
+                        self.seat(source)
+                            .ok()
+                            .and_then(|seat| seat.equipment.hook(sha_equipment_id(*kind)))
+                    });
+                    for kind in kinds {
+                        let id = sha_equipment_id(kind);
+                        if !queue
+                            .completed
+                            .contains(&Identity::Named(source, id.to_owned()))
+                            && self.sha_equipment_eligible(source, target, kind)
+                        {
+                            pending.push(Candidate::ShaEquipment {
+                                source,
+                                target,
+                                kind,
+                            });
+                        }
+                    }
+                }
+            }
             let mut ids: Vec<_> = self.trigger_registrations.keys().copied().collect();
             ids.sort_unstable();
             for id in ids {
@@ -317,9 +557,10 @@ impl Game {
                 }
                 let registration = &self.trigger_registrations[&id];
                 if registration.timing != queue.event.timing
-                    || queue
-                        .completed
-                        .contains(&(registration.owner, registration.skill.clone()))
+                    || queue.completed.contains(&Identity::Named(
+                        registration.owner,
+                        registration.skill.clone(),
+                    ))
                 {
                     continue;
                 }
@@ -357,18 +598,35 @@ impl Game {
                     crate::TriggerOrder::Normal,
                     rule.priority(),
                 ),
+                Candidate::QinggangCleanup { owner, .. } => {
+                    (*owner, crate::TriggerOrder::First, 12)
+                }
                 Candidate::Native(owner, _) => (*owner, crate::TriggerOrder::Normal, 0),
-                Candidate::Qilin { source, .. } => (*source, crate::TriggerOrder::Normal, 0),
+                Candidate::Qilin { source, .. } | Candidate::ShaEquipment { source, .. } => {
+                    (*source, crate::TriggerOrder::Normal, 0)
+                }
                 Candidate::Registered(id, _) => {
                     let r = game.trigger_registrations.get(id)?;
-                    (r.owner, r.order, r.priority)
+                    queue
+                        .deferred_order
+                        .get(id)
+                        .map_or((r.owner, r.order, r.priority), |seed| {
+                            (seed.owner, seed.order, seed.priority)
+                        })
                 }
             };
             let seat = order.iter().position(|s| *s == owner).unwrap_or(usize::MAX);
             let subpriority = match candidate {
-                Candidate::Elemental(_) => -1,
-                Candidate::Qilin { .. } => 25,
-                Candidate::Registered(id, _) if game.trigger_registrations[id].silent => -1,
+                Candidate::Elemental(_) | Candidate::QinggangCleanup { .. } => -1,
+                Candidate::Qilin { .. } | Candidate::ShaEquipment { .. } => 25,
+                Candidate::Registered(id, _)
+                    if queue
+                        .deferred_order
+                        .get(id)
+                        .map_or(game.trigger_registrations[id].silent, |seed| seed.silent) =>
+                {
+                    -1
+                }
                 _ => 0,
             };
             Some(match group {
@@ -387,6 +645,9 @@ impl Game {
             .map(|moment| self.register_hero_triggers(moment));
         let eligible = |game: &Game, c: &Candidate| match c {
             Candidate::Elemental(rule) => rule.eligible(game),
+            Candidate::QinggangCleanup { owner, use_event } => {
+                game.eligible_qinggang_cleanup(*owner, *use_event)
+            }
             Candidate::Native(owner, skill) => {
                 game.is_in(*owner)
                     && live_native
@@ -399,6 +660,11 @@ impl Game {
             }
             Candidate::Registered(id, _) => game.registered_matches(*id, &queue.event),
             Candidate::Qilin { source, target } => game.qilin_program(*source, *target).is_some(),
+            Candidate::ShaEquipment {
+                source,
+                target,
+                kind,
+            } => game.sha_equipment_eligible(*source, *target, *kind),
         };
         let selected = if queue.choosing {
             queue.choosing = false;
@@ -418,6 +684,9 @@ impl Game {
             distinct.extend(queue.choice_indices.iter().copied().filter(|&i| {
                 pending.get(i).is_some_and(|candidate| match candidate {
                     Candidate::Elemental(rule) => rule.eligible(self),
+                    Candidate::QinggangCleanup { owner, use_event } => {
+                        self.eligible_qinggang_cleanup(*owner, *use_event)
+                    }
                     Candidate::Native(owner, skill) => {
                         self.is_in(*owner) && self.has_skill(*owner, skill.as_str())
                     }
@@ -425,6 +694,11 @@ impl Game {
                     Candidate::Qilin { source, target } => {
                         self.qilin_program(*source, *target).is_some()
                     }
+                    Candidate::ShaEquipment {
+                        source,
+                        target,
+                        kind,
+                    } => self.sha_equipment_eligible(*source, *target, *kind),
                 })
             }));
         } else {
@@ -456,15 +730,7 @@ impl Game {
                     if !eligible(self, candidate) {
                         continue;
                     }
-                    let identity = match candidate {
-                        Candidate::Elemental(rule) => (rule.owner(self), rule.skill().to_owned()),
-                        Candidate::Native(owner, skill) => (*owner, skill.as_str().to_owned()),
-                        Candidate::Qilin { source, .. } => (*source, "qilin_skill".to_owned()),
-                        Candidate::Registered(id, _) => {
-                            let r = &self.trigger_registrations[id];
-                            (r.owner, r.skill.clone())
-                        }
-                    };
+                    let identity = candidate.identity(self);
                     if let Some(&index) = seen.get(&identity) {
                         if key(self, candidate) < key(self, &pending[distinct[index]]) {
                             distinct[index] = i;
@@ -512,7 +778,7 @@ impl Game {
             .filter(|i| key(self, &pending[*i]) == Some(best_key))
             .collect();
         let visible = |c: &Candidate| match c {
-            Candidate::Elemental(_) => None,
+            Candidate::Elemental(_) | Candidate::QinggangCleanup { .. } => None,
             Candidate::Native(owner, skill) => self
                 .seat(*owner)
                 .ok()
@@ -524,6 +790,14 @@ impl Game {
                 })
                 .map(|definition| definition.name.clone()),
             Candidate::Qilin { .. } => Some("麒麟弓".into()),
+            Candidate::ShaEquipment { kind, .. } => Some(
+                match kind {
+                    CardKind::Qinggang => "青釭剑",
+                    CardKind::Cixiong => "雌雄双股剑",
+                    _ => unreachable!(),
+                }
+                .into(),
+            ),
             Candidate::Registered(id, _) => self.trigger_registrations.get(id).and_then(|r| {
                 if r.silent {
                     None
@@ -534,8 +808,8 @@ impl Game {
         };
         let owner = |c: &Candidate| match c {
             Candidate::Elemental(rule) => rule.owner(self),
-            Candidate::Native(s, _) => *s,
-            Candidate::Qilin { source, .. } => *source,
+            Candidate::Native(s, _) | Candidate::QinggangCleanup { owner: s, .. } => *s,
+            Candidate::Qilin { source, .. } | Candidate::ShaEquipment { source, .. } => *source,
             Candidate::Registered(id, _) => self.trigger_registrations[id].owner,
         };
         if selected.is_none()
@@ -572,15 +846,7 @@ impl Game {
             }
         });
         let chosen_candidate = pending[chosen].clone();
-        let identity = match &chosen_candidate {
-            Candidate::Elemental(rule) => (rule.owner(self), rule.skill().to_owned()),
-            Candidate::Native(owner, skill) => (*owner, skill.as_str().to_owned()),
-            Candidate::Qilin { source, .. } => (*source, "qilin_skill".to_owned()),
-            Candidate::Registered(id, _) => {
-                let r = &self.trigger_registrations[id];
-                (r.owner, r.skill.clone())
-            }
-        };
+        let identity = chosen_candidate.identity(self);
         let registered_chosen = matches!(chosen_candidate, Candidate::Registered(..));
         let mut pruned: Vec<_> = pending
             .iter()
@@ -591,21 +857,12 @@ impl Game {
                 }
                 // Indexed native repeats are separate activations; duplicate registrations across roles are not.
                 match c {
-                    Candidate::Elemental(rule) => {
-                        (rule.owner(self), rule.skill()) != (identity.0, identity.1.as_str())
+                    Candidate::Native(..)
+                    | Candidate::Qilin { .. }
+                    | Candidate::ShaEquipment { .. } => {
+                        !registered_chosen || c.identity(self) != identity
                     }
-                    Candidate::Registered(id, _) => {
-                        let r = &self.trigger_registrations[id];
-                        (r.owner, r.skill.as_str()) != (identity.0, identity.1.as_str())
-                    }
-                    Candidate::Qilin { source, .. } => {
-                        !registered_chosen
-                            || (*source, "qilin_skill") != (identity.0, identity.1.as_str())
-                    }
-                    Candidate::Native(owner, skill) => {
-                        !registered_chosen
-                            || (*owner, skill.as_str()) != (identity.0, identity.1.as_str())
-                    }
+                    _ => c.identity(self) != identity,
                 }
             })
             .map(|(_, c)| c.clone())
@@ -623,8 +880,30 @@ impl Game {
         self.scheduler.replace_current(Program::Dispatch(queue));
         match chosen_candidate {
             Candidate::Elemental(rule) => self.scheduler.next(rule.program(self)),
+            Candidate::QinggangCleanup { owner, use_event } => {
+                if self.eligible_qinggang_cleanup(owner, use_event) {
+                    self.remove_qinggang_use(owner, use_event);
+                }
+            }
             Candidate::Qilin { source, target } => {
                 if let Some(program) = self.qilin_program(source, target) {
+                    self.scheduler.next(program);
+                }
+            }
+            Candidate::ShaEquipment {
+                source,
+                target,
+                kind,
+            } => {
+                if let Some(program) = self.sha_equipment_program(
+                    source,
+                    target,
+                    kind,
+                    match moment {
+                        Some(HeroMoment::ShaTarget { attack, .. }) => attack,
+                        _ => unreachable!(),
+                    },
+                ) {
                     self.scheduler.next(program);
                 }
             }
@@ -1338,6 +1617,14 @@ impl Game {
             _ => unreachable!(),
         };
         self.finish_hero(result);
+    }
+}
+
+fn sha_equipment_id(kind: CardKind) -> &'static str {
+    match kind {
+        CardKind::Qinggang => "qinggang_skill",
+        CardKind::Cixiong => "cixiong_skill",
+        _ => unreachable!(),
     }
 }
 

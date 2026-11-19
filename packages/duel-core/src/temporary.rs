@@ -15,7 +15,7 @@ pub type SkillRemovalEffect = Arc<dyn Fn(&mut SkillRemoval<'_>) + Send + Sync>;
 pub struct SkillRemoval<'a> {
     game: &'a mut Game,
     owner: SeatId,
-    queued: bool,
+    cleanup: &'a mut Vec<crate::Program>,
 }
 
 impl SkillRemoval<'_> {
@@ -24,8 +24,7 @@ impl SkillRemoval<'_> {
     }
     pub fn discard_expansions(&mut self, tag: &str) {
         if let Some(program) = self.game.discard_expansions_program(self.owner, tag) {
-            self.game.scheduler.next_cleanup(program);
-            self.queued = true;
+            self.cleanup.push(program);
         }
     }
 }
@@ -105,8 +104,12 @@ impl Game {
     }
 
     pub(crate) fn seat_has_skill(&self, player: &Seat, id: &str) -> bool {
+        crate::equipment::has_equipment_skill(player, id)
+            || self.seat_has_non_equipment_skill(player, id)
+    }
+
+    pub(crate) fn seat_has_non_equipment_skill(&self, player: &Seat, id: &str) -> bool {
         (id == "undist" && player.rest_undist)
-            || crate::equipment::has_equipment_skill(player, id)
             || player
                 .hero
                 .is_some_and(|hero| hero.skills.iter().any(|skill| skill.id == id))
@@ -117,6 +120,38 @@ impl Game {
                 .any(|grant| grant.owner == player.id && grant.name == id)
     }
 
+    pub(crate) fn add_qinggang_use(&mut self, owner: SeatId, use_event: crate::EventId) {
+        self.grant_temporary(owner, TemporarySkill::until_turn_end("qinggang2"))
+            .expect("a live target can gain qinggang2");
+        let uses = &mut self.seat_mut(owner).qinggang_uses;
+        if !uses.contains(&use_event) {
+            uses.push(use_event);
+        }
+    }
+    pub(crate) fn has_qinggang_use(&self, owner: SeatId, use_event: crate::EventId) -> bool {
+        self.seat(owner)
+            .is_ok_and(|seat| seat.qinggang_uses.contains(&use_event))
+    }
+    pub(crate) fn eligible_qinggang_cleanup(
+        &self,
+        owner: SeatId,
+        use_event: crate::EventId,
+    ) -> bool {
+        self.is_in(owner)
+            && self.has_skill(owner, "qinggang2")
+            && self.has_qinggang_use(owner, use_event)
+    }
+    pub(crate) fn remove_qinggang_use(&mut self, owner: SeatId, use_event: crate::EventId) {
+        let uses = &mut self.seat_mut(owner).qinggang_uses;
+        let Some(index) = uses.iter().position(|id| *id == use_event) else {
+            return;
+        };
+        uses.remove(index);
+        if uses.is_empty() {
+            self.revoke_active_ownership(owner, "qinggang2");
+            self.remove_temporary(owner, "qinggang2");
+        }
+    }
     /// Whether the holder's effective-card modifiers permit this kind of use.
     pub fn card_enabled(&self, seat: SeatId, kind: CardKind) -> bool {
         self.is_in(seat)
@@ -166,6 +201,7 @@ impl Game {
         for (registration, count) in skill.indexed_triggers {
             triggers.push(self.register_indexed_trigger(registration, count)?);
         }
+        self.seat_mut(owner).equipment.register_hook(&skill.name);
         self.temporary_skills.push(Grant {
             owner,
             name: skill.name,
@@ -185,12 +221,39 @@ impl Game {
         else {
             return false;
         };
-        self.remove_grant(index);
+        let mut cleanup = Vec::new();
+        self.remove_grant(index, &mut cleanup);
+        for program in cleanup {
+            self.scheduler.next_cleanup(program);
+        }
         true
     }
 
-    fn remove_grant(&mut self, index: usize) -> bool {
+    pub(crate) fn remove_temporary_with_cleanup(
+        &mut self,
+        owner: SeatId,
+        name: &str,
+        cleanup: &mut Vec<crate::Program>,
+    ) -> bool {
+        let Some(index) = self
+            .temporary_skills
+            .iter()
+            .position(|grant| grant.owner == owner && grant.name == name)
+        else {
+            return false;
+        };
+        self.remove_grant(index, cleanup);
+        true
+    }
+
+    fn remove_grant(&mut self, index: usize, cleanup: &mut Vec<crate::Program>) {
         let grant = self.temporary_skills.remove(index);
+        if grant.name == "qinggang2" {
+            self.seat_mut(grant.owner).qinggang_uses.clear();
+        }
+        self.seat_mut(grant.owner)
+            .equipment
+            .remove_hook(&grant.name);
         for id in grant.triggers {
             self.unregister_trigger(id);
         }
@@ -198,12 +261,10 @@ impl Game {
             let mut removal = SkillRemoval {
                 game: self,
                 owner: grant.owner,
-                queued: false,
+                cleanup,
             };
             effect(&mut removal);
-            return removal.queued;
         }
-        false
     }
 
     pub(crate) fn remove_temporary_for_seat(&mut self, owner: SeatId) {
@@ -212,7 +273,11 @@ impl Game {
             .iter()
             .position(|grant| grant.owner == owner)
         {
-            self.remove_grant(index);
+            let mut cleanup = Vec::new();
+            self.remove_grant(index, &mut cleanup);
+            for program in cleanup {
+                self.scheduler.next_cleanup(program);
+            }
         }
     }
 
@@ -232,8 +297,21 @@ impl Game {
     }
 
     pub(crate) fn begin_timing_request(&mut self, event: &TriggerEvent) -> bool {
+        let mut cleanup = Vec::new();
+        let result = self.begin_timing_request_with_cleanup(event, &mut cleanup);
+        for program in cleanup {
+            self.scheduler.next_cleanup(program);
+        }
+        result
+    }
+
+    pub(crate) fn begin_timing_request_with_cleanup(
+        &mut self,
+        event: &TriggerEvent,
+        cleanup: &mut Vec<crate::Program>,
+    ) -> bool {
         self.observe_timing_request(event);
-        let mut cleanup = false;
+        let start = cleanup.len();
         let mut index = 0;
         while index < self.temporary_skills.len() {
             let grant = &self.temporary_skills[index];
@@ -242,11 +320,11 @@ impl Game {
                 .iter()
                 .any(|term| term.matches(grant.owner, event))
             {
-                cleanup |= self.remove_grant(index);
+                self.remove_grant(index, cleanup);
             } else {
                 index += 1;
             }
         }
-        cleanup || self.has_registered_candidates(event)
+        cleanup.len() != start || self.has_registered_candidates(event)
     }
 }

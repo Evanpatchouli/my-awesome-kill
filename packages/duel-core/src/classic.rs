@@ -1,5 +1,7 @@
 pub(crate) mod add_judge;
 pub(crate) mod basic_use;
+#[cfg(test)]
+mod combined_mount_tests;
 pub(crate) mod compare;
 pub(crate) mod counter;
 pub(crate) mod elemental;
@@ -18,6 +20,8 @@ pub(crate) mod pile_order;
 pub(crate) mod recast;
 pub(crate) mod rest;
 pub(crate) mod revival;
+#[cfg(test)]
+mod sha_cancel_tests;
 pub(crate) mod skills;
 pub(crate) mod target_timing;
 #[cfg(test)]
@@ -103,6 +107,34 @@ impl Game {
         count: usize,
         registrations: Vec<crate::TriggerRegistration>,
     ) -> Result<Self, RuleError> {
+        Self::classic_with_mount_slots_and_triggers(
+            seed,
+            human,
+            hero_id,
+            count,
+            crate::MountSlots::Separate,
+            registrations,
+        )
+    }
+
+    pub fn classic_with_mount_slots(
+        seed: u32,
+        human: SeatId,
+        hero_id: &str,
+        count: usize,
+        mode: crate::MountSlots,
+    ) -> Result<Self, RuleError> {
+        Self::classic_with_mount_slots_and_triggers(seed, human, hero_id, count, mode, Vec::new())
+    }
+
+    pub fn classic_with_mount_slots_and_triggers(
+        seed: u32,
+        human: SeatId,
+        hero_id: &str,
+        count: usize,
+        mode: crate::MountSlots,
+        registrations: Vec<crate::TriggerRegistration>,
+    ) -> Result<Self, RuleError> {
         let mut roles =
             classic_data::deal_roles(count).ok_or(RuleError::UnsupportedSeatCount { count })?;
         if human as usize >= count {
@@ -146,6 +178,7 @@ impl Game {
                     rest_mark_shown: false,
                     rest_undist: false,
                     rest_trigger: None,
+                    qinggang_uses: Vec::new(),
                     linked: false,
                     turned_over: false,
                     armor: 0,
@@ -187,6 +220,7 @@ impl Game {
         random.shuffle(&mut deck);
 
         let mut game = Self::with_seats(seats, lord);
+        game.mount_slots = mode;
         game.classic = Some(Classic {
             human,
             lord,

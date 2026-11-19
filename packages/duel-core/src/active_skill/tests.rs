@@ -1,3 +1,5 @@
+mod qinggang_revocation;
+
 use super::*;
 use crate::{
     Action, Card, CardKind, Command, TriggerOrder, TriggerRegistration, TriggerRole, TriggerStep,

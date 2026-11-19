@@ -1,4 +1,4 @@
-mod attack;
+pub(crate) mod attack;
 mod response;
 mod skill;
 
@@ -221,9 +221,14 @@ pub(crate) fn is_equipment(kind: CardKind) -> bool {
     slot(kind).is_some()
 }
 
-pub(crate) fn has_slot(seat: &Seat, wanted: Slot, ignored: Option<CardId>) -> bool {
+fn is_mount(slot: Slot) -> bool {
+    matches!(slot, Slot::DefenseHorse | Slot::AttackHorse)
+}
+
+pub(crate) fn count_slot(seat: &Seat, wanted: Slot, ignored: Option<CardId>) -> usize {
     seat.registered_equipment()
-        .any(|card| Some(card.id) != ignored && slot(card.kind) == Some(wanted))
+        .filter(|card| Some(card.id) != ignored && slot(card.kind) == Some(wanted))
+        .count()
 }
 
 impl Seat {
@@ -405,7 +410,7 @@ impl Game {
                 direct,
             } => self.resolve_equip(seat, card, step, direct, child),
             Flow::Replace(replacement) => self.resolve_equip_replacement(replacement, child),
-            Flow::Attack(attack) => self.resolve_attack(attack, child),
+            Flow::Attack(attack) => self.resolve_attack(event, attack, child),
             Flow::Target(target) => self.resolve_sha_target(target, child),
             Flow::Response(response) => self.resolve_response(response, child),
             Flow::Payment(payment) => self.resolve_response_payment(payment, child),
@@ -663,20 +668,29 @@ impl Game {
                             .seat(replacement.seat)
                             .expect("the equipping seat exists");
                         let wanted = slot(replacement.incoming.kind);
+                        let combined = self.mount_slots == crate::MountSlots::Combined
+                            && wanted.is_some_and(is_mount);
                         let entries: Vec<_> = player
                             .equipment
                             .registrations()
                             .iter()
-                            .filter(|entry| slot(entry.card.kind) == wanted)
+                            .filter(|entry| {
+                                slot(entry.card.kind) == wanted
+                                    || (combined && slot(entry.card.kind).is_some_and(is_mount))
+                            })
                             .cloned()
                             .collect();
-                        let required = entries.len().saturating_add(1).saturating_sub(
-                            self.equipment_slot_state(
-                                replacement.seat,
-                                wanted.expect("equipment slot"),
-                            )
-                            .equipable,
-                        );
+                        let required =
+                            entries.len().saturating_add(1).saturating_sub(if combined {
+                                self.equipment_slot_state(replacement.seat, Slot::DefenseHorse)
+                                    .equipable
+                            } else {
+                                self.equipment_slot_state(
+                                    replacement.seat,
+                                    wanted.expect("equipment slot"),
+                                )
+                                .equipable
+                            });
                         if required >= entries.len() {
                             replacement.selected = player
                                 .equipment
@@ -760,8 +774,13 @@ impl Game {
                                         .copied()
                                         .filter(|card| {
                                             cards.contains(&card.id)
-                                                && slot(card.kind)
+                                                && (slot(card.kind)
                                                     == slot(replacement.incoming.kind)
+                                                    || (self.mount_slots
+                                                        == crate::MountSlots::Combined
+                                                        && slot(replacement.incoming.kind)
+                                                            .is_some_and(is_mount)
+                                                        && slot(card.kind).is_some_and(is_mount)))
                                         })
                                         .collect()
                                 })
@@ -804,8 +823,24 @@ impl Game {
             .copied()
     }
 
+    fn weapons_without(
+        &self,
+        seat: SeatId,
+        ignored: Option<CardId>,
+    ) -> impl Iterator<Item = Card> + '_ {
+        self.seat(seat)
+            .ok()
+            .into_iter()
+            .flat_map(|player| player.equipment.registrations().iter())
+            .filter(move |entry| {
+                slot(entry.card.kind) == Some(Slot::Weapon) && Some(entry.card.id) != ignored
+            })
+            .map(|entry| entry.card)
+    }
+
     fn has_weapon(&self, seat: SeatId, kind: CardKind) -> bool {
-        self.weapon(seat).is_some_and(|card| card.kind == kind)
+        self.weapons_without(seat, None)
+            .any(|card| card.kind == kind)
     }
 
     pub(crate) fn in_sha_range(&self, seat: SeatId, target: SeatId) -> bool {
@@ -821,14 +856,17 @@ impl Game {
         if self.has_skill(seat, "undist") || self.has_skill(target, "undist") {
             return false;
         }
-        let weapon = self.weapon(seat).filter(|card| Some(card.id) != ignored);
-        let range = match weapon.map(|card| card.kind) {
-            Some(CardKind::Cixiong | CardKind::Qinggang) => 2,
-            Some(CardKind::Qinglong | CardKind::Zhangba | CardKind::Guanshi) => 3,
-            Some(CardKind::Fangtian) => 4,
-            Some(CardKind::Qilin) => 5,
-            _ => 1,
-        };
+        let range = self
+            .weapons_without(seat, ignored)
+            .map(|weapon| match weapon.kind {
+                CardKind::Cixiong | CardKind::Qinggang => 2,
+                CardKind::Qinglong | CardKind::Zhangba | CardKind::Guanshi => 3,
+                CardKind::Fangtian => 4,
+                CardKind::Qilin => 5,
+                _ => 1,
+            })
+            .max()
+            .unwrap_or(1);
         self.distance_without(seat, target, ignored)
             .is_ok_and(|distance| distance > 0 && distance <= range)
     }
@@ -844,9 +882,19 @@ impl Game {
             .expect("the table is classic")
             .sha_played
             || self.hero_unlimited_sha(seat)
-            || self
-                .weapon(seat)
-                .is_some_and(|weapon| weapon.kind == CardKind::Zhuge && Some(weapon.id) != material)
+            || self.seat(seat).is_ok_and(|player| {
+                if !self.seat_has_skill(player, "zhuge_skill") {
+                    return false;
+                }
+                let mut equipped = player
+                    .equipment
+                    .iter()
+                    .filter(|card| card.kind == CardKind::Zhuge)
+                    .peekable();
+                self.seat_has_non_equipment_skill(player, "zhuge_skill")
+                    || equipped.peek().is_none()
+                    || equipped.any(|card| Some(card.id) != material)
+            })
     }
 
     pub(crate) fn physical_sha_uses(&self, player: &Seat, card: Card) -> Vec<PlannedUse> {
@@ -1136,24 +1184,52 @@ impl Game {
         let Ok(player) = self.seat(seat) else {
             return EquipmentSlotState::default();
         };
+        if self.mount_slots == crate::MountSlots::Combined && slot == Slot::AttackHorse {
+            return EquipmentSlotState::default();
+        }
         let i = slot_index(slot);
-        let enabled =
-            (1 + player.equipment_expanded[i]).saturating_sub(player.equipment_disabled[i]);
+        let enabled = 1 + player.equipment_expanded[i] as i64 - player.equipment_disabled[i] as i64;
         let registered = player
             .registered_equipment()
             .filter(|card| self::slot(card.kind) == Some(slot))
             .count();
         EquipmentSlotState {
             enabled,
-            empty: enabled.saturating_sub(registered),
-            equipable: enabled,
+            empty: (enabled.max(0) as usize).saturating_sub(registered),
+            equipable: enabled.max(0) as usize,
             disabled: player.equipment_disabled[i],
+        }
+    }
+    pub fn combined_mount_slot_state(&self, seat: SeatId) -> EquipmentSlotState {
+        if self.seat(seat).is_err() {
+            return EquipmentSlotState::default();
+        }
+        let canonical = self.equipment_slot_state(seat, Slot::DefenseHorse);
+        EquipmentSlotState {
+            enabled: 1,
+            disabled: 0,
+            empty: canonical.empty,
+            equipable: canonical.equipable,
         }
     }
     pub fn can_equip(&self, seat: SeatId, kind: CardKind, replace: bool) -> bool {
         let Some(slot) = slot(kind) else { return false };
         if !self.is_in(seat) {
             return false;
+        }
+        if self.mount_slots == crate::MountSlots::Combined && is_mount(slot) {
+            let state = self.equipment_slot_state(seat, Slot::DefenseHorse);
+            let occupied = self
+                .seat(seat)
+                .unwrap()
+                .registered_equipment()
+                .filter(|card| self::slot(card.kind).is_some_and(is_mount))
+                .count();
+            return if replace {
+                state.equipable > 0
+            } else {
+                state.equipable > occupied
+            };
         }
         let state = self.equipment_slot_state(seat, slot);
         if replace {
@@ -1195,15 +1271,33 @@ impl Game {
                         flow.stage = Select;
                         continue;
                     }
-                    for &slot in &flow.slots {
-                        let i = slot_index(slot);
+                    for (i, &slot) in SLOTS.iter().enumerate() {
+                        let combined = self.mount_slots == crate::MountSlots::Combined;
+                        if combined && slot == Slot::AttackHorse {
+                            continue;
+                        }
+                        let count = if combined && slot == Slot::DefenseHorse {
+                            flow.slots
+                                .iter()
+                                .filter(|&&s| s == Slot::DefenseHorse)
+                                .count()
+                                .max(
+                                    flow.slots
+                                        .iter()
+                                        .filter(|&&s| s == Slot::AttackHorse)
+                                        .count(),
+                                )
+                        } else {
+                            flow.slots.iter().filter(|&&s| s == slot).count()
+                        };
                         let player = self.seat_mut(flow.seat);
                         if flow.op == AreaOp::Expand {
-                            player.equipment_expanded[i] += 1;
-                        } else if flow.op == AreaOp::Enable && player.equipment_disabled[i] > 0 {
-                            player.equipment_disabled[i] -= 1;
+                            player.equipment_expanded[i] += count;
+                        } else if flow.op == AreaOp::Enable {
+                            let restored = count.min(player.equipment_disabled[i]);
+                            player.equipment_disabled[i] -= restored;
                             player.equipment_markers[i] =
-                                player.equipment_markers[i].saturating_sub(1);
+                                player.equipment_markers[i].saturating_sub(restored);
                         }
                     }
                     flow.stage = End;
@@ -1216,11 +1310,39 @@ impl Game {
                     }
                     let i = flow.index;
                     flow.index += 1;
-                    let count = flow.slots.iter().filter(|&&slot| slot == SLOTS[i]).count();
+                    let combined = self.mount_slots == crate::MountSlots::Combined;
+                    if combined && SLOTS[i] == Slot::AttackHorse {
+                        continue;
+                    }
+                    let count = if combined && SLOTS[i] == Slot::DefenseHorse {
+                        flow.slots
+                            .iter()
+                            .filter(|&&s| s == Slot::DefenseHorse)
+                            .count()
+                            .max(
+                                flow.slots
+                                    .iter()
+                                    .filter(|&&s| s == Slot::AttackHorse)
+                                    .count(),
+                            )
+                    } else {
+                        flow.slots.iter().filter(|&&slot| slot == SLOTS[i]).count()
+                    };
                     if count == 0 {
                         continue;
                     }
                     let player = self.seat_mut(flow.seat);
+                    if combined && SLOTS[i] == Slot::DefenseHorse {
+                        player.equipment_disabled[i] += 1;
+                        flow.cards.extend(
+                            player
+                                .equipment
+                                .iter()
+                                .copied()
+                                .filter(|card| slot(card.kind).is_some_and(is_mount)),
+                        );
+                        continue;
+                    }
                     let enabled = (1 + player.equipment_expanded[i])
                         .saturating_sub(player.equipment_disabled[i]);
                     let change = count.min(enabled);
@@ -1229,7 +1351,8 @@ impl Game {
                     }
                     player.equipment_disabled[i] += change;
                     let wanted = SLOTS[i];
-                    let capacity = self.equipment_slot_state(flow.seat, wanted).enabled;
+                    let capacity =
+                        self.equipment_slot_state(flow.seat, wanted).enabled.max(0) as usize;
                     let cards: Vec<_> = self
                         .seat(flow.seat)
                         .unwrap()

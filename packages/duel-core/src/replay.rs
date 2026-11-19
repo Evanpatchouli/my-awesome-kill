@@ -25,6 +25,15 @@ pub enum ReplaySetup {
         hero: String,
         seats: usize,
     },
+    PrescribedCombinedMounts {
+        setup: GameSetup,
+    },
+    SeededCombinedMounts {
+        seed: u32,
+        human: SeatId,
+        hero: String,
+        seats: usize,
+    },
 }
 
 impl ReplaySetup {
@@ -37,6 +46,21 @@ impl ReplaySetup {
                 hero,
                 seats,
             } => Game::classic(*seed, *human, hero, *seats),
+            Self::PrescribedCombinedMounts { setup } => {
+                Game::new_with_mount_slots(setup.clone(), crate::MountSlots::Combined)
+            }
+            Self::SeededCombinedMounts {
+                seed,
+                human,
+                hero,
+                seats,
+            } => Game::classic_with_mount_slots(
+                *seed,
+                *human,
+                hero,
+                *seats,
+                crate::MountSlots::Combined,
+            ),
         }
     }
 }
