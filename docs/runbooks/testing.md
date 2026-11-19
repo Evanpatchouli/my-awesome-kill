@@ -37,6 +37,10 @@
 
 使用 `qa-xunxun` 单独构建 WASM，把绑定目录设为 `MAK_XUNXUN_BINDINGS` 后执行 `node apps/game/smoke-xunxun.mjs`。开局的摸牌阶段可选择发动恂恂。将四张实体中的两张按指定顺序移到底部，确认后由该席自然摸取顶行。人类牌桌测试底行零张、一张、两张时的确认权限和行首插入，并在其他七席检查牌面隐私。
 
+### 体力上限与威重
+
+使用 `qa-vitality` 构建独立绑定，设置 `MAK_VITALITY_BINDINGS`，执行 `node apps/game/smoke-vitality.mjs`。八席样例在实际牌桌增加和减少 1 号席的体力上限，核对 4/4 → 4/5 → 4/4 → 3/3。每次变化只触发一次威重，分别暗摸 2、1、1 张。继续提升至 3/9 时，横屏座位以数字展示体力。取消死亡、死亡后的变动与求桃次序由 Rust 测试和[固定上游轨迹](../../tests/reference/max-hp.json)核对。
+
 ### 重铸的真实 WebAssembly 交互
 
 在项目根目录构建带测试内容的独立绑定，随后用普通 Vite 开发入口运行烟测。示例中的第二套绑定放在临时目录，正常发行版保持默认 Cargo features。

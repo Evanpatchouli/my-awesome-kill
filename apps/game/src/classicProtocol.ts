@@ -282,7 +282,9 @@ const cardEffects: Partial<Record<string, 'play' | 'respond' | 'equip' | 'judge'
 
 function isPresentationEvent(e: EventRecord) {
   if (e.type === 'draw') return e.status === 'finished' && (e.amount ?? 0) > 0
-  if (['link', 'turnOver', 'changeArmor', 'damage'].includes(e.type)) return e.status === 'finished'
+  if (e.type === 'gainMaxHp' || e.type === 'loseMaxHp')
+    return e.status !== 'started' && e.before != null && e.after != null && e.before !== e.after
+  if (['link', 'turnOver', 'changeArmor', 'damage', 'death'].includes(e.type)) return e.status === 'finished'
   return e.status === 'started'
 }
 
@@ -352,7 +354,8 @@ export function describeEvent(view: TableView, e: EventRecord): string | undefin
   if (e.type === 'damage' && e.nature && e.target != null)
     return `${seatName(view, e.target)}受到${e.amount}点${damageNames[e.nature]}伤害`
   if (e.type === 'changeHp' && e.before !== e.after) return `${who}体力 ${e.before} → ${e.after}`
-  if (e.type === 'death') return `${seatName(view, e.target)}阵亡 · ${e.role ? roles[e.role] : ''}`
+  if (e.type === 'gainMaxHp' || e.type === 'loseMaxHp') return `${who}体力上限 ${e.before} → ${e.after}`
+  if (e.type === 'death') return `${seatName(view, e.target)}阵亡${e.role ? ' · ' + roles[e.role] : ''}`
   if (e.type === 'draw') return `${who}摸了${e.amount}张牌`
   if (e.type === 'skill' && e.skill) return `${who}发动【${skillName(e.skill)}】`
 }

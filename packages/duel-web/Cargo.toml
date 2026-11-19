@@ -17,6 +17,7 @@ qa-phase-skills = ["duel-core/content-phase-skills"]
 qa-multi-compare = ["duel-core/content-multi-compare"]
 qa-mingdian = ["duel-core/content-mingdian"]
 qa-xunxun = ["duel-core/content-xunxun"]
+qa-vitality = ["duel-core/content-vitality"]
 
 [dependencies]
 duel-core = { path = "../duel-core" }
