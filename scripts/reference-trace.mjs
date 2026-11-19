@@ -17,6 +17,7 @@ import { checkReferenceRevival, installReferenceRevival } from './reference-revi
 import { checkReferenceRest, installReferenceRest } from './reference-rest.mjs';
 import { checkRestInterruptions, installRestInterruptions } from './reference-rest-interruptions.mjs';
 import { checkJudgeArea, installJudgeArea } from './reference-judge-area.mjs';
+import { checkJudgeInterruptions, installJudgeInterruptions } from './reference-judge-interruptions.mjs';
 import { checkReferenceExpansion, installReferenceExpansion } from './reference-expansion.mjs';
 import { checkZhongyiBoundaries, installZhongyiBoundaries } from './reference-zhongyi-boundaries.mjs';
 import { checkZhongyiTransitDeath, installZhongyiTransitDeath } from './reference-zhongyi-transit-death.mjs';
@@ -77,6 +78,7 @@ const descriptions = new Map([
   ['rest', 'rest lifecycle, extra and natural turn countdowns, and the original mbmowang skill'],
   ['rest-interruptions', 'damage interrupted by rest and rest clocks after death and direct revival'],
   ['judge-area', 'abolishing and restoring the judgment area, including interrupted card loss'],
+  ['judge-interruptions', 'judgment-area interruptions, retained cards and lightning return'],
 ]);
 let scenario = 'sha-no-shan';
 const scenarioIndex = argv.indexOf('--scenario');
@@ -90,7 +92,7 @@ if (argv.length && (argv.length !== 2 || !['--check', '--write'].includes(argv[0
 }
 const isRecast = scenario === 'tiesuo-recast' || scenario === 'recast-callbacks';
 const isBatchRecast = scenario === 'recast-batch' || scenario === 'recast-batch-boundaries';
-if (['zhongyi-expansion', 'zhongyi-boundaries', 'zhongyi-transit-death', 'qiaoshui-targets', 'judgment-zones', 'ordered-move', 'judge-area'].includes(scenario)) {
+if (['zhongyi-expansion', 'zhongyi-boundaries', 'zhongyi-transit-death', 'qiaoshui-targets', 'judgment-zones', 'ordered-move', 'judge-area', 'judge-interruptions'].includes(scenario)) {
   sourceHashes['/character/standard/skill.js'] = 'ee769399395b93f3d8293cd5b880b8e708864329bd0d79a0b4f0d8bd6f855a9e';
 }
 if (scenario === 'ordered-move') {
@@ -173,6 +175,8 @@ try {
     await context.addInitScript(installRestInterruptions);
   } else if (scenario === 'judge-area') {
     await context.addInitScript(installJudgeArea);
+  } else if (scenario === 'judge-interruptions') {
+    await context.addInitScript(installJudgeInterruptions);
   } else if (scenario === 'zhongyi-expansion') {
     await context.addInitScript(installReferenceExpansion);
   } else if (scenario === 'zhongyi-boundaries') {
@@ -281,6 +285,11 @@ try {
           }
           if (scenario === 'judge-area') {
             window.__referenceResult = await window.__runJudgeArea({ lib, game, ui, get, _status, actor });
+            game.pause();
+            return;
+          }
+          if (scenario === 'judge-interruptions') {
+            window.__referenceResult = await window.__runJudgeInterruptions({ lib, game, ui, get, _status, actor });
             game.pause();
             return;
           }
@@ -465,6 +474,7 @@ try {
   if (scenario === 'rest') checkReferenceRest(captured.value);
   if (scenario === 'rest-interruptions') checkRestInterruptions(captured.value);
   if (scenario === 'judge-area') checkJudgeArea(captured.value);
+  if (scenario === 'judge-interruptions') checkJudgeInterruptions(captured.value);
   if (scenario === 'compare') checkReferenceCompare(captured.value);
   if (scenario === 'qiaoshui-targets') checkQiaoshuiTargets(captured.value);
   if (scenario === 'compare-boundaries') checkCompareBoundaries(captured.value);
