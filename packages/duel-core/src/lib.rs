@@ -647,17 +647,22 @@ impl Game {
 
     /// Walk the table once, starting at `start` and following the setup order.
     pub fn seat_order_from(&self, start: SeatId) -> Result<Vec<SeatId>, RuleError> {
-        let index = self
-            .seats
-            .iter()
-            .position(|seat| seat.id == start)
-            .ok_or(RuleError::UnknownSeat { seat: start })?;
-        let (before, from_start) = self.seats.split_at(index);
-        Ok(from_start
-            .iter()
-            .chain(before)
+        Ok(self
+            .seat_ring_from(self.seat_index(start)?)
             .map(|seat| seat.id)
             .collect())
+    }
+
+    fn seat_index(&self, id: SeatId) -> Result<usize, RuleError> {
+        self.seats
+            .iter()
+            .position(|seat| seat.id == id)
+            .ok_or(RuleError::UnknownSeat { seat: id })
+    }
+
+    fn seat_ring_from(&self, index: usize) -> impl Iterator<Item = &Seat> {
+        let (before, from_start) = self.seats.split_at(index);
+        from_start.iter().chain(before)
     }
 
     /// Count the shorter direction around the table, skipping seats omitted from distance.
@@ -671,26 +676,32 @@ impl Game {
         to: SeatId,
         ignored: Option<CardId>,
     ) -> Result<usize, RuleError> {
-        for id in [from, to] {
-            if !self.seat(id)?.is_in() {
-                return Err(RuleError::InactiveSeat { seat: id });
-            }
+        let from_index = self.seat_index(from)?;
+        let rider = &self.seats[from_index];
+        if !rider.is_in() {
+            return Err(RuleError::InactiveSeat { seat: from });
         }
         if from == to {
             return Ok(0);
         }
-        let participants = self.in_order_from(from);
-        let counts_for_distance = |seat: &&SeatId| !self.has_skill(**seat, "undist");
-        let length = participants.iter().filter(counts_for_distance).count() as i32;
-        let clockwise = 1 + participants
-            .iter()
-            .skip(1)
-            .take_while(|&&seat| seat != to)
-            .filter(counts_for_distance)
-            .count() as i32;
-        let raw = clockwise.min(length - clockwise);
-        let rider = self.seat(from)?;
         let target = self.seat(to)?;
+        if !target.is_in() {
+            return Err(RuleError::InactiveSeat { seat: to });
+        }
+
+        let mut clockwise = 1;
+        let mut length = 0;
+        for seat in self.seat_ring_from(from_index).skip(1) {
+            if seat.id == to {
+                // Reaching the target costs one step even if it has undist.
+                clockwise = 1 + length;
+            }
+            if seat.is_in() && !self.seat_has_skill(seat, "undist") {
+                length += 1;
+            }
+        }
+        length += i32::from(!self.seat_has_skill(rider, "undist"));
+        let raw = clockwise.min(length - clockwise);
         let adjustment = i32::from(equipment::has_slot(
             target,
             equipment::Slot::DefenseHorse,
@@ -699,7 +710,7 @@ impl Game {
             rider,
             equipment::Slot::AttackHorse,
             ignored,
-        )) + self.hero_distance_modifier(from);
+        )) + self.hero_distance_modifier(rider);
         Ok((raw + adjustment).max(1) as usize)
     }
 

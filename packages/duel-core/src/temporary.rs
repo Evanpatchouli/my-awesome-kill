@@ -1,5 +1,6 @@
 use crate::{
-    CardKind, Game, RuleError, SeatId, TriggerEvent, TriggerId, TriggerRegistration, TriggerRole,
+    CardKind, Game, RuleError, Seat, SeatId, TriggerEvent, TriggerId, TriggerRegistration,
+    TriggerRole,
 };
 use std::sync::Arc;
 
@@ -99,17 +100,20 @@ pub(crate) struct Grant {
 impl Game {
     /// Native and temporarily acquired skills visible to trusted rules content.
     pub fn has_skill(&self, seat: SeatId, id: &str) -> bool {
-        self.seat(seat).is_ok_and(|player| {
-            (id == "undist" && player.rest_undist)
-                || player
-                    .hero
-                    .is_some_and(|hero| hero.skills.iter().any(|skill| skill.id == id))
-                || self.owns_active_skill(seat, id)
-                || self
-                    .temporary_skills
-                    .iter()
-                    .any(|grant| grant.owner == seat && grant.name == id)
-        })
+        self.seat(seat)
+            .is_ok_and(|player| self.seat_has_skill(player, id))
+    }
+
+    pub(crate) fn seat_has_skill(&self, player: &Seat, id: &str) -> bool {
+        (id == "undist" && player.rest_undist)
+            || player
+                .hero
+                .is_some_and(|hero| hero.skills.iter().any(|skill| skill.id == id))
+            || self.owns_active_skill(player.id, id)
+            || self
+                .temporary_skills
+                .iter()
+                .any(|grant| grant.owner == player.id && grant.name == id)
     }
 
     /// Whether the holder's effective-card modifiers permit this kind of use.

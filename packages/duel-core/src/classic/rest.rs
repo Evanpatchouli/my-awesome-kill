@@ -140,10 +140,12 @@ impl Game {
     }
 
     pub(crate) fn in_order_from(&self, start: SeatId) -> Vec<SeatId> {
-        self.seat_order_from(start)
-            .expect("the starting seat is present")
-            .into_iter()
-            .filter(|&seat| self.is_in(seat))
+        let index = self
+            .seat_index(start)
+            .expect("the starting seat is present");
+        self.seat_ring_from(index)
+            .filter(|seat| seat.is_in())
+            .map(|seat| seat.id)
             .collect()
     }
 

@@ -1,6 +1,6 @@
 use super::{branch, SkillId};
 use crate::classic_data::{Role, Suit};
-use crate::{Card, CardId, CardKind, ChoiceBranch, Game, Phase, SeatId, VirtualPlay};
+use crate::{Card, CardId, CardKind, ChoiceBranch, Game, Phase, Seat, SeatId, VirtualPlay};
 
 impl Game {
     pub(crate) fn has_lord_skill(&self, seat: SeatId, skill: &str) -> bool {
@@ -10,8 +10,8 @@ impl Game {
                 .is_ok_and(|player| player.role == Some(Role::Lord))
     }
 
-    pub(crate) fn hero_distance_modifier(&self, from: SeatId) -> i32 {
-        -i32::from(self.has_skill(from, SkillId::Mashu.as_str()))
+    pub(crate) fn hero_distance_modifier(&self, from: &Seat) -> i32 {
+        -i32::from(self.seat_has_skill(from, SkillId::Mashu.as_str()))
     }
 
     pub(crate) fn hero_allows_target(&self, target: SeatId, kind: CardKind) -> bool {

@@ -29,6 +29,8 @@
 
 运行 `cargo test --release --locked --manifest-path packages/duel-core/Cargo.toml --lib benchmark_seeded_eight_player_games -- --ignored --nocapture`。游戏使用真实 Rust 规则，按固定种子跑完一局后验牌区守恒；进程启动、浏览器动画和 I/O 不算作结算耗时。[Rust 核心说明](../../packages/duel-core/README.md)记录测量方法和详细结果。
 
+在加入休整后的 `fb070b7` 上，100 局共 54,675 次决定。以同一逻辑 P 核预热后交替运行基线与直接遍历座次环的候选版本，十对测量中规则 p95 的中位数从 10.7 µs 降至 9.8 µs。逐步命令和 0 号席视图轨迹共 269,241,747 字节，两版 SHA-256 同为 `6854C77B6146B2F853AFFCA971A096A3B9DB4B2A4DE19F9A76CA92DF0FF111F7`。与更早版本的 55,216 次决定之差来自反贼摸牌放在旧手牌前面；固定原版的 `rewardOrder` 和 Rust 实体回归均核对了实际顺序。[奖励顺序](../../tests/reference/revival.json)
+
 ### 命令回放
 
 `pnpm engine:test` 包含指定牌桌的私有响应与完整种子对局的 Rust 回放，以及发布 WASM 的逐命令前缀恢复。运行 Vite 开发入口后执行 `node apps/game/smoke-replay.mjs`。脚本从正常选将开八人局，用发布模块的录制工厂接受玩家和 AI 决定，然后在全新的浏览器上下文比较全部八席与旁观者的视图。种子 317 的样例包含初始局面、私有弃牌及三次电脑决策，共六个检查点。过期命令被拒绝后日志和各视图保持原值。
