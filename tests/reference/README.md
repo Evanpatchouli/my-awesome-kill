@@ -131,6 +131,7 @@
    node scripts/reference-trace.mjs --scenario hp-cancel --check tests/reference/hp-cancel.json
    node scripts/reference-trace.mjs --scenario max-hp --check tests/reference/max-hp.json
    node scripts/reference-trace.mjs --scenario revival --check tests/reference/revival.json
+   node scripts/reference-trace.mjs --scenario rest --check tests/reference/rest.json
    node scripts/reference-trace.mjs --scenario tiesuo-recast --check tests/reference/tiesuo-recast.json
    node scripts/reference-trace.mjs --scenario recast-callbacks --check tests/reference/recast-callbacks.json
    node scripts/reference-trace.mjs --scenario recast-batch --check tests/reference/recast-batch.json

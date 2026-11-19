@@ -1,0 +1,2136 @@
+{
+  "schema": "noname-reference-trace-v1",
+  "referenceCommit": "c73270948d72949aa80009536b9fd5400767d091",
+  "mode": "identity",
+  "scenario": "rest lifecycle, extra and natural turn countdowns, and the original mbmowang skill",
+  "seats": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H"
+  ],
+  "clockSeats": [
+    "B",
+    "D",
+    "E",
+    "F",
+    "G"
+  ],
+  "eventColumns": [
+    "kind",
+    "trial",
+    "timing",
+    "seat",
+    "turn",
+    "parent",
+    "data"
+  ],
+  "stateColumns": [
+    "hp",
+    "maxHp",
+    "alive",
+    "out",
+    "in",
+    "clock",
+    "mark",
+    "undist",
+    "hand",
+    "equip",
+    "linked",
+    "turnedOver",
+    "inPlayers",
+    "inDead",
+    "counted",
+    "previous",
+    "next",
+    "previousEligibleNext",
+    "identityShown"
+  ],
+  "events": [
+    ["request","cancel-rest","rest","B","A-natural","reference_rest_observer",{"hp":2,"out":true,"alive":true,"clock":["phase",-1],"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","cancel-rest","rest","B","A-natural","reference_rest_observer",{"hp":2,"out":true,"alive":true,"clock":["phase",-1],"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","cancel-rest","restCancelled","B","A-natural","reference_rest_observer",{"hp":2,"out":true,"alive":true,"clock":["phase",-1],"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":true}],
+    ["callback","cancel-rest","restCancelled","B","A-natural","reference_rest_observer",{"hp":2,"out":true,"alive":true,"clock":["phase",-1],"reviveHp":null,"reserveOut":false,"finished":true,"cancelled":true}],
+    ["request","cancel-revive","reviveBefore","B","A-natural","restEnd",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":3,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","cancel-revive","reviveBefore","B","A-natural","restEnd",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":3,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","cancel-revive","reviveCancelled","B","A-natural","restEnd",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":3,"reserveOut":false,"finished":false,"cancelled":true}],
+    ["callback","cancel-revive","reviveCancelled","B","A-natural","restEnd",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":3,"reserveOut":false,"finished":true,"cancelled":true}],
+    ["request","cancel-revive","restEnd","B","A-natural","reference_rest_observer",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","cancel-revive","restEnd","B","A-natural","reference_rest_observer",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","zero-clock","rest","B","A-natural","reference_rest_observer",{"hp":2,"out":true,"alive":true,"clock":["phase",0],"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","zero-clock","rest","B","A-natural","reference_rest_observer",{"hp":2,"out":true,"alive":true,"clock":["phase",0],"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","manual-zero-hp","reviveBefore","B","A-natural","restEnd",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":1,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","manual-zero-hp","reviveBefore","B","A-natural","restEnd",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":1,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","manual-zero-hp","reviveBegin","B","A-natural","restEnd",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":1,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","manual-zero-hp","reviveBegin","B","A-natural","restEnd",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":1,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","manual-zero-hp","reviveEnd","B","A-natural","restEnd",{"hp":1,"out":false,"alive":true,"clock":null,"reviveHp":1,"reserveOut":false,"finished":true,"cancelled":false}],
+    ["callback","manual-zero-hp","reviveEnd","B","A-natural","restEnd",{"hp":1,"out":false,"alive":true,"clock":null,"reviveHp":1,"reserveOut":false,"finished":true,"cancelled":false}],
+    ["request","manual-zero-hp","reviveAfter","B","A-natural","restEnd",{"hp":1,"out":false,"alive":true,"clock":null,"reviveHp":1,"reserveOut":false,"finished":true,"cancelled":false}],
+    ["callback","manual-zero-hp","reviveAfter","B","A-natural","restEnd",{"hp":1,"out":false,"alive":true,"clock":null,"reviveHp":1,"reserveOut":false,"finished":true,"cancelled":false}],
+    ["request","manual-zero-hp","restEnd","B","A-natural","reference_rest_observer",{"hp":1,"out":false,"alive":true,"clock":null,"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","manual-zero-hp","restEnd","B","A-natural","reference_rest_observer",{"hp":1,"out":false,"alive":true,"clock":null,"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","negative-clock","rest","B","A-natural","reference_rest_observer",{"hp":1,"out":true,"alive":true,"clock":["phase",-2],"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","negative-clock","rest","B","A-natural","reference_rest_observer",{"hp":1,"out":true,"alive":true,"clock":["phase",-2],"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","cancel-rest-end","reviveBefore","B","A-natural","restEnd",{"hp":1,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","cancel-rest-end","reviveBefore","B","A-natural","restEnd",{"hp":1,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","cancel-rest-end","reviveBegin","B","A-natural","restEnd",{"hp":1,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","cancel-rest-end","reviveBegin","B","A-natural","restEnd",{"hp":1,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","cancel-rest-end","reviveEnd","B","A-natural","restEnd",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":true,"cancelled":false}],
+    ["callback","cancel-rest-end","reviveEnd","B","A-natural","restEnd",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":true,"cancelled":false}],
+    ["request","cancel-rest-end","reviveAfter","B","A-natural","restEnd",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":true,"cancelled":false}],
+    ["callback","cancel-rest-end","reviveAfter","B","A-natural","restEnd",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":true,"cancelled":false}],
+    ["request","cancel-rest-end","restEnd","B","A-natural","reference_rest_observer",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","cancel-rest-end","restEnd","B","A-natural","reference_rest_observer",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","cancel-rest-end","restEndCancelled","B","A-natural","reference_rest_observer",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":true}],
+    ["callback","cancel-rest-end","restEndCancelled","B","A-natural","reference_rest_observer",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":null,"reserveOut":false,"finished":true,"cancelled":true}],
+    ["request","persistent-clocks","rest","F","A-natural","reference_rest_observer",{"hp":2,"out":true,"alive":true,"clock":["phase",0],"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","persistent-clocks","rest","F","A-natural","reference_rest_observer",{"hp":2,"out":true,"alive":true,"clock":["phase",0],"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","persistent-clocks","rest","G","A-natural","reference_rest_observer",{"hp":2,"out":true,"alive":true,"clock":["round",-2],"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","persistent-clocks","rest","G","A-natural","reference_rest_observer",{"hp":2,"out":true,"alive":true,"clock":["round",-2],"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","phase-clock","rest","B","A-natural","reference_rest_observer",{"hp":4,"out":true,"alive":true,"clock":["phase",4],"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","phase-clock","rest","B","A-natural","reference_rest_observer",{"hp":4,"out":true,"alive":true,"clock":["phase",4],"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","phase-clock","reviveBefore","B","C-natural","restEnd",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","phase-clock","reviveBefore","B","C-natural","restEnd",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","phase-clock","reviveBegin","B","C-natural","restEnd",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","phase-clock","reviveBegin","B","C-natural","restEnd",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","phase-clock","reviveEnd","B","C-natural","restEnd",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":true,"cancelled":false}],
+    ["callback","phase-clock","reviveEnd","B","C-natural","restEnd",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":true,"cancelled":false}],
+    ["request","phase-clock","reviveAfter","B","C-natural","restEnd",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":true,"cancelled":false}],
+    ["callback","phase-clock","reviveAfter","B","C-natural","restEnd",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":true,"cancelled":false}],
+    ["request","phase-clock","restEnd","B","C-natural","_rest_return",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","phase-clock","restEnd","B","C-natural","_rest_return",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","round-clock","rest","D","C-natural","reference_rest_observer",{"hp":2,"out":true,"alive":true,"clock":["round",2],"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","round-clock","rest","D","C-natural","reference_rest_observer",{"hp":2,"out":true,"alive":true,"clock":["round",2],"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","round-clock","reviveBefore","D","D-natural","restEnd",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","round-clock","reviveBefore","D","D-natural","restEnd",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","round-clock","reviveBegin","D","D-natural","restEnd",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","round-clock","reviveBegin","D","D-natural","restEnd",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","round-clock","reviveEnd","D","D-natural","restEnd",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":true,"cancelled":false}],
+    ["callback","round-clock","reviveEnd","D","D-natural","restEnd",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":true,"cancelled":false}],
+    ["request","round-clock","reviveAfter","D","D-natural","restEnd",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":true,"cancelled":false}],
+    ["callback","round-clock","reviveAfter","D","D-natural","restEnd",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":true,"cancelled":false}],
+    ["request","round-clock","restEnd","D","D-natural","_rest_return",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","round-clock","restEnd","D","D-natural","_rest_return",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","mbmowang","dieBefore","E","E-natural","mbmowang_die",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","mbmowang","dieBefore","E","E-natural","mbmowang_die",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","mbmowang","dieBegin","E","E-natural","mbmowang_die",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":null,"reserveOut":true,"finished":false,"cancelled":false}],
+    ["callback","mbmowang","dieBegin","E","E-natural","mbmowang_die",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":null,"reserveOut":true,"finished":false,"cancelled":false}],
+    ["request","mbmowang","die","E","E-natural","mbmowang_die",{"hp":0,"out":false,"alive":false,"clock":null,"reviveHp":null,"reserveOut":true,"finished":false,"cancelled":false}],
+    ["callback","mbmowang","die","E","E-natural","mbmowang_die",{"hp":0,"out":false,"alive":false,"clock":null,"reviveHp":null,"reserveOut":true,"finished":false,"cancelled":false}],
+    ["request","mbmowang","dieEnd","E","E-natural","mbmowang_die",{"hp":0,"out":false,"alive":false,"clock":null,"reviveHp":null,"reserveOut":true,"finished":true,"cancelled":false}],
+    ["callback","mbmowang","dieEnd","E","E-natural","mbmowang_die",{"hp":0,"out":false,"alive":false,"clock":null,"reviveHp":null,"reserveOut":true,"finished":true,"cancelled":false}],
+    ["request","mbmowang","dieAfter","E","E-natural","mbmowang_die",{"hp":0,"out":false,"alive":false,"clock":null,"reviveHp":null,"reserveOut":true,"finished":true,"cancelled":false}],
+    ["callback","mbmowang","dieAfter","E","E-natural","mbmowang_die",{"hp":0,"out":false,"alive":false,"clock":null,"reviveHp":null,"reserveOut":true,"finished":true,"cancelled":false}],
+    ["request","mbmowang","rest","E","E-natural","mbmowang",{"hp":0,"out":true,"alive":true,"clock":["round",1],"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","mbmowang","rest","E","E-natural","mbmowang",{"hp":0,"out":true,"alive":true,"clock":["round",1],"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","mbmowang-repeat-death","dieBefore","E",null,"reference_rest_observer",{"hp":0,"out":true,"alive":true,"clock":["round",1],"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","mbmowang-repeat-death","dieBefore","E",null,"reference_rest_observer",{"hp":0,"out":true,"alive":true,"clock":["round",1],"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","mbmowang-repeat-death","dieCancelled","E",null,"reference_rest_observer",{"hp":0,"out":true,"alive":true,"clock":["round",1],"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":true}],
+    ["callback","mbmowang-repeat-death","dieCancelled","E",null,"reference_rest_observer",{"hp":0,"out":true,"alive":true,"clock":["round",1],"reviveHp":null,"reserveOut":false,"finished":true,"cancelled":true}],
+    ["request","mbmowang","reviveBefore","E","E-natural","restEnd",{"hp":0,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","mbmowang","reviveBefore","E","E-natural","restEnd",{"hp":0,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","mbmowang","reviveBegin","E","E-natural","restEnd",{"hp":0,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","mbmowang","reviveBegin","E","E-natural","restEnd",{"hp":0,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","mbmowang","reviveEnd","E","E-natural","restEnd",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":true,"cancelled":false}],
+    ["callback","mbmowang","reviveEnd","E","E-natural","restEnd",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":true,"cancelled":false}],
+    ["request","mbmowang","reviveAfter","E","E-natural","restEnd",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":true,"cancelled":false}],
+    ["callback","mbmowang","reviveAfter","E","E-natural","restEnd",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":true,"cancelled":false}],
+    ["request","mbmowang","restEnd","E","E-natural","_rest_return",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","mbmowang","restEnd","E","E-natural","_rest_return",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","competing-clocks","reviveBefore","F","E-natural","restEnd",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":2,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","competing-clocks","reviveBefore","F","E-natural","restEnd",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":2,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","competing-clocks","reviveBegin","F","E-natural","restEnd",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":2,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","competing-clocks","reviveBegin","F","E-natural","restEnd",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":2,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","competing-clocks","reviveEnd","F","E-natural","restEnd",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":2,"reserveOut":false,"finished":true,"cancelled":false}],
+    ["callback","competing-clocks","reviveEnd","F","E-natural","restEnd",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":2,"reserveOut":false,"finished":true,"cancelled":false}],
+    ["request","competing-clocks","reviveAfter","F","E-natural","restEnd",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":2,"reserveOut":false,"finished":true,"cancelled":false}],
+    ["callback","competing-clocks","reviveAfter","F","E-natural","restEnd",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":2,"reserveOut":false,"finished":true,"cancelled":false}],
+    ["request","competing-clocks","restEnd","F","E-natural","reference_rest_observer",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","competing-clocks","restEnd","F","E-natural","reference_rest_observer",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","competing-clocks","rest","F","E-natural","reference_rest_observer",{"hp":2,"out":true,"alive":true,"clock":["phase",1],"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","competing-clocks","rest","F","E-natural","reference_rest_observer",{"hp":2,"out":true,"alive":true,"clock":["phase",1],"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","competing-clocks","reviveBefore","G","E-natural","restEnd",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":2,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","competing-clocks","reviveBefore","G","E-natural","restEnd",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":2,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","competing-clocks","reviveBegin","G","E-natural","restEnd",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":2,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","competing-clocks","reviveBegin","G","E-natural","restEnd",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":2,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","competing-clocks","reviveEnd","G","E-natural","restEnd",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":2,"reserveOut":false,"finished":true,"cancelled":false}],
+    ["callback","competing-clocks","reviveEnd","G","E-natural","restEnd",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":2,"reserveOut":false,"finished":true,"cancelled":false}],
+    ["request","competing-clocks","reviveAfter","G","E-natural","restEnd",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":2,"reserveOut":false,"finished":true,"cancelled":false}],
+    ["callback","competing-clocks","reviveAfter","G","E-natural","restEnd",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":2,"reserveOut":false,"finished":true,"cancelled":false}],
+    ["request","competing-clocks","restEnd","G","E-natural","reference_rest_observer",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","competing-clocks","restEnd","G","E-natural","reference_rest_observer",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","competing-clocks","rest","G","E-natural","reference_rest_observer",{"hp":2,"out":true,"alive":true,"clock":["phase",1],"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","competing-clocks","rest","G","E-natural","reference_rest_observer",{"hp":2,"out":true,"alive":true,"clock":["phase",1],"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","competing-clocks","reviveBefore","G","G-priority-extra","restEnd",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","competing-clocks","reviveBefore","G","G-priority-extra","restEnd",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","competing-clocks","reviveBegin","G","G-priority-extra","restEnd",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","competing-clocks","reviveBegin","G","G-priority-extra","restEnd",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","competing-clocks","reviveEnd","G","G-priority-extra","restEnd",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":true,"cancelled":false}],
+    ["callback","competing-clocks","reviveEnd","G","G-priority-extra","restEnd",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":true,"cancelled":false}],
+    ["request","competing-clocks","reviveAfter","G","G-priority-extra","restEnd",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":true,"cancelled":false}],
+    ["callback","competing-clocks","reviveAfter","G","G-priority-extra","restEnd",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":true,"cancelled":false}],
+    ["request","competing-clocks","restEnd","G","G-priority-extra","_rest_return",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","competing-clocks","restEnd","G","G-priority-extra","_rest_return",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","competing-clocks","reviveBefore","F","F-natural","restEnd",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","competing-clocks","reviveBefore","F","F-natural","restEnd",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","competing-clocks","reviveBegin","F","F-natural","restEnd",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","competing-clocks","reviveBegin","F","F-natural","restEnd",{"hp":2,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["request","competing-clocks","reviveEnd","F","F-natural","restEnd",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":true,"cancelled":false}],
+    ["callback","competing-clocks","reviveEnd","F","F-natural","restEnd",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":true,"cancelled":false}],
+    ["request","competing-clocks","reviveAfter","F","F-natural","restEnd",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":true,"cancelled":false}],
+    ["callback","competing-clocks","reviveAfter","F","F-natural","restEnd",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":4,"reserveOut":false,"finished":true,"cancelled":false}],
+    ["request","competing-clocks","restEnd","F","F-natural","_rest_return",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}],
+    ["callback","competing-clocks","restEnd","F","F-natural","_rest_return",{"hp":4,"out":false,"alive":true,"clock":null,"reviveHp":null,"reserveOut":false,"finished":false,"cancelled":false}]
+  ],
+  "stages": [
+    {
+      "name": "initial",
+      "seat": "B",
+      "state": [
+        2,
+        4,
+        true,
+        false,
+        true,
+        null,
+        false,
+        false,
+        1,
+        1,
+        true,
+        true,
+        true,
+        false,
+        true,
+        "A",
+        "C",
+        "B",
+        false
+      ],
+      "detail": null
+    },
+    {
+      "name": "end-without-rest",
+      "seat": "B",
+      "state": [
+        2,
+        4,
+        true,
+        false,
+        true,
+        null,
+        false,
+        false,
+        1,
+        1,
+        true,
+        true,
+        true,
+        false,
+        true,
+        "A",
+        "C",
+        "B",
+        false
+      ],
+      "detail": {
+        "finished": true,
+        "cancelled": false
+      }
+    },
+    {
+      "name": "cancel-rest",
+      "seat": "B",
+      "state": [
+        2,
+        4,
+        true,
+        true,
+        false,
+        [
+          "phase",
+          -1
+        ],
+        true,
+        true,
+        1,
+        1,
+        true,
+        true,
+        true,
+        false,
+        false,
+        "A",
+        "C",
+        "C",
+        false
+      ],
+      "detail": {
+        "finished": true,
+        "cancelled": true
+      }
+    },
+    {
+      "name": "repeat-rest",
+      "seat": "B",
+      "state": [
+        2,
+        4,
+        true,
+        true,
+        false,
+        [
+          "phase",
+          -1
+        ],
+        true,
+        true,
+        1,
+        1,
+        true,
+        true,
+        true,
+        false,
+        false,
+        "A",
+        "C",
+        "C",
+        false
+      ],
+      "detail": {
+        "finished": true,
+        "cancelled": false
+      }
+    },
+    {
+      "name": "cancel-revive",
+      "seat": "B",
+      "state": [
+        2,
+        4,
+        true,
+        false,
+        true,
+        null,
+        false,
+        false,
+        1,
+        1,
+        true,
+        true,
+        true,
+        false,
+        true,
+        "A",
+        "C",
+        "B",
+        false
+      ],
+      "detail": {
+        "finished": true,
+        "cancelled": false,
+        "handRetained": true,
+        "equipRetained": true
+      }
+    },
+    {
+      "name": "zero-clock",
+      "seat": "B",
+      "state": [
+        2,
+        4,
+        true,
+        true,
+        false,
+        [
+          "phase",
+          0
+        ],
+        true,
+        true,
+        1,
+        1,
+        true,
+        true,
+        true,
+        false,
+        false,
+        "A",
+        "C",
+        "C",
+        false
+      ],
+      "detail": {
+        "finished": true,
+        "cancelled": false
+      }
+    },
+    {
+      "name": "manual-zero-hp",
+      "seat": "B",
+      "state": [
+        1,
+        4,
+        true,
+        false,
+        true,
+        null,
+        false,
+        false,
+        1,
+        1,
+        true,
+        true,
+        true,
+        false,
+        true,
+        "A",
+        "C",
+        "B",
+        false
+      ],
+      "detail": {
+        "finished": true,
+        "cancelled": false
+      }
+    },
+    {
+      "name": "negative-clock",
+      "seat": "B",
+      "state": [
+        1,
+        4,
+        true,
+        true,
+        false,
+        [
+          "phase",
+          -2
+        ],
+        true,
+        true,
+        1,
+        1,
+        true,
+        true,
+        true,
+        false,
+        false,
+        "A",
+        "C",
+        "C",
+        false
+      ],
+      "detail": {
+        "finished": true,
+        "cancelled": false
+      }
+    },
+    {
+      "name": "cancel-rest-end",
+      "seat": "B",
+      "state": [
+        4,
+        4,
+        true,
+        false,
+        true,
+        null,
+        false,
+        false,
+        1,
+        1,
+        true,
+        true,
+        true,
+        false,
+        true,
+        "A",
+        "C",
+        "B",
+        false
+      ],
+      "detail": {
+        "finished": true,
+        "cancelled": true,
+        "handRetained": true,
+        "equipRetained": true
+      }
+    },
+    {
+      "name": "repeat-end",
+      "seat": "B",
+      "state": [
+        4,
+        4,
+        true,
+        false,
+        true,
+        null,
+        false,
+        false,
+        1,
+        1,
+        true,
+        true,
+        true,
+        false,
+        true,
+        "A",
+        "C",
+        "B",
+        false
+      ],
+      "detail": {
+        "finished": true,
+        "cancelled": false
+      }
+    },
+    {
+      "name": "persistent-zero-placed",
+      "seat": "F",
+      "state": [
+        2,
+        4,
+        true,
+        true,
+        false,
+        [
+          "phase",
+          0
+        ],
+        true,
+        true,
+        4,
+        0,
+        false,
+        false,
+        true,
+        false,
+        false,
+        "E",
+        "G",
+        "H",
+        false
+      ],
+      "detail": null
+    },
+    {
+      "name": "persistent-negative-placed",
+      "seat": "G",
+      "state": [
+        2,
+        4,
+        true,
+        true,
+        false,
+        [
+          "round",
+          -2
+        ],
+        true,
+        true,
+        4,
+        0,
+        false,
+        false,
+        true,
+        false,
+        false,
+        "F",
+        "H",
+        null,
+        false
+      ],
+      "detail": null
+    },
+    {
+      "name": "phase-clock",
+      "seat": "B",
+      "state": [
+        4,
+        4,
+        true,
+        true,
+        false,
+        [
+          "phase",
+          4
+        ],
+        true,
+        true,
+        1,
+        1,
+        true,
+        false,
+        true,
+        false,
+        false,
+        "A",
+        "C",
+        "C",
+        false
+      ],
+      "detail": {
+        "finished": true,
+        "cancelled": false
+      }
+    },
+    {
+      "name": "phase-clock-returned",
+      "seat": "B",
+      "state": [
+        4,
+        4,
+        true,
+        false,
+        true,
+        null,
+        false,
+        false,
+        1,
+        1,
+        true,
+        false,
+        true,
+        false,
+        true,
+        "A",
+        "C",
+        "B",
+        false
+      ],
+      "detail": null
+    },
+    {
+      "name": "round-clock",
+      "seat": "D",
+      "state": [
+        2,
+        4,
+        true,
+        true,
+        false,
+        [
+          "round",
+          2
+        ],
+        true,
+        true,
+        4,
+        0,
+        false,
+        false,
+        true,
+        false,
+        false,
+        "C",
+        "E",
+        "E",
+        false
+      ],
+      "detail": null
+    },
+    {
+      "name": "round-clock-returned",
+      "seat": "D",
+      "state": [
+        4,
+        4,
+        true,
+        false,
+        true,
+        null,
+        false,
+        false,
+        4,
+        0,
+        false,
+        false,
+        true,
+        false,
+        true,
+        "C",
+        "E",
+        "D",
+        false
+      ],
+      "detail": null
+    },
+    {
+      "name": "real-ready",
+      "seat": "E",
+      "state": [
+        2,
+        4,
+        true,
+        false,
+        true,
+        null,
+        false,
+        false,
+        1,
+        1,
+        true,
+        false,
+        true,
+        false,
+        true,
+        "D",
+        "F",
+        "E",
+        false
+      ],
+      "detail": null
+    },
+    {
+      "name": "real-entered",
+      "seat": "E",
+      "state": [
+        0,
+        4,
+        true,
+        true,
+        false,
+        [
+          "round",
+          1
+        ],
+        true,
+        true,
+        0,
+        0,
+        false,
+        false,
+        true,
+        false,
+        false,
+        "D",
+        "F",
+        "H",
+        false
+      ],
+      "detail": {
+        "handInDiscard": true,
+        "equipInDiscard": true,
+        "remainingAttendants": 2,
+        "dead": []
+      }
+    },
+    {
+      "name": "real-repeat-death",
+      "seat": "E",
+      "state": [
+        0,
+        4,
+        true,
+        true,
+        false,
+        [
+          "round",
+          1
+        ],
+        true,
+        true,
+        0,
+        0,
+        false,
+        false,
+        true,
+        false,
+        false,
+        "D",
+        "F",
+        "H",
+        false
+      ],
+      "detail": {
+        "cancelled": true
+      }
+    },
+    {
+      "name": "persistent-zero-unchanged",
+      "seat": "F",
+      "state": [
+        2,
+        4,
+        true,
+        true,
+        false,
+        [
+          "phase",
+          0
+        ],
+        true,
+        true,
+        4,
+        0,
+        false,
+        false,
+        true,
+        false,
+        false,
+        "E",
+        "G",
+        "H",
+        false
+      ],
+      "detail": null
+    },
+    {
+      "name": "persistent-negative-unchanged",
+      "seat": "G",
+      "state": [
+        2,
+        4,
+        true,
+        true,
+        false,
+        [
+          "round",
+          -2
+        ],
+        true,
+        true,
+        4,
+        0,
+        false,
+        false,
+        true,
+        false,
+        false,
+        "F",
+        "H",
+        null,
+        false
+      ],
+      "detail": null
+    },
+    {
+      "name": "real-returned",
+      "seat": "E",
+      "state": [
+        4,
+        4,
+        true,
+        false,
+        true,
+        null,
+        false,
+        false,
+        1,
+        0,
+        false,
+        false,
+        true,
+        false,
+        true,
+        "D",
+        "F",
+        "E",
+        false
+      ],
+      "detail": {
+        "remainingAttendants": 0,
+        "dead": [],
+        "gameOver": false
+      }
+    }
+  ],
+  "turns": [
+    {
+      "timing": "phaseBefore",
+      "turn": "C-extra",
+      "phase": 1,
+      "round": 1,
+      "in": true,
+      "clocks": [
+        [
+          "phase",
+          4
+        ],
+        null,
+        null,
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseBeforeStart",
+      "turn": "C-extra",
+      "phase": 2,
+      "round": 1,
+      "in": true,
+      "clocks": [
+        [
+          "phase",
+          3
+        ],
+        null,
+        null,
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": true
+    },
+    {
+      "timing": "phaseZhunbeiBefore",
+      "turn": "C-extra",
+      "phase": 2,
+      "round": 1,
+      "in": true,
+      "clocks": [
+        [
+          "phase",
+          3
+        ],
+        null,
+        null,
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": true
+    },
+    {
+      "timing": "phaseBefore",
+      "turn": "B-extra",
+      "phase": 2,
+      "round": 1,
+      "in": false,
+      "clocks": [
+        [
+          "phase",
+          3
+        ],
+        null,
+        null,
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseBeforeStart",
+      "turn": "B-extra",
+      "phase": 3,
+      "round": 1,
+      "in": false,
+      "clocks": [
+        [
+          "phase",
+          2
+        ],
+        null,
+        null,
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": true
+    },
+    {
+      "timing": "phaseBefore",
+      "turn": "B-natural",
+      "phase": 3,
+      "round": 1,
+      "in": false,
+      "clocks": [
+        [
+          "phase",
+          2
+        ],
+        null,
+        null,
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseBeforeStart",
+      "turn": "B-natural",
+      "phase": 4,
+      "round": 1,
+      "in": false,
+      "clocks": [
+        [
+          "phase",
+          1
+        ],
+        null,
+        null,
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": true
+    },
+    {
+      "timing": "phaseBefore",
+      "turn": "C-natural",
+      "phase": 4,
+      "round": 1,
+      "in": true,
+      "clocks": [
+        [
+          "phase",
+          1
+        ],
+        null,
+        null,
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseBeforeStart",
+      "turn": "C-natural",
+      "phase": 5,
+      "round": 1,
+      "in": true,
+      "clocks": [
+        null,
+        null,
+        null,
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": true
+    },
+    {
+      "timing": "phaseZhunbeiBefore",
+      "turn": "C-natural",
+      "phase": 5,
+      "round": 1,
+      "in": true,
+      "clocks": [
+        null,
+        [
+          "round",
+          2
+        ],
+        null,
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": true
+    },
+    {
+      "timing": "phaseBefore",
+      "turn": "D-extra",
+      "phase": 5,
+      "round": 1,
+      "in": false,
+      "clocks": [
+        null,
+        [
+          "round",
+          2
+        ],
+        null,
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseBeforeStart",
+      "turn": "D-extra",
+      "phase": 6,
+      "round": 1,
+      "in": false,
+      "clocks": [
+        null,
+        [
+          "round",
+          2
+        ],
+        null,
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseBefore",
+      "turn": "D-natural",
+      "phase": 6,
+      "round": 1,
+      "in": false,
+      "clocks": [
+        null,
+        [
+          "round",
+          2
+        ],
+        null,
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseBeforeStart",
+      "turn": "D-natural",
+      "phase": 7,
+      "round": 1,
+      "in": false,
+      "clocks": [
+        null,
+        [
+          "round",
+          1
+        ],
+        null,
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": true
+    },
+    {
+      "timing": "phaseBefore",
+      "turn": "E-natural",
+      "phase": 7,
+      "round": 1,
+      "in": true,
+      "clocks": [
+        null,
+        [
+          "round",
+          1
+        ],
+        null,
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseBeforeStart",
+      "turn": "E-natural",
+      "phase": 8,
+      "round": 1,
+      "in": true,
+      "clocks": [
+        null,
+        [
+          "round",
+          1
+        ],
+        null,
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseZhunbeiBefore",
+      "turn": "E-natural",
+      "phase": 8,
+      "round": 1,
+      "in": true,
+      "clocks": [
+        null,
+        [
+          "round",
+          1
+        ],
+        null,
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseBefore",
+      "turn": "F-natural",
+      "phase": 8,
+      "round": 1,
+      "in": false,
+      "clocks": [
+        null,
+        [
+          "round",
+          1
+        ],
+        null,
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseBeforeStart",
+      "turn": "F-natural",
+      "phase": 9,
+      "round": 1,
+      "in": false,
+      "clocks": [
+        null,
+        [
+          "round",
+          1
+        ],
+        null,
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseBefore",
+      "turn": "G-natural",
+      "phase": 9,
+      "round": 1,
+      "in": false,
+      "clocks": [
+        null,
+        [
+          "round",
+          1
+        ],
+        null,
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseBeforeStart",
+      "turn": "G-natural",
+      "phase": 10,
+      "round": 1,
+      "in": false,
+      "clocks": [
+        null,
+        [
+          "round",
+          1
+        ],
+        null,
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "roundStart",
+      "turn": "A-natural",
+      "phase": 12,
+      "round": 2,
+      "in": true,
+      "clocks": [
+        null,
+        [
+          "round",
+          1
+        ],
+        null,
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseBefore",
+      "turn": "B-natural",
+      "phase": 12,
+      "round": 2,
+      "in": true,
+      "clocks": [
+        null,
+        [
+          "round",
+          1
+        ],
+        null,
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseBeforeStart",
+      "turn": "B-natural",
+      "phase": 13,
+      "round": 2,
+      "in": true,
+      "clocks": [
+        null,
+        [
+          "round",
+          1
+        ],
+        null,
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseZhunbeiBefore",
+      "turn": "B-natural",
+      "phase": 13,
+      "round": 2,
+      "in": true,
+      "clocks": [
+        null,
+        [
+          "round",
+          1
+        ],
+        null,
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseBefore",
+      "turn": "C-natural",
+      "phase": 13,
+      "round": 2,
+      "in": true,
+      "clocks": [
+        null,
+        [
+          "round",
+          1
+        ],
+        null,
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseBeforeStart",
+      "turn": "C-natural",
+      "phase": 14,
+      "round": 2,
+      "in": true,
+      "clocks": [
+        null,
+        [
+          "round",
+          1
+        ],
+        null,
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseZhunbeiBefore",
+      "turn": "C-natural",
+      "phase": 14,
+      "round": 2,
+      "in": true,
+      "clocks": [
+        null,
+        [
+          "round",
+          1
+        ],
+        null,
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseBefore",
+      "turn": "D-natural",
+      "phase": 14,
+      "round": 2,
+      "in": false,
+      "clocks": [
+        null,
+        [
+          "round",
+          1
+        ],
+        null,
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseBeforeStart",
+      "turn": "D-natural",
+      "phase": 15,
+      "round": 2,
+      "in": true,
+      "clocks": [
+        null,
+        null,
+        null,
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": true
+    },
+    {
+      "timing": "phaseZhunbeiBefore",
+      "turn": "D-natural",
+      "phase": 15,
+      "round": 2,
+      "in": true,
+      "clocks": [
+        null,
+        null,
+        null,
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": true
+    },
+    {
+      "timing": "phaseBefore",
+      "turn": "E-natural",
+      "phase": 15,
+      "round": 2,
+      "in": true,
+      "clocks": [
+        null,
+        null,
+        null,
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseBeforeStart",
+      "turn": "E-natural",
+      "phase": 16,
+      "round": 2,
+      "in": true,
+      "clocks": [
+        null,
+        null,
+        null,
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseZhunbeiBefore",
+      "turn": "E-natural",
+      "phase": 16,
+      "round": 2,
+      "in": true,
+      "clocks": [
+        null,
+        null,
+        null,
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseBefore",
+      "turn": "F-natural",
+      "phase": 16,
+      "round": 2,
+      "in": false,
+      "clocks": [
+        null,
+        null,
+        [
+          "round",
+          1
+        ],
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseBeforeStart",
+      "turn": "F-natural",
+      "phase": 17,
+      "round": 2,
+      "in": false,
+      "clocks": [
+        null,
+        null,
+        [
+          "round",
+          1
+        ],
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseBefore",
+      "turn": "G-natural",
+      "phase": 17,
+      "round": 2,
+      "in": false,
+      "clocks": [
+        null,
+        null,
+        [
+          "round",
+          1
+        ],
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseBeforeStart",
+      "turn": "G-natural",
+      "phase": 18,
+      "round": 2,
+      "in": false,
+      "clocks": [
+        null,
+        null,
+        [
+          "round",
+          1
+        ],
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "roundStart",
+      "turn": "A-natural",
+      "phase": 20,
+      "round": 3,
+      "in": true,
+      "clocks": [
+        null,
+        null,
+        [
+          "round",
+          1
+        ],
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseBefore",
+      "turn": "B-natural",
+      "phase": 20,
+      "round": 3,
+      "in": true,
+      "clocks": [
+        null,
+        null,
+        [
+          "round",
+          1
+        ],
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseBeforeStart",
+      "turn": "B-natural",
+      "phase": 21,
+      "round": 3,
+      "in": true,
+      "clocks": [
+        null,
+        null,
+        [
+          "round",
+          1
+        ],
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseZhunbeiBefore",
+      "turn": "B-natural",
+      "phase": 21,
+      "round": 3,
+      "in": true,
+      "clocks": [
+        null,
+        null,
+        [
+          "round",
+          1
+        ],
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseBefore",
+      "turn": "C-natural",
+      "phase": 21,
+      "round": 3,
+      "in": true,
+      "clocks": [
+        null,
+        null,
+        [
+          "round",
+          1
+        ],
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseBeforeStart",
+      "turn": "C-natural",
+      "phase": 22,
+      "round": 3,
+      "in": true,
+      "clocks": [
+        null,
+        null,
+        [
+          "round",
+          1
+        ],
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseZhunbeiBefore",
+      "turn": "C-natural",
+      "phase": 22,
+      "round": 3,
+      "in": true,
+      "clocks": [
+        null,
+        null,
+        [
+          "round",
+          1
+        ],
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseBefore",
+      "turn": "D-natural",
+      "phase": 22,
+      "round": 3,
+      "in": true,
+      "clocks": [
+        null,
+        null,
+        [
+          "round",
+          1
+        ],
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseBeforeStart",
+      "turn": "D-natural",
+      "phase": 23,
+      "round": 3,
+      "in": true,
+      "clocks": [
+        null,
+        null,
+        [
+          "round",
+          1
+        ],
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseZhunbeiBefore",
+      "turn": "D-natural",
+      "phase": 23,
+      "round": 3,
+      "in": true,
+      "clocks": [
+        null,
+        null,
+        [
+          "round",
+          1
+        ],
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseBefore",
+      "turn": "E-natural",
+      "phase": 23,
+      "round": 3,
+      "in": false,
+      "clocks": [
+        null,
+        null,
+        [
+          "round",
+          1
+        ],
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseBeforeStart",
+      "turn": "E-natural",
+      "phase": 24,
+      "round": 3,
+      "in": true,
+      "clocks": [
+        null,
+        null,
+        null,
+        [
+          "phase",
+          0
+        ],
+        [
+          "round",
+          -2
+        ]
+      ],
+      "counted": true
+    },
+    {
+      "timing": "phaseZhunbeiBefore",
+      "turn": "E-natural",
+      "phase": 24,
+      "round": 3,
+      "in": true,
+      "clocks": [
+        null,
+        null,
+        null,
+        [
+          "phase",
+          1
+        ],
+        [
+          "phase",
+          1
+        ]
+      ],
+      "counted": true
+    },
+    {
+      "timing": "phaseBefore",
+      "turn": "G-priority-extra",
+      "phase": 24,
+      "round": 3,
+      "in": false,
+      "clocks": [
+        null,
+        null,
+        null,
+        [
+          "phase",
+          1
+        ],
+        [
+          "phase",
+          1
+        ]
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseBeforeStart",
+      "turn": "G-priority-extra",
+      "phase": 25,
+      "round": 3,
+      "in": true,
+      "clocks": [
+        null,
+        null,
+        null,
+        [
+          "phase",
+          1
+        ],
+        null
+      ],
+      "counted": true
+    },
+    {
+      "timing": "phaseZhunbeiBefore",
+      "turn": "G-priority-extra",
+      "phase": 25,
+      "round": 3,
+      "in": true,
+      "clocks": [
+        null,
+        null,
+        null,
+        [
+          "phase",
+          1
+        ],
+        null
+      ],
+      "counted": true
+    },
+    {
+      "timing": "phaseBefore",
+      "turn": "F-natural",
+      "phase": 25,
+      "round": 3,
+      "in": false,
+      "clocks": [
+        null,
+        null,
+        null,
+        [
+          "phase",
+          1
+        ],
+        null
+      ],
+      "counted": false
+    },
+    {
+      "timing": "phaseBeforeStart",
+      "turn": "F-natural",
+      "phase": 26,
+      "round": 3,
+      "in": true,
+      "clocks": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "counted": true
+    }
+  ]
+}

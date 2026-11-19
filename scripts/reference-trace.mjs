@@ -14,6 +14,7 @@ import { checkCompareMultiple, installCompareMultiple } from './reference-compar
 import { checkReferenceHp, installReferenceHp } from './reference-hp.mjs';
 import { checkReferenceMaxHp, installReferenceMaxHp } from './reference-max-hp.mjs';
 import { checkReferenceRevival, installReferenceRevival } from './reference-revival.mjs';
+import { checkReferenceRest, installReferenceRest } from './reference-rest.mjs';
 import { checkReferenceExpansion, installReferenceExpansion } from './reference-expansion.mjs';
 import { checkZhongyiBoundaries, installZhongyiBoundaries } from './reference-zhongyi-boundaries.mjs';
 import { checkZhongyiTransitDeath, installZhongyiTransitDeath } from './reference-zhongyi-transit-death.mjs';
@@ -71,6 +72,7 @@ const descriptions = new Map([
   ['hp-cancel', 'cancelling changeHpBefore and changeHpEnd during a linked armored fire sha'],
   ['max-hp', 'max HP lifecycles, cancellation, death, and real cross-pack skills'],
   ['revival', 'ordinary and event revival after real deaths, including max HP and cancellation boundaries'],
+  ['rest', 'rest lifecycle, extra and natural turn countdowns, and the original mbmowang skill'],
 ]);
 let scenario = 'sha-no-shan';
 const scenarioIndex = argv.indexOf('--scenario');
@@ -96,7 +98,7 @@ if (isBatchRecast || ['batch-give-death', 'recast-callbacks', 'compare', 'compar
 if (isBatchRecast || ['batch-give-death', 'zhongyi-boundaries', 'zhongyi-transit-death', 'phase-scheduling', 'phase-queue', 'compare-multiple', 'counter-payment', 'ordered-move'].includes(scenario)) {
   sourceHashes['/noname/get/index.js'] = '8515ed7242d2638720180507a778cb273d8f33743eac12c5237d2f50e805823d';
 }
-if (['batch-give-death', 'zhongyi-transit-death', 'phase-scheduling', 'phase-queue', 'compare-multiple'].includes(scenario)) {
+if (['batch-give-death', 'zhongyi-transit-death', 'phase-scheduling', 'phase-queue', 'compare-multiple', 'rest'].includes(scenario)) {
   sourceHashes['/noname/library/element/GameEvent/compilers/ContentCompilerBase.ts'] = 'ea0174cdbc2ce664532335df11e120efa45b5c35253ecba5f28a73e0271c6cee';
   sourceHashes['/noname/library/element/GameEvent/compilers/ArrayCompiler.ts'] = '78d495e8871751bc38749775c1b402f810e234547ab4e6a12565160d4950853e';
 }
@@ -109,6 +111,7 @@ if (scenario === 'zhongyi-boundaries') {
 }
 if (['linked-damage', 'compare', 'qiaoshui-targets', 'phase-scheduling', 'max-hp'].includes(scenario)) sourceHashes['/character/yijiang/skill.js'] = '5b0eb965a8428535bf3cd7d369c261b8ad95cccbeac8d8c817cad3490643a54f';
 if (['max-hp', 'revival'].includes(scenario)) sourceHashes['/character/sp/skill.js'] = 'a63785adcf4c9518b58ca05f6ea85559f8eb6ea3d89ebcd782498f445cde85f9';
+if (scenario === 'rest') sourceHashes['/character/mobile/skill.js'] = 'eaef7605ae59d3e9c3996238d9ec790d0bc4eace1f56d3f602fee9b492086d3a';
 if (scenario === 'phase-scheduling') {
   sourceHashes['/character/shenhua/skill.js'] = '7e87ec26c3f183b83878f886e3872bd78a0f69a5e51e7f46a64bfcc79362cd62';
 }
@@ -159,6 +162,8 @@ try {
     await context.addInitScript(installReferenceMaxHp);
   } else if (scenario === 'revival') {
     await context.addInitScript(installReferenceRevival);
+  } else if (scenario === 'rest') {
+    await context.addInitScript(installReferenceRest);
   } else if (scenario === 'zhongyi-expansion') {
     await context.addInitScript(installReferenceExpansion);
   } else if (scenario === 'zhongyi-boundaries') {
@@ -406,6 +411,7 @@ try {
     else if (scenario === 'phase-scheduling') await window.__installPhaseScheduling({ lib, game, ui, get, _status });
     else if (scenario === 'ordered-move') await window.__installOrderedMove({ lib, game, ui, get, _status });
     else if (scenario === 'phase-queue') window.__installPhaseQueue({ lib, game, ui, _status });
+    else if (scenario === 'rest') await window.__installReferenceRest({ lib, game, ui, _status });
     else fixtures.push('reference_fixture_use');
     for (const skill of fixtures) {
       game.finishSkill(skill);
@@ -437,6 +443,7 @@ try {
   if (scenario === 'hp-cancel') checkReferenceHp(captured.value);
   if (scenario === 'max-hp') checkReferenceMaxHp(captured.value);
   if (scenario === 'revival') checkReferenceRevival(captured.value);
+  if (scenario === 'rest') checkReferenceRest(captured.value);
   if (scenario === 'compare') checkReferenceCompare(captured.value);
   if (scenario === 'qiaoshui-targets') checkQiaoshuiTargets(captured.value);
   if (scenario === 'compare-boundaries') checkCompareBoundaries(captured.value);
