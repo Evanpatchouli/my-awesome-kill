@@ -87,6 +87,7 @@ try {
   assert.equal(await button(normal, '明典').count(), 0)
   const native = await normal.evaluate(async () => {
     const mod = await import('/src/generated/duel/duel.js')
+    await mod.default()
     const duel = mod.Duel.classic(317, 0, 'guanyu', 8)
     try { return JSON.parse(duel.view(0)).activePlays ?? [] } finally { duel.free() }
   })
