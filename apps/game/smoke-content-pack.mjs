@@ -34,6 +34,8 @@ RecordedDuel.classicWithContent = (...args) => (window.contentTable = createCont
   await page.locator('select').selectOption('2')
   await button('开始对局').click()
   const board = page.locator('[data-battle-table]')
+  const gallery = board.locator('[data-hand-gallery]')
+  const toolbar = board.locator('.classic-hand-toolbar')
   await board.waitFor()
   await page.clock.runFor(1000)
   const view = () => page.evaluate(() => JSON.parse(window.contentTable.view(0)))
@@ -43,15 +45,14 @@ RecordedDuel.classicWithContent = (...args) => (window.contentTable = createCont
   await page.clock.runFor(1000)
   assert.equal((await view()).seats[0].handCount, 8)
   assert.ok(await button('拾遗').isDisabled())
-  await board.locator('[data-hand-gallery]').getByRole('button', { name: /满载而归/ }).first().click()
+  await gallery.getByRole('button', { name: /满载而归/ }).first().click()
   assert.match(await board.locator('[data-hand-rule]').innerText(), /摸三张/)
   await board.locator('.self-select').click()
   await button('确认').click()
   await page.clock.runFor(1300)
-  assert.match(await board.locator('[data-card-choice] h1').innerText(), /无懈可击.*满载而归/)
-  const pass = board.locator('[data-card-choice] .classic-options button').filter({ hasText: /不使用|放弃/ }).first()
+  assert.match(await board.locator('.classic-center h1').innerText(), /无懈可击.*满载而归/)
+  const pass = toolbar.locator('.classic-options button').filter({ hasText: /不使用|放弃/ }).first()
   await pass.click()
-  await button('确认').click()
   await page.clock.runFor(1600)
   assert.equal((await view()).seats[0].handCount, 10)
 
@@ -63,33 +64,32 @@ RecordedDuel.classicWithContent = (...args) => (window.contentTable = createCont
       continue
     }
     if (state.waitingFor === 0 && state.choice?.kind === 'discard') {
-      const candidates = board.locator('[data-card-choice] [data-card-id]:enabled')
+      const candidates = gallery.locator('[data-card-id]:enabled')
       if (!(await candidates.count())) { await page.clock.runFor(500); continue }
       for (let index = 0; index < state.choice.min; index++) await candidates.nth(index).click()
       await button('确认').click()
     } else if (state.waitingFor === 0 && ['shan', 'save'].includes(state.choice?.kind)) {
       if (await button('放弃').isEnabled()) await button('放弃').click()
     } else if (state.waitingFor === 0 && state.choice?.counter) {
-      const decline = board.locator('.classic-options button:enabled').filter({ hasText: /不使用|放弃/ }).first()
-      if (await decline.count()) {
-        await decline.click()
-        await button('确认').click()
-      }
+      const decline = toolbar.locator('.classic-options button:enabled').filter({ hasText: /不使用|放弃/ }).first()
+      if (await decline.count()) await decline.click()
     } else if (state.waitingFor === 0 && state.choice?.kind === 'content') {
       const first = state.choice.branches[0]
-      const choice = board.locator('[data-card-choice]')
-      if (await choice.locator('.classic-options button:enabled').count()) {
-        await choice.locator('.classic-options button:enabled').first().click()
-      } else if (await choice.locator('.classic-random-hand button:enabled').count()) {
-        await choice.locator('.classic-random-hand button:enabled').first().click()
+      const branch = toolbar.getByRole('button', { name: first.label, exact: true })
+      const random = board.locator('[data-card-choice] .classic-random-hand button:enabled').first()
+      if (await branch.count() && await branch.isEnabled()) {
+        await branch.click()
+      } else if (await random.count()) {
+        await random.click()
       }
-      for (let index = 0; index < first.minCards; index++) {
-        await choice.locator('.classic-pool [data-card-id]').nth(index).click()
+      if ((await view()).version !== state.version) continue
+      for (const id of first.cards.slice(0, first.minCards)) {
+        await board.locator(`[data-card-id="${id}"]:enabled`).click()
       }
       for (let index = 0; index < first.minTargets; index++) {
-        await choice.locator('.classic-choice-targets button').nth(index).click()
+        await toolbar.locator('.classic-choice-targets button').nth(index).click()
       }
-      if (await button('确认').isEnabled()) await button('确认').click()
+      if (await button('确认').count() && await button('确认').isEnabled()) await button('确认').click()
     } else if (state.waitingFor === 0 && await button('结束出牌').count() && await button('结束出牌').isEnabled()) {
       await button('结束出牌').click()
     }

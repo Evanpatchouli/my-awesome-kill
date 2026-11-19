@@ -86,7 +86,7 @@ try {
   await d.close()
 
   const declined = await start(true, 317, 'fangquan')
-  await button(declined, '不发动放权').click(); await button(declined, '确认').click()
+  await button(declined, '不发动放权').click()
   await declined.clock.runFor(3000)
   state = await view(declined)
   assert.equal(state.turn.phase, 'play'); assert.equal(state.choice, null)
@@ -98,7 +98,7 @@ try {
   assert.equal(await f.locator('[data-seat]').count(), 8)
   assert.equal(await f.locator('.classic-opponents [data-seat]').count(), 7)
   for (let id = 1; id < 8; id++) assert.equal((await view(f, id)).choice, null)
-  await button(f, '发动放权').click(); await button(f, '确认').click(); await f.clock.runFor(3000)
+  await button(f, '发动放权').click(); await f.clock.runFor(3000)
   state = await view(f)
   assert.equal(state.turn.phase, 'discard')
   assert.deepEqual(state.seats[0].marks, [{ skill: 'fangquan2', count: 1, source: null }])
@@ -126,14 +126,15 @@ try {
   assert.ok(markBox.x >= 0 && markBox.x + markBox.width <= 844 && markBox.y >= 0 && markBox.y + markBox.height <= 390)
   await shot(f, 'extra-turn-landscape')
   await f.setViewportSize({ width: 1280, height: 720 })
-  await button(f, '继续当前回合').click(); await button(f, '确认').click()
+  await button(f, '继续当前回合').click()
   for (let i = 0; i < 60; i++) {
     await f.clock.runFor(3000); state = await view(f)
     if (state.turn.number === 3) break
     if (state.waitingFor !== 0 || !state.choice) continue
     if (state.choice.kind === 'shan' || state.choice.kind === 'save') {
       if (await button(f, '放弃').isDisabled()) { await f.clock.runFor(5000); continue }
-      if (state.choice.cards.length) { await card(f, state.choice.cards[0]).click(); await button(f, '确认').click() }
+      if (state.choice.cards.length === 1) await button(f, state.choice.kind === 'shan' ? '使用闪' : '使用桃').click()
+      else if (state.choice.cards.length > 1) { await card(f, state.choice.cards[0]).click(); await button(f, '确认').click() }
       else await button(f, '放弃').click()
     } else throw new Error(`Unexpected choice: ${state.choice.kind}`)
   }

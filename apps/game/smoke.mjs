@@ -106,7 +106,7 @@ try {
     const kind = await board.getAttribute('data-choice-kind')
     const confirm = page.locator('.classic-control-row button').filter({ hasText: '确认' })
     if (kind === 'discard') {
-      const cards = page.locator('[data-card-choice] .classic-pool .playing-card:not([disabled])')
+      const cards = page.locator('[data-hand-gallery] .playing-card:enabled')
       for (let n = 0; n < (await cards.count()) && (await confirm.isDisabled()); n++)
         await cards.nth(n).click()
       if (await confirm.isEnabled()) await confirm.click()
@@ -204,13 +204,17 @@ try {
         )
         continue
       }
+      const before = await board.getAttribute('data-revision')
       await options.first().click()
       content++
+      if (await board.getAttribute('data-revision') !== before) {
+        actions++
+        continue
+      }
     } else if (kind === 'discard') {
-      const cards = page.locator('[data-card-choice] .classic-pool .playing-card:not([disabled])')
+      const cards = page.locator('[data-hand-gallery] .playing-card:enabled')
       if (!(await cards.count())) continue
-      assert.equal(await page.locator('[data-hand-gallery] .playing-card:enabled').count(), 0, 'footer hand is disabled during discard')
-      assert.equal(await page.locator('[data-card-choice] .classic-controls').count(), 1)
+      assert.equal(await page.locator('[data-card-choice]').count(), 0, 'discard uses the hand gallery')
       assert.equal(await confirm.isDisabled(), true)
       const first = cards.first()
       await first.click()
@@ -310,10 +314,11 @@ try {
   await board.waitFor()
   await page.clock.runFor(1000)
   await page.locator('.classic-options button').filter({ hasText: '观星' }).click()
-  await page.locator('.classic-control-row button').filter({ hasText: '确认' }).click()
   await page.clock.runFor(1000)
-  const arrangement = page.getByRole('dialog', { name: '观星' })
+  const arrangement = page.locator('[data-move-choice]')
+  const moveControls = page.locator('.classic-hand-toolbar [data-move-controls]')
   await arrangement.waitFor()
+  assert.equal(await arrangement.locator('button:not(.playing-card), select').count(), 0)
   const topRow = arrangement.locator('[data-row="0"]')
   const bottomRow = arrangement.locator('[data-row="1"]')
   const rowCards = (row) => row.locator('button[data-card-id]')
@@ -323,34 +328,36 @@ try {
   assert.equal(await page.locator('.classic-revealed').count(), 0)
   const sendToBottom = async () => {
     await rowCards(topRow).first().click()
-    await bottomRow.getByRole('button', { name: '移动到牌堆底', exact: true }).click()
+    await moveControls.getByRole('button', { name: '移动到牌堆底', exact: true }).click()
   }
   await sendToBottom()
   assert.deepEqual(await ids(bottomRow), initialPreview.slice(0, 1))
-  await arrangement.getByRole('button', { name: '撤销移动', exact: true }).click()
+  await moveControls.getByRole('button', { name: '撤销移动', exact: true }).click()
   assert.deepEqual(await ids(topRow), initialPreview)
   // Undo preserves the selected card, so move it to the bottom once more.
-  await bottomRow.getByRole('button', { name: '移动到牌堆底', exact: true }).click()
+  await moveControls.getByRole('button', { name: '移动到牌堆底', exact: true }).click()
   if (await rowCards(topRow).count() > 1) {
     const before = await ids(topRow)
     await rowCards(topRow).last().click()
-    await topRow.getByRole('combobox', { name: '牌堆顶插入位置' }).selectOption('0')
-    await topRow.getByRole('button', { name: '移动到牌堆顶', exact: true }).click()
+    await moveControls.getByRole('combobox', { name: '牌堆顶插入位置' }).selectOption('0')
+    await moveControls.getByRole('button', { name: '移动到牌堆顶', exact: true }).click()
     assert.deepEqual(await ids(topRow), [before.at(-1), ...before.slice(0, -1)])
   }
   const expectedDraw = (await ids(topRow)).slice(0, 2)
   assert.ok(expectedDraw.length > 0)
   await shot('private-choice')
   await page.setViewportSize({ width: 640, height: 272 })
-  const confirmOrder = arrangement.getByRole('button', { name: '确认', exact: true })
+  const confirmOrder = moveControls.getByRole('button', { name: '确认', exact: true })
   const confirmBox = await confirmOrder.boundingBox()
   assert.ok(confirmBox && confirmBox.x >= 0 && confirmBox.y >= 0 &&
     confirmBox.x + confirmBox.width <= 640 && confirmBox.y + confirmBox.height <= 272)
+  const surface = await page.locator('[data-card-choice]').boundingBox()
+  await shot('private-choice-short-landscape')
   for (const row of [topRow, bottomRow]) {
     const first = await rowCards(row).first().boundingBox()
-    assert.ok(first && first.y >= 0 && first.y + first.height < confirmBox.y)
+    assert.ok(first && first.y >= 0 && first.y + first.height <= surface.y + surface.height,
+      `choice card ${JSON.stringify(first)} must fit inside ${JSON.stringify(surface)}`)
   }
-  await shot('private-choice-short-landscape')
   await confirmOrder.click()
   await page.clock.runFor(1000)
   assert.equal(await arrangement.count(), 0, 'the private ordering completes')
@@ -376,9 +383,9 @@ try {
   await page.locator('.classic-own-skills').getByRole('button', { name: '仁德', exact: true }).click()
   const skillConfirm = page.locator('.classic-control-row button').filter({ hasText: '确认' })
   assert.equal(await skillConfirm.isDisabled(), true)
-  await page.locator('[data-card-choice] [data-hand] .playing-card:not([disabled])').first().click()
+  await page.locator('[data-hand-gallery] .playing-card:enabled').first().click()
   assert.equal(await skillConfirm.isDisabled(), true, 'skill requires a legal target')
-  await page.locator('.classic-choice-targets button:enabled').first().click()
+  await page.locator('.classic-seat .seat-select:enabled').first().click()
   assert.equal(await skillConfirm.isEnabled(), true)
   await shot('skill-target')
   await skillConfirm.click()

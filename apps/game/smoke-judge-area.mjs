@@ -32,7 +32,6 @@ async function submit(label, id, card) {
 async function finishDiscard(label) {
   assert.deepEqual((await view()).choice.branches.map(b => b.label), ['允许弃置', '取消弃置'])
   await button(label).click()
-  await button('确认').click()
   await page.clock.runFor(1000)
   return view()
 }
@@ -110,7 +109,6 @@ try {
   assert.ok(sword && state.seats[swordSeat].judgeAssignments.some(a => a.id === sword.id && a.kind === 'lebu'))
   await submit('废除判定区', swordSeat)
   await button('取回并装备青釭剑').click()
-  await button('确认').click()
   await page.clock.runFor(1000)
   state = await view()
   const holder = state.seats[swordSeat]
@@ -133,7 +131,6 @@ try {
   if (evidence) await page.screenshot({ path: path.join(evidence, 'registered-judgment.png') })
   await submit('废除判定区', wrapperSeat)
   await button('允许弃置').click()
-  await button('确认').click()
   await page.clock.runFor(1000)
   state = await view()
   assert.deepEqual(state.seats[wrapperSeat].logicalJudges ?? [], [])

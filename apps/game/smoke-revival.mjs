@@ -73,7 +73,6 @@ async function target(page, label) {
 async function answer(page, label) {
   assert.deepEqual((await view(page)).choice.branches.map(b => b.label), ['允许复活', '取消复活'])
   await button(page, label).click()
-  await button(page, '确认').click()
   await page.clock.runFor(1000)
   return view(page)
 }

@@ -48,7 +48,6 @@ try {
   assert.equal(state.turn.seat, 0)
   assert.ok(state.choice.branches.some((branch) => branch.id === 1 && branch.label === '发动恂恂'))
   await button(page, '发动恂恂').click()
-  await button(page, '确认').click()
   await page.clock.runFor(1400)
   state = await view(page)
   const request = state.choice.moveCards
@@ -63,10 +62,12 @@ try {
     assert.equal(other.privateChoiceCards.length, 0)
     assert.ok(other.cardFaces.every((face) => !ids.includes(face.id)))
   }
-  const dialog = page.locator('[data-move-choice]')
-  const confirm = dialog.getByRole('button', { name: '确认', exact: true })
+  const arrangement = page.locator('[data-move-choice]')
+  const controls = page.locator('.classic-hand-toolbar [data-move-controls]')
+  const confirm = controls.getByRole('button', { name: '确认', exact: true })
+  assert.equal(await arrangement.locator('button:not([data-card-id]), select').count(), 0)
   assert.ok(await confirm.isDisabled())
-  const moveBottom = button(page, '移动到牌堆底')
+  const moveBottom = controls.getByRole('button', { name: '移动到牌堆底', exact: true })
   await card(page, ids[3]).click()
   assert.equal(await card(page, ids[3]).getAttribute('aria-pressed'), 'true')
   await moveBottom.click()
@@ -76,14 +77,28 @@ try {
   assert.ok(await confirm.isEnabled())
   await card(page, ids[2]).click()
   assert.ok(await moveBottom.isDisabled())
-  await page.getByLabel('牌堆顶插入位置').selectOption('0')
-  await button(page, '移动到牌堆顶').click()
-  assert.deepEqual(await page.locator('[data-row="0"] [data-card-id]').evaluateAll((nodes) => nodes.map((n) => Number(n.dataset.cardId))), [ids[2], ids[0]])
-  assert.deepEqual(await page.locator('[data-row="1"] [data-card-id]').evaluateAll((nodes) => nodes.map((n) => Number(n.dataset.cardId))), [ids[3], ids[1]])
+  await controls.getByLabel('牌堆顶插入位置').selectOption('0')
+  await controls.getByRole('button', { name: '移动到牌堆顶', exact: true }).click()
+  assert.deepEqual(await arrangement.locator('[data-row="0"] [data-card-id]').evaluateAll((nodes) => nodes.map((n) => Number(n.dataset.cardId))), [ids[2], ids[0]])
+  assert.deepEqual(await arrangement.locator('[data-row="1"] [data-card-id]').evaluateAll((nodes) => nodes.map((n) => Number(n.dataset.cardId))), [ids[3], ids[1]])
   await shot(page, 'choice')
   await page.setViewportSize({ width: 640, height: 272 })
-  assert.ok(await confirm.isVisible())
+  const [surface, actions, gallery, visibleCards] = await Promise.all([
+    arrangement.locator('..').boundingBox(),
+    controls.boundingBox(),
+    page.locator('[data-hand-gallery]').boundingBox(),
+    arrangement.locator('[data-card-id]').evaluateAll(cards => cards.filter(card => {
+      const bounds = card.getBoundingClientRect()
+      const surface = card.closest('.classic-center-surface').getBoundingClientRect()
+      const hit = document.elementFromPoint(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2)
+      return bounds.top >= surface.top && bounds.bottom <= surface.bottom && card.contains(hit)
+    }).length),
+  ])
   await shot(page, 'landscape')
+  assert.equal(visibleCards, ids.length, 'every card fits inside the middle surface and can be clicked')
+  assert.ok(surface && actions && gallery && surface.y >= 0)
+  assert.ok(surface.y + surface.height <= actions.y + 1, 'the middle surface fits above the move controls')
+  assert.ok(actions.y + actions.height <= gallery.y + 1 && gallery.y + gallery.height <= 273, 'controls and gallery fit the short landscape viewport')
   await page.setViewportSize({ width: 1280, height: 720 })
   const beforeHand = state.seats[0].hand.map((c) => c.id)
   await confirm.click()
@@ -112,7 +127,7 @@ try {
       } else if (choice.kind === 'shan' || choice.kind === 'save') await button(page, '放弃').click()
       else {
         const pass = choice.branches.find((branch) => branch.id === 0)
-        if (pass) { await button(page, pass.label).click(); await button(page, '确认').click() }
+        if (pass) await button(page, pass.label).click()
       }
     }
     if (state.turn?.seat > 1 || state.winner || state.drawn) break

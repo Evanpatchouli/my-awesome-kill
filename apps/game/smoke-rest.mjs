@@ -156,7 +156,6 @@ try {
         await button(natural, '放弃').click({timeout: 2000})
       } else if (choice.branches?.some(branch => branch.label === '放弃')) {
         await button(natural, '放弃').click({timeout: 2000})
-        await button(natural, '确认').click()
       } else {
         throw new Error(`Unexpected choice: ${JSON.stringify(choice)}`)
       }

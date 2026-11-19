@@ -114,7 +114,6 @@ try {
         const pass = human.choice.branches.find((b) => b.id === 0)
         assert.ok(pass, `expected a pass for ${human.choice.kind}`)
         await button(page, pass.label).click()
-        await button(page, '确认').click()
       }
     }
     if (human.winner || human.drawn) break

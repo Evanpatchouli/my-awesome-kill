@@ -62,7 +62,7 @@ const projections = (page) => page.evaluate(() => Array.from({ length: 9 }, (_, 
 const bids = (page) => page.locator('[data-compare-bid]').evaluateAll((nodes) => nodes.map((node) => Number(node.dataset.compareBid)))
 async function continueChoice(page, label) {
   await page.clock.runFor(1200)
-  await button(page, label).click(); await button(page, '确认').click()
+  await button(page, label).click()
   await page.clock.runFor(1000)
 }
 async function showPanel(page) {

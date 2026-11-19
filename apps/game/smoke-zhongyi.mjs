@@ -74,10 +74,10 @@ try {
 
   // The equipment zone is offered through the same branch card picker as hand cards.
   const equipped = await start(true, 12)
-  await card(equipped, 54).click(); await seat(equipped, 0).locator('.self-select').click(); await button(equipped, '确认').click(); await equipped.clock.runFor(1800)
+  await card(equipped, 54).click(); await button(equipped, '确认').click(); await equipped.clock.runFor(1800)
   assert.ok((await view(equipped)).seats[0].equipment.some((c) => c.id === 54))
   await button(equipped, '忠义').click()
-  const equipChoice = equipped.locator('.classic-pool [data-card-id="54"]')
+  const equipChoice = card(equipped, 54)
   assert.ok(await equipChoice.isVisible())
   await equipChoice.click(); await button(equipped, '确认').click(); await equipped.clock.runFor(1800)
   assert.deepEqual((await view(equipped)).seats[0].expansions, [{ card: { id: 54, kind: 'bagua' }, tags: ['zhongyi2'] }])
@@ -131,7 +131,8 @@ try {
     const choice = state.choice
     if (choice.kind === 'shan' || choice.kind === 'save') {
       if (await button(page, '放弃').isDisabled()) { await page.clock.runFor(8000); continue }
-      if (choice.cards.length) { await card(page, choice.cards[0]).click(); await button(page, '确认').click() }
+      if (choice.cards.length === 1) await button(page, choice.kind === 'shan' ? '使用闪' : '使用桃').click()
+      else if (choice.cards.length > 1) { await card(page, choice.cards[0]).click(); await button(page, '确认').click() }
       else await button(page, '放弃').click()
     } else if (choice.kind === 'discard') {
       for (const id of choice.cards.slice(0, choice.min)) await card(page, id).click()
@@ -139,6 +140,7 @@ try {
     } else if (choice.kind === 'content') {
       const branch = choice.branches[0]
       await button(page, branch.label).click()
+      if ((await view(page)).version !== state.version) continue
       for (const id of branch.cards.slice(0, branch.minCards)) {
         if (await card(page, id).count()) await card(page, id).click()
         else await page.locator(`.classic-pool [data-card-id="${id}"]`).click()

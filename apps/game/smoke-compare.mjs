@@ -258,7 +258,6 @@ async function runCase(test, baseline) {
     await shot(page, `${sample}-before-result`)
     await page.clock.runFor(1000)
     await button(page, '继续结算拼点').click()
-    await button(page, '确认').click()
   }
   const publicViews = await projections(page)
   const winner =

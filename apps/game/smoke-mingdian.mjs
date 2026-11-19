@@ -197,7 +197,6 @@ try {
         const pass = choice.branches.find((branch) => branch.id === 0)
         assert.ok(pass, 'a response during the AI turn can be declined')
         await button(page, pass.label).click()
-        await button(page, '确认').click()
       }
     }
     if (state.turn?.seat !== 1 || state.winner || state.drawn) break
