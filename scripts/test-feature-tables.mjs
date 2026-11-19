@@ -5,7 +5,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const root = fs.realpathSync(fileURLToPath(new URL('../', import.meta.url)))
-const target = path.join(root, 'packages/duel-web/target')
+const target = path.resolve(root, process.env.CARGO_TARGET_DIR || 'packages/duel-web/target')
 const generated = path.join(root, 'apps/game/src/generated/duel')
 const features = ['compare', 'elemental', 'recast', 'qiaoshui', 'zhongyi', 'phase-skills', 'multi-compare', 'mingdian', 'xunxun', 'vitality', 'revival', 'rest', 'judge-area', 'equip-slots']
 const help = `Usage: node scripts/test-feature-tables.mjs --output <new-external-directory> [--url <url>] [--feature <name>]...\n\nRuns serial QA builds and browser smoke tests against an already running game server.\nFeatures: ${features.join(', ')}\nMAK_QA_BROWSER and MAK_QA_PLAYWRIGHT are inherited. When MAK_SMOKE_SCREENSHOTS\nis set, each feature writes to a new subdirectory under that external directory.\n`

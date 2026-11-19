@@ -4,7 +4,7 @@ import path from 'node:path'
 
 const root = fileURLToPath(new URL('../', import.meta.url))
 const manifest = path.join(root, 'packages/duel-web/Cargo.toml')
-const target = path.resolve(root, 'packages/duel-web/target')
+const target = path.resolve(root, process.env.CARGO_TARGET_DIR || 'packages/duel-web/target')
 const output = path.join(root, 'apps/game/src/generated/duel')
 
 function run(tool, args) {

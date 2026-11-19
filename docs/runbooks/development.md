@@ -19,6 +19,22 @@ pnpm tauri dev    # 桌面应用
 
 `pnpm dev`、`pnpm typecheck` 和 `pnpm build` 会先编译 Rust 引擎并生成 WASM 绑定；修改规则代码后重新运行相应命令。
 
+### 本机构建空间预算
+
+本机可在当前 PowerShell 进程复用固定 Cargo target，并限制增量缓存和并行度。依赖已经缓存时，使用离线、锁定的 release 构建；缺少依赖时离线构建会失败，需先准备缓存。
+
+```powershell
+$env:CARGO_TARGET_DIR = 'C:\Users\evanpatchouli\AppData\Local\my-awesome-kill\p1-cargo-target'
+$env:CARGO_INCREMENTAL = '0'
+$env:CARGO_BUILD_JOBS = '2'
+$env:CARGO_NET_OFFLINE = 'true'
+cargo build --offline --locked --release --manifest-path packages/duel-web/Cargo.toml --target wasm32-unknown-unknown
+```
+
+引擎构建及 feature-table QA 脚本也会使用 `CARGO_TARGET_DIR`；未设置时沿用 `packages/duel-web/target`。构建前后同时监控 C 盘剩余空间、固定 target 目录大小和承载开发盘的 VHDX 文件大小。删除 E 盘文件不能保证 C 盘空间立即归还，VHDX 的实际回收取决于宿主和虚拟磁盘管理。
+
+在本机 PowerShell 7.2+ 中，`./scripts/test-core-budget.ps1` 运行核心库及集成测试，`-TestFilter 名称` 可只运行指定测试。它在独立进程中设置上述缓存和并发选项，每秒采样一次。缓存达到 2 GiB、C 盘余量低于 120 GiB、单次 C 盘余量减少 3 GiB 或工作盘镜像增长 256 MiB 时，停止此次测试进程树并报告。阈值基于采样，短时写入可能越过阈值。其他直接调用 Cargo 的命令需要另行监控。
+
 Android 工程已初始化，可在 `apps/game` 运行 `pnpm tauri android dev`。Android manifest 使用横屏；重新初始化生成目录时须保留 `android:screenOrientation="landscape"`。打包和设备运行还需要对应平台 SDK 和签名配置。
 
 桌面和 Android 使用应用数据目录中的 `matches.sqlite3` 保存完局战绩；以对局 id 去重。浏览器开发模式使用 localStorage，因此与原生应用的数据互不共享。
