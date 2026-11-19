@@ -151,6 +151,28 @@ fn shan_resumes_the_existing_choice_and_cancels_the_effect_before_cleaning_up_sh
 }
 
 #[test]
+fn a_lethal_hit_on_a_prescribed_table_updates_both_rosters() {
+    let mut table = setup(SHAN);
+    table.seats[0].hp = 1;
+    let mut game = Game::new(table).unwrap();
+    start_attack(&mut game);
+    let paused = game.view(Some(TARGET)).unwrap();
+    game.submit(Command {
+        version: paused.version,
+        seat: TARGET,
+        action: Action::Choose {
+            event: paused.choice.unwrap().event,
+            card: None,
+        },
+    })
+    .unwrap();
+    assert!(!game.is_alive(TARGET));
+    assert_eq!(game.living_seats(), [OBSERVER, SOURCE]);
+    assert_eq!(game.dead_seats(), [TARGET]);
+    assert_eq!(game.living_seat_ring(SOURCE).unwrap(), [SOURCE, OBSERVER]);
+}
+
+#[test]
 fn passing_applies_one_damage_and_allows_a_new_root_event() {
     let mut game = Game::new(setup(SHAN)).unwrap();
     start_attack(&mut game);

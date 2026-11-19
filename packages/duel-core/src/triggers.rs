@@ -78,9 +78,7 @@ impl TriggerEvent {
         use crate::EventKind::*;
         match game.event_kind(self.subject)? {
             Damage { .. } | LoseHp { .. } | Draw { .. } => Some(i64::from(self.amount)),
-            GainMaxHp { num, .. } | LoseMaxHp { num, .. } | Revive { hp: num, .. } => {
-                Some(i64::from(num))
-            }
+            GainMaxHp { num, .. } | LoseMaxHp { num, .. } => Some(i64::from(num)),
             Lose { .. } | LoseToDiscardpile { .. } | ActivateSkill { .. } => Some(0),
             Turn { .. } if self.timing == "roundStart" => Some(0),
             _ => self.delta,
@@ -913,7 +911,20 @@ impl Game {
     /// Revoke a callback, including any pending, unconsumed occurrence.
     pub fn unregister_trigger(&mut self, id: TriggerId) -> bool {
         self.indexed_triggers.remove(&id);
+        self.force_die_triggers.remove(&id);
         self.trigger_registrations.remove(&id).is_some()
+    }
+    /// Allow this registration to run even when its owner is dead.
+    pub fn set_trigger_force_die(&mut self, id: TriggerId, enabled: bool) -> Result<(), RuleError> {
+        if !self.trigger_registrations.contains_key(&id) {
+            return Err(RuleError::InvalidSelection);
+        }
+        if enabled {
+            self.force_die_triggers.insert(id);
+        } else {
+            self.force_die_triggers.remove(&id);
+        }
+        Ok(())
     }
     pub(crate) fn has_timing_registrations(&self, timing: &str) -> bool {
         self.has_expiry_at(timing)
@@ -1031,17 +1042,24 @@ impl Game {
         let Some(r) = self.trigger_registrations.get(&id) else {
             return false;
         };
-        self.registration_applies(r, event) && (r.filter)(self, event, r.owner)
+        self.registration_applies(id, r, event) && (r.filter)(self, event, r.owner)
     }
-    fn registration_applies(&self, r: &TriggerRegistration, event: &TriggerEvent) -> bool {
+    fn registration_applies(
+        &self,
+        id: TriggerId,
+        r: &TriggerRegistration,
+        event: &TriggerEvent,
+    ) -> bool {
         r.timing == event.timing
-            && self.seat(r.owner).is_ok_and(|s| s.alive)
+            && self
+                .seat(r.owner)
+                .is_ok_and(|s| s.alive || self.force_die_triggers.contains(&id))
             && r.role.matches(r.owner, event)
     }
     pub(crate) fn has_registered_candidates(&self, event: &TriggerEvent) -> bool {
         self.trigger_registrations
-            .values()
-            .any(|r| self.registration_applies(r, event))
+            .iter()
+            .any(|(&id, r)| self.registration_applies(id, r, event))
     }
     pub(crate) fn resolve_registered(
         &mut self,

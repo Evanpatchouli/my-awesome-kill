@@ -753,10 +753,9 @@ impl Game {
                         None
                     };
                     let classic = self.classic.is_some();
-                    let player = self.seat_mut(hp.seat);
-                    player.hp = after;
+                    self.seat_mut(hp.seat).hp = after;
                     if !classic {
-                        player.alive = after > 0;
+                        self.set_seat_alive(hp.seat, after > 0);
                     }
                     let rule = hp.damage.and_then(|index| {
                         let record = &mut self.elemental.history[index];

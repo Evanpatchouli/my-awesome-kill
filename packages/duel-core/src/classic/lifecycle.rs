@@ -7,6 +7,22 @@ use crate::{
 };
 
 impl Game {
+    /// Change membership without moving the seat in the physical table order.
+    pub(crate) fn set_seat_alive(&mut self, seat: SeatId, alive: bool) {
+        let player = self.seat_mut(seat);
+        if player.alive == alive {
+            return;
+        }
+        player.alive = alive;
+        let (leave, enter) = if alive {
+            (&mut self.dead_seats, &mut self.living_seats)
+        } else {
+            (&mut self.living_seats, &mut self.dead_seats)
+        };
+        leave.retain(|&id| id != seat);
+        enter.push(seat);
+    }
+
     pub(crate) fn resolve_classic(
         &mut self,
         event: EventRef,
@@ -331,10 +347,8 @@ impl Game {
                     let killer = self.seat_mut(source);
                     killer.turn_kills = killer.turn_kills.saturating_add(1);
                 }
-                self.living_seats.retain(|&seat| seat != target);
-                self.dead_seats.push(target);
+                self.set_seat_alive(target, false);
                 let player = self.seat_mut(target);
-                player.alive = false;
                 player.linked = false;
                 player.turned_over = false;
                 let hp = player.hp;

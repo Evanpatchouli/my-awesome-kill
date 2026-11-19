@@ -1,6 +1,6 @@
 //! Immediate and event-based revival share the same state transition.
 use crate::scheduler::Outcome;
-use crate::{EventKind, Game, Program, Resolution, RuleError, SeatId};
+use crate::{EventId, EventKind, Game, Program, Resolution, RuleError, SeatId};
 
 #[cfg(test)]
 mod tests;
@@ -35,17 +35,20 @@ impl Flow {
 }
 
 impl Game {
+    /// Cancellation status of an active revival event, available during its callbacks.
+    pub fn revival_cancelled(&self, event: EventId) -> Option<bool> {
+        match self.scheduler.active_frame(event)? {
+            (_, Program::Revive(flow)) => Some(flow.cancelled),
+            _ => None,
+        }
+    }
+
     pub(crate) fn revive_now(&mut self, seat: SeatId, hp: Option<i32>) -> Result<(), RuleError> {
         self.seat(seat)?;
         let player = self.seat_mut(seat);
-        let was_dead = !player.alive;
         player.max_hp = player.max_hp.max(1);
         player.hp = hp.filter(|&n| n != 0).unwrap_or(1).min(player.max_hp);
-        player.alive = true;
-        if was_dead {
-            self.dead_seats.retain(|&id| id != seat);
-            self.living_seats.push(seat);
-        }
+        self.set_seat_alive(seat, true);
         Ok(())
     }
 
@@ -83,11 +86,11 @@ impl Game {
                 }
                 Stage::End => {
                     flow.stage = Stage::After;
-                    ("reviveEnd", false)
+                    ("reviveEnd", true)
                 }
                 Stage::After => {
                     flow.stage = Stage::Finish;
-                    ("reviveAfter", false)
+                    ("reviveAfter", true)
                 }
                 Stage::Cancel => {
                     flow.stage = Stage::Finish;

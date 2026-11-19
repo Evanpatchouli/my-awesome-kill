@@ -520,6 +520,7 @@ impl Game {
         if selected.is_none()
             && best_key.0 == 1
             && tied.len() > 1
+            && self.is_alive(owner(&pending[first]))
             && tied.iter().all(|i| visible(&pending[*i]).is_some())
         {
             {
