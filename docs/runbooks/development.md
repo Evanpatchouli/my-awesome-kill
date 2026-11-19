@@ -66,3 +66,11 @@ Android 的 ARM64 调试包位于 `apps/game/src-tauri/gen/android/app/build/out
 在文件支持的 Windows 开发盘上运行构建和模拟器时，应同时查看承载 VHDX 的宿主卷。模拟器冷启动、Windows 页面文件和编译目录都可能占用同一个物理盘。复用 Cargo target，并在一次隔离 AVD 验证后关闭该实例及其专属 ADB 服务器，可减少重复写入和并发磁盘占用。
 
 2026-11-19 另从提交 `042c6df` 的默认发行资源重建并实测两端。Windows 程序 SHA-256 为 `3470DC8E3AE33B4DB2A2ABC9348D2188CBA05A03F1B4424EAC249A5FDF9EFF1A`。Android ARM64 调试包 SHA-256 为 `A6AF768146548523FE7ABBD9212D2AE3AE5CEA0ECA383F2E0626FF385E2EE2E0`，大小 135,172,351 字节，v2 验签、16 KiB 对齐和设备内 APK 哈希均已核对。两端离线选张飞进入八人局并提交过河拆桥，Windows 版本由 0 变为 1，Android 由 0 变为 5。运行中 WebView 读到的 WASM 均为 `E04FF567BABC6D2CAC7E015FDF2451B3285EDD185436AF2EDC3F00C41A8223B3`。Android 的 `frontendDist` 覆盖应使用相对配置文件的路径；本次直接填入 Windows 盘符绝对路径时被 Tauri 解析为 URL。核对实际页面中的 WASM 和可交互状态能发现这种打包错误。
+
+### 包含有序分区和体力上限的离线制品
+
+`f160124` 的 Windows release 程序为 17,352,704 字节，SHA-256 为 `62FF61FDD9333A013E04BFEAA07552682AF4ADE14CA5AEE25F1CB7AB90E1A39B`。ARM64 debug APK 为 144,642,295 字节，SHA-256 为 `7D21BC45FFD8FABFABB3BCC3CFBBA7933D5BC441B2EA6111B9AF26D8B0D9CE93`。已核对 v2 签名、16 KiB 对齐和设备的 base.apk。包内、设备内与新编译的 ARM64 库哈希均为 `FDC0BFE36E4B55B81DED451E33833D0DE58489DAB32BF91B7F07EDE2BEA1401D`。
+
+分别在 1280×720 的 Windows WebView2 和 API 36 x86_64 模拟器的 ARM64 兼容环境中离线运行。设备处于横屏，640×320 显示面板中的 WebView 边界为 (0,24)–(640,296)。两个宿主从正在运行的页面读取到同一份 WASM，SHA-256 为 `23C64D2FC44DF8109E1C9A16E9C632089AD1470E5125FD5735B7076A0DE1B9AD`。从首页选择张飞进入八席后，过河拆桥的提交令版本由 0 变为 1。返回选将后用诸葛亮发动观星，实体 28 移至底行，顶行的 86、85 随后实际进入手牌。两组牌和确认按钮均在各端可用视口内，两次验证均无 JS 异常。
+
+复用独立 Gradle 工程时，对照目标 Git 版本核验参与打包的 manifest、Kotlin Activity、资源和 Gradle 配置，再放入新编译的原生库。本次首个候选沿用了旧版 `MainActivity.kt`，虽然 WASM 和原生库哈希正确，可用视口却为 640×320。同步系统栏内边距代码后重新打包，在设备中实测为 640×272。
