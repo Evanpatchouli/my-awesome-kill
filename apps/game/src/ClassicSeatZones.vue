@@ -11,6 +11,7 @@ const props = defineProps<{
   expansions?: { card: TableCard; tags: string[] }[]
   label: string
   seatNames: string[]
+  mountCombined?: boolean
 }>()
 const labels = { weapon: '武', armor: '防', plus: '+马', minus: '−马' }
 const slotLabels = { weapon: '武器', armor: '防具', defenseHorse: '防御马', attackHorse: '进攻马', treasure: '宝物' }
@@ -49,7 +50,7 @@ const known = computed(() => props.knownHand?.map(printedFace).join(' · '))
     </div>
     <div :title="equipped || '无装备'"><span>装备</span> {{ equipped || '—' }}</div>
     <div v-if="seat.equipmentDisabledMarkers?.length" :data-disabled-equipment="seat.id" title="已废除的装备栏">
-      <span>废栏</span> {{ seat.equipmentDisabledMarkers.map(slot => slotLabels[slot]).join(' · ') }}
+      <span>废栏</span> {{ seat.equipmentDisabledMarkers.map(slot => mountCombined && slot === 'defenseHorse' ? '坐骑栏' : slotLabels[slot]).join(' · ') }}
     </div>
     <div v-if="seat.detachedEquipment?.length" :data-equipment-effect="seat.id" title="实体已经离开，装备效果仍然生效">
       <span>生效</span> {{ seat.detachedEquipment.map(kind => cardName(kind)).join(' · ') }}

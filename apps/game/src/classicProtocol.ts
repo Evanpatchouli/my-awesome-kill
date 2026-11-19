@@ -158,6 +158,7 @@ interface EventRecord {
   delta?: number
 }
 export interface TableView {
+  mountCombined?: boolean
   roundSuspended?: boolean
   groupUpdates?: GroupAnnouncement[]
   version: number

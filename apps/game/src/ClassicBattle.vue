@@ -408,6 +408,7 @@ function canPickCard(id: number) {
         <ClassicSeatZones
           :label="seatName(view, seat.id)"
           :seat="seat"
+          :mount-combined="view.mountCombined"
           :seat-names="view.seats.map((item) => seatName(view, item.id))"
           :equipment="seatCards(seat, 'equipment')"
           :judges="seatCards(seat, 'judges')"
@@ -462,6 +463,7 @@ function canPickCard(id: number) {
         <ClassicSeatZones
           :label="seatName(view, me.id)"
           :seat="me"
+          :mount-combined="view.mountCombined"
           :seat-names="view.seats.map((item) => seatName(view, item.id))"
           :equipment="seatCards(me, 'equipment')"
           :judges="seatCards(me, 'judges')"

@@ -1,7 +1,7 @@
 use super::Duel;
 use duel_core::{
     classic_data::Suit, ActiveSkillRegistration, CardKind, ChoiceBranch, EquipmentSlot, Game,
-    SeatId, TriggerEffect, TriggerStep,
+    MountSlots, SeatId, TriggerEffect, TriggerStep,
 };
 use std::sync::Arc;
 use wasm_bindgen::prelude::*;
@@ -156,5 +156,90 @@ pub fn classic_equip_slots_fixture(
             }))
         }),
     )?;
+    Ok(Duel { game })
+}
+
+#[wasm_bindgen(js_name = classicCombinedMountFixture)]
+pub fn classic_combined_mount_fixture(
+    seed: u32,
+    seat: SeatId,
+    hero: &str,
+    count: usize,
+) -> Result<Duel, JsError> {
+    if seat != 0 || count != 8 {
+        return Err(JsError::new("fixture requires seat 0 and eight seats"));
+    }
+    let mut game = Game::classic_with_mount_slots(seed, seat, hero, count, MountSlots::Combined)
+        .map_err(|err| JsError::new(&format!("{err:?}")))?;
+    let done: TriggerEffect = Arc::new(|_, _, _| TriggerStep::Done);
+    let second = equip_created(seat, 1, CardKind::Jueying, done.clone());
+    let first = equip_created(seat, 1, CardKind::Chitu, second);
+    skill(
+        &mut game,
+        seat,
+        "fixture_mount_prepare",
+        "准备合马",
+        Arc::new(move |ctx, _, _| {
+            ctx.expand_equip(
+                1,
+                vec![EquipmentSlot::DefenseHorse, EquipmentSlot::AttackHorse],
+            )
+            .expect("fixture expand mounts");
+            TriggerStep::ContinueWith(first.clone())
+        }),
+    )?;
+    skill(
+        &mut game,
+        seat,
+        "fixture_mount_third",
+        "替换电脑坐骑",
+        equip_created(seat, 1, CardKind::Dawan, done),
+    )?;
+    for (name, label, disable) in [
+        ("fixture_mount_disable", "废除合马栏", true),
+        ("fixture_mount_enable", "恢复合马栏", false),
+    ] {
+        game.register_active_skill(ActiveSkillRegistration {
+            owner: seat,
+            skill: name.into(),
+            limited: false,
+            choice: Arc::new(move |game, _| {
+                game.is_in(1).then(|| ChoiceBranch {
+                    targets: vec![1],
+                    min_targets: 1,
+                    max_targets: 1,
+                    ..choice(label)
+                })
+            }),
+            effect: Arc::new(move |ctx, _, selected| {
+                let target = selected
+                    .and_then(|selection| selection.targets.first())
+                    .copied()
+                    .expect("fixture target");
+                let slots = if disable {
+                    vec![
+                        EquipmentSlot::DefenseHorse,
+                        EquipmentSlot::DefenseHorse,
+                        EquipmentSlot::AttackHorse,
+                    ]
+                } else {
+                    vec![
+                        EquipmentSlot::DefenseHorse,
+                        EquipmentSlot::AttackHorse,
+                        EquipmentSlot::AttackHorse,
+                    ]
+                };
+                if disable {
+                    ctx.disable_equip(target, slots)
+                        .expect("fixture disable mounts");
+                } else {
+                    ctx.enable_equip(target, slots)
+                        .expect("fixture restore mounts");
+                }
+                TriggerStep::Done
+            }),
+        })
+        .map_err(|err| JsError::new(&format!("{err:?}")))?;
+    }
     Ok(Duel { game })
 }

@@ -45,7 +45,21 @@ try {
   page.on('pageerror', e => errors.push(e.message))
   page.on('console', m => { if (['warning', 'error'].includes(m.type()) && !m.location().url.endsWith('/favicon.ico')) errors.push(m.text()) })
   await page.route('**/src/generated/duel/duel.js*', route => route.fulfill({
-    contentType: 'text/javascript', body: js + '\nDuel.classic = (...args) => (window.equipTable = classicEquipSlotsFixture(...args))',
+    contentType: 'text/javascript', body: js + `
+      const originalBot = Duel.prototype.bot;
+      Duel.prototype.bot = function () {
+        const own = JSON.parse(this.view(1));
+        if (localStorage.getItem('qa-combined-mount') === 'true' && own.choice?.seat === 1) {
+          const viewers = [...Array(8).keys(), null].map(id => {
+            const view = JSON.parse(this.view(id));
+            return { viewer: id, hasChoice: !!view.choice, exposesHand: view.seats[1].hand !== null };
+          });
+          (window.__mountBotChoices ||= []).push({ choice: own.choice, viewers });
+        }
+        return originalBot.call(this);
+      };
+      Duel.classic = (...args) => (window.equipTable = localStorage.getItem('qa-combined-mount') === 'true'
+        ? classicCombinedMountFixture(...args) : classicEquipSlotsFixture(...args));`,
   }))
   await page.route('**/src/generated/duel/duel_bg.wasm*', route => route.fulfill({ contentType: 'application/wasm', path: path.join(bindings, 'duel_bg.wasm') }))
   await page.clock.install({ time: new Date('2026-01-01T12:00:00Z') })
@@ -53,6 +67,7 @@ try {
   await page.addInitScript(() => { Math.random = () => 317.1 / 0x7fffffff; localStorage.setItem('mak-reduced-motion', 'true') })
 
   await reset()
+  assert.equal((await view()).mountCombined, undefined)
   await action('准备双武器')
   let state = await view()
   assert.deepEqual(state.seats[1].equipment.map(c => c.kind), ['qinggang', 'zhuge'])
@@ -104,8 +119,52 @@ try {
   assert.deepEqual(state.seats[0].detachedEquipment, ['zhuge'])
   assert.equal(state.seats[0].equipment.length, 1)
   assert.ok(!state.seats[0].equipment.some(c => c.kind === 'qinglong'))
+
+  await page.evaluate(() => localStorage.setItem('qa-combined-mount', 'true'))
+  await reset()
+  state = await view()
+  assert.equal(state.mountCombined, true)
+  await action('准备合马')
+  state = await view()
+  assert.deepEqual(state.seats[1].equipment.map(card => card.kind), ['jueying', 'chitu'])
+  const initialMounts = state.seats[1].equipment
+  await action('替换电脑坐骑')
+  state = await view()
+  assert.equal(state.seats[1].equipment.length, 2)
+  assert.ok(state.seats[1].equipment.some(card => card.kind === 'dawan'))
+  const botChoices = await page.evaluate(() => window.__mountBotChoices || [])
+  assert.equal(botChoices.length, 1, 'the real B bot resolved one shared-slot choice')
+  assert.equal(botChoices[0].choice.branches[0].minCards, 1)
+  assert.equal(botChoices[0].choice.branches[0].maxCards, 1)
+  assert.deepEqual(new Set(botChoices[0].choice.branches[0].cards), new Set(initialMounts.map(card => card.id)))
+  for (const snapshot of botChoices[0].viewers) {
+    assert.equal(snapshot.hasChoice, snapshot.viewer === 1, `choice privacy for ${snapshot.viewer}`)
+    assert.equal(snapshot.exposesHand, snapshot.viewer === 1, `hand privacy for ${snapshot.viewer}`)
+  }
+  const third = state.seats[1].equipment.find(card => card.kind === 'dawan')
+  const allMounts = [...initialMounts, third]
+  assert.equal(initialMounts.filter(card => state.discard.some(discarded => discarded.id === card.id)).length, 1)
+  await button('废除合马栏').click()
+  await page.locator('[data-seat="1"] .seat-select').click()
+  await button('确认').click()
+  await page.clock.runFor(2000)
+  state = await view()
+  assert.deepEqual(state.seats[1].equipment, [])
+  assert.deepEqual(state.seats[1].equipmentDisabledMarkers, ['defenseHorse'])
+  assert.match(await page.locator('[data-disabled-equipment="1"]').innerText(), /坐骑栏/)
+  for (const card of allMounts) assert.equal(state.discard.filter(discarded => discarded.id === card.id).length, 1)
+  if (evidence) await page.screenshot({ path: path.join(evidence, 'combined-mount-disabled.png') })
+  await button('恢复合马栏').click()
+  await page.locator('[data-seat="1"] .seat-select').click()
+  await button('确认').click()
+  await page.clock.runFor(2000)
+  state = await view()
+  assert.deepEqual(state.seats[1].equipmentDisabledMarkers ?? [], [])
+  assert.equal(await page.locator('[data-disabled-equipment="1"]').count(), 0)
+  assert.equal(state.seats[1].hand, null)
+  for (const card of allMounts) assert.equal(state.discard.filter(discarded => discarded.id === card.id).length, 1)
   assert.deepEqual(errors, [])
-  console.log(JSON.stringify({ seed: 317, scenarios: ['human-disable', 'bot-replacement', 'detached-selection'], evidence }))
+  console.log(JSON.stringify({ seed: 317, scenarios: ['human-disable', 'bot-replacement', 'detached-selection', 'combined-mount-bot-and-human'], evidence }))
 } finally {
   await browser.close()
 }
