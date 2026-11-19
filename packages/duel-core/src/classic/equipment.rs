@@ -36,17 +36,46 @@ pub(crate) fn is_equipment(kind: CardKind) -> bool {
 }
 
 pub(crate) fn has_slot(seat: &Seat, wanted: Slot, ignored: Option<CardId>) -> bool {
-    seat.equipment
-        .iter()
+    seat.registered_equipment()
         .any(|card| Some(card.id) != ignored && slot(card.kind) == Some(wanted))
+}
+
+impl Seat {
+    fn registered_equipment(&self) -> impl Iterator<Item = &Card> {
+        self.equipment.iter().chain(&self.detached_equipment)
+    }
+}
+
+pub(crate) fn has_equipment_skill(seat: &Seat, skill: &str) -> bool {
+    use CardKind::*;
+    let kind = match skill {
+        "bagua_skill" => Bagua,
+        "zhuge_skill" => Zhuge,
+        "cixiong_skill" => Cixiong,
+        "qinggang_skill" => Qinggang,
+        "qinglong_skill" => Qinglong,
+        "zhangba_skill" => Zhangba,
+        "guanshi_skill" => Guanshi,
+        "fangtian_skill" => Fangtian,
+        "qilin_skill" => Qilin,
+        _ => return false,
+    };
+    seat.registered_equipment().any(|card| card.kind == kind)
 }
 
 #[derive(Clone, Copy)]
 pub(crate) enum EquipStep {
     Pay,
     Timing,
+    DirectBefore,
+    DirectBegin,
+    DirectLose,
     Replace,
     Install,
+    DirectEnd,
+    DirectAfter,
+    DirectFinish,
+    DirectCancelled,
 }
 
 #[derive(Clone)]
@@ -55,6 +84,7 @@ pub(crate) enum Flow {
         seat: SeatId,
         card: Card,
         step: EquipStep,
+        direct: bool,
     },
     Attack(attack::Attack),
     Target(attack::Target),
@@ -133,6 +163,18 @@ fn branch(id: u32, label: &str, cards: Vec<CardId>, count: usize) -> ChoiceBranc
 }
 
 impl Game {
+    /// Registered equipment in the slot used by `slot_of`. Card IDs refer to the actual materials.
+    pub fn equipment_registrations(&self, seat: SeatId, slot_of: CardKind) -> Vec<Card> {
+        let (Ok(player), Some(wanted)) = (self.seat(seat), slot(slot_of)) else {
+            return Vec::new();
+        };
+        player
+            .registered_equipment()
+            .copied()
+            .filter(|card| slot(card.kind) == Some(wanted))
+            .collect()
+    }
+
     pub(crate) fn resolve_equipment(
         &mut self,
         event: EventRef,
@@ -140,7 +182,12 @@ impl Game {
         child: Option<Outcome<Resolution>>,
     ) {
         match flow {
-            Flow::Equip { seat, card, step } => self.resolve_equip(seat, card, step, child),
+            Flow::Equip {
+                seat,
+                card,
+                step,
+                direct,
+            } => self.resolve_equip(seat, card, step, direct, child),
             Flow::Attack(attack) => self.resolve_attack(attack, child),
             Flow::Target(target) => self.resolve_sha_target(target, child),
             Flow::Response(response) => self.resolve_response(response, child),
@@ -158,8 +205,32 @@ impl Game {
                 seat,
                 card,
                 step: EquipStep::Pay,
+                direct: false,
             }),
         }])
+    }
+
+    pub(crate) fn equip_from_hand_program(
+        &self,
+        seat: SeatId,
+        id: CardId,
+    ) -> Result<Program, RuleError> {
+        let player = self.seat(seat)?;
+        if !self.is_in(seat) {
+            return Err(RuleError::InactiveSeat { seat });
+        }
+        let card = player
+            .hand
+            .iter()
+            .copied()
+            .find(|card| card.id == id && is_equipment(card.kind))
+            .ok_or(RuleError::InvalidCard)?;
+        Ok(Program::Equipment(Flow::Equip {
+            seat,
+            card,
+            step: EquipStep::DirectBefore,
+            direct: true,
+        }))
     }
 
     fn resolve_equip(
@@ -167,29 +238,91 @@ impl Game {
         seat: SeatId,
         card: Card,
         step: EquipStep,
+        direct: bool,
         child: Option<Outcome<Resolution>>,
     ) {
+        let program = |step| {
+            Program::Equipment(Flow::Equip {
+                seat,
+                card,
+                step,
+                direct,
+            })
+        };
+        if matches!(child, Some(Outcome::Cancelled))
+            && matches!(
+                step,
+                EquipStep::DirectBegin
+                    | EquipStep::DirectLose
+                    | EquipStep::DirectAfter
+                    | EquipStep::DirectFinish
+            )
+        {
+            self.scheduler
+                .replace_current(program(EquipStep::DirectCancelled));
+            self.queue_timing("equipCancelled", Some(seat), None, None, 1, &[card]);
+            return;
+        }
         match step {
+            EquipStep::DirectBefore
+            | EquipStep::DirectBegin
+            | EquipStep::DirectEnd
+            | EquipStep::DirectAfter => {
+                let (timing, next) = match step {
+                    EquipStep::DirectBefore => ("equipBefore", EquipStep::DirectBegin),
+                    EquipStep::DirectBegin => ("equipBegin", EquipStep::DirectLose),
+                    EquipStep::DirectEnd => ("equipEnd", EquipStep::DirectAfter),
+                    EquipStep::DirectAfter => ("equipAfter", EquipStep::DirectFinish),
+                    _ => unreachable!(),
+                };
+                self.scheduler.replace_current(program(next));
+                self.queue_timing(timing, Some(seat), None, None, 1, &[card]);
+            }
+            EquipStep::DirectLose => {
+                if !self.is_in(seat)
+                    || !self
+                        .seat(seat)
+                        .is_ok_and(|player| player.hand.contains(&card))
+                {
+                    self.scheduler
+                        .replace_current(program(EquipStep::DirectEnd));
+                    return;
+                }
+                self.scheduler.replace_current(program(EquipStep::Replace));
+                self.scheduler
+                    .next(self.lose_to_own_special(seat, card, Zone::Hand));
+            }
             EquipStep::Pay => {
                 self.queue_use_costs(seat, &[card]);
-                self.scheduler
-                    .replace_current(Program::Equipment(Flow::Equip {
-                        seat,
-                        card,
-                        step: EquipStep::Timing,
-                    }));
+                self.scheduler.replace_current(program(EquipStep::Timing));
             }
             EquipStep::Timing => {
-                self.scheduler
-                    .replace_current(Program::Equipment(Flow::Equip {
-                        seat,
-                        card,
-                        step: EquipStep::Replace,
-                    }));
+                self.scheduler.replace_current(program(EquipStep::Replace));
                 self.queue_use_card2(seat, card.kind, &[card]);
             }
             EquipStep::Replace => {
-                if matches!(child, Some(Outcome::Cancelled)) || !self.is_in(seat) {
+                let material_available = if direct {
+                    self.transferring.contains(&card)
+                } else {
+                    self.resolving.contains(&card)
+                };
+                if direct && (!material_available || !self.is_in(seat)) {
+                    self.scheduler
+                        .replace_current(program(EquipStep::DirectEnd));
+                    if material_available {
+                        self.scheduler.next(Program::JudgmentCleanup(
+                            super::hero_integration::Cleanup::Cards {
+                                cards: vec![card],
+                                stage: super::hero_integration::DiscardStage::Before,
+                            },
+                        ));
+                    }
+                    return;
+                }
+                if matches!(child, Some(Outcome::Cancelled))
+                    || !self.is_in(seat)
+                    || !material_available
+                {
                     self.scheduler
                         .after(Program::event(EventKind::Discard { card }));
                     self.scheduler.end(Outcome::Cancelled);
@@ -201,12 +334,7 @@ impl Game {
                     .iter()
                     .find(|old| slot(old.kind) == slot(card.kind))
                     .copied();
-                self.scheduler
-                    .replace_current(Program::Equipment(Flow::Equip {
-                        seat,
-                        card,
-                        step: EquipStep::Install,
-                    }));
+                self.scheduler.replace_current(program(EquipStep::Install));
                 if let Some(old) = old {
                     self.scheduler.next(Program::DiscardFrom {
                         seat,
@@ -216,7 +344,48 @@ impl Game {
                 }
             }
             EquipStep::Install => {
-                if !self.is_in(seat) {
+                let occupied = self.seat(seat).is_ok_and(|player| {
+                    slot(card.kind).is_some_and(|wanted| has_slot(player, wanted, None))
+                });
+                let available = if direct {
+                    self.transferring.contains(&card)
+                } else {
+                    self.resolving.contains(&card)
+                };
+                if occupied && available && self.is_in(seat) {
+                    self.scheduler.next(Program::JudgmentCleanup(
+                        super::hero_integration::Cleanup::Cards {
+                            cards: vec![card],
+                            stage: super::hero_integration::DiscardStage::Before,
+                        },
+                    ));
+                    if direct {
+                        self.scheduler
+                            .replace_current(program(EquipStep::DirectEnd));
+                    } else {
+                        self.finish();
+                    }
+                    return;
+                }
+                if direct {
+                    if let Some(index) = self.transferring.iter().position(|&c| c == card) {
+                        if self.is_in(seat) {
+                            let taken = self.transferring.remove(index);
+                            self.seat_mut(seat).equipment.push(taken);
+                        } else {
+                            self.scheduler.next(Program::JudgmentCleanup(
+                                super::hero_integration::Cleanup::Cards {
+                                    cards: vec![card],
+                                    stage: super::hero_integration::DiscardStage::Before,
+                                },
+                            ));
+                        }
+                    }
+                    self.scheduler
+                        .replace_current(program(EquipStep::DirectEnd));
+                    return;
+                }
+                if !self.is_in(seat) || !available {
                     self.scheduler
                         .after(Program::event(EventKind::Discard { card }));
                     self.scheduler.end(Outcome::Cancelled);
@@ -226,14 +395,15 @@ impl Game {
                 self.seat_mut(seat).equipment.push(card);
                 self.finish();
             }
+            EquipStep::DirectFinish => self.finish(),
+            EquipStep::DirectCancelled => self.scheduler.end(Outcome::Cancelled),
         }
     }
 
     pub(crate) fn weapon(&self, seat: SeatId) -> Option<Card> {
         self.seat(seat)
             .ok()?
-            .equipment
-            .iter()
+            .registered_equipment()
             .find(|card| slot(card.kind) == Some(Slot::Weapon))
             .copied()
     }

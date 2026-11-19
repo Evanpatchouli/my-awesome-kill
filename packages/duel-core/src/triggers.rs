@@ -512,7 +512,7 @@ impl TriggerContext<'_> {
         Ok(())
     }
 
-    /// Move one held hand or equipment card through the public expansion gain lifecycle.
+    /// Move one of the recipient's held hand, equipment or judgment cards to expansion.
     pub fn add_to_expansion(
         &mut self,
         owner: SeatId,
@@ -520,18 +520,50 @@ impl TriggerContext<'_> {
         tag: impl Into<String>,
     ) -> Result<(), RuleError> {
         let tag = tag.into();
+        self.game.seat(owner)?;
         if self.claimed_cards().contains(&id) {
             return Err(RuleError::InvalidSelection);
         }
         let card = self
             .game
-            .hand_and_equipment(owner)?
-            .find(|card| card.id == id)
-            .copied()
+            .held_card_location(id)
+            .filter(|(seat, zone, _)| *seat == owner && *zone != Zone::Expansion)
+            .map(|(_, _, card)| card)
             .ok_or(RuleError::InvalidCard)?;
         self.game.expansion_program(owner, card, tag.clone())?;
         self.operations
             .push_back(TriggerOperation::Expand { owner, card, tag });
+        Ok(())
+    }
+
+    /// Gain a public equipment, judgment or expansion card from its present holder.
+    pub fn gain_owned_card(
+        &mut self,
+        from: SeatId,
+        to: SeatId,
+        id: CardId,
+    ) -> Result<(), RuleError> {
+        if self.claimed_cards().contains(&id) {
+            return Err(RuleError::InvalidSelection);
+        }
+        self.game.gain_owned_card_program(from, to, id)?;
+        self.operations
+            .push_back(TriggerOperation::GainOwnedCard { from, to, id });
+        Ok(())
+    }
+
+    /// Install an actual equipment card from the recipient's hand.
+    pub fn equip_from_hand(&mut self, seat: SeatId, id: CardId) -> Result<(), RuleError> {
+        if self.claimed_cards().contains(&id) {
+            return Err(RuleError::InvalidSelection);
+        }
+        self.game.seat(seat)?;
+        if seat != self.owner && !self.game.is_known_by(id, Some(self.owner)) {
+            return Err(RuleError::InvalidCard);
+        }
+        self.game.equip_from_hand_program(seat, id)?;
+        self.operations
+            .push_back(TriggerOperation::EquipFromHand { seat, id });
         Ok(())
     }
 
@@ -763,6 +795,8 @@ impl TriggerContext<'_> {
                 TriggerOperation::Recast { card, .. }
                 | TriggerOperation::GiveHand { card, .. }
                 | TriggerOperation::GainPublicPile { card, .. }
+                | TriggerOperation::GainOwnedCard { id: card, .. }
+                | TriggerOperation::EquipFromHand { id: card, .. }
                 | TriggerOperation::GainCompare { card, .. } => {
                     claimed.insert(*card);
                 }
@@ -874,6 +908,15 @@ enum TriggerOperation {
         from: SeatId,
         to: SeatId,
         card: Card,
+    },
+    GainOwnedCard {
+        from: SeatId,
+        to: SeatId,
+        id: CardId,
+    },
+    EquipFromHand {
+        seat: SeatId,
+        id: CardId,
     },
     Compare {
         initiator: SeatId,
@@ -1159,6 +1202,7 @@ impl Game {
                         Some(crate::CardKind::Sha)
                     }
                     crate::EventKind::UseTrick { card, .. }
+                    | crate::EventKind::Equip { card, .. }
                     | crate::EventKind::UseResponseCard { card, .. } => Some(card.kind),
                     crate::EventKind::UseVirtual { kind, .. } => Some(kind),
                     _ => None,
@@ -1297,6 +1341,7 @@ impl Game {
                     | TriggerOperation::GiveCards { .. }
                     | TriggerOperation::Expand { .. }
                     | TriggerOperation::GainExpansion { .. }
+                    | TriggerOperation::GainOwnedCard { .. }
                     | TriggerOperation::GiveHand { .. }
                     | TriggerOperation::Compare { .. }
                     | TriggerOperation::CompareMany { .. }
@@ -1379,6 +1424,24 @@ impl Game {
                 }
                 TriggerOperation::GainExpansion { from, to, card } => {
                     let Ok(program) = self.gain_expansion_program(from, to, card) else {
+                        self.finish();
+                        return;
+                    };
+                    program
+                }
+                TriggerOperation::GainOwnedCard { from, to, id } => {
+                    let Ok(program) = self.gain_owned_card_program(from, to, id) else {
+                        self.finish();
+                        return;
+                    };
+                    program
+                }
+                TriggerOperation::EquipFromHand { seat, id } => {
+                    if seat != flow.owner && !self.is_known_by(id, Some(flow.owner)) {
+                        self.finish();
+                        return;
+                    }
+                    let Ok(program) = self.equip_from_hand_program(seat, id) else {
                         self.finish();
                         return;
                     };

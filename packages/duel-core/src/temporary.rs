@@ -106,6 +106,7 @@ impl Game {
 
     pub(crate) fn seat_has_skill(&self, player: &Seat, id: &str) -> bool {
         (id == "undist" && player.rest_undist)
+            || crate::equipment::has_equipment_skill(player, id)
             || player
                 .hero
                 .is_some_and(|hero| hero.skills.iter().any(|skill| skill.id == id))

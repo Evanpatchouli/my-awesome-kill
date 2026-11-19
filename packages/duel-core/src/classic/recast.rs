@@ -368,6 +368,9 @@ enum GainOrigin {
     Expansion {
         seat: SeatId,
     },
+    PublicOwned {
+        seat: SeatId,
+    },
     DrawPile,
     /// Draw has already taken this card out of the pile, privately.
     Drawn,
@@ -455,6 +458,7 @@ impl Movement {
                             | GainOrigin::Judgment(_)
                             | GainOrigin::Hand { public: true, .. }
                             | GainOrigin::Expansion { .. }
+                            | GainOrigin::PublicOwned { .. }
                     )
                 }),
             },
@@ -585,25 +589,15 @@ impl Game {
         movement.allow_intercepted = true;
         Program::Recast(Flow::Movement(movement))
     }
-    pub(crate) fn expansion_lose_program(
-        &self,
-        seat: SeatId,
-        card: Card,
-        zone: Zone,
-        discard: bool,
-    ) -> Program {
+    pub(crate) fn lose_to_own_special(&self, seat: SeatId, card: Card, zone: Zone) -> Program {
         Program::Recast(Flow::Movement(Movement::new(
             seat,
             MoveKind::Lose {
                 card,
                 zone,
-                destination: if discard {
-                    LossDestination::Discard
-                } else {
-                    LossDestination::Transfer {
-                        to: seat,
-                        visible: true,
-                    }
+                destination: LossDestination::Transfer {
+                    to: seat,
+                    visible: true,
                 },
             },
         )))
@@ -617,6 +611,30 @@ impl Game {
                 origin: GainOrigin::Expansion { seat: from },
             },
         )))
+    }
+
+    pub(crate) fn gain_owned_card_program(
+        &self,
+        from: SeatId,
+        to: SeatId,
+        id: CardId,
+    ) -> Result<Program, RuleError> {
+        self.seat(from)?;
+        self.seat(to)?;
+        if !self.is_in(to) {
+            return Err(RuleError::InactiveSeat { seat: to });
+        }
+        let (holder, zone, card) = self.held_card_location(id).ok_or(RuleError::InvalidCard)?;
+        if holder != from || zone == Zone::Hand {
+            return Err(RuleError::InvalidCard);
+        }
+        Ok(Program::Recast(Flow::Movement(Movement::new(
+            to,
+            MoveKind::Gain {
+                card,
+                origin: GainOrigin::PublicOwned { seat: from },
+            },
+        ))))
     }
 
     pub(crate) fn lose_compare_program(
@@ -1294,6 +1312,43 @@ impl Game {
                                 },
                             ))
                         }
+                        Gain {
+                            card,
+                            origin: GainOrigin::PublicOwned { seat: from },
+                        } => {
+                            let Some((holder, zone, _)) = self.held_card_location(card.id) else {
+                                movement.stage = End;
+                                continue;
+                            };
+                            if holder != from || zone == Zone::Hand {
+                                movement.stage = End;
+                                continue;
+                            }
+                            self.known_to_all.insert(card.id);
+                            if zone == Zone::Judgment
+                                && self.judgment_overrides.contains_key(&card.id)
+                            {
+                                // A raw material gain does not dispatch a loss for the virtual judgment.
+                                let material = self.take_card(from, zone, card.id);
+                                self.put_in_hand(seat, material);
+                                movement.committed = Some(material);
+                                None
+                            } else {
+                                let mut loss = Movement::new(
+                                    from,
+                                    Lose {
+                                        card,
+                                        zone,
+                                        destination: LossDestination::Transfer {
+                                            to: seat,
+                                            visible: true,
+                                        },
+                                    },
+                                );
+                                loss.allow_intercepted = true;
+                                Some(loss)
+                            }
+                        }
                         Lose {
                             card,
                             zone,
@@ -1417,6 +1472,21 @@ impl Game {
                     }
                 }
                 ChildMoved => {
+                    if let Gain {
+                        card,
+                        origin: GainOrigin::PublicOwned { .. },
+                    } = movement.kind
+                    {
+                        if self.is_in(seat) {
+                            if let Some(taken) = self.take_unowned_card(card) {
+                                self.put_in_hand(seat, taken);
+                                self.known_to_all.insert(taken.id);
+                                movement.committed = Some(taken);
+                            }
+                        }
+                        movement.stage = End;
+                        continue;
+                    }
                     let Some(Outcome::Finished(Resolution::RecastMove { card, .. })) = child else {
                         movement.stage = Cancel(MoveCancellation::InvalidMovement);
                         continue;

@@ -219,6 +219,9 @@ pub struct SeatView {
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub known_hand: Vec<Card>,
     pub equipment: Vec<Card>,
+    /// Effective equipment whose material is outside the physical equipment area.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub detached_equipment: Vec<CardKind>,
     pub judges: Vec<Card>,
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub judge_disabled: bool,

@@ -986,7 +986,10 @@ impl Game {
 
     fn collect_borrowed_weapon(&mut self, seat: SeatId, holder: SeatId) {
         if self.is_in(seat) && self.is_in(holder) {
-            if let Some(weapon) = self.weapon(holder) {
+            if let Some(weapon) = self.weapon(holder).filter(|card| {
+                self.seat(holder)
+                    .is_ok_and(|player| player.equipment.contains(card))
+            }) {
                 let card = self.take_card(holder, Zone::Equipment, weapon.id);
                 self.put_in_hand(seat, card);
                 self.queue_hero_losses(holder, vec![(Zone::Equipment, card)]);

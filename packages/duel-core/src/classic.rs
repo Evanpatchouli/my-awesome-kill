@@ -154,6 +154,7 @@ impl Game {
                     turn_kills: 0,
                     hand: Vec::new(),
                     equipment: Vec::new(),
+                    detached_equipment: Vec::new(),
                     judges: Vec::new(),
                     judge_disabled: false,
                     judge_disabled_marker: false,

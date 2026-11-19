@@ -379,6 +379,7 @@ struct Seat {
     turn_kills: u64,
     hand: Vec<Card>,
     equipment: Vec<Card>,
+    detached_equipment: Vec<Card>,
     judges: Vec<Card>,
     judge_disabled: bool,
     judge_disabled_marker: bool,
@@ -429,6 +430,7 @@ impl From<SeatSetup> for Seat {
             turn_kills: 0,
             hand: setup.hand,
             equipment: Vec::new(),
+            detached_equipment: Vec::new(),
             judges: Vec::new(),
             judge_disabled: false,
             judge_disabled_marker: false,
@@ -770,6 +772,11 @@ impl Game {
                         .copied()
                         .collect(),
                     equipment: seat.equipment.clone(),
+                    detached_equipment: seat
+                        .detached_equipment
+                        .iter()
+                        .map(|card| card.kind)
+                        .collect(),
                     judges: seat.judges.clone(),
                     judge_disabled: seat.judge_disabled,
                     judge_disabled_marker: seat.judge_disabled_marker,

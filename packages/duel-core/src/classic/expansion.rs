@@ -28,8 +28,10 @@ pub(crate) enum Flow {
 #[derive(Clone, Copy)]
 pub(crate) enum AddStage {
     Before,
+    Begin,
     Lose,
     Move,
+    End,
     After,
     Finish,
 }
@@ -115,6 +117,8 @@ impl Game {
             Zone::Hand
         } else if player.equipment.contains(&card) {
             Zone::Equipment
+        } else if player.judges.contains(&card) {
+            Zone::Judgment
         } else {
             return Err(RuleError::InvalidCard);
         };
@@ -184,7 +188,11 @@ impl Game {
                 let (owner, card, zone) = (*owner, *card, *zone);
                 match *stage {
                     AddStage::Before => {
-                        *stage = AddStage::Lose;
+                        *stage = if zone == Zone::Judgment {
+                            AddStage::Begin
+                        } else {
+                            AddStage::Lose
+                        };
                         let queued = self.queue_timing(
                             "addToExpansionBefore",
                             Some(owner),
@@ -198,16 +206,28 @@ impl Game {
                             return;
                         }
                     }
+                    AddStage::Begin => {
+                        if matches!(child, Some(Outcome::Cancelled)) {
+                            self.scheduler.end(Outcome::Cancelled);
+                            return;
+                        }
+                        *stage = AddStage::Lose;
+                        self.queue_timing(
+                            "addToExpansionBegin",
+                            Some(owner),
+                            Some(owner),
+                            None,
+                            0,
+                            &[card],
+                        );
+                        self.scheduler.replace_current(Program::Expansion(flow));
+                    }
                     AddStage::Lose => {
                         if matches!(child, Some(Outcome::Cancelled)) || !self.is_in(owner) {
                             self.scheduler.end(Outcome::Cancelled);
                             return;
                         }
-                        let held = self.seat(owner).is_ok_and(|p| match zone {
-                            Zone::Hand => p.hand.contains(&card),
-                            Zone::Equipment => p.equipment.contains(&card),
-                            _ => false,
-                        });
+                        let held = self.seat(owner).is_ok_and(|p| p.zone(zone).contains(&card));
                         if !held {
                             self.scheduler.end(Outcome::Cancelled);
                             return;
@@ -215,7 +235,7 @@ impl Game {
                         // A give becomes public only after the cancellable outer before hook.
                         self.known_to_all.insert(card.id);
                         *stage = AddStage::Move;
-                        let loss = self.expansion_lose_program(owner, card, zone, false);
+                        let loss = self.lose_to_own_special(owner, card, zone);
                         self.scheduler.replace_current(Program::Expansion(flow));
                         self.scheduler.next(loss);
                         return;
@@ -239,7 +259,23 @@ impl Game {
                                 tags.push(tag.clone());
                             }
                         }
+                        *stage = if zone == Zone::Judgment {
+                            AddStage::End
+                        } else {
+                            AddStage::After
+                        };
+                        self.scheduler.replace_current(Program::Expansion(flow));
+                    }
+                    AddStage::End => {
                         *stage = AddStage::After;
+                        self.queue_timing(
+                            "addToExpansionEnd",
+                            Some(owner),
+                            Some(owner),
+                            None,
+                            0,
+                            &[card],
+                        );
                         self.scheduler.replace_current(Program::Expansion(flow));
                     }
                     AddStage::After => {

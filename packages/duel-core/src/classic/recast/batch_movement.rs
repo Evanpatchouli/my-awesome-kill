@@ -16,6 +16,7 @@ pub(crate) struct BatchMovement {
     kind: BatchKind,
     stage: MoveStage,
     cards: Arc<[Card]>,
+    virtual_judgment_materials: Arc<[CardId]>,
     committed: Vec<Card>,
     losses: Vec<(Zone, Card)>,
     stranded: bool,
@@ -53,6 +54,7 @@ impl BatchMovement {
             seat,
             kind,
             cards,
+            virtual_judgment_materials: Arc::from([]),
             stage: MoveStage::Before,
             committed: Vec::new(),
             losses: Vec::new(),
@@ -174,11 +176,17 @@ impl BatchMovement {
 
 impl Game {
     pub(crate) fn judge_discard_program(&self, seat: SeatId, cards: Vec<Card>) -> Program {
-        Program::Recast(Flow::BatchMovement(BatchMovement::new(
-            seat,
-            BatchKind::JudgeDiscard,
-            Arc::from(cards),
-        )))
+        let virtual_materials = cards
+            .iter()
+            .filter_map(|card| {
+                self.judgment_overrides
+                    .contains_key(&card.id)
+                    .then_some(card.id)
+            })
+            .collect::<Vec<_>>();
+        let mut discard = BatchMovement::new(seat, BatchKind::JudgeDiscard, Arc::from(cards));
+        discard.virtual_judgment_materials = Arc::from(virtual_materials);
+        Program::Recast(Flow::BatchMovement(discard))
     }
 
     fn batch_remove_transfer(&mut self, card: Card) -> Option<Card> {
@@ -252,7 +260,22 @@ impl Game {
                     };
                     if matches!(stage, After)
                         && matches!(movement.kind, BatchKind::Lose { .. })
-                        && self.queue_hero_losses(seat, movement.losses.clone())
+                        && self.queue_hero_losses(
+                            seat,
+                            movement
+                                .losses
+                                .iter()
+                                .map(|&(zone, card)| {
+                                    let zone =
+                                        if movement.virtual_judgment_materials.contains(&card.id) {
+                                            Zone::Judgment
+                                        } else {
+                                            zone
+                                        };
+                                    (zone, card)
+                                })
+                                .collect(),
+                        )
                     {
                         true
                     } else {
@@ -307,14 +330,17 @@ impl Game {
                                 movement.stage = Discarded;
                                 continue;
                             }
-                            Some(BatchMovement::new(
+                            let mut loss = BatchMovement::new(
                                 seat,
                                 BatchKind::Lose {
                                     destination: BatchDestination::Discard,
                                     from_judgment_discard: true,
                                 },
                                 Arc::from(cards),
-                            ))
+                            );
+                            loss.virtual_judgment_materials =
+                                movement.virtual_judgment_materials.clone();
+                            Some(loss)
                         }
                         BatchKind::Draw { amount, .. } => {
                             match self.draw_from_piles(amount as usize) {
@@ -366,6 +392,13 @@ impl Game {
                                 });
                                 if let Some(zone) = zone {
                                     let taken = self.take_card(seat, zone, card.id);
+                                    if zone == Zone::Equipment
+                                        && movement.virtual_judgment_materials.contains(&card.id)
+                                    {
+                                        // The selected judgment wrapper loses its material. This does not remove
+                                        // the distinct equipment registration created after the wrapper was selected.
+                                        self.seat_mut(seat).detached_equipment.push(taken);
+                                    }
                                     if matches!(
                                         destination,
                                         BatchDestination::Transfer { visible: false, .. }

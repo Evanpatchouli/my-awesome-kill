@@ -697,3 +697,582 @@ fn direct_add_to_dead_target_leaves_material_with_owner() {
     assert_eq!(game.seat(0).unwrap().hand, [material]);
     assert!(game.seat(1).unwrap().judges.is_empty());
 }
+
+#[test]
+fn disabling_area_tracks_cards_moved_to_same_seat_zones_during_discard() {
+    let golden = payment_reference();
+    let mut game = table();
+    let disable = register(&mut game, true);
+    let enable = register(&mut game, false);
+    game.scheduler.start(Program::event(EventKind::Phase {
+        seat: 0,
+        phase: Phase::Play,
+    }));
+    game.run(None);
+    let mut id = 80;
+    let mut registered_weapon = None;
+    for timing in ["discardBefore", "loseBefore"] {
+        for destination in ["h", "e", "x"] {
+            let label = format!("move:{timing}:{destination}");
+            let expected = golden["movements"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .find(|trial| trial["name"] == label)
+                .unwrap();
+            let material = card(
+                id,
+                if destination == "e" {
+                    CardKind::Qinggang
+                } else {
+                    CardKind::Lebu
+                },
+            );
+            id += 1;
+            if game.is_judge_disabled(1) {
+                submit(&mut game, enable);
+            }
+            game.put_in_judgment(1, material, CardKind::Lebu);
+            let equip_end_zone = Arc::new(Mutex::new(None));
+            let equip_sample = equip_end_zone.clone();
+            game.timing_observer = Some(Arc::new(move |game, event| {
+                if event.timing == "equipEnd" {
+                    let location = game.card_location(material.id).unwrap();
+                    let zone = match (location.owner, location.zone) {
+                        (Some(1), Some(CardZone::Equipment)) => "B:e",
+                        (_, Some(CardZone::DiscardPile)) => "d",
+                        other => panic!("unexpected equipEnd material location {other:?}"),
+                    };
+                    *equip_sample.lock().unwrap() = Some(zone);
+                }
+            }));
+            let handled = Arc::new(Mutex::new(false));
+            let flag = handled.clone();
+            let intermediate = Arc::new(Mutex::new(false));
+            let captured = intermediate.clone();
+            game.register_trigger(TriggerRegistration {
+                owner: 0,
+                skill: format!("same_seat_move_{timing}_{destination}"),
+                timing: timing.into(),
+                role: TriggerRole::Global,
+                order: TriggerOrder::First,
+                priority: 0,
+                label: None,
+                silent: true,
+                filter: Arc::new(|_, e, _| e.player == Some(1)),
+                effect: Arc::new(move |ctx, step, _| {
+                    if step == 0 {
+                        if *flag.lock().unwrap() {
+                            return TriggerStep::Done;
+                        }
+                        *flag.lock().unwrap() = true;
+                        if destination == "x" {
+                            ctx.add_to_expansion(1, material.id, "test").unwrap();
+                        } else {
+                            ctx.gain_owned_card(1, 1, material.id).unwrap();
+                        }
+                        return TriggerStep::Continue(1);
+                    }
+                    if step == 1 && destination == "e" {
+                        assert!(ctx.game().seat(1).unwrap().hand.contains(&material));
+                        ctx.equip_from_hand(1, material.id).unwrap();
+                        return TriggerStep::Continue(2);
+                    }
+                    let player = ctx.game().seat(1).unwrap();
+                    *captured.lock().unwrap() = match destination {
+                        "h" => player.hand.contains(&material),
+                        "e" => player.equipment.contains(&material),
+                        "x" => player.expansions.contains(&material),
+                        _ => unreachable!(),
+                    };
+                    TriggerStep::Done
+                }),
+            })
+            .unwrap();
+            submit(&mut game, disable);
+            assert_eq!(*handled.lock().unwrap(), expected["handled"], "{label}");
+            if destination == "e" {
+                let expected_equip_end = golden["events"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .find(|row| row[0] == label && row[1] == "request" && row[2] == "equipEnd")
+                    .unwrap()
+                    .as_array()
+                    .unwrap()
+                    .last()
+                    .unwrap()["zone"]
+                    .as_str()
+                    .unwrap();
+                assert_eq!(
+                    *equip_end_zone.lock().unwrap(),
+                    Some(expected_equip_end),
+                    "{label} equipEnd location"
+                );
+                assert_eq!(
+                    *intermediate.lock().unwrap(),
+                    expected_equip_end == "B:e",
+                    "{label} continuation location"
+                );
+            } else {
+                assert!(
+                    *intermediate.lock().unwrap(),
+                    "{label}: material must visit the selected same-seat zone"
+                );
+            }
+            assert_eq!(expected["after"]["zone"], "d");
+            if destination == "e" {
+                let old = *registered_weapon.get_or_insert(material);
+                assert_eq!(
+                    game.equipment_registrations(1, CardKind::Qinggang),
+                    [old],
+                    "{label}: persistent virtual registration"
+                );
+                assert!(game.seat(1).unwrap().equipment.is_empty());
+                assert_eq!(
+                    game.card_location(old.id).unwrap().zone,
+                    Some(CardZone::DiscardPile)
+                );
+                assert!(
+                    game.in_sha_range(1, 3),
+                    "detached Qinggang retains its range"
+                );
+                assert!(
+                    game.has_skill(1, "qinggang_skill"),
+                    "detached Qinggang retains its skill"
+                );
+            }
+            assert_eq!(
+                game.discard.iter().filter(|&&c| c == material).count(),
+                1,
+                "{label}"
+            );
+            assert!(game.is_judge_disabled(1));
+            assert!(!game.seat(1).unwrap().hand.contains(&material));
+            assert!(!game.seat(1).unwrap().equipment.contains(&material));
+            assert!(!game.seat(1).unwrap().expansions.contains(&material));
+            assert_eq!(
+                game.is_known_by(material.id, Some(2)),
+                expected["after"]["knownC"],
+                "{label}"
+            );
+        }
+    }
+}
+
+#[test]
+fn fresh_virtual_judgment_equipment_move_installs_before_outer_loss() {
+    let mut game = table();
+    let material = card(99, CardKind::Qinggang);
+    game.put_in_judgment(1, material, CardKind::Lebu);
+    let disable = register(&mut game, true);
+    let seen = Arc::new(Mutex::new(None));
+    let sample = seen.clone();
+    game.timing_observer = Some(Arc::new(move |game, event| {
+        if event.timing == "equipEnd" {
+            *sample.lock().unwrap() = game.card_location(material.id);
+        }
+    }));
+    let handled = Arc::new(Mutex::new(false));
+    let flag = handled.clone();
+    game.register_trigger(TriggerRegistration {
+        owner: 0,
+        skill: "fresh_judgment_equip_control".into(),
+        timing: "loseBefore".into(),
+        role: TriggerRole::Global,
+        order: TriggerOrder::First,
+        priority: 0,
+        label: None,
+        silent: true,
+        filter: Arc::new(|_, event, _| event.player == Some(1)),
+        effect: Arc::new(move |ctx, step, _| {
+            if step == 0 {
+                if *flag.lock().unwrap() {
+                    return TriggerStep::Done;
+                }
+                *flag.lock().unwrap() = true;
+                ctx.gain_owned_card(1, 1, material.id).unwrap();
+                return TriggerStep::Continue(1);
+            }
+            if step == 1 {
+                ctx.equip_from_hand(1, material.id).unwrap();
+                return TriggerStep::Continue(2);
+            }
+            TriggerStep::Done
+        }),
+    })
+    .unwrap();
+    game.scheduler.start(Program::event(EventKind::Phase {
+        seat: 0,
+        phase: Phase::Play,
+    }));
+    game.run(None);
+    submit(&mut game, disable);
+    assert!(*handled.lock().unwrap());
+    assert_eq!(
+        *seen.lock().unwrap(),
+        Some(crate::CardLocation {
+            owner: Some(1),
+            zone: Some(CardZone::Equipment)
+        })
+    );
+    assert_eq!(
+        game.discard
+            .iter()
+            .filter(|&&card| card == material)
+            .count(),
+        1
+    );
+}
+
+fn owned_skill(
+    game: &mut Game,
+    name: &str,
+    effect: impl Fn(&mut crate::TriggerContext<'_>) + Send + Sync + 'static,
+) -> u64 {
+    game.register_active_skill(ActiveSkillRegistration {
+        owner: 0,
+        skill: name.into(),
+        limited: false,
+        choice: Arc::new(|_, _| {
+            Some(ChoiceBranch {
+                id: 0,
+                label: "fixture".into(),
+                cards: vec![],
+                min_cards: 0,
+                max_cards: 0,
+                targets: vec![],
+                min_targets: 0,
+                max_targets: 0,
+            })
+        }),
+        effect: Arc::new(move |ctx, _, _| {
+            effect(ctx);
+            TriggerStep::Done
+        }),
+    })
+    .unwrap()
+}
+
+#[test]
+fn ordinary_equipment_transfer_replacement_and_death_remove_registrations() {
+    let mut game = table();
+    let old = card(201, CardKind::Qinggang);
+    let replacement = card(202, CardKind::Zhuge);
+    game.seat_mut(1).equipment.push(old);
+    let gain = owned_skill(&mut game, "normal_equipment_gain", move |ctx| {
+        ctx.gain_owned_card(1, 1, old.id).unwrap();
+    });
+    game.scheduler.start(Program::event(EventKind::Phase {
+        seat: 0,
+        phase: Phase::Play,
+    }));
+    game.run(None);
+    assert_eq!(game.equipment_registrations(1, CardKind::Qinggang), [old]);
+    submit(&mut game, gain);
+    assert!(game.seat(1).unwrap().hand.contains(&old));
+    assert!(game
+        .equipment_registrations(1, CardKind::Qinggang)
+        .is_empty());
+
+    let mut game = table();
+    game.seat_mut(1).equipment.push(old);
+    game.seat_mut(1).hand.push(replacement);
+    game.known_to_all.insert(replacement.id);
+    let equip = owned_skill(&mut game, "normal_equipment_replace", move |ctx| {
+        ctx.equip_from_hand(1, replacement.id).unwrap();
+    });
+    let kill = owned_skill(&mut game, "normal_equipment_death", |ctx| {
+        ctx.die(1, None).unwrap();
+    });
+    game.scheduler.start(Program::event(EventKind::Phase {
+        seat: 0,
+        phase: Phase::Play,
+    }));
+    game.run(None);
+    submit(&mut game, equip);
+    assert!(game.discard.contains(&old));
+    assert_eq!(
+        game.equipment_registrations(1, CardKind::Qinggang),
+        [replacement]
+    );
+    assert_eq!(
+        game.equipment_registrations(1, CardKind::Zhuge),
+        [replacement]
+    );
+    submit(&mut game, kill);
+    assert!(!game.is_alive(1));
+    assert!(game.equipment_registrations(1, CardKind::Zhuge).is_empty());
+    assert!(game.discard.contains(&replacement));
+}
+
+#[test]
+fn detached_qinggang_changes_real_bagua_response_without_becoming_a_cost() {
+    use crate::ChoiceKind;
+    for detached in [false, true] {
+        let mut game = table();
+        let sha = card(210, CardKind::Sha);
+        let sword = card(211, CardKind::Qinggang);
+        let bagua = card(212, CardKind::Bagua);
+        let red_judgment = card(213, CardKind::Tao);
+        let dismantle = card(214, CardKind::Guohe);
+        let borrowed_sword = card(215, CardKind::Jiedao);
+        game.seat_mut(0).hand.push(sha);
+        game.seat_mut(1).equipment.push(bagua);
+        game.seat_mut(2).hand.extend([dismantle, borrowed_sword]);
+        game.classic.as_mut().unwrap().faces.extend([
+            CardFace {
+                id: sha.id,
+                suit: Suit::Spade,
+                rank: 7,
+            },
+            CardFace {
+                id: red_judgment.id,
+                suit: Suit::Heart,
+                rank: 9,
+            },
+        ]);
+        game.classic.as_mut().unwrap().deck.push(red_judgment);
+        if detached {
+            game.put_in_judgment(0, sword, CardKind::Lebu);
+            let create = owned_skill(&mut game, "battle_disable_judge", |ctx| {
+                ctx.disable_judge(0).unwrap();
+            });
+            let handled = Arc::new(Mutex::new(false));
+            let flag = handled.clone();
+            game.register_trigger(TriggerRegistration {
+                owner: 0,
+                skill: "battle_detach_qinggang".into(),
+                timing: "discardBefore".into(),
+                role: TriggerRole::Global,
+                order: TriggerOrder::First,
+                priority: 0,
+                label: None,
+                silent: true,
+                filter: Arc::new(|_, event, _| event.player == Some(0)),
+                effect: Arc::new(move |ctx, step, _| {
+                    if step == 0 {
+                        if *flag.lock().unwrap() {
+                            return TriggerStep::Done;
+                        }
+                        *flag.lock().unwrap() = true;
+                        ctx.gain_owned_card(0, 0, sword.id).unwrap();
+                        return TriggerStep::Continue(1);
+                    }
+                    if step == 1 {
+                        ctx.equip_from_hand(0, sword.id).unwrap();
+                        return TriggerStep::Continue(2);
+                    }
+                    TriggerStep::Done
+                }),
+            })
+            .unwrap();
+            game.scheduler.start(Program::event(EventKind::Phase {
+                seat: 0,
+                phase: Phase::Play,
+            }));
+            game.run(None);
+            submit(&mut game, create);
+            assert!(*handled.lock().unwrap());
+            assert_eq!(game.equipment_registrations(0, CardKind::Qinggang), [sword]);
+            assert!(game.seat(0).unwrap().equipment.is_empty());
+            assert!(game.discard.contains(&sword));
+            assert!(game
+                .submit(Command {
+                    version: game.version,
+                    seat: 0,
+                    action: Action::PlayCard {
+                        card: sword.id,
+                        targets: vec![0]
+                    }
+                })
+                .is_err());
+        } else {
+            game.scheduler.start(Program::event(EventKind::Phase {
+                seat: 0,
+                phase: Phase::Play,
+            }));
+            game.run(None);
+        }
+        game.submit(Command {
+            version: game.version,
+            seat: 0,
+            action: Action::PlaySha {
+                card: sha.id,
+                target: 1,
+            },
+        })
+        .unwrap();
+        let view = game.view(Some(1)).unwrap();
+        let choice = view.choice.unwrap();
+        if detached {
+            assert_eq!(choice.kind, ChoiceKind::Shan);
+            game.submit(Command {
+                version: game.version,
+                seat: 1,
+                action: Action::Choose {
+                    event: choice.event,
+                    card: None,
+                },
+            })
+            .unwrap();
+            assert_eq!(game.seat(1).unwrap().hp, 3);
+            assert!(!game.discard.contains(&red_judgment));
+        } else {
+            assert_eq!(choice.kind, ChoiceKind::Content);
+            assert!(choice
+                .branches
+                .iter()
+                .any(|branch| branch.id == 1 && branch.label.contains("八卦")));
+            game.submit(Command {
+                version: game.version,
+                seat: 1,
+                action: Action::Select {
+                    event: choice.event,
+                    branch: 1,
+                    cards: vec![],
+                    targets: vec![],
+                },
+            })
+            .unwrap();
+            assert_eq!(game.seat(1).unwrap().hp, 4);
+            assert!(game.discard.contains(&red_judgment));
+        }
+        assert_eq!(game.seat(1).unwrap().equipment, [bagua]);
+        assert_eq!(game.discard.iter().filter(|&&card| card == sha).count(), 1);
+        if detached {
+            assert!(game.discard.contains(&sword));
+            for trick in [dismantle] {
+                let options = game.trick_uses(game.seat(2).unwrap(), trick).unwrap();
+                assert!(
+                    options
+                        .iter()
+                        .all(|option| option.targets.first() != Some(&0)),
+                    "{:?}: detached weapon cannot be dismantled",
+                    trick.kind
+                );
+            }
+        }
+    }
+}
+
+#[test]
+fn borrowing_a_detached_registered_weapon_never_moves_its_discarded_material() {
+    let mut game = scene(
+        &[
+            Role::Lord,
+            Role::Loyalist,
+            Role::Loyalist,
+            Role::Rebel,
+            Role::Loyalist,
+            Role::Rebel,
+            Role::Loyalist,
+            Role::Rebel,
+        ],
+        2,
+    );
+    let sword = card(220, CardKind::Qinggang);
+    let jiedao = card(221, CardKind::Jiedao);
+    game.put_in_judgment(0, sword, CardKind::Lebu);
+    game.seat_mut(2).hand.push(jiedao);
+    let create = game
+        .register_active_skill(ActiveSkillRegistration {
+            owner: 2,
+            skill: "borrow_fixture_disable".into(),
+            limited: false,
+            choice: Arc::new(|_, _| {
+                Some(ChoiceBranch {
+                    id: 0,
+                    label: "fixture".into(),
+                    cards: vec![],
+                    min_cards: 0,
+                    max_cards: 0,
+                    targets: vec![],
+                    min_targets: 0,
+                    max_targets: 0,
+                })
+            }),
+            effect: Arc::new(|ctx, _, _| {
+                ctx.disable_judge(0).unwrap();
+                TriggerStep::Done
+            }),
+        })
+        .unwrap();
+    let done = Arc::new(Mutex::new(false));
+    let flag = done.clone();
+    game.register_trigger(TriggerRegistration {
+        owner: 2,
+        skill: "borrow_fixture_detach".into(),
+        timing: "discardBefore".into(),
+        role: TriggerRole::Global,
+        order: TriggerOrder::First,
+        priority: 0,
+        label: None,
+        silent: true,
+        filter: Arc::new(|_, event, _| event.player == Some(0)),
+        effect: Arc::new(move |ctx, step, _| {
+            if step == 0 {
+                if *flag.lock().unwrap() {
+                    return TriggerStep::Done;
+                }
+                *flag.lock().unwrap() = true;
+                ctx.gain_owned_card(0, 0, sword.id).unwrap();
+                return TriggerStep::Continue(1);
+            }
+            if step == 1 {
+                ctx.equip_from_hand(0, sword.id).unwrap();
+                return TriggerStep::Continue(2);
+            }
+            TriggerStep::Done
+        }),
+    })
+    .unwrap();
+    game.scheduler.start(Program::event(EventKind::Phase {
+        seat: 2,
+        phase: Phase::Play,
+    }));
+    game.run(None);
+    game.submit(Command {
+        version: game.version,
+        seat: 2,
+        action: Action::ActivateSkill {
+            registration: create,
+            cards: vec![],
+            targets: vec![],
+        },
+    })
+    .unwrap();
+    assert!(*done.lock().unwrap());
+    assert!(game.discard.contains(&sword));
+    assert!(game.seat(0).unwrap().equipment.is_empty());
+    let play = Action::PlayCard {
+        card: jiedao.id,
+        targets: vec![0, 1],
+    };
+    assert!(game.view(Some(2)).unwrap().actions.contains(&play));
+    game.submit(Command {
+        version: game.version,
+        seat: 2,
+        action: play,
+    })
+    .unwrap();
+    crate::classic::tests::pass_counters(&mut game);
+    let choice = game.view(Some(0)).unwrap().choice.unwrap();
+    game.submit(Command {
+        version: game.version,
+        seat: 0,
+        action: Action::Select {
+            event: choice.event,
+            branch: 0,
+            cards: vec![],
+            targets: vec![],
+        },
+    })
+    .unwrap();
+    assert_eq!(
+        game.discard.iter().filter(|&&card| card == sword).count(),
+        1
+    );
+    assert!(!game.seat(2).unwrap().hand.contains(&sword));
+    assert!(game.seat(0).unwrap().equipment.is_empty());
+}

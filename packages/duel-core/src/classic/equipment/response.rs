@@ -199,8 +199,7 @@ impl Game {
                 let armor = self
                     .seat(seat)
                     .expect("the responding seat exists")
-                    .equipment
-                    .iter()
+                    .registered_equipment()
                     .any(|card| card.kind == CardKind::Bagua);
                 if armor && !response.ignore_armor {
                     response.step = Step::OfferArmor;
