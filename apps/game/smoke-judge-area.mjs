@@ -103,8 +103,24 @@ try {
   assert.deepEqual(state.seats[id].judges.map(c => c.id), [40])
   assert.equal(state.discard.filter(c => c.id === 28).length, 1)
   if (evidence) await page.screenshot({ path: path.join(evidence, 'judgment-restored.png') })
+  const swordSeat = 2
+  await submit('用青釭剑放置乐不思蜀', swordSeat)
+  state = await view()
+  const sword = state.seats[swordSeat].judges.find(card => card.kind === 'qinggang')
+  assert.ok(sword && state.seats[swordSeat].judgeAssignments.some(a => a.id === sword.id && a.kind === 'lebu'))
+  await submit('废除判定区', swordSeat)
+  await button('取回并装备青釭剑').click()
+  await button('确认').click()
+  await page.clock.runFor(1000)
+  state = await view()
+  const holder = state.seats[swordSeat]
+  assert.deepEqual(holder.equipment, [])
+  assert.deepEqual(holder.detachedEquipment, ['qinggang'])
+  assert.equal(state.discard.filter(c => c.id === sword.id).length, 1)
+  assert.match(await page.locator(`[data-equipment-effect="${swordSeat}"]`).innerText(), /青釭剑/)
+  if (evidence) await page.screenshot({ path: path.join(evidence, 'registered-sword.png') })
   assert.deepEqual(errors, [])
-  console.log(JSON.stringify({ seed: 317, target: id, discarded: 28, newMaterial: 40, evidence }))
+  console.log(JSON.stringify({ seed: 317, target: id, discarded: 28, newMaterial: 40, detachedSword: sword.id, evidence }))
 } finally {
   await browser.close()
 }

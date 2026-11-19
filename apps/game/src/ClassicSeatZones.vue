@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { slot } from '@mak/rules'
-import { printedFace, skillName, type SeatView, type TableCard } from './classicProtocol'
+import { cardName, printedFace, skillName, type SeatView, type TableCard } from './classicProtocol'
 import CardFace from './CardFace.vue'
 const props = defineProps<{
   seat: SeatView
@@ -40,6 +40,9 @@ const known = computed(() => props.knownHand?.map(printedFace).join(' · '))
       {{ state }}
     </div>
     <div :title="equipped || '无装备'"><span>装备</span> {{ equipped || '—' }}</div>
+    <div v-if="seat.detachedEquipment?.length" :data-equipment-effect="seat.id" title="实体已经离开，装备效果仍然生效">
+      <span>生效</span> {{ seat.detachedEquipment.map(kind => cardName(kind)).join(' · ') }}
+    </div>
     <div :data-judge-area="seat.id" :title="judgment || '无判定牌'">
       <span>判定</span> {{ seat.judgeDisabledMarker ? '已废除' : judgment || '—' }}
       <template v-if="seat.judgeDisabledMarker">

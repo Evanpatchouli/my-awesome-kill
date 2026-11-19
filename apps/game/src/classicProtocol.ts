@@ -112,6 +112,7 @@ export interface SeatView {
   limitedSpent?: string[]
   marks?: { skill: string; count: number; source: number | null }[]
   equipment: Entity[]
+  detachedEquipment?: string[]
   judges: Entity[]
   judgeAssignments: Entity[]
 }
