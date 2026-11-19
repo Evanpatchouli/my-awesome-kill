@@ -21,6 +21,8 @@ mod qa_qiaoshui;
 mod qa_recast;
 #[cfg(feature = "qa-rest")]
 mod qa_rest;
+#[cfg(feature = "qa-equip-slots")]
+mod qa_equip_slots;
 #[cfg(feature = "qa-judge-area")]
 mod qa_judge_area;
 #[cfg(feature = "qa-revival")]
