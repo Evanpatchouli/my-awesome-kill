@@ -171,41 +171,38 @@ impl Game {
         child: Option<Outcome<Resolution>>,
     ) {
         if self.match_result().is_some()
-            || self.seat(target).expect("the dying seat exists").hp > 0
-            || matches!(child, Some(Outcome::Finished(Resolution::Complete)))
+            || !self
+                .seat(target)
+                .is_ok_and(|player| player.alive && player.hp <= 0)
+            || matches!(
+                child,
+                Some(Outcome::Finished(
+                    Resolution::Complete | Resolution::DeathCancelled
+                ))
+            )
         {
             self.finish();
             return;
         }
 
-        let order = self.living_order_from(self.active_seat);
-        let next = match child {
-            None => order.first(),
+        let order = self
+            .seat_order_from(self.active_seat)
+            .expect("the turn seat exists");
+        let remaining = match child {
+            None => order.as_slice(),
             Some(Outcome::Finished(Resolution::SavePassed(previous))) => {
                 let index = order
                     .iter()
                     .position(|id| *id == previous)
-                    .expect("the save actor lives");
-                order.get(index + 1)
+                    .expect("the save actor has a seat");
+                &order[index + 1..]
             }
             _ => unreachable!("the dying event only waits for save decisions and death"),
         };
-        if let Some(seat) = next {
-            self.next(EventKind::ChooseSave {
-                seat: *seat,
-                target,
-            });
+        if let Some(&seat) = remaining.iter().find(|&&seat| self.is_alive(seat)) {
+            self.next(EventKind::ChooseSave { seat, target });
         } else {
-            let role = self
-                .seat(target)
-                .expect("the dying seat exists")
-                .role
-                .expect("the seat has a role");
-            self.next(EventKind::Death {
-                source,
-                target,
-                role,
-            });
+            self.scheduler.next(self.death_program(target, source));
         }
     }
 
@@ -217,7 +214,12 @@ impl Game {
         child: Option<Outcome<Resolution>>,
         answer: &mut Option<Answer>,
     ) {
-        if self.seat(target).expect("the dying seat exists").hp > 0 {
+        if self.match_result().is_some()
+            || !self.is_alive(seat)
+            || !self
+                .seat(target)
+                .is_ok_and(|player| player.alive && player.hp <= 0)
+        {
             self.scheduler
                 .end(Outcome::Finished(Resolution::SavePassed(seat)));
             return;
@@ -273,12 +275,21 @@ impl Game {
         }
     }
 
+    pub(crate) fn death_program(&self, target: SeatId, source: Option<SeatId>) -> Program {
+        Program::event(EventKind::Death {
+            source,
+            target,
+            role: self.seat(target).expect("the death target exists").role,
+        })
+    }
+
     pub(crate) fn resolve_death(
         &mut self,
         source: Option<SeatId>,
         target: SeatId,
-        role: Role,
+        role: Option<Role>,
         stage: crate::DeathStage,
+        child: Option<Outcome<Resolution>>,
     ) {
         use crate::DeathStage;
         let next = |stage| Program::Death {
@@ -287,24 +298,59 @@ impl Game {
             role,
             stage,
         };
+        if matches!(child, Some(Outcome::Cancelled))
+            && matches!(
+                stage,
+                DeathStage::Begin
+                    | DeathStage::Apply
+                    | DeathStage::Cleanup
+                    | DeathStage::After
+                    | DeathStage::Finish
+            )
+        {
+            self.scheduler
+                .replace_current(next(DeathStage::FinishCancelled));
+            self.queue_timing("dieCancelled", Some(target), source, None, 0, &[]);
+            return;
+        }
         match stage {
+            DeathStage::Before => {
+                self.scheduler.replace_current(next(DeathStage::Begin));
+                self.queue_timing("dieBefore", Some(target), source, None, 0, &[]);
+            }
             DeathStage::Begin => {
+                self.scheduler.replace_current(next(DeathStage::Apply));
+                self.queue_timing("dieBegin", Some(target), source, None, 0, &[]);
+            }
+            DeathStage::Apply => {
+                if !self.is_alive(target) {
+                    self.finish();
+                    return;
+                }
                 let player = self.seat_mut(target);
                 player.alive = false;
-                player.hp = 0;
-                let alive: Vec<_> = self
-                    .seats
-                    .iter()
-                    .filter(|seat| seat.alive)
-                    .filter_map(|seat| seat.role)
-                    .collect();
-                if let Some(winner) = classic_data::winning_side(&alive) {
-                    self.classic.as_mut().expect("the table is classic").result =
-                        Some(MatchResult::Winner(winner));
+                player.linked = false;
+                player.turned_over = false;
+                let hp = player.hp;
+                self.scheduler.replace_current(next(DeathStage::Announce));
+                if hp != 0 {
+                    self.queue_health_change(target, -i64::from(hp), None);
+                }
+            }
+            DeathStage::Announce => {
+                if let Some(table) = self.classic.as_mut() {
+                    let alive: Vec<_> = self
+                        .seats
+                        .iter()
+                        .filter(|s| s.alive)
+                        .filter_map(|s| s.role)
+                        .collect();
+                    if table.result.is_none() {
+                        table.result = classic_data::winning_side(&alive).map(MatchResult::Winner);
+                    }
                 }
                 self.scheduler.replace_current(next(DeathStage::Cleanup));
                 self.queue_timing("die", Some(target), source, None, 0, &[]);
-                return;
             }
             DeathStage::Cleanup => {
                 self.remove_temporary_for_seat(target);
@@ -318,10 +364,15 @@ impl Game {
             }
             DeathStage::Reward => {
                 if self.match_result().is_none() {
-                    self.queue_death_reward(source, role);
+                    if let Some(role) = role {
+                        self.queue_death_reward(source, role);
+                    }
                 }
+                self.scheduler.replace_current(next(DeathStage::End));
+            }
+            DeathStage::End => {
                 self.scheduler.replace_current(next(DeathStage::After));
-                return;
+                self.queue_timing("dieEnd", Some(target), source, None, 0, &[]);
             }
             DeathStage::After => {
                 self.scheduler.replace_current(next(DeathStage::Finish));
@@ -329,6 +380,9 @@ impl Game {
                 return;
             }
             DeathStage::Finish => self.finish(),
+            DeathStage::FinishCancelled => self
+                .scheduler
+                .end(Outcome::Finished(Resolution::DeathCancelled)),
         }
     }
 

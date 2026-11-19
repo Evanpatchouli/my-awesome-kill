@@ -8,6 +8,7 @@ mod equipment_tests;
 pub(crate) mod expansion;
 pub(crate) mod hero_integration;
 mod lifecycle;
+pub(crate) mod max_hp;
 pub(crate) mod multi_compare;
 pub(crate) mod phases;
 pub(crate) mod pile_order;
@@ -129,10 +130,10 @@ impl Game {
                 } else {
                     others.pop().expect("there are enough generals")
                 };
-                let max_hp = general.max_hp + u16::from(role == Role::Lord && count > 4);
+                let max_hp = i32::from(general.max_hp) + i32::from(role == Role::Lord && count > 4);
                 Seat {
                     id,
-                    hp: i32::from(max_hp),
+                    hp: max_hp,
                     max_hp,
                     alive: true,
                     linked: false,
@@ -311,7 +312,7 @@ impl Game {
         }
         let uses = match card.kind {
             CardKind::Sha => self.physical_sha_uses(player, card),
-            CardKind::Tao if player.hp < i32::from(player.max_hp) => vec![PlannedUse {
+            CardKind::Tao if player.hp < player.max_hp => vec![PlannedUse {
                 targets: vec![seat],
                 program: Program::event(EventKind::UseTao {
                     seat,
@@ -534,7 +535,7 @@ impl Game {
             Taoyuan
                 if self
                     .seat(context.target)
-                    .is_ok_and(|seat| seat.hp < i32::from(seat.max_hp)) =>
+                    .is_ok_and(|seat| seat.hp < seat.max_hp) =>
             {
                 target_attitude
             }
@@ -555,7 +556,7 @@ impl Game {
         kind: CardKind,
         targets: &[SeatId],
         lord: SeatId,
-    ) -> (u8, i32) {
+    ) -> (u8, i64) {
         use CardKind::*;
         let court = matches!(actor.role, Some(Role::Lord | Role::Loyalist));
         let targets_lord = targets.contains(&lord);
@@ -575,15 +576,13 @@ impl Game {
                 let hp = target
                     .and_then(|target| self.seat(*target).ok())
                     .map_or(0, |target| target.hp);
-                (priority, -hp)
+                (priority, -i64::from(hp))
             }
             Nanman | Wanjian if targets_lord && court => (0, 0),
             Taoyuan
                 if targets_lord
                     && !court
-                    && self
-                        .seat(lord)
-                        .is_ok_and(|lord| lord.hp < i32::from(lord.max_hp)) =>
+                    && self.seat(lord).is_ok_and(|lord| lord.hp < lord.max_hp) =>
             {
                 (0, 0)
             }

@@ -195,7 +195,7 @@ pub struct SeatView {
     pub limited_spent: Vec<String>,
     pub id: SeatId,
     pub hp: i32,
-    pub max_hp: u16,
+    pub max_hp: i32,
     pub alive: bool,
     #[serde(default)]
     pub linked: bool,
@@ -663,7 +663,26 @@ pub enum EventKind {
     Death {
         source: Option<SeatId>,
         target: SeatId,
-        role: Role,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        role: Option<Role>,
+    },
+    GainMaxHp {
+        seat: SeatId,
+        source: Option<SeatId>,
+        num: i32,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        before: Option<i32>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        after: Option<i32>,
+    },
+    LoseMaxHp {
+        seat: SeatId,
+        source: Option<SeatId>,
+        num: i32,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        before: Option<i32>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        after: Option<i32>,
     },
     Penalty {
         lord: SeatId,

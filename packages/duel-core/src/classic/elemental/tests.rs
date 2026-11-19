@@ -120,7 +120,7 @@ fn row(game: &Game, event: &TriggerEvent, sample: &str, kind: &str) -> Value {
     let amount = match subject.as_str() {
         "changeHp" | "changeHujia" => event.delta,
         "link" => None,
-        _ => Some(i32::from(event.amount)),
+        _ => Some(i64::from(event.amount)),
     };
     json!([
         sample,

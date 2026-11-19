@@ -41,7 +41,7 @@ fn state_dependent_registration_is_callable_from_public_view_and_submit() {
                 assert_eq!(state.seats().collect::<Vec<_>>(), [0, 1]);
                 assert_eq!(state.turn().unwrap().phase, Phase::Play);
                 actor.alive
-                    && actor.hp == i32::from(actor.max_hp)
+                    && actor.hp == actor.max_hp
                     && actor.hand.contains(&card)
                     && card == material
                     && state.face(card.id).is_some()

@@ -68,16 +68,17 @@ pub struct TriggerEvent {
     pub card_kind: Option<crate::CardKind>,
     pub nature: Option<crate::DamageNature>,
     /// Signed change on changeHp and changeHujia subjects.
-    pub delta: Option<i32>,
+    pub delta: Option<i64>,
 }
 
 impl TriggerEvent {
     /// The subject's numeric argument when its rules define one. `amount` separately
     /// counts physical cards on movement callbacks, e.g. a loss of three cards has num 0.
-    pub fn subject_number(&self, game: &Game) -> Option<i32> {
+    pub fn subject_number(&self, game: &Game) -> Option<i64> {
         use crate::EventKind::*;
         match game.event_kind(self.subject)? {
-            Damage { .. } | LoseHp { .. } | Draw { .. } => Some(i32::from(self.amount)),
+            Damage { .. } | LoseHp { .. } | Draw { .. } => Some(i64::from(self.amount)),
+            GainMaxHp { num, .. } | LoseMaxHp { num, .. } => Some(i64::from(num)),
             Lose { .. } | LoseToDiscardpile { .. } | ActivateSkill { .. } => Some(0),
             Turn { .. } if self.timing == "roundStart" => Some(0),
             _ => self.delta,
@@ -180,11 +181,43 @@ impl TriggerContext<'_> {
         if !self.game.seat(target)?.alive {
             return Err(RuleError::InactiveSeat { seat: target });
         }
-        if self.game.seat(target)?.role.is_none() {
-            return Err(RuleError::WrongEvent);
-        }
         self.operations
             .push_back(TriggerOperation::Death { target, source });
+        Ok(())
+    }
+
+    pub fn gain_max_hp(
+        &mut self,
+        seat: SeatId,
+        num: i32,
+        source: Option<SeatId>,
+    ) -> Result<(), RuleError> {
+        self.queue_max_hp(seat, num, source, crate::MaxHpKind::Gain)
+    }
+
+    pub fn lose_max_hp(
+        &mut self,
+        seat: SeatId,
+        num: i32,
+        source: Option<SeatId>,
+    ) -> Result<(), RuleError> {
+        self.queue_max_hp(seat, num, source, crate::MaxHpKind::Lose)
+    }
+
+    fn queue_max_hp(
+        &mut self,
+        seat: SeatId,
+        num: i32,
+        source: Option<SeatId>,
+        kind: crate::MaxHpKind,
+    ) -> Result<(), RuleError> {
+        self.game.max_hp_program(seat, source, kind, num)?;
+        self.operations.push_back(TriggerOperation::MaxHp {
+            seat,
+            source,
+            kind,
+            num,
+        });
         Ok(())
     }
     /// Lock one bid from every seat, then settle the group using the requested mode.
@@ -610,6 +643,7 @@ impl TriggerContext<'_> {
                     claimed.extend(rows.iter().flatten().map(|card| card.id))
                 }
                 TriggerOperation::PreviewPile { .. }
+                | TriggerOperation::MaxHp { .. }
                 | TriggerOperation::Death { .. }
                 | TriggerOperation::CompareMany { .. }
                 | TriggerOperation::VirtualSha { .. }
@@ -656,6 +690,12 @@ impl TriggerContext<'_> {
 
 #[derive(Clone)]
 enum TriggerOperation {
+    MaxHp {
+        seat: SeatId,
+        source: Option<SeatId>,
+        kind: crate::MaxHpKind,
+        num: i32,
+    },
     PreviewPile {
         seat: SeatId,
         count: u16,
@@ -1096,19 +1136,21 @@ impl Game {
                     self.return_pile_program(self.scheduler.current_id(), seat, rows)
                 }
                 TriggerOperation::Death { target, source } => {
-                    let Some(role) = self
-                        .seat(target)
-                        .ok()
-                        .filter(|s| s.alive)
-                        .and_then(|s| s.role)
-                    else {
+                    if !self.is_alive(target) {
+                        continue;
+                    }
+                    self.death_program(target, source)
+                }
+                TriggerOperation::MaxHp {
+                    seat,
+                    source,
+                    kind,
+                    num,
+                } => {
+                    let Ok(program) = self.max_hp_program(seat, source, kind, num) else {
                         continue;
                     };
-                    Program::event(crate::EventKind::Death {
-                        source,
-                        target,
-                        role,
-                    })
+                    program
                 }
                 TriggerOperation::CompareMany {
                     initiator,

@@ -19,7 +19,7 @@ fn hp_row(game: &Game, event: &TriggerEvent, trial: &str, observation: &str) -> 
     let amount = match subject.as_str() {
         "link" => None,
         "changeHujia" | "changeHp" => event.delta,
-        _ => Some(i32::from(event.amount)),
+        _ => Some(i64::from(event.amount)),
     };
     let seat = game.seat(event.player.unwrap()).unwrap();
     json!([

@@ -58,7 +58,7 @@ pub struct RecastSeat<'a> {
     pub id: SeatId,
     pub alive: bool,
     pub hp: i32,
-    pub max_hp: u16,
+    pub max_hp: i32,
     pub hand: &'a [Card],
     pub equipment: &'a [Card],
     pub judges: &'a [Card],
@@ -644,6 +644,10 @@ impl Game {
 
     pub(crate) fn draw_one_program(&self, seat: SeatId) -> Program {
         Program::Recast(Flow::Movement(Movement::new(seat, MoveKind::Draw)))
+    }
+
+    pub(crate) fn draw_many_program(&self, seat: SeatId, count: u16) -> Program {
+        Program::Recast(Flow::BatchMovement(BatchMovement::draw(seat, count)))
     }
 
     pub(crate) fn created_gain_program(&self, seat: SeatId, card: Card) -> Program {

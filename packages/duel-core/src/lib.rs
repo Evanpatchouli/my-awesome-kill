@@ -18,6 +18,8 @@ pub mod mingdian;
 mod move_choice;
 #[cfg(test)]
 mod move_choice_tests;
+#[cfg(any(test, feature = "content-vitality"))]
+pub mod vitality_content;
 #[cfg(any(test, feature = "content-xunxun"))]
 pub mod xunxun;
 pub use move_choice::{
@@ -48,6 +50,7 @@ use classic::elemental::{self, CardDamage};
 pub use classic::elemental::{DamageNature, DamageRecord};
 use classic::equipment;
 use classic::hero_integration::Judgment;
+pub use classic::max_hp::{MaxHpChange, MaxHpKind, MaxHpMetrics};
 pub use classic::phases::PhaseInfo;
 pub use classic::pile_order::PileOrderResult;
 pub use classic::recast::{
@@ -97,6 +100,10 @@ enum Resolution {
     Selected(Selection),
     MovedCards(MoveResult),
     PileOrdered(PileOrderResult),
+    MaxHpChanged {
+        cancelled: bool,
+    },
+    DeathCancelled,
     Responded,
     Judged(Card),
     HpChanged {
@@ -154,11 +161,16 @@ pub enum Zone {
 
 #[derive(Clone, Copy)]
 enum DeathStage {
+    Before,
     Begin,
+    Apply,
+    Announce,
     Cleanup,
     Reward,
+    End,
     After,
     Finish,
+    FinishCancelled,
 }
 
 #[derive(Clone)]
@@ -169,12 +181,13 @@ enum Program {
     Death {
         source: Option<SeatId>,
         target: SeatId,
-        role: Role,
+        role: Option<Role>,
         stage: DeathStage,
     },
     ActiveSkill(active_skill::Flow),
     MoveChoice(move_choice::Flow),
     PileOrder(classic::pile_order::Flow),
+    MaxHp(classic::max_hp::Flow),
     Expansion(classic::expansion::Flow),
     BasicUse(classic::basic_use::Flow),
     Compare(classic::compare::Flow),
@@ -226,7 +239,7 @@ impl Program {
                 source,
                 target,
                 role,
-                stage: DeathStage::Begin,
+                stage: DeathStage::Before,
             },
             EventKind::UseTao { seat, target, card } => {
                 Self::BasicUse(classic::basic_use::Flow::tao(seat, target, card, false))
@@ -271,6 +284,7 @@ impl Program {
             Self::ActiveSkill(flow) => flow.kind(),
             Self::MoveChoice(flow) => flow.kind(),
             Self::PileOrder(flow) => flow.kind(),
+            Self::MaxHp(flow) => flow.kind(),
             Self::Expansion(flow) => flow.kind(),
             Self::BasicUse(flow) => flow.kind(),
             Self::Event(kind) => *kind,
@@ -319,7 +333,7 @@ impl Program {
 struct Seat {
     id: SeatId,
     hp: i32,
-    max_hp: u16,
+    max_hp: i32,
     alive: bool,
     linked: bool,
     turned_over: bool,
@@ -356,7 +370,7 @@ impl From<SeatSetup> for Seat {
         Self {
             id: setup.id,
             hp: i32::from(setup.hp),
-            max_hp: setup.hp,
+            max_hp: i32::from(setup.hp),
             alive: setup.hp > 0,
             linked: false,
             turned_over: false,
@@ -509,7 +523,7 @@ impl Game {
         self.seat(seat).is_ok_and(|player| player.alive)
     }
 
-    pub fn health(&self, seat: SeatId) -> Option<(i32, u16)> {
+    pub fn health(&self, seat: SeatId) -> Option<(i32, i32)> {
         self.seat(seat)
             .ok()
             .map(|player| (player.hp, player.max_hp))
@@ -1079,6 +1093,8 @@ impl Game {
                             cancelled: true, ..
                         })
                         | Outcome::Finished(Resolution::HpChanged { cancelled: true })
+                        | Outcome::Finished(Resolution::MaxHpChanged { cancelled: true })
+                        | Outcome::Finished(Resolution::DeathCancelled)
                         | Outcome::Finished(Resolution::PileOrdered(PileOrderResult {
                             cancelled: true,
                             ..
@@ -1125,7 +1141,8 @@ impl Game {
                 target,
                 role,
                 stage,
-            } => return self.resolve_death(source, target, role, stage),
+            } => return self.resolve_death(source, target, role, stage, child),
+            Program::MaxHp(flow) => return self.resolve_max_hp(event, flow, child),
             Program::ActiveSkill(flow) => return self.resolve_active_skill(flow, child),
             Program::PileOrder(flow) => return self.resolve_pile_order(event, flow, child),
             Program::MoveChoice(flow) => {
@@ -1316,6 +1333,24 @@ impl Game {
             kind: match (status, program) {
                 (EventStatus::Started, Program::Elemental(elemental::Flow::Hp(hp))) => {
                     hp.announced(self)
+                }
+                (
+                    _,
+                    Program::Death {
+                        source,
+                        target,
+                        role,
+                        ..
+                    },
+                ) if self.is_alive(*target)
+                    && *role != Some(Role::Lord)
+                    && self.match_result().is_none() =>
+                {
+                    EventKind::Death {
+                        source: *source,
+                        target: *target,
+                        role: None,
+                    }
                 }
                 _ => program.kind(),
             },

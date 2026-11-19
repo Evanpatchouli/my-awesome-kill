@@ -122,6 +122,10 @@ pub(crate) enum ContentAction {
     Draw {
         seat: SeatId,
     },
+    DrawMany {
+        seat: SeatId,
+        count: u16,
+    },
 }
 
 impl ContentAction {
@@ -132,6 +136,7 @@ impl ContentAction {
             | Self::Armor { seat, .. }
             | Self::LoseHp { seat, .. }
             | Self::Draw { seat }
+            | Self::DrawMany { seat, .. }
             | Self::GainCreated { seat, .. } => *seat,
             Self::Damage { target, .. } => *target,
         };
@@ -148,6 +153,7 @@ impl ContentAction {
             } => Some(game.elemental_damage_program(source, target, amount, card, false)),
             Self::LoseHp { amount, .. } => Some(game.lose_hp_program(seat, amount)),
             Self::Draw { .. } => Some(game.draw_one_program(seat)),
+            Self::DrawMany { count, .. } => Some(game.draw_many_program(seat, count)),
             Self::GainCreated { card, .. } => Some(game.created_gain_program(seat, card)),
         }
     }
@@ -221,6 +227,14 @@ impl crate::TriggerContext<'_> {
         }
         self.enqueue_elemental(seat, ContentAction::Draw { seat })
     }
+
+    /// Draw the requested number in one draw and one private gain.
+    pub fn draw_cards(&mut self, seat: SeatId, count: u16) -> Result<(), RuleError> {
+        if self.game().classic.is_none() {
+            return Err(RuleError::InvalidSelection);
+        }
+        self.enqueue_elemental(seat, ContentAction::DrawMany { seat, count })
+    }
 }
 
 #[derive(Clone, Copy)]
@@ -292,26 +306,25 @@ pub(crate) struct HealthChange {
     seat: SeatId,
     before: i32,
     after: i32,
-    delta: i32,
+    delta: i64,
     damage: Option<usize>,
     stage: Stage,
     awaiting_timing: bool,
 }
 
 impl HealthChange {
-    fn values(&self, game: &Game) -> (i32, i32, i32, u16) {
+    fn values(&self, game: &Game) -> (i32, i32, i64, u16) {
         let player = game.seat(self.seat).expect("the changed seat exists");
         let absorbed = if self.damage.is_some() && self.delta < 0 {
-            self.delta.unsigned_abs().min(u32::from(player.armor)) as u16
+            self.delta.unsigned_abs().min(u64::from(player.armor)) as u16
         } else {
             0
         };
-        let delta = self.delta + i32::from(absorbed);
-        let signed = player
-            .hp
+        let delta = self.delta + i64::from(absorbed);
+        let signed = i64::from(player.hp)
             .saturating_add(delta)
-            .min(i32::from(player.max_hp));
-        let after = if game.classic.is_some() {
+            .clamp(i64::from(i32::MIN), i64::from(player.max_hp)) as i32;
+        let after = if game.classic.is_some() || !player.alive {
             signed
         } else {
             signed.max(0)
@@ -559,7 +572,12 @@ impl Game {
         })))
     }
 
-    pub(crate) fn queue_health_change(&mut self, seat: SeatId, delta: i32, damage: Option<usize>) {
+    pub(crate) fn queue_health_change(
+        &mut self,
+        seat: SeatId,
+        delta: impl Into<i64>,
+        damage: Option<usize>,
+    ) {
         let player = self.seat(seat).expect("the health change target exists");
         let before = player.hp;
         self.scheduler
@@ -567,7 +585,7 @@ impl Game {
                 seat,
                 before,
                 after: before,
-                delta,
+                delta: delta.into(),
                 damage,
                 stage: Stage::Before,
                 awaiting_timing: false,
@@ -681,7 +699,7 @@ impl Game {
                 stage => {
                     let timing = change.timing();
                     let delta = match change.change {
-                        Change::Armor(delta) => Some(delta),
+                        Change::Armor(delta) => Some(i64::from(delta)),
                         _ => None,
                     };
                     change.stage = match stage {
@@ -790,7 +808,7 @@ impl Game {
         &mut self,
         timing: &'static str,
         seat: SeatId,
-        delta: Option<i32>,
+        delta: Option<i64>,
         rule: Option<Rule>,
     ) -> Option<Program> {
         if rule.is_none() && !self.wants_timing(timing) {

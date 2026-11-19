@@ -74,10 +74,7 @@ impl Game {
         let others = living.iter().skip(1).copied().collect::<Vec<_>>();
         let hand = self.hero_owned_card_ids(seat, false);
         let owned = self.hero_owned_card_ids(seat, true);
-        let wounded = |seat| {
-            self.seat(seat)
-                .is_ok_and(|seat| seat.hp < i32::from(seat.max_hp))
-        };
+        let wounded = |seat| self.seat(seat).is_ok_and(|seat| seat.hp < seat.max_hp);
         let male = |seat| {
             self.seat(seat)
                 .ok()
@@ -506,7 +503,7 @@ impl Game {
                 let targets = &play.branch.targets;
                 let score = match play.skill {
                     SkillId::Qingnang if targets.contains(&seat) => 8,
-                    SkillId::Jieyin if actor.hp < i32::from(actor.max_hp) => 7,
+                    SkillId::Jieyin if actor.hp < actor.max_hp => 7,
                     SkillId::Fanjian => 5,
                     SkillId::Lijian => 4,
                     SkillId::Kurou if actor.hp >= 3 && actor.hand.len() < actor.hp as usize - 1 => {

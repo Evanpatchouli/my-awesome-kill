@@ -87,7 +87,7 @@ fn real_opening_deals_a_unique_roster_and_separates_each_viewer() {
             .find(|hero| Some(&hero.id) == seat.hero.as_ref())
             .unwrap()
             .max_hp;
-        assert_eq!(seat.max_hp, base + u16::from(seat.id == lord));
+        assert_eq!(seat.max_hp, i32::from(base) + i32::from(seat.id == lord));
         assert_eq!(seat.hand_count, if seat.id == lord { 6 } else { 4 });
 
         let perspective = game.view(Some(seat.id)).unwrap();
@@ -332,7 +332,7 @@ fn ordinary_tao_is_available_to_a_damaged_actor_and_recovers_only_that_actor() {
         card: tao.id,
         targets: vec![target],
     };
-    assert_eq!(player.hp + 1, i32::from(player.max_hp));
+    assert_eq!(player.hp + 1, player.max_hp);
     assert!(wounded.actions.contains(&use_tao));
     assert_eq!(
         game.submit(command(
@@ -347,7 +347,7 @@ fn ordinary_tao_is_available_to_a_damaged_actor_and_recovers_only_that_actor() {
     game.submit(command(&wounded, use_tao)).unwrap();
 
     let healed = game.view(Some(target)).unwrap();
-    assert_eq!(healed.seats[target as usize].hp, i32::from(player.max_hp));
+    assert_eq!(healed.seats[target as usize].hp, player.max_hp);
     assert!(healed.discard.contains(tao));
     let held = healed.seats[target as usize].hand.as_ref().unwrap();
     assert!(!healed.actions.iter().any(|action| matches!(action,

@@ -85,7 +85,7 @@ impl Game {
         }
         match kind {
             Sha | Juedou | Nanman | Wanjian => target != owner,
-            Tao => player.hp < i32::from(player.max_hp),
+            Tao => player.hp < player.max_hp,
             Tiesuo | Wuzhong | Wugu | Taoyuan => true,
             Shunshou | Guohe => {
                 target != owner

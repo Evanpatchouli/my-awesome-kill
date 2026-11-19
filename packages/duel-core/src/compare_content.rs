@@ -212,7 +212,7 @@ pub fn danlie(owner: SeatId) -> ActiveSkillRegistration {
 
 fn number_value(game: &Game, event: &crate::TriggerEvent, owner: SeatId) -> Option<i32> {
     let (hp, max) = game.health(owner)?;
-    let lost = i32::from(max).checked_sub(hp)?.max(0);
+    let lost = max.saturating_sub(hp).max(0);
     if lost == 0 {
         return None;
     }
