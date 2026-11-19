@@ -78,7 +78,7 @@ export interface MoveChoiceView {
   allowDecline: boolean
 }
 export type Action =
-  | { type: 'endPlay' }
+  | { type: 'endPlay' | 'advanceRound' }
   | { type: 'playCard'; card: number; targets: number[] }
   | { type: 'recast'; card: number }
   | { type: 'choose'; event: number; card: number | null }
@@ -93,6 +93,8 @@ export interface SeatView {
   hero: string
   role: keyof typeof roles | null
   alive: boolean
+  out?: boolean
+  rest?: { unit: 'phase' | 'round'; count: number }
   linked?: boolean
   turnedOver?: boolean
   armor?: number
@@ -124,6 +126,7 @@ export interface Choice {
   moveCards?: MoveChoiceView
 }
 interface EventRecord {
+  bodySkipped?: boolean
   id: number
   type: string
   status: string
@@ -145,6 +148,7 @@ interface EventRecord {
   delta?: number
 }
 export interface TableView {
+  roundSuspended?: boolean
   groupUpdates?: GroupAnnouncement[]
   version: number
   activeSeat: number
@@ -281,8 +285,9 @@ const cardEffects: Partial<Record<string, 'play' | 'respond' | 'equip' | 'judge'
 }
 
 function isPresentationEvent(e: EventRecord) {
+  if (e.bodySkipped) return false
   if (e.type === 'draw') return e.status === 'finished' && (e.amount ?? 0) > 0
-  if (e.type === 'gainMaxHp' || e.type === 'loseMaxHp')
+  if (e.type === 'gainMaxHp' || e.type === 'loseMaxHp' || e.type === 'changeHp')
     return e.status !== 'started' && e.before != null && e.after != null && e.before !== e.after
   if (['link', 'turnOver', 'changeArmor', 'damage', 'death'].includes(e.type)) return e.status === 'finished'
   return e.status === 'started'

@@ -159,6 +159,7 @@ const pool = computed(() => {
 const prompt = computed(() => {
   if (props.view.drawn) return '牌堆耗尽，本局平局'
   if (props.view.winner) return `${sides[props.view.winner]}获胜`
+  if (props.view.roundSuspended) return '所有角色均已离场，等待下一轮'
   if (props.view.waitingFor === props.view.humanSeat && props.locked) return '正在结算…'
   if (!active.value)
     return `${seatName(props.view, props.view.waitingFor ?? props.view.activeSeat)}正在思考`

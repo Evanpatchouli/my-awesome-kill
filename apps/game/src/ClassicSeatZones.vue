@@ -13,8 +13,15 @@ const props = defineProps<{
   seatNames: string[]
 }>()
 const labels = { weapon: '武', armor: '防', plus: '+马', minus: '−马' }
+const absence = computed(() => {
+  const clock = props.seat.rest
+  if (!clock) return props.seat.out ? '已离场' : ''
+  const label = props.seat.out ? '休整' : '休整标记'
+  if (clock.count <= 0) return `${label} · 无限期`
+  return `${label} · 余 ${clock.count} ${clock.unit === 'round' ? '轮' : '回合'}`
+})
 const state = computed(() =>
-  [props.seat.linked && '横置', props.seat.turnedOver && '已翻面', props.seat.armor && `护甲 ${props.seat.armor}`]
+  [absence.value, props.seat.linked && '横置', props.seat.turnedOver && '已翻面', props.seat.armor && `护甲 ${props.seat.armor}`]
     .filter(Boolean)
     .join(' · '),
 )
@@ -26,7 +33,7 @@ const known = computed(() => props.knownHand?.map(printedFace).join(' · '))
 </script>
 <template>
   <div class="classic-zones" :aria-label="label + '的场上信息'">
-    <div v-if="state" class="classic-seat-state" :aria-label="label + '的状态'" :title="state">
+    <div v-if="state" class="classic-seat-state" :data-rest-seat="seat.rest ? seat.id : undefined" :aria-label="label + '的状态'" :title="state">
       {{ state }}
     </div>
     <div :title="equipped || '无装备'"><span>装备</span> {{ equipped || '—' }}</div>

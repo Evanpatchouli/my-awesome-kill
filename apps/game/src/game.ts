@@ -128,8 +128,9 @@ export const useGame = defineStore('game', () => {
     }
     const token = generation
     locked.value = true
-    const isBot =
-      current.waitingFor != null && current.waitingFor !== 0 && !current.winner && !current.drawn
+    const isBot = !current.winner && !current.drawn && (
+      current.roundSuspended || (current.waitingFor != null && current.waitingFor !== 0)
+    )
     const counterOnlyPass =
       current.choice?.counter &&
       current.choice.branches.length === 1 &&
