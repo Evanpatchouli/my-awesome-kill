@@ -1,0 +1,1006 @@
+{
+  "schema": "noname-reference-trace-v1",
+  "referenceCommit": "c73270948d72949aa80009536b9fd5400767d091",
+  "mode": "identity",
+  "scenario": "qinggang target mark lifecycle",
+  "columns": [
+    "trial",
+    "kind",
+    "timing",
+    "frame",
+    "event",
+    "parentId",
+    "parent",
+    "player",
+    "target",
+    "cards",
+    "state"
+  ],
+  "events": [
+    ["multi","request","useCardBefore",1,"useCard",2,"chooseToUse","A",null,["multi-sha"],{"hp":[12,12],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"A:h"}}],
+    ["multi","callback-high","useCardBefore",1,"useCard",2,"chooseToUse","A",null,["multi-sha"],{"hp":[12,12],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"A:h"}}],
+    ["multi","callback-low","useCardBefore",1,"useCard",2,"chooseToUse","A",null,["multi-sha"],{"hp":[12,12],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"A:h"}}],
+    ["multi","request","useCardToPlayered",3,"useCardToPlayered",1,"useCard","A","B",["multi-sha"],{"hp":[12,12],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o"}}],
+    ["multi","callback-high","useCardToPlayered",3,"useCardToPlayered",1,"useCard","A","B",["multi-sha"],{"hp":[12,12],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o"}}],
+    ["multi","callback-low","useCardToPlayered",3,"useCardToPlayered",1,"useCard","A","B",["multi-sha"],{"hp":[12,12],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o"}}],
+    ["multi","request","useCardToPlayered",5,"useCardToPlayered",1,"useCard","A","C",["multi-sha"],{"hp":[12,12],"has":[true,false],"contains":[true,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o"}}],
+    ["multi","callback-high","useCardToPlayered",5,"useCardToPlayered",1,"useCard","A","C",["multi-sha"],{"hp":[12,12],"has":[true,false],"contains":[true,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o"}}],
+    ["multi","callback-low","useCardToPlayered",5,"useCardToPlayered",1,"useCard","A","C",["multi-sha"],{"hp":[12,12],"has":[true,false],"contains":[true,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o"}}],
+    ["multi","request","shaHit",7,"sha",1,"useCard","A","B",["multi-sha"],{"hp":[12,12],"has":[true,true],"contains":[true,true],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o"}}],
+    ["multi","callback-high","shaHit",7,"sha",1,"useCard","A","B",["multi-sha"],{"hp":[12,12],"has":[true,true],"contains":[true,true],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o"}}],
+    ["multi","callback-low","shaHit",7,"sha",1,"useCard","A","B",["multi-sha"],{"hp":[12,12],"has":[true,true],"contains":[true,true],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o"}}],
+    ["multi","request","damageBegin1",8,"damage",7,"sha","B",null,["multi-sha"],{"hp":[12,12],"has":[true,true],"contains":[true,true],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o"}}],
+    ["multi","callback-high","damageBegin1",8,"damage",7,"sha","B",null,["multi-sha"],{"hp":[12,12],"has":[true,true],"contains":[true,true],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o"}}],
+    ["multi","callback-low","damageBegin1",8,"damage",7,"sha","B",null,["multi-sha"],{"hp":[12,12],"has":[true,true],"contains":[true,true],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o"}}],
+    ["multi","request","damage",8,"damage",7,"sha","B",null,["multi-sha"],{"hp":[12,12],"has":[true,true],"contains":[true,true],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o"}}],
+    ["multi","callback-high","damage",8,"damage",7,"sha","B",null,["multi-sha"],{"hp":[11,12],"has":[true,true],"contains":[true,true],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o"}}],
+    ["multi","callback-low","damage",8,"damage",7,"sha","B",null,["multi-sha"],{"hp":[11,12],"has":[false,true],"contains":[false,true],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o"}}],
+    ["multi","request","damageEnd",8,"damage",7,"sha","B",null,["multi-sha"],{"hp":[11,12],"has":[false,true],"contains":[false,true],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o"}}],
+    ["multi","callback-high","damageEnd",8,"damage",7,"sha","B",null,["multi-sha"],{"hp":[11,12],"has":[false,true],"contains":[false,true],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o"}}],
+    ["multi","callback-low","damageEnd",8,"damage",7,"sha","B",null,["multi-sha"],{"hp":[11,12],"has":[false,true],"contains":[false,true],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o"}}],
+    ["multi","request","shaHit",9,"sha",1,"useCard","A","C",["multi-sha"],{"hp":[11,12],"has":[false,true],"contains":[false,true],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o"}}],
+    ["multi","callback-high","shaHit",9,"sha",1,"useCard","A","C",["multi-sha"],{"hp":[11,12],"has":[false,true],"contains":[false,true],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o"}}],
+    ["multi","callback-low","shaHit",9,"sha",1,"useCard","A","C",["multi-sha"],{"hp":[11,12],"has":[false,true],"contains":[false,true],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o"}}],
+    ["multi","request","damageBegin1",10,"damage",9,"sha","C",null,["multi-sha"],{"hp":[11,12],"has":[false,true],"contains":[false,true],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o"}}],
+    ["multi","callback-high","damageBegin1",10,"damage",9,"sha","C",null,["multi-sha"],{"hp":[11,12],"has":[false,true],"contains":[false,true],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o"}}],
+    ["multi","callback-low","damageBegin1",10,"damage",9,"sha","C",null,["multi-sha"],{"hp":[11,12],"has":[false,true],"contains":[false,true],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o"}}],
+    ["multi","request","damage",10,"damage",9,"sha","C",null,["multi-sha"],{"hp":[11,12],"has":[false,true],"contains":[false,true],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o"}}],
+    ["multi","callback-high","damage",10,"damage",9,"sha","C",null,["multi-sha"],{"hp":[11,11],"has":[false,true],"contains":[false,true],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o"}}],
+    ["multi","callback-low","damage",10,"damage",9,"sha","C",null,["multi-sha"],{"hp":[11,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o"}}],
+    ["multi","request","damageEnd",10,"damage",9,"sha","C",null,["multi-sha"],{"hp":[11,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o"}}],
+    ["multi","callback-high","damageEnd",10,"damage",9,"sha","C",null,["multi-sha"],{"hp":[11,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o"}}],
+    ["multi","callback-low","damageEnd",10,"damage",9,"sha","C",null,["multi-sha"],{"hp":[11,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o"}}],
+    ["multi","request","useCardEnd",1,"useCard",2,"chooseToUse","A",null,["multi-sha"],{"hp":[11,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o"}}],
+    ["multi","callback-high","useCardEnd",1,"useCard",2,"chooseToUse","A",null,["multi-sha"],{"hp":[11,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o"}}],
+    ["multi","callback-low","useCardEnd",1,"useCard",2,"chooseToUse","A",null,["multi-sha"],{"hp":[11,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o"}}],
+    ["multi","request","useCardAfter",1,"useCard",2,"chooseToUse","A",null,["multi-sha"],{"hp":[11,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o"}}],
+    ["multi","callback-high","useCardAfter",1,"useCard",2,"chooseToUse","A",null,["multi-sha"],{"hp":[11,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o"}}],
+    ["multi","callback-low","useCardAfter",1,"useCard",2,"chooseToUse","A",null,["multi-sha"],{"hp":[11,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"C:e","multi-sha":"o"}}],
+    ["miss","request","useCardBefore",11,"useCard",12,"reference_fixture_use","A",null,["miss-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"A:h","shan":"B:h"}}],
+    ["miss","callback-high","useCardBefore",11,"useCard",12,"reference_fixture_use","A",null,["miss-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"A:h","shan":"B:h"}}],
+    ["miss","callback-low","useCardBefore",11,"useCard",12,"reference_fixture_use","A",null,["miss-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"A:h","shan":"B:h"}}],
+    ["miss","request","useCardToPlayered",13,"useCardToPlayered",11,"useCard","A","B",["miss-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"o","shan":"B:h"}}],
+    ["miss","callback-high","useCardToPlayered",13,"useCardToPlayered",11,"useCard","A","B",["miss-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"o","shan":"B:h"}}],
+    ["miss","callback-low","useCardToPlayered",13,"useCardToPlayered",11,"useCard","A","B",["miss-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"o","shan":"B:h"}}],
+    ["miss","request","shaMiss",15,"sha",11,"useCard","A","B",["miss-sha"],{"hp":[12,11],"has":[true,false],"contains":[true,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"o","shan":"d"}}],
+    ["miss","callback-high","shaMiss",15,"sha",11,"useCard","A","B",["miss-sha"],{"hp":[12,11],"has":[true,false],"contains":[true,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"o","shan":"d"}}],
+    ["miss","callback-low","shaMiss",15,"sha",11,"useCard","A","B",["miss-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"o","shan":"d"}}],
+    ["miss","request","useCardEnd",11,"useCard",12,"reference_fixture_use","A",null,["miss-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"o","shan":"d"}}],
+    ["miss","callback-high","useCardEnd",11,"useCard",12,"reference_fixture_use","A",null,["miss-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"o","shan":"d"}}],
+    ["miss","callback-low","useCardEnd",11,"useCard",12,"reference_fixture_use","A",null,["miss-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"o","shan":"d"}}],
+    ["miss","request","useCardAfter",11,"useCard",12,"reference_fixture_use","A",null,["miss-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"o","shan":"d"}}],
+    ["miss","callback-high","useCardAfter",11,"useCard",12,"reference_fixture_use","A",null,["miss-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"o","shan":"d"}}],
+    ["miss","callback-low","useCardAfter",11,"useCard",12,"reference_fixture_use","A",null,["miss-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"o","shan":"d"}}],
+    ["follow","request","useCardBefore",16,"useCard",12,"reference_fixture_use","C",null,["follow-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"C:h","red":"c"}}],
+    ["follow","callback-high","useCardBefore",16,"useCard",12,"reference_fixture_use","C",null,["follow-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"C:h","red":"c"}}],
+    ["follow","callback-low","useCardBefore",16,"useCard",12,"reference_fixture_use","C",null,["follow-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"C:h","red":"c"}}],
+    ["follow","request","useCardToPlayered",17,"useCardToPlayered",16,"useCard","C","B",["follow-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"o","red":"c"}}],
+    ["follow","callback-high","useCardToPlayered",17,"useCardToPlayered",16,"useCard","C","B",["follow-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"o","red":"c"}}],
+    ["follow","callback-low","useCardToPlayered",17,"useCardToPlayered",16,"useCard","C","B",["follow-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"o","red":"c"}}],
+    ["follow","request","shaMiss",20,"sha",16,"useCard","C","B",["follow-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"o","red":"d"}}],
+    ["follow","callback-high","shaMiss",20,"sha",16,"useCard","C","B",["follow-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"o","red":"d"}}],
+    ["follow","callback-low","shaMiss",20,"sha",16,"useCard","C","B",["follow-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"o","red":"d"}}],
+    ["follow","request","useCardEnd",16,"useCard",12,"reference_fixture_use","C",null,["follow-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"o","red":"d"}}],
+    ["follow","callback-high","useCardEnd",16,"useCard",12,"reference_fixture_use","C",null,["follow-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"o","red":"d"}}],
+    ["follow","callback-low","useCardEnd",16,"useCard",12,"reference_fixture_use","C",null,["follow-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"o","red":"d"}}],
+    ["follow","request","useCardAfter",16,"useCard",12,"reference_fixture_use","C",null,["follow-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"o","red":"d"}}],
+    ["follow","callback-high","useCardAfter",16,"useCard",12,"reference_fixture_use","C",null,["follow-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"o","red":"d"}}],
+    ["follow","callback-low","useCardAfter",16,"useCard",12,"reference_fixture_use","C",null,["follow-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"o","red":"d"}}],
+    ["cancel-damage","request","useCardBefore",21,"useCard",12,"reference_fixture_use","A",null,["cancel-damage-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"A:h"}}],
+    ["cancel-damage","callback-high","useCardBefore",21,"useCard",12,"reference_fixture_use","A",null,["cancel-damage-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"A:h"}}],
+    ["cancel-damage","callback-low","useCardBefore",21,"useCard",12,"reference_fixture_use","A",null,["cancel-damage-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"A:h"}}],
+    ["cancel-damage","request","useCardToPlayered",22,"useCardToPlayered",21,"useCard","A","B",["cancel-damage-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"o"}}],
+    ["cancel-damage","callback-high","useCardToPlayered",22,"useCardToPlayered",21,"useCard","A","B",["cancel-damage-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"o"}}],
+    ["cancel-damage","callback-low","useCardToPlayered",22,"useCardToPlayered",21,"useCard","A","B",["cancel-damage-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"o"}}],
+    ["cancel-damage","request","shaHit",24,"sha",21,"useCard","A","B",["cancel-damage-sha"],{"hp":[12,11],"has":[true,false],"contains":[true,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"o"}}],
+    ["cancel-damage","callback-high","shaHit",24,"sha",21,"useCard","A","B",["cancel-damage-sha"],{"hp":[12,11],"has":[true,false],"contains":[true,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"o"}}],
+    ["cancel-damage","callback-low","shaHit",24,"sha",21,"useCard","A","B",["cancel-damage-sha"],{"hp":[12,11],"has":[true,false],"contains":[true,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"o"}}],
+    ["cancel-damage","request","damageBegin1",25,"damage",24,"sha","B",null,["cancel-damage-sha"],{"hp":[12,11],"has":[true,false],"contains":[true,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"o"}}],
+    ["cancel-damage","request","damageCancelled",25,"damage",24,"sha","B",null,["cancel-damage-sha"],{"hp":[12,11],"has":[true,false],"contains":[true,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"o"}}],
+    ["cancel-damage","callback-high","damageCancelled",25,"damage",24,"sha","B",null,["cancel-damage-sha"],{"hp":[12,11],"has":[true,false],"contains":[true,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"o"}}],
+    ["cancel-damage","callback-low","damageCancelled",25,"damage",24,"sha","B",null,["cancel-damage-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"o"}}],
+    ["cancel-damage","request","useCardEnd",21,"useCard",12,"reference_fixture_use","A",null,["cancel-damage-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"o"}}],
+    ["cancel-damage","callback-high","useCardEnd",21,"useCard",12,"reference_fixture_use","A",null,["cancel-damage-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"o"}}],
+    ["cancel-damage","callback-low","useCardEnd",21,"useCard",12,"reference_fixture_use","A",null,["cancel-damage-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"o"}}],
+    ["cancel-damage","request","useCardAfter",21,"useCard",12,"reference_fixture_use","A",null,["cancel-damage-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"o"}}],
+    ["cancel-damage","callback-high","useCardAfter",21,"useCard",12,"reference_fixture_use","A",null,["cancel-damage-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"o"}}],
+    ["cancel-damage","callback-low","useCardAfter",21,"useCard",12,"reference_fixture_use","A",null,["cancel-damage-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"o"}}],
+    ["cancel-target","request","useCardBefore",26,"useCard",12,"reference_fixture_use","A",null,["cancel-target-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"A:h"}}],
+    ["cancel-target","callback-high","useCardBefore",26,"useCard",12,"reference_fixture_use","A",null,["cancel-target-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"A:h"}}],
+    ["cancel-target","callback-low","useCardBefore",26,"useCard",12,"reference_fixture_use","A",null,["cancel-target-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"A:h"}}],
+    ["cancel-target","request","useCardToPlayered",27,"useCardToPlayered",26,"useCard","A","B",["cancel-target-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"o"}}],
+    ["cancel-target","request","useCardToPlayeredCancelled",27,"useCardToPlayered",26,"useCard","A","B",["cancel-target-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"o"}}],
+    ["cancel-target","callback-high","useCardToPlayeredCancelled",27,"useCardToPlayered",26,"useCard","A","B",["cancel-target-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"o"}}],
+    ["cancel-target","callback-low","useCardToPlayeredCancelled",27,"useCardToPlayered",26,"useCard","A","B",["cancel-target-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"o"}}],
+    ["cancel-target","request","shaMiss",30,"sha",26,"useCard","A","B",["cancel-target-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"o"}}],
+    ["cancel-target","callback-high","shaMiss",30,"sha",26,"useCard","A","B",["cancel-target-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"o"}}],
+    ["cancel-target","callback-low","shaMiss",30,"sha",26,"useCard","A","B",["cancel-target-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"o"}}],
+    ["cancel-target","request","useCardEnd",26,"useCard",12,"reference_fixture_use","A",null,["cancel-target-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"o"}}],
+    ["cancel-target","callback-high","useCardEnd",26,"useCard",12,"reference_fixture_use","A",null,["cancel-target-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"o"}}],
+    ["cancel-target","callback-low","useCardEnd",26,"useCard",12,"reference_fixture_use","A",null,["cancel-target-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"o"}}],
+    ["cancel-target","request","useCardAfter",26,"useCard",12,"reference_fixture_use","A",null,["cancel-target-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"o"}}],
+    ["cancel-target","callback-high","useCardAfter",26,"useCard",12,"reference_fixture_use","A",null,["cancel-target-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"o"}}],
+    ["cancel-target","callback-low","useCardAfter",26,"useCard",12,"reference_fixture_use","A",null,["cancel-target-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"o"}}],
+    ["zero-damage","request","useCardBefore",31,"useCard",12,"reference_fixture_use","A",null,["zero-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"A:h"}}],
+    ["zero-damage","callback-high","useCardBefore",31,"useCard",12,"reference_fixture_use","A",null,["zero-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"A:h"}}],
+    ["zero-damage","callback-low","useCardBefore",31,"useCard",12,"reference_fixture_use","A",null,["zero-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"A:h"}}],
+    ["zero-damage","request","useCardToPlayered",32,"useCardToPlayered",31,"useCard","A","B",["zero-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"o"}}],
+    ["zero-damage","callback-high","useCardToPlayered",32,"useCardToPlayered",31,"useCard","A","B",["zero-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"o"}}],
+    ["zero-damage","callback-low","useCardToPlayered",32,"useCardToPlayered",31,"useCard","A","B",["zero-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"o"}}],
+    ["zero-damage","request","shaHit",34,"sha",31,"useCard","A","B",["zero-sha"],{"hp":[12,11],"has":[true,false],"contains":[true,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"o"}}],
+    ["zero-damage","callback-high","shaHit",34,"sha",31,"useCard","A","B",["zero-sha"],{"hp":[12,11],"has":[true,false],"contains":[true,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"o"}}],
+    ["zero-damage","callback-low","shaHit",34,"sha",31,"useCard","A","B",["zero-sha"],{"hp":[12,11],"has":[true,false],"contains":[true,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"o"}}],
+    ["zero-damage","request","damageBegin1",35,"damage",34,"sha","B",null,["zero-sha"],{"hp":[12,11],"has":[true,false],"contains":[true,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"o"}}],
+    ["zero-damage","request","damageZero",35,"damage",34,"sha","B",null,["zero-sha"],{"hp":[12,11],"has":[true,false],"contains":[true,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"o"}}],
+    ["zero-damage","callback-high","damageZero",35,"damage",34,"sha","B",null,["zero-sha"],{"hp":[12,11],"has":[true,false],"contains":[true,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"o"}}],
+    ["zero-damage","callback-low","damageZero",35,"damage",34,"sha","B",null,["zero-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"o"}}],
+    ["zero-damage","request","useCardEnd",31,"useCard",12,"reference_fixture_use","A",null,["zero-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"o"}}],
+    ["zero-damage","callback-high","useCardEnd",31,"useCard",12,"reference_fixture_use","A",null,["zero-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"o"}}],
+    ["zero-damage","callback-low","useCardEnd",31,"useCard",12,"reference_fixture_use","A",null,["zero-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"o"}}],
+    ["zero-damage","request","useCardAfter",31,"useCard",12,"reference_fixture_use","A",null,["zero-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"o"}}],
+    ["zero-damage","callback-high","useCardAfter",31,"useCard",12,"reference_fixture_use","A",null,["zero-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"o"}}],
+    ["zero-damage","callback-low","useCardAfter",31,"useCard",12,"reference_fixture_use","A",null,["zero-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"o"}}],
+    ["exclude-all","request","useCardBefore",36,"useCard",12,"reference_fixture_use","A",null,["exclude-all-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"d","exclude-all-sha":"A:h"}}],
+    ["exclude-all","callback-high","useCardBefore",36,"useCard",12,"reference_fixture_use","A",null,["exclude-all-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"d","exclude-all-sha":"A:h"}}],
+    ["exclude-all","callback-low","useCardBefore",36,"useCard",12,"reference_fixture_use","A",null,["exclude-all-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"d","exclude-all-sha":"A:h"}}],
+    ["exclude-all","request","useCardToPlayered",37,"useCardToPlayered",36,"useCard","A","B",["exclude-all-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"d","exclude-all-sha":"o"}}],
+    ["exclude-all","callback-high","useCardToPlayered",37,"useCardToPlayered",36,"useCard","A","B",["exclude-all-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"d","exclude-all-sha":"o"}}],
+    ["exclude-all","callback-low","useCardToPlayered",37,"useCardToPlayered",36,"useCard","A","B",["exclude-all-sha"],{"hp":[12,11],"has":[false,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"d","exclude-all-sha":"o"}}],
+    ["exclude-all","request","useCardEnd",36,"useCard",12,"reference_fixture_use","A",null,["exclude-all-sha"],{"hp":[12,11],"has":[true,false],"contains":[true,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"d","exclude-all-sha":"o"}}],
+    ["exclude-all","callback-high","useCardEnd",36,"useCard",12,"reference_fixture_use","A",null,["exclude-all-sha"],{"hp":[12,11],"has":[true,false],"contains":[true,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"d","exclude-all-sha":"o"}}],
+    ["exclude-all","callback-low","useCardEnd",36,"useCard",12,"reference_fixture_use","A",null,["exclude-all-sha"],{"hp":[12,11],"has":[true,false],"contains":[true,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"d","exclude-all-sha":"o"}}],
+    ["exclude-all","request","useCardAfter",36,"useCard",12,"reference_fixture_use","A",null,["exclude-all-sha"],{"hp":[12,11],"has":[true,false],"contains":[true,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"d","exclude-all-sha":"o"}}],
+    ["exclude-all","callback-high","useCardAfter",36,"useCard",12,"reference_fixture_use","A",null,["exclude-all-sha"],{"hp":[12,11],"has":[true,false],"contains":[true,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"d","exclude-all-sha":"o"}}],
+    ["exclude-all","callback-low","useCardAfter",36,"useCard",12,"reference_fixture_use","A",null,["exclude-all-sha"],{"hp":[12,11],"has":[true,false],"contains":[true,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"d","exclude-all-sha":"o"}}],
+    ["cancel-root","request","useCardBefore",39,"useCard",12,"reference_fixture_use","A",null,["cancel-root-sha"],{"hp":[12,11],"has":[true,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"d","exclude-all-sha":"d","cancel-root-sha":"A:h"}}],
+    ["cancel-root","callback-high","useCardBefore",39,"useCard",12,"reference_fixture_use","A",null,["cancel-root-sha"],{"hp":[12,11],"has":[true,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"d","exclude-all-sha":"d","cancel-root-sha":"A:h"}}],
+    ["cancel-root","callback-low","useCardBefore",39,"useCard",12,"reference_fixture_use","A",null,["cancel-root-sha"],{"hp":[12,11],"has":[true,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"d","exclude-all-sha":"d","cancel-root-sha":"A:h"}}],
+    ["cancel-root","request","useCardToPlayered",40,"useCardToPlayered",39,"useCard","A","C",["cancel-root-sha"],{"hp":[12,11],"has":[true,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"d","exclude-all-sha":"d","cancel-root-sha":"o"}}],
+    ["cancel-root","callback-high","useCardToPlayered",40,"useCardToPlayered",39,"useCard","A","C",["cancel-root-sha"],{"hp":[12,11],"has":[true,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"d","exclude-all-sha":"d","cancel-root-sha":"o"}}],
+    ["cancel-root","callback-low","useCardToPlayered",40,"useCardToPlayered",39,"useCard","A","C",["cancel-root-sha"],{"hp":[12,11],"has":[true,false],"contains":[false,false],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"d","exclude-all-sha":"d","cancel-root-sha":"o"}}],
+    ["cancel-root","request","useCardCancelled",39,"useCard",12,"reference_fixture_use","A",null,["cancel-root-sha"],{"hp":[12,11],"has":[true,true],"contains":[false,true],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"d","exclude-all-sha":"d","cancel-root-sha":"o"}}],
+    ["cancel-root","callback-high","useCardCancelled",39,"useCard",12,"reference_fixture_use","A",null,["cancel-root-sha"],{"hp":[12,11],"has":[true,true],"contains":[false,true],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"d","exclude-all-sha":"d","cancel-root-sha":"o"}}],
+    ["cancel-root","callback-low","useCardCancelled",39,"useCard",12,"reference_fixture_use","A",null,["cancel-root-sha"],{"hp":[12,11],"has":[true,true],"contains":[false,true],"cards":{"sword":"A:e","fang":"A:e","armor-B":"B:e","armor-C":"d","multi-sha":"d","miss-sha":"d","shan":"d","follow-sha":"d","red":"d","cancel-damage-sha":"d","cancel-target-sha":"d","zero-sha":"d","exclude-all-sha":"d","cancel-root-sha":"o"}}]
+  ],
+  "stages": [
+    [
+      "multi",
+      {
+        "hp": [
+          11,
+          11
+        ],
+        "has": [
+          false,
+          false
+        ],
+        "contains": [
+          false,
+          false
+        ],
+        "cards": {
+          "sword": "A:e",
+          "fang": "A:e",
+          "armor-B": "B:e",
+          "armor-C": "C:e",
+          "multi-sha": "d"
+        }
+      }
+    ],
+    [
+      "miss",
+      {
+        "hp": [
+          12,
+          11
+        ],
+        "has": [
+          false,
+          false
+        ],
+        "contains": [
+          false,
+          false
+        ],
+        "cards": {
+          "sword": "A:e",
+          "fang": "A:e",
+          "armor-B": "B:e",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "miss-sha": "d",
+          "shan": "d"
+        }
+      }
+    ],
+    [
+      "follow",
+      {
+        "hp": [
+          12,
+          11
+        ],
+        "has": [
+          false,
+          false
+        ],
+        "contains": [
+          false,
+          false
+        ],
+        "cards": {
+          "sword": "A:e",
+          "fang": "A:e",
+          "armor-B": "B:e",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "miss-sha": "d",
+          "shan": "d",
+          "follow-sha": "d",
+          "red": "d"
+        }
+      }
+    ],
+    [
+      "cancel-damage",
+      {
+        "hp": [
+          12,
+          11
+        ],
+        "has": [
+          false,
+          false
+        ],
+        "contains": [
+          false,
+          false
+        ],
+        "cards": {
+          "sword": "A:e",
+          "fang": "A:e",
+          "armor-B": "B:e",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "miss-sha": "d",
+          "shan": "d",
+          "follow-sha": "d",
+          "red": "d",
+          "cancel-damage-sha": "d"
+        }
+      }
+    ],
+    [
+      "cancel-target",
+      {
+        "hp": [
+          12,
+          11
+        ],
+        "has": [
+          false,
+          false
+        ],
+        "contains": [
+          false,
+          false
+        ],
+        "cards": {
+          "sword": "A:e",
+          "fang": "A:e",
+          "armor-B": "B:e",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "miss-sha": "d",
+          "shan": "d",
+          "follow-sha": "d",
+          "red": "d",
+          "cancel-damage-sha": "d",
+          "cancel-target-sha": "d"
+        }
+      }
+    ],
+    [
+      "zero-damage",
+      {
+        "hp": [
+          12,
+          11
+        ],
+        "has": [
+          false,
+          false
+        ],
+        "contains": [
+          false,
+          false
+        ],
+        "cards": {
+          "sword": "A:e",
+          "fang": "A:e",
+          "armor-B": "B:e",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "miss-sha": "d",
+          "shan": "d",
+          "follow-sha": "d",
+          "red": "d",
+          "cancel-damage-sha": "d",
+          "cancel-target-sha": "d",
+          "zero-sha": "d"
+        }
+      }
+    ],
+    [
+      "exclude-all",
+      {
+        "hp": [
+          12,
+          11
+        ],
+        "has": [
+          true,
+          false
+        ],
+        "contains": [
+          true,
+          false
+        ],
+        "cards": {
+          "sword": "A:e",
+          "fang": "A:e",
+          "armor-B": "B:e",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "miss-sha": "d",
+          "shan": "d",
+          "follow-sha": "d",
+          "red": "d",
+          "cancel-damage-sha": "d",
+          "cancel-target-sha": "d",
+          "zero-sha": "d",
+          "exclude-all-sha": "d"
+        }
+      }
+    ],
+    [
+      "cancel-root",
+      {
+        "hp": [
+          12,
+          11
+        ],
+        "has": [
+          true,
+          true
+        ],
+        "contains": [
+          false,
+          true
+        ],
+        "cards": {
+          "sword": "A:e",
+          "fang": "A:e",
+          "armor-B": "B:e",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "miss-sha": "d",
+          "shan": "d",
+          "follow-sha": "d",
+          "red": "d",
+          "cancel-damage-sha": "d",
+          "cancel-target-sha": "d",
+          "zero-sha": "d",
+          "exclude-all-sha": "d",
+          "cancel-root-sha": "d"
+        }
+      }
+    ]
+  ],
+  "calls": [
+    [
+      "multi",
+      "qinggang_skill",
+      "begin",
+      "A",
+      4,
+      3,
+      {
+        "hp": [
+          12,
+          12
+        ],
+        "has": [
+          false,
+          false
+        ],
+        "contains": [
+          false,
+          false
+        ],
+        "cards": {
+          "sword": "A:e",
+          "fang": "A:e",
+          "armor-B": "B:e",
+          "armor-C": "C:e",
+          "multi-sha": "o"
+        }
+      }
+    ],
+    [
+      "multi",
+      "qinggang_skill",
+      "end",
+      "A",
+      4,
+      3,
+      {
+        "hp": [
+          12,
+          12
+        ],
+        "has": [
+          true,
+          false
+        ],
+        "contains": [
+          true,
+          false
+        ],
+        "cards": {
+          "sword": "A:e",
+          "fang": "A:e",
+          "armor-B": "B:e",
+          "armor-C": "C:e",
+          "multi-sha": "o"
+        }
+      }
+    ],
+    [
+      "multi",
+      "qinggang_skill",
+      "begin",
+      "A",
+      6,
+      5,
+      {
+        "hp": [
+          12,
+          12
+        ],
+        "has": [
+          true,
+          false
+        ],
+        "contains": [
+          true,
+          false
+        ],
+        "cards": {
+          "sword": "A:e",
+          "fang": "A:e",
+          "armor-B": "B:e",
+          "armor-C": "C:e",
+          "multi-sha": "o"
+        }
+      }
+    ],
+    [
+      "multi",
+      "qinggang_skill",
+      "end",
+      "A",
+      6,
+      5,
+      {
+        "hp": [
+          12,
+          12
+        ],
+        "has": [
+          true,
+          true
+        ],
+        "contains": [
+          true,
+          true
+        ],
+        "cards": {
+          "sword": "A:e",
+          "fang": "A:e",
+          "armor-B": "B:e",
+          "armor-C": "C:e",
+          "multi-sha": "o"
+        }
+      }
+    ],
+    [
+      "miss",
+      "qinggang_skill",
+      "begin",
+      "A",
+      14,
+      13,
+      {
+        "hp": [
+          12,
+          11
+        ],
+        "has": [
+          false,
+          false
+        ],
+        "contains": [
+          false,
+          false
+        ],
+        "cards": {
+          "sword": "A:e",
+          "fang": "A:e",
+          "armor-B": "B:e",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "miss-sha": "o",
+          "shan": "B:h"
+        }
+      }
+    ],
+    [
+      "miss",
+      "qinggang_skill",
+      "end",
+      "A",
+      14,
+      13,
+      {
+        "hp": [
+          12,
+          11
+        ],
+        "has": [
+          true,
+          false
+        ],
+        "contains": [
+          true,
+          false
+        ],
+        "cards": {
+          "sword": "A:e",
+          "fang": "A:e",
+          "armor-B": "B:e",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "miss-sha": "o",
+          "shan": "B:h"
+        }
+      }
+    ],
+    [
+      "follow",
+      "bagua_skill",
+      "begin",
+      "B",
+      18,
+      19,
+      {
+        "hp": [
+          12,
+          11
+        ],
+        "has": [
+          false,
+          false
+        ],
+        "contains": [
+          false,
+          false
+        ],
+        "cards": {
+          "sword": "A:e",
+          "fang": "A:e",
+          "armor-B": "B:e",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "miss-sha": "d",
+          "shan": "d",
+          "follow-sha": "o",
+          "red": "c"
+        }
+      }
+    ],
+    [
+      "follow",
+      "bagua_skill",
+      "end",
+      "B",
+      18,
+      19,
+      {
+        "hp": [
+          12,
+          11
+        ],
+        "has": [
+          false,
+          false
+        ],
+        "contains": [
+          false,
+          false
+        ],
+        "cards": {
+          "sword": "A:e",
+          "fang": "A:e",
+          "armor-B": "B:e",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "miss-sha": "d",
+          "shan": "d",
+          "follow-sha": "o",
+          "red": "d"
+        }
+      }
+    ],
+    [
+      "cancel-damage",
+      "qinggang_skill",
+      "begin",
+      "A",
+      23,
+      22,
+      {
+        "hp": [
+          12,
+          11
+        ],
+        "has": [
+          false,
+          false
+        ],
+        "contains": [
+          false,
+          false
+        ],
+        "cards": {
+          "sword": "A:e",
+          "fang": "A:e",
+          "armor-B": "B:e",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "miss-sha": "d",
+          "shan": "d",
+          "follow-sha": "d",
+          "red": "d",
+          "cancel-damage-sha": "o"
+        }
+      }
+    ],
+    [
+      "cancel-damage",
+      "qinggang_skill",
+      "end",
+      "A",
+      23,
+      22,
+      {
+        "hp": [
+          12,
+          11
+        ],
+        "has": [
+          true,
+          false
+        ],
+        "contains": [
+          true,
+          false
+        ],
+        "cards": {
+          "sword": "A:e",
+          "fang": "A:e",
+          "armor-B": "B:e",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "miss-sha": "d",
+          "shan": "d",
+          "follow-sha": "d",
+          "red": "d",
+          "cancel-damage-sha": "o"
+        }
+      }
+    ],
+    [
+      "cancel-target",
+      "bagua_skill",
+      "begin",
+      "B",
+      28,
+      29,
+      {
+        "hp": [
+          12,
+          11
+        ],
+        "has": [
+          false,
+          false
+        ],
+        "contains": [
+          false,
+          false
+        ],
+        "cards": {
+          "sword": "A:e",
+          "fang": "A:e",
+          "armor-B": "B:e",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "miss-sha": "d",
+          "shan": "d",
+          "follow-sha": "d",
+          "red": "d",
+          "cancel-damage-sha": "d",
+          "cancel-target-sha": "o"
+        }
+      }
+    ],
+    [
+      "cancel-target",
+      "bagua_skill",
+      "end",
+      "B",
+      28,
+      29,
+      {
+        "hp": [
+          12,
+          11
+        ],
+        "has": [
+          false,
+          false
+        ],
+        "contains": [
+          false,
+          false
+        ],
+        "cards": {
+          "sword": "A:e",
+          "fang": "A:e",
+          "armor-B": "B:e",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "miss-sha": "d",
+          "shan": "d",
+          "follow-sha": "d",
+          "red": "d",
+          "cancel-damage-sha": "d",
+          "cancel-target-sha": "o"
+        }
+      }
+    ],
+    [
+      "zero-damage",
+      "qinggang_skill",
+      "begin",
+      "A",
+      33,
+      32,
+      {
+        "hp": [
+          12,
+          11
+        ],
+        "has": [
+          false,
+          false
+        ],
+        "contains": [
+          false,
+          false
+        ],
+        "cards": {
+          "sword": "A:e",
+          "fang": "A:e",
+          "armor-B": "B:e",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "miss-sha": "d",
+          "shan": "d",
+          "follow-sha": "d",
+          "red": "d",
+          "cancel-damage-sha": "d",
+          "cancel-target-sha": "d",
+          "zero-sha": "o"
+        }
+      }
+    ],
+    [
+      "zero-damage",
+      "qinggang_skill",
+      "end",
+      "A",
+      33,
+      32,
+      {
+        "hp": [
+          12,
+          11
+        ],
+        "has": [
+          true,
+          false
+        ],
+        "contains": [
+          true,
+          false
+        ],
+        "cards": {
+          "sword": "A:e",
+          "fang": "A:e",
+          "armor-B": "B:e",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "miss-sha": "d",
+          "shan": "d",
+          "follow-sha": "d",
+          "red": "d",
+          "cancel-damage-sha": "d",
+          "cancel-target-sha": "d",
+          "zero-sha": "o"
+        }
+      }
+    ],
+    [
+      "exclude-all",
+      "qinggang_skill",
+      "begin",
+      "A",
+      38,
+      37,
+      {
+        "hp": [
+          12,
+          11
+        ],
+        "has": [
+          false,
+          false
+        ],
+        "contains": [
+          false,
+          false
+        ],
+        "cards": {
+          "sword": "A:e",
+          "fang": "A:e",
+          "armor-B": "B:e",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "miss-sha": "d",
+          "shan": "d",
+          "follow-sha": "d",
+          "red": "d",
+          "cancel-damage-sha": "d",
+          "cancel-target-sha": "d",
+          "zero-sha": "d",
+          "exclude-all-sha": "o"
+        }
+      }
+    ],
+    [
+      "exclude-all",
+      "qinggang_skill",
+      "end",
+      "A",
+      38,
+      37,
+      {
+        "hp": [
+          12,
+          11
+        ],
+        "has": [
+          true,
+          false
+        ],
+        "contains": [
+          true,
+          false
+        ],
+        "cards": {
+          "sword": "A:e",
+          "fang": "A:e",
+          "armor-B": "B:e",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "miss-sha": "d",
+          "shan": "d",
+          "follow-sha": "d",
+          "red": "d",
+          "cancel-damage-sha": "d",
+          "cancel-target-sha": "d",
+          "zero-sha": "d",
+          "exclude-all-sha": "o"
+        }
+      }
+    ],
+    [
+      "cancel-root",
+      "qinggang_skill",
+      "begin",
+      "A",
+      41,
+      40,
+      {
+        "hp": [
+          12,
+          11
+        ],
+        "has": [
+          true,
+          false
+        ],
+        "contains": [
+          false,
+          false
+        ],
+        "cards": {
+          "sword": "A:e",
+          "fang": "A:e",
+          "armor-B": "B:e",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "miss-sha": "d",
+          "shan": "d",
+          "follow-sha": "d",
+          "red": "d",
+          "cancel-damage-sha": "d",
+          "cancel-target-sha": "d",
+          "zero-sha": "d",
+          "exclude-all-sha": "d",
+          "cancel-root-sha": "o"
+        }
+      }
+    ],
+    [
+      "cancel-root",
+      "qinggang_skill",
+      "end",
+      "A",
+      41,
+      40,
+      {
+        "hp": [
+          12,
+          11
+        ],
+        "has": [
+          true,
+          true
+        ],
+        "contains": [
+          false,
+          true
+        ],
+        "cards": {
+          "sword": "A:e",
+          "fang": "A:e",
+          "armor-B": "B:e",
+          "armor-C": "d",
+          "multi-sha": "d",
+          "miss-sha": "d",
+          "shan": "d",
+          "follow-sha": "d",
+          "red": "d",
+          "cancel-damage-sha": "d",
+          "cancel-target-sha": "d",
+          "zero-sha": "d",
+          "exclude-all-sha": "d",
+          "cancel-root-sha": "o"
+        }
+      }
+    ]
+  ]
+}

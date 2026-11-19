@@ -6,6 +6,8 @@
 
 `events` 的列名保存在 `eventColumns`。每行是对上游 `GameEvent.trigger` 的一次调用及当时状态：它记录被请求的时机，不表示一定存在或执行了对应技能。`A` 和 `B` 是被测角色，`other` 是其余角色；牌区 `h`、`o`、`d` 分别表示手牌区、处理区和弃牌堆。记录包含处理区清理前后的内部事件，便于核对顺序。
 
+`qinggang-expiry.json` 用真实装备与用牌记录青釭目标标记的 144 条请求和高/低优先级真实回调，观察技能优先级 13/11 夹住上游 `qinggang2` 的 12，按同一真实虚拟牌对象检查存储。双目标各自伤害时，高回调看到该目标标记、低回调看到其已清除；闪抵消后的 `shaMiss`、取消伤害的 `damageCancelled`、零伤的 `damageZero` 同样如此。闪后无剑角色再杀同一目标，八卦红判恢复。目标时机 First 取消时不产生青釭标记，八卦仍可执行。额外两项在青釭生效后由 Last 回调分别全排除目标与取消根 useCard：对应目标在流程结束后仍持有该杀标记；两项使用不同目标并检查各自开始前不含旧标记，不对 `qinggang2` 人为写入。局部事件 ID 仅用于本轨迹关联父子事件。
+
 `sha-target-equipment.json` 在固定八席以男、女、男角色验证杀目标事件与装备技能登记，记录 92 条请求/回调及 32 条技能内容边界。真实出牌阶段用方天最后一张实体杀指定 B/C：B 的目标时机弃去青釭，C 的时机取回并装备，B 的八卦红判生效而 C 受伤；两个目标事件局部 ID 不同、直接父级为同一 useCard、均携带实体材料，无材料虚拟杀的 cards 为空。人类通过 Playwright 实际点选雌雄先执行。临时青釭先于装备时的执行顺序与装备先于临时的顺序不同；后者再授临时为 no-op。临时先加、实体仍在时移除临时后，`hasSkill` 与装备技能查询仍为真，但该次未执行青釭回调，此现象作为独立观测保留。外层青釭杀 B 的目标时机中，无剑 C 对 B 的嵌套实体杀也压制八卦，红判牌留在牌堆。目标事件 ID 仅在本次轨迹中标识事件，不是上游持久标识。
 
 `multi-weapon-combat.json` 记录八席真实装备与结算的 142 条请求/回调和 12 条装备技能执行边界。红判定八卦抵消基线黑杀；连弩和两把青釭并存后射程从 1 增至 2，同名技能只登记一次。真实出牌阶段先后使用两张杀，第一张后失去一把青釭、第二张后失去连弩，第三张仍在手中。另以真实 `arrangeTrigger` 选择贯石斧先或青龙先：前者支付两张牌使原杀命中，后者先结算追加杀、再支付两张牌使命中原杀。贯石斧先的顺序由 Playwright 实际点击真人控制的“贯石斧”选项，记录当时玩家为本机且自动模式关闭；青龙先及后续费用选择使用 AI 偏好。牌、费用与伤害均由上游事件结算；事件请求与实际回调分别记录。
@@ -146,6 +148,7 @@
    node scripts/reference-trace.mjs --scenario combined-mounts --check tests/reference/combined-mounts.json
    node scripts/reference-trace.mjs --scenario multi-weapon-combat --check tests/reference/multi-weapon-combat.json
    node scripts/reference-trace.mjs --scenario sha-target-equipment --check tests/reference/sha-target-equipment.json
+   node scripts/reference-trace.mjs --scenario qinggang-expiry --check tests/reference/qinggang-expiry.json
    node scripts/reference-trace.mjs --scenario virtual-equip-discard-first --check tests/reference/virtual-equip-discard-first.json
    node scripts/reference-trace.mjs --scenario virtual-equip-lose-first --check tests/reference/virtual-equip-lose-first.json
    node scripts/reference-trace.mjs --scenario virtual-equip-combat --check tests/reference/virtual-equip-combat.json
