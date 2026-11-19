@@ -1,0 +1,1644 @@
+{
+  "schema": "noname-reference-trace-v1",
+  "referenceCommit": "c73270948d72949aa80009536b9fd5400767d091",
+  "mode": "identity",
+  "scenario": "combined mount slot behavior and real equipment choices",
+  "combined": true,
+  "columns": [
+    "trial",
+    "kind",
+    "timing",
+    "event",
+    "parent",
+    "player",
+    "source",
+    "slots",
+    "cards",
+    "chosen",
+    "candidates",
+    "finished",
+    "cancelled",
+    "state"
+  ],
+  "events": [
+    ["equip-chitu","request","equipBefore","equip","reference_fixture_use","B",null,null,["chitu"],[],null,false,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":[],"cards":{"chitu":"s","jueying":"s","dawan":"s"}}],
+    ["equip-chitu","callback","equipBefore","equip","reference_fixture_use","B",null,null,["chitu"],[],null,false,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":[],"cards":{"chitu":"s","jueying":"s","dawan":"s"}}],
+    ["equip-chitu","request","equipBegin","equip","reference_fixture_use","B",null,null,["chitu"],[],null,false,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":[],"cards":{"chitu":"s","jueying":"s","dawan":"s"}}],
+    ["equip-chitu","callback","equipBegin","equip","reference_fixture_use","B",null,null,["chitu"],[],null,false,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":[],"cards":{"chitu":"s","jueying":"s","dawan":"s"}}],
+    ["equip-chitu","request","replaceEquipBefore","replaceEquip","equip","B",null,null,[],[],null,false,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":[],"cards":{"chitu":"s","jueying":"s","dawan":"s"}}],
+    ["equip-chitu","callback","replaceEquipBefore","replaceEquip","equip","B",null,null,[],[],null,false,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":[],"cards":{"chitu":"s","jueying":"s","dawan":"s"}}],
+    ["equip-chitu","request","replaceEquipBegin","replaceEquip","equip","B",null,null,[],[],null,false,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":[],"cards":{"chitu":"s","jueying":"s","dawan":"s"}}],
+    ["equip-chitu","callback","replaceEquipBegin","replaceEquip","equip","B",null,null,[],[],null,false,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":[],"cards":{"chitu":"s","jueying":"s","dawan":"s"}}],
+    ["equip-chitu","request","replaceEquipEnd","replaceEquip","equip","B",null,null,[],[],null,true,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":[],"cards":{"chitu":"s","jueying":"s","dawan":"s"}}],
+    ["equip-chitu","callback","replaceEquipEnd","replaceEquip","equip","B",null,null,[],[],null,true,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":[],"cards":{"chitu":"s","jueying":"s","dawan":"s"}}],
+    ["equip-chitu","request","replaceEquipAfter","replaceEquip","equip","B",null,null,[],[],null,true,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":[],"cards":{"chitu":"s","jueying":"s","dawan":"s"}}],
+    ["equip-chitu","callback","replaceEquipAfter","replaceEquip","equip","B",null,null,[],[],null,true,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":[],"cards":{"chitu":"s","jueying":"s","dawan":"s"}}],
+    ["equip-chitu","request","equipEnd","equip","reference_fixture_use","B",null,null,["chitu"],[],null,true,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[1,1],"distanceToD":[2,1],"registered":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"s","dawan":"s"}}],
+    ["equip-chitu","callback","equipEnd","equip","reference_fixture_use","B",null,null,["chitu"],[],null,true,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[1,1],"distanceToD":[2,1],"registered":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"s","dawan":"s"}}],
+    ["equip-chitu","request","equipAfter","equip","reference_fixture_use","B",null,null,["chitu"],[],null,true,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[1,1],"distanceToD":[2,1],"registered":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"s","dawan":"s"}}],
+    ["equip-chitu","callback","equipAfter","equip","reference_fixture_use","B",null,null,["chitu"],[],null,true,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[1,1],"distanceToD":[2,1],"registered":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"s","dawan":"s"}}],
+    ["equip-jueying","request","equipBefore","equip","reference_fixture_use","B",null,null,["jueying"],[],null,false,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[1,1],"distanceToD":[2,1],"registered":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"s","dawan":"s"}}],
+    ["equip-jueying","callback","equipBefore","equip","reference_fixture_use","B",null,null,["jueying"],[],null,false,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[1,1],"distanceToD":[2,1],"registered":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"s","dawan":"s"}}],
+    ["equip-jueying","request","equipBegin","equip","reference_fixture_use","B",null,null,["jueying"],[],null,false,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[1,1],"distanceToD":[2,1],"registered":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"s","dawan":"s"}}],
+    ["equip-jueying","callback","equipBegin","equip","reference_fixture_use","B",null,null,["jueying"],[],null,false,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[1,1],"distanceToD":[2,1],"registered":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"s","dawan":"s"}}],
+    ["equip-jueying","request","replaceEquipBefore","replaceEquip","equip","B",null,null,[],[],null,false,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[1,1],"distanceToD":[2,1],"registered":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"s","dawan":"s"}}],
+    ["equip-jueying","callback","replaceEquipBefore","replaceEquip","equip","B",null,null,[],[],null,false,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[1,1],"distanceToD":[2,1],"registered":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"s","dawan":"s"}}],
+    ["equip-jueying","request","replaceEquipBegin","replaceEquip","equip","B",null,null,[],[],null,false,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[1,1],"distanceToD":[2,1],"registered":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"s","dawan":"s"}}],
+    ["equip-jueying","callback","replaceEquipBegin","replaceEquip","equip","B",null,null,[],[],null,false,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[1,1],"distanceToD":[2,1],"registered":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"s","dawan":"s"}}],
+    ["equip-jueying","request","replaceEquipEnd","replaceEquip","equip","B",null,null,[],[],null,true,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[1,1],"distanceToD":[2,1],"registered":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"s","dawan":"s"}}],
+    ["equip-jueying","callback","replaceEquipEnd","replaceEquip","equip","B",null,null,[],[],null,true,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[1,1],"distanceToD":[2,1],"registered":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"s","dawan":"s"}}],
+    ["equip-jueying","request","replaceEquipAfter","replaceEquip","equip","B",null,null,[],[],null,true,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[1,1],"distanceToD":[2,1],"registered":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"s","dawan":"s"}}],
+    ["equip-jueying","callback","replaceEquipAfter","replaceEquip","equip","B",null,null,[],[],null,true,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[1,1],"distanceToD":[2,1],"registered":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"s","dawan":"s"}}],
+    ["equip-jueying","request","loseBefore","lose","equip","B",null,null,["chitu"],[],null,false,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[1,1],"distanceToD":[2,1],"registered":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"s","dawan":"s"}}],
+    ["equip-jueying","callback","loseBefore","lose","equip","B",null,null,["chitu"],[],null,false,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[1,1],"distanceToD":[2,1],"registered":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"s","dawan":"s"}}],
+    ["equip-jueying","request","loseBegin","lose","equip","B",null,null,["chitu"],[],null,false,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[1,1],"distanceToD":[2,1],"registered":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"s","dawan":"s"}}],
+    ["equip-jueying","callback","loseBegin","lose","equip","B",null,null,["chitu"],[],null,false,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[1,1],"distanceToD":[2,1],"registered":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"s","dawan":"s"}}],
+    ["equip-jueying","request","loseEnd","lose","equip","B",null,null,["chitu"],[],null,true,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":[],"cards":{"chitu":"d","jueying":"s","dawan":"s"}}],
+    ["equip-jueying","callback","loseEnd","lose","equip","B",null,null,["chitu"],[],null,true,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":[],"cards":{"chitu":"d","jueying":"s","dawan":"s"}}],
+    ["equip-jueying","request","loseAfter","lose","equip","B",null,null,["chitu"],[],null,true,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":[],"cards":{"chitu":"d","jueying":"s","dawan":"s"}}],
+    ["equip-jueying","callback","loseAfter","lose","equip","B",null,null,["chitu"],[],null,true,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":[],"cards":{"chitu":"d","jueying":"s","dawan":"s"}}],
+    ["equip-jueying","request","equipEnd","equip","reference_fixture_use","B",null,null,["jueying"],[],null,true,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[0,0,0],"equipable":[1,0,1],"horse":[true,false,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,2],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"markers":[],"cards":{"chitu":"d","jueying":"B:e","dawan":"s"}}],
+    ["equip-jueying","callback","equipEnd","equip","reference_fixture_use","B",null,null,["jueying"],[],null,true,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[0,0,0],"equipable":[1,0,1],"horse":[true,false,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,2],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"markers":[],"cards":{"chitu":"d","jueying":"B:e","dawan":"s"}}],
+    ["equip-jueying","request","equipAfter","equip","reference_fixture_use","B",null,null,["jueying"],[],null,true,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[0,0,0],"equipable":[1,0,1],"horse":[true,false,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,2],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"markers":[],"cards":{"chitu":"d","jueying":"B:e","dawan":"s"}}],
+    ["equip-jueying","callback","equipAfter","equip","reference_fixture_use","B",null,null,["jueying"],[],null,true,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[0,0,0],"equipable":[1,0,1],"horse":[true,false,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,2],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"markers":[],"cards":{"chitu":"d","jueying":"B:e","dawan":"s"}}],
+    ["expand-3-4","request","expandEquipBefore","expandEquip","reference_fixture_use","B","A",["equip3","equip4"],[],[],null,false,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[0,0,0],"equipable":[1,0,1],"horse":[true,false,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,2],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"markers":[],"cards":{"chitu":"d","jueying":"B:e","dawan":"s"}}],
+    ["expand-3-4","callback","expandEquipBefore","expandEquip","reference_fixture_use","B","A",["equip3","equip4"],[],[],null,false,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[0,0,0],"equipable":[1,0,1],"horse":[true,false,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,2],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"markers":[],"cards":{"chitu":"d","jueying":"B:e","dawan":"s"}}],
+    ["expand-3-4","request","expandEquipBegin","expandEquip","reference_fixture_use","B","A",["equip3","equip4"],[],[],null,false,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[0,0,0],"equipable":[1,0,1],"horse":[true,false,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,2],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"markers":[],"cards":{"chitu":"d","jueying":"B:e","dawan":"s"}}],
+    ["expand-3-4","callback","expandEquipBegin","expandEquip","reference_fixture_use","B","A",["equip3","equip4"],[],[],null,false,false,{"enabled":[1,0,1],"disabled":[0,0,0],"empty":[0,0,0],"equipable":[1,0,1],"horse":[true,false,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,2],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"markers":[],"cards":{"chitu":"d","jueying":"B:e","dawan":"s"}}],
+    ["expand-3-4","request","expandEquipEnd","expandEquip","reference_fixture_use","B","A",["equip3","equip4"],[],[],null,true,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[2,1],"distanceToD":[3,2],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"markers":[],"cards":{"chitu":"d","jueying":"B:e","dawan":"s"}}],
+    ["expand-3-4","callback","expandEquipEnd","expandEquip","reference_fixture_use","B","A",["equip3","equip4"],[],[],null,true,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[2,1],"distanceToD":[3,2],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"markers":[],"cards":{"chitu":"d","jueying":"B:e","dawan":"s"}}],
+    ["expand-3-4","request","expandEquipAfter","expandEquip","reference_fixture_use","B","A",["equip3","equip4"],[],[],null,true,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[2,1],"distanceToD":[3,2],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"markers":[],"cards":{"chitu":"d","jueying":"B:e","dawan":"s"}}],
+    ["expand-3-4","callback","expandEquipAfter","expandEquip","reference_fixture_use","B","A",["equip3","equip4"],[],[],null,true,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[2,1],"distanceToD":[3,2],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"markers":[],"cards":{"chitu":"d","jueying":"B:e","dawan":"s"}}],
+    ["equip-chitu-again","request","equipBefore","equip","reference_fixture_use","B",null,null,["chitu"],[],null,false,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[2,1],"distanceToD":[3,2],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"markers":[],"cards":{"chitu":"d","jueying":"B:e","dawan":"s"}}],
+    ["equip-chitu-again","callback","equipBefore","equip","reference_fixture_use","B",null,null,["chitu"],[],null,false,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[2,1],"distanceToD":[3,2],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"markers":[],"cards":{"chitu":"d","jueying":"B:e","dawan":"s"}}],
+    ["equip-chitu-again","request","equipBegin","equip","reference_fixture_use","B",null,null,["chitu"],[],null,false,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[2,1],"distanceToD":[3,2],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"markers":[],"cards":{"chitu":"d","jueying":"B:e","dawan":"s"}}],
+    ["equip-chitu-again","callback","equipBegin","equip","reference_fixture_use","B",null,null,["chitu"],[],null,false,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[2,1],"distanceToD":[3,2],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"markers":[],"cards":{"chitu":"d","jueying":"B:e","dawan":"s"}}],
+    ["equip-chitu-again","request","replaceEquipBefore","replaceEquip","equip","B",null,null,[],[],null,false,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[2,1],"distanceToD":[3,2],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"markers":[],"cards":{"chitu":"d","jueying":"B:e","dawan":"s"}}],
+    ["equip-chitu-again","callback","replaceEquipBefore","replaceEquip","equip","B",null,null,[],[],null,false,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[2,1],"distanceToD":[3,2],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"markers":[],"cards":{"chitu":"d","jueying":"B:e","dawan":"s"}}],
+    ["equip-chitu-again","request","replaceEquipBegin","replaceEquip","equip","B",null,null,[],[],null,false,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[2,1],"distanceToD":[3,2],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"markers":[],"cards":{"chitu":"d","jueying":"B:e","dawan":"s"}}],
+    ["equip-chitu-again","callback","replaceEquipBegin","replaceEquip","equip","B",null,null,[],[],null,false,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[2,1],"distanceToD":[3,2],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"markers":[],"cards":{"chitu":"d","jueying":"B:e","dawan":"s"}}],
+    ["equip-chitu-again","request","replaceEquipEnd","replaceEquip","equip","B",null,null,[],[],null,true,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[2,1],"distanceToD":[3,2],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"markers":[],"cards":{"chitu":"d","jueying":"B:e","dawan":"s"}}],
+    ["equip-chitu-again","callback","replaceEquipEnd","replaceEquip","equip","B",null,null,[],[],null,true,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[2,1],"distanceToD":[3,2],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"markers":[],"cards":{"chitu":"d","jueying":"B:e","dawan":"s"}}],
+    ["equip-chitu-again","request","replaceEquipAfter","replaceEquip","equip","B",null,null,[],[],null,true,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[2,1],"distanceToD":[3,2],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"markers":[],"cards":{"chitu":"d","jueying":"B:e","dawan":"s"}}],
+    ["equip-chitu-again","callback","replaceEquipAfter","replaceEquip","equip","B",null,null,[],[],null,true,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[2,1],"distanceToD":[3,2],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"markers":[],"cards":{"chitu":"d","jueying":"B:e","dawan":"s"}}],
+    ["equip-chitu-again","request","equipEnd","equip","reference_fixture_use","B",null,null,["chitu"],[],null,true,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"B:e","dawan":"s"}}],
+    ["equip-chitu-again","callback","equipEnd","equip","reference_fixture_use","B",null,null,["chitu"],[],null,true,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"B:e","dawan":"s"}}],
+    ["equip-chitu-again","request","equipAfter","equip","reference_fixture_use","B",null,null,["chitu"],[],null,true,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"B:e","dawan":"s"}}],
+    ["equip-chitu-again","callback","equipAfter","equip","reference_fixture_use","B",null,null,["chitu"],[],null,true,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"B:e","dawan":"s"}}],
+    ["equip-third","request","equipBefore","equip","reference_fixture_use","B",null,null,["dawan"],[],null,false,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"B:e","dawan":"s"}}],
+    ["equip-third","callback","equipBefore","equip","reference_fixture_use","B",null,null,["dawan"],[],null,false,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"B:e","dawan":"s"}}],
+    ["equip-third","request","equipBegin","equip","reference_fixture_use","B",null,null,["dawan"],[],null,false,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"B:e","dawan":"s"}}],
+    ["equip-third","callback","equipBegin","equip","reference_fixture_use","B",null,null,["dawan"],[],null,false,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"B:e","dawan":"s"}}],
+    ["equip-third","request","replaceEquipBefore","replaceEquip","equip","B",null,null,[],[],null,false,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"B:e","dawan":"s"}}],
+    ["equip-third","callback","replaceEquipBefore","replaceEquip","equip","B",null,null,[],[],null,false,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"B:e","dawan":"s"}}],
+    ["equip-third","request","replaceEquipBegin","replaceEquip","equip","B",null,null,[],[],null,false,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"B:e","dawan":"s"}}],
+    ["equip-third","callback","replaceEquipBegin","replaceEquip","equip","B",null,null,[],[],null,false,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"B:e","dawan":"s"}}],
+    ["equip-third","request","chooseButtonBefore","chooseButton","replaceEquip","B",null,null,[],[],null,false,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"B:e","dawan":"s"}}],
+    ["equip-third","callback","chooseButtonBefore","chooseButton","replaceEquip","B",null,null,[],[],null,false,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"B:e","dawan":"s"}}],
+    ["equip-third","request","chooseButtonBegin","chooseButton","replaceEquip","B",null,null,[],[],null,false,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"B:e","dawan":"s"}}],
+    ["equip-third","callback","chooseButtonBegin","chooseButton","replaceEquip","B",null,null,[],[],null,false,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"B:e","dawan":"s"}}],
+    ["equip-third","request","chooseButtonEnd","chooseButton","replaceEquip","B",null,null,[],["chitu"],[["jueying"],["chitu"]],true,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"B:e","dawan":"s"}}],
+    ["equip-third","callback","chooseButtonEnd","chooseButton","replaceEquip","B",null,null,[],["chitu"],[["jueying"],["chitu"]],true,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"B:e","dawan":"s"}}],
+    ["equip-third","request","chooseButtonAfter","chooseButton","replaceEquip","B",null,null,[],["chitu"],[["jueying"],["chitu"]],true,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"B:e","dawan":"s"}}],
+    ["equip-third","callback","chooseButtonAfter","chooseButton","replaceEquip","B",null,null,[],["chitu"],[["jueying"],["chitu"]],true,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"B:e","dawan":"s"}}],
+    ["equip-third","request","replaceEquipEnd","replaceEquip","equip","B",null,null,[],[],null,true,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"B:e","dawan":"s"}}],
+    ["equip-third","callback","replaceEquipEnd","replaceEquip","equip","B",null,null,[],[],null,true,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"B:e","dawan":"s"}}],
+    ["equip-third","request","replaceEquipAfter","replaceEquip","equip","B",null,null,[],[],null,true,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"B:e","dawan":"s"}}],
+    ["equip-third","callback","replaceEquipAfter","replaceEquip","equip","B",null,null,[],[],null,true,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"B:e","dawan":"s"}}],
+    ["equip-third","request","loseBefore","lose","equip","B",null,null,["chitu"],[],null,false,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"B:e","dawan":"s"}}],
+    ["equip-third","callback","loseBefore","lose","equip","B",null,null,["chitu"],[],null,false,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"B:e","dawan":"s"}}],
+    ["equip-third","request","loseBegin","lose","equip","B",null,null,["chitu"],[],null,false,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"B:e","dawan":"s"}}],
+    ["equip-third","callback","loseBegin","lose","equip","B",null,null,["chitu"],[],null,false,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["chitu"],"name":"chitu","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"B:e","jueying":"B:e","dawan":"s"}}],
+    ["equip-third","request","loseEnd","lose","equip","B",null,null,["chitu"],[],null,true,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[2,1],"distanceToD":[3,2],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"markers":[],"cards":{"chitu":"d","jueying":"B:e","dawan":"s"}}],
+    ["equip-third","callback","loseEnd","lose","equip","B",null,null,["chitu"],[],null,true,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[2,1],"distanceToD":[3,2],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"markers":[],"cards":{"chitu":"d","jueying":"B:e","dawan":"s"}}],
+    ["equip-third","request","loseAfter","lose","equip","B",null,null,["chitu"],[],null,true,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[2,1],"distanceToD":[3,2],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"markers":[],"cards":{"chitu":"d","jueying":"B:e","dawan":"s"}}],
+    ["equip-third","callback","loseAfter","lose","equip","B",null,null,["chitu"],[],null,true,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[2,1],"distanceToD":[3,2],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]}],"markers":[],"cards":{"chitu":"d","jueying":"B:e","dawan":"s"}}],
+    ["equip-third","request","equipEnd","equip","reference_fixture_use","B",null,null,["dawan"],[],null,true,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["dawan"],"name":"dawan","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["dawan"],"name":"dawan","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"d","jueying":"B:e","dawan":"B:e"}}],
+    ["equip-third","callback","equipEnd","equip","reference_fixture_use","B",null,null,["dawan"],[],null,true,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["dawan"],"name":"dawan","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["dawan"],"name":"dawan","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"d","jueying":"B:e","dawan":"B:e"}}],
+    ["equip-third","request","equipAfter","equip","reference_fixture_use","B",null,null,["dawan"],[],null,true,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["dawan"],"name":"dawan","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["dawan"],"name":"dawan","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"d","jueying":"B:e","dawan":"B:e"}}],
+    ["equip-third","callback","equipAfter","equip","reference_fixture_use","B",null,null,["dawan"],[],null,true,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["dawan"],"name":"dawan","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["dawan"],"name":"dawan","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"d","jueying":"B:e","dawan":"B:e"}}],
+    ["disable-3-3-4","request","disableEquipBefore","disableEquip","reference_fixture_use","B","A",["equip3","equip3","equip4"],[],[],null,false,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["dawan"],"name":"dawan","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["dawan"],"name":"dawan","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"d","jueying":"B:e","dawan":"B:e"}}],
+    ["disable-3-3-4","callback","disableEquipBefore","disableEquip","reference_fixture_use","B","A",["equip3","equip3","equip4"],[],[],null,false,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["dawan"],"name":"dawan","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["dawan"],"name":"dawan","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"d","jueying":"B:e","dawan":"B:e"}}],
+    ["disable-3-3-4","request","disableEquipBegin","disableEquip","reference_fixture_use","B","A",["equip3","equip3","equip4"],[],[],null,false,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["dawan"],"name":"dawan","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["dawan"],"name":"dawan","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"d","jueying":"B:e","dawan":"B:e"}}],
+    ["disable-3-3-4","callback","disableEquipBegin","disableEquip","reference_fixture_use","B","A",["equip3","equip3","equip4"],[],[],null,false,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[1,0,1],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["dawan"],"name":"dawan","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["dawan"],"name":"dawan","subtypes":["equip4"]}],"markers":[],"cards":{"chitu":"d","jueying":"B:e","dawan":"B:e"}}],
+    ["disable-3-3-4","request","loseToDiscardpileBefore","loseToDiscardpile","disableEquip","B",null,null,["jueying","dawan"],[],null,false,false,{"enabled":[1,0,1],"disabled":[1,0,0],"empty":[0,0,0],"equipable":[1,0,1],"horse":[true,false,true],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["dawan"],"name":"dawan","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["dawan"],"name":"dawan","subtypes":["equip4"]}],"markers":["feichu_equip3"],"cards":{"chitu":"d","jueying":"B:e","dawan":"B:e"}}],
+    ["disable-3-3-4","callback","loseToDiscardpileBefore","loseToDiscardpile","disableEquip","B",null,null,["jueying","dawan"],[],null,false,false,{"enabled":[1,0,1],"disabled":[1,0,0],"empty":[0,0,0],"equipable":[1,0,1],"horse":[true,false,true],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["dawan"],"name":"dawan","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["dawan"],"name":"dawan","subtypes":["equip4"]}],"markers":["feichu_equip3"],"cards":{"chitu":"d","jueying":"B:e","dawan":"B:e"}}],
+    ["disable-3-3-4","request","loseToDiscardpileBegin","loseToDiscardpile","disableEquip","B",null,null,["jueying","dawan"],[],null,false,false,{"enabled":[1,0,1],"disabled":[1,0,0],"empty":[0,0,0],"equipable":[1,0,1],"horse":[true,false,true],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["dawan"],"name":"dawan","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["dawan"],"name":"dawan","subtypes":["equip4"]}],"markers":["feichu_equip3"],"cards":{"chitu":"d","jueying":"B:e","dawan":"B:e"}}],
+    ["disable-3-3-4","callback","loseToDiscardpileBegin","loseToDiscardpile","disableEquip","B",null,null,["jueying","dawan"],[],null,false,false,{"enabled":[1,0,1],"disabled":[1,0,0],"empty":[0,0,0],"equipable":[1,0,1],"horse":[true,false,true],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["dawan"],"name":"dawan","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["dawan"],"name":"dawan","subtypes":["equip4"]}],"markers":["feichu_equip3"],"cards":{"chitu":"d","jueying":"B:e","dawan":"B:e"}}],
+    ["disable-3-3-4","request","loseBefore","lose","loseToDiscardpile","B",null,null,["jueying","dawan"],[],null,false,false,{"enabled":[1,0,1],"disabled":[1,0,0],"empty":[0,0,0],"equipable":[1,0,1],"horse":[true,false,true],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["dawan"],"name":"dawan","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["dawan"],"name":"dawan","subtypes":["equip4"]}],"markers":["feichu_equip3"],"cards":{"chitu":"d","jueying":"B:e","dawan":"B:e"}}],
+    ["disable-3-3-4","callback","loseBefore","lose","loseToDiscardpile","B",null,null,["jueying","dawan"],[],null,false,false,{"enabled":[1,0,1],"disabled":[1,0,0],"empty":[0,0,0],"equipable":[1,0,1],"horse":[true,false,true],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["dawan"],"name":"dawan","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["dawan"],"name":"dawan","subtypes":["equip4"]}],"markers":["feichu_equip3"],"cards":{"chitu":"d","jueying":"B:e","dawan":"B:e"}}],
+    ["disable-3-3-4","request","loseBegin","lose","loseToDiscardpile","B",null,null,["jueying","dawan"],[],null,false,false,{"enabled":[1,0,1],"disabled":[1,0,0],"empty":[0,0,0],"equipable":[1,0,1],"horse":[true,false,true],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["dawan"],"name":"dawan","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["dawan"],"name":"dawan","subtypes":["equip4"]}],"markers":["feichu_equip3"],"cards":{"chitu":"d","jueying":"B:e","dawan":"B:e"}}],
+    ["disable-3-3-4","callback","loseBegin","lose","loseToDiscardpile","B",null,null,["jueying","dawan"],[],null,false,false,{"enabled":[1,0,1],"disabled":[1,0,0],"empty":[0,0,0],"equipable":[1,0,1],"horse":[true,false,true],"canEquip":[[false,true],[false,true]],"distance":[2,1],"distanceToD":[3,1],"registered":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["dawan"],"name":"dawan","subtypes":["equip4"]}],"physical":[{"ids":["jueying"],"name":"jueying","subtypes":["equip3"]},{"ids":["dawan"],"name":"dawan","subtypes":["equip4"]}],"markers":["feichu_equip3"],"cards":{"chitu":"d","jueying":"B:e","dawan":"B:e"}}],
+    ["disable-3-3-4","request","loseEnd","lose","loseToDiscardpile","B",null,null,["jueying","dawan"],[],null,true,false,{"enabled":[1,0,1],"disabled":[1,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,true],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["disable-3-3-4","callback","loseEnd","lose","loseToDiscardpile","B",null,null,["jueying","dawan"],[],null,true,false,{"enabled":[1,0,1],"disabled":[1,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,true],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["disable-3-3-4","request","loseAfter","lose","loseToDiscardpile","B",null,null,["jueying","dawan"],[],null,true,false,{"enabled":[1,0,1],"disabled":[1,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,true],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["disable-3-3-4","callback","loseAfter","lose","loseToDiscardpile","B",null,null,["jueying","dawan"],[],null,true,false,{"enabled":[1,0,1],"disabled":[1,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,true],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["disable-3-3-4","request","loseToDiscardpile","loseToDiscardpile","disableEquip","B",null,null,["jueying","dawan"],[],null,false,false,{"enabled":[1,0,1],"disabled":[1,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,true],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["disable-3-3-4","callback","loseToDiscardpile","loseToDiscardpile","disableEquip","B",null,null,["jueying","dawan"],[],null,false,false,{"enabled":[1,0,1],"disabled":[1,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,true],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["disable-3-3-4","request","loseToDiscardpileEnd","loseToDiscardpile","disableEquip","B",null,null,["jueying","dawan"],[],null,true,false,{"enabled":[1,0,1],"disabled":[1,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,true],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["disable-3-3-4","callback","loseToDiscardpileEnd","loseToDiscardpile","disableEquip","B",null,null,["jueying","dawan"],[],null,true,false,{"enabled":[1,0,1],"disabled":[1,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,true],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["disable-3-3-4","request","loseToDiscardpileAfter","loseToDiscardpile","disableEquip","B",null,null,["jueying","dawan"],[],null,true,false,{"enabled":[1,0,1],"disabled":[1,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,true],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["disable-3-3-4","callback","loseToDiscardpileAfter","loseToDiscardpile","disableEquip","B",null,null,["jueying","dawan"],[],null,true,false,{"enabled":[1,0,1],"disabled":[1,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,true],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["disable-3-3-4","request","disableEquipEnd","disableEquip","reference_fixture_use","B","A",["equip3","equip3","equip4"],["jueying","dawan"],[],null,true,false,{"enabled":[1,0,1],"disabled":[1,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,true],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["disable-3-3-4","callback","disableEquipEnd","disableEquip","reference_fixture_use","B","A",["equip3","equip3","equip4"],["jueying","dawan"],[],null,true,false,{"enabled":[1,0,1],"disabled":[1,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,true],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["disable-3-3-4","request","disableEquipAfter","disableEquip","reference_fixture_use","B","A",["equip3","equip3","equip4"],["jueying","dawan"],[],null,true,false,{"enabled":[1,0,1],"disabled":[1,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,true],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["disable-3-3-4","callback","disableEquipAfter","disableEquip","reference_fixture_use","B","A",["equip3","equip3","equip4"],["jueying","dawan"],[],null,true,false,{"enabled":[1,0,1],"disabled":[1,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,true],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["disable-3-4-first","request","disableEquipBefore","disableEquip","reference_fixture_use","B","A",["equip3","equip4"],[],[],null,false,false,{"enabled":[1,0,1],"disabled":[1,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,true],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["disable-3-4-first","callback","disableEquipBefore","disableEquip","reference_fixture_use","B","A",["equip3","equip4"],[],[],null,false,false,{"enabled":[1,0,1],"disabled":[1,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,true],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["disable-3-4-first","request","disableEquipBegin","disableEquip","reference_fixture_use","B","A",["equip3","equip4"],[],[],null,false,false,{"enabled":[1,0,1],"disabled":[1,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,true],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["disable-3-4-first","callback","disableEquipBegin","disableEquip","reference_fixture_use","B","A",["equip3","equip4"],[],[],null,false,false,{"enabled":[1,0,1],"disabled":[1,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,true],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["disable-3-4-first","request","disableEquipEnd","disableEquip","reference_fixture_use","B","A",["equip3","equip4"],[],[],null,true,false,{"enabled":[0,0,1],"disabled":[2,0,0],"empty":[0,0,0],"equipable":[0,0,0],"horse":[false,false,true],"canEquip":[[false,false],[false,false]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3","feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["disable-3-4-first","callback","disableEquipEnd","disableEquip","reference_fixture_use","B","A",["equip3","equip4"],[],[],null,true,false,{"enabled":[0,0,1],"disabled":[2,0,0],"empty":[0,0,0],"equipable":[0,0,0],"horse":[false,false,true],"canEquip":[[false,false],[false,false]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3","feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["disable-3-4-first","request","disableEquipAfter","disableEquip","reference_fixture_use","B","A",["equip3","equip4"],[],[],null,true,false,{"enabled":[0,0,1],"disabled":[2,0,0],"empty":[0,0,0],"equipable":[0,0,0],"horse":[false,false,true],"canEquip":[[false,false],[false,false]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3","feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["disable-3-4-first","callback","disableEquipAfter","disableEquip","reference_fixture_use","B","A",["equip3","equip4"],[],[],null,true,false,{"enabled":[0,0,1],"disabled":[2,0,0],"empty":[0,0,0],"equipable":[0,0,0],"horse":[false,false,true],"canEquip":[[false,false],[false,false]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3","feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["disable-3-4-second","request","disableEquipBefore","disableEquip","reference_fixture_use","B","A",["equip3","equip4"],[],[],null,false,false,{"enabled":[0,0,1],"disabled":[2,0,0],"empty":[0,0,0],"equipable":[0,0,0],"horse":[false,false,true],"canEquip":[[false,false],[false,false]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3","feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["disable-3-4-second","callback","disableEquipBefore","disableEquip","reference_fixture_use","B","A",["equip3","equip4"],[],[],null,false,false,{"enabled":[0,0,1],"disabled":[2,0,0],"empty":[0,0,0],"equipable":[0,0,0],"horse":[false,false,true],"canEquip":[[false,false],[false,false]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3","feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["disable-3-4-second","request","disableEquipBegin","disableEquip","reference_fixture_use","B","A",["equip3","equip4"],[],[],null,false,false,{"enabled":[0,0,1],"disabled":[2,0,0],"empty":[0,0,0],"equipable":[0,0,0],"horse":[false,false,true],"canEquip":[[false,false],[false,false]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3","feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["disable-3-4-second","callback","disableEquipBegin","disableEquip","reference_fixture_use","B","A",["equip3","equip4"],[],[],null,false,false,{"enabled":[0,0,1],"disabled":[2,0,0],"empty":[0,0,0],"equipable":[0,0,0],"horse":[false,false,true],"canEquip":[[false,false],[false,false]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3","feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["disable-3-4-second","request","disableEquipEnd","disableEquip","reference_fixture_use","B","A",["equip3","equip4"],[],[],null,true,false,{"enabled":[-1,0,1],"disabled":[3,0,0],"empty":[0,0,0],"equipable":[0,0,0],"horse":[false,false,true],"canEquip":[[false,false],[false,false]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3","feichu_equip3","feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["disable-3-4-second","callback","disableEquipEnd","disableEquip","reference_fixture_use","B","A",["equip3","equip4"],[],[],null,true,false,{"enabled":[-1,0,1],"disabled":[3,0,0],"empty":[0,0,0],"equipable":[0,0,0],"horse":[false,false,true],"canEquip":[[false,false],[false,false]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3","feichu_equip3","feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["disable-3-4-second","request","disableEquipAfter","disableEquip","reference_fixture_use","B","A",["equip3","equip4"],[],[],null,true,false,{"enabled":[-1,0,1],"disabled":[3,0,0],"empty":[0,0,0],"equipable":[0,0,0],"horse":[false,false,true],"canEquip":[[false,false],[false,false]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3","feichu_equip3","feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["disable-3-4-second","callback","disableEquipAfter","disableEquip","reference_fixture_use","B","A",["equip3","equip4"],[],[],null,true,false,{"enabled":[-1,0,1],"disabled":[3,0,0],"empty":[0,0,0],"equipable":[0,0,0],"horse":[false,false,true],"canEquip":[[false,false],[false,false]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3","feichu_equip3","feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["enable-3-4-4","request","enableEquipBefore","enableEquip","reference_fixture_use","B","A",["equip3","equip4","equip4"],[],[],null,false,false,{"enabled":[-1,0,1],"disabled":[3,0,0],"empty":[0,0,0],"equipable":[0,0,0],"horse":[false,false,true],"canEquip":[[false,false],[false,false]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3","feichu_equip3","feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["enable-3-4-4","callback","enableEquipBefore","enableEquip","reference_fixture_use","B","A",["equip3","equip4","equip4"],[],[],null,false,false,{"enabled":[-1,0,1],"disabled":[3,0,0],"empty":[0,0,0],"equipable":[0,0,0],"horse":[false,false,true],"canEquip":[[false,false],[false,false]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3","feichu_equip3","feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["enable-3-4-4","request","enableEquipBegin","enableEquip","reference_fixture_use","B","A",["equip3","equip4","equip4"],[],[],null,false,false,{"enabled":[-1,0,1],"disabled":[3,0,0],"empty":[0,0,0],"equipable":[0,0,0],"horse":[false,false,true],"canEquip":[[false,false],[false,false]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3","feichu_equip3","feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["enable-3-4-4","callback","enableEquipBegin","enableEquip","reference_fixture_use","B","A",["equip3","equip4","equip4"],[],[],null,false,false,{"enabled":[-1,0,1],"disabled":[3,0,0],"empty":[0,0,0],"equipable":[0,0,0],"horse":[false,false,true],"canEquip":[[false,false],[false,false]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3","feichu_equip3","feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["enable-3-4-4","request","enableEquipEnd","enableEquip","reference_fixture_use","B","A",["equip3","equip4","equip4"],[],[],null,true,false,{"enabled":[1,0,1],"disabled":[1,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,true],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["enable-3-4-4","callback","enableEquipEnd","enableEquip","reference_fixture_use","B","A",["equip3","equip4","equip4"],[],[],null,true,false,{"enabled":[1,0,1],"disabled":[1,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,true],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["enable-3-4-4","request","enableEquipAfter","enableEquip","reference_fixture_use","B","A",["equip3","equip4","equip4"],[],[],null,true,false,{"enabled":[1,0,1],"disabled":[1,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,true],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["enable-3-4-4","callback","enableEquipAfter","enableEquip","reference_fixture_use","B","A",["equip3","equip4","equip4"],[],[],null,true,false,{"enabled":[1,0,1],"disabled":[1,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,true],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["enable-4","request","enableEquipBefore","enableEquip","reference_fixture_use","B","A",["equip4"],[],[],null,false,false,{"enabled":[1,0,1],"disabled":[1,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,true],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["enable-4","callback","enableEquipBefore","enableEquip","reference_fixture_use","B","A",["equip4"],[],[],null,false,false,{"enabled":[1,0,1],"disabled":[1,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,true],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["enable-4","request","enableEquipBegin","enableEquip","reference_fixture_use","B","A",["equip4"],[],[],null,false,false,{"enabled":[1,0,1],"disabled":[1,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,true],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["enable-4","callback","enableEquipBegin","enableEquip","reference_fixture_use","B","A",["equip4"],[],[],null,false,false,{"enabled":[1,0,1],"disabled":[1,0,0],"empty":[1,0,1],"equipable":[1,0,1],"horse":[true,true,true],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":["feichu_equip3"],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["enable-4","request","enableEquipEnd","enableEquip","reference_fixture_use","B","A",["equip4"],[],[],null,true,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[2,0,2],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":[],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["enable-4","callback","enableEquipEnd","enableEquip","reference_fixture_use","B","A",["equip4"],[],[],null,true,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[2,0,2],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":[],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["enable-4","request","enableEquipAfter","enableEquip","reference_fixture_use","B","A",["equip4"],[],[],null,true,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[2,0,2],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":[],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["enable-4","callback","enableEquipAfter","enableEquip","reference_fixture_use","B","A",["equip4"],[],[],null,true,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[2,0,2],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":[],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["expand-d-3-4-4","request","expandEquipBefore","expandEquip","reference_fixture_use","D","A",["equip3","equip4","equip4"],[],[],null,false,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[2,0,2],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":[],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["expand-d-3-4-4","callback","expandEquipBefore","expandEquip","reference_fixture_use","D","A",["equip3","equip4","equip4"],[],[],null,false,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[2,0,2],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":[],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["expand-d-3-4-4","request","expandEquipBegin","expandEquip","reference_fixture_use","D","A",["equip3","equip4","equip4"],[],[],null,false,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[2,0,2],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":[],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["expand-d-3-4-4","callback","expandEquipBegin","expandEquip","reference_fixture_use","D","A",["equip3","equip4","equip4"],[],[],null,false,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[2,0,2],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":[],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["expand-d-3-4-4","request","expandEquipEnd","expandEquip","reference_fixture_use","D","A",["equip3","equip4","equip4"],[],[],null,true,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[2,0,2],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":[],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["expand-d-3-4-4","callback","expandEquipEnd","expandEquip","reference_fixture_use","D","A",["equip3","equip4","equip4"],[],[],null,true,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[2,0,2],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":[],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["expand-d-3-4-4","request","expandEquipAfter","expandEquip","reference_fixture_use","D","A",["equip3","equip4","equip4"],[],[],null,true,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[2,0,2],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":[],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}],
+    ["expand-d-3-4-4","callback","expandEquipAfter","expandEquip","reference_fixture_use","D","A",["equip3","equip4","equip4"],[],[],null,true,false,{"enabled":[2,0,1],"disabled":[0,0,0],"empty":[2,0,2],"equipable":[2,0,2],"horse":[true,true,false],"canEquip":[[true,true],[true,true]],"distance":[1,1],"distanceToD":[2,2],"registered":[],"physical":[],"markers":[],"cards":{"chitu":"d","jueying":"d","dawan":"d"}}]
+  ],
+  "stages": [
+    {
+      "name": "empty",
+      "B": {
+        "enabled": [
+          1,
+          0,
+          1
+        ],
+        "disabled": [
+          0,
+          0,
+          0
+        ],
+        "empty": [
+          1,
+          0,
+          1
+        ],
+        "equipable": [
+          1,
+          0,
+          1
+        ],
+        "horse": [
+          true,
+          true,
+          false
+        ],
+        "canEquip": [
+          [
+            true,
+            true
+          ],
+          [
+            true,
+            true
+          ]
+        ],
+        "distance": [
+          1,
+          1
+        ],
+        "distanceToD": [
+          2,
+          2
+        ],
+        "registered": [],
+        "physical": [],
+        "markers": [],
+        "cards": {
+          "chitu": "s",
+          "jueying": "s",
+          "dawan": "s"
+        }
+      },
+      "D": {
+        "enabled": [
+          1,
+          0,
+          1
+        ],
+        "disabled": [
+          0,
+          0,
+          0
+        ],
+        "empty": [
+          1,
+          0,
+          1
+        ],
+        "equipable": [
+          1,
+          0,
+          1
+        ],
+        "horse": [
+          true,
+          true,
+          false
+        ],
+        "canEquip": [
+          [
+            true,
+            true
+          ],
+          [
+            true,
+            true
+          ]
+        ],
+        "distance": [
+          3,
+          3
+        ],
+        "distanceToD": [
+          0,
+          0
+        ],
+        "registered": [],
+        "physical": [],
+        "markers": [],
+        "cards": {
+          "chitu": "s",
+          "jueying": "s",
+          "dawan": "s"
+        }
+      }
+    },
+    {
+      "name": "equip-chitu",
+      "B": {
+        "enabled": [
+          1,
+          0,
+          1
+        ],
+        "disabled": [
+          0,
+          0,
+          0
+        ],
+        "empty": [
+          1,
+          0,
+          1
+        ],
+        "equipable": [
+          1,
+          0,
+          1
+        ],
+        "horse": [
+          true,
+          true,
+          false
+        ],
+        "canEquip": [
+          [
+            false,
+            true
+          ],
+          [
+            false,
+            true
+          ]
+        ],
+        "distance": [
+          1,
+          1
+        ],
+        "distanceToD": [
+          2,
+          1
+        ],
+        "registered": [
+          {
+            "ids": [
+              "chitu"
+            ],
+            "name": "chitu",
+            "subtypes": [
+              "equip4"
+            ]
+          }
+        ],
+        "physical": [
+          {
+            "ids": [
+              "chitu"
+            ],
+            "name": "chitu",
+            "subtypes": [
+              "equip4"
+            ]
+          }
+        ],
+        "markers": [],
+        "cards": {
+          "chitu": "B:e",
+          "jueying": "s",
+          "dawan": "s"
+        }
+      },
+      "D": {
+        "enabled": [
+          1,
+          0,
+          1
+        ],
+        "disabled": [
+          0,
+          0,
+          0
+        ],
+        "empty": [
+          1,
+          0,
+          1
+        ],
+        "equipable": [
+          1,
+          0,
+          1
+        ],
+        "horse": [
+          true,
+          true,
+          false
+        ],
+        "canEquip": [
+          [
+            true,
+            true
+          ],
+          [
+            true,
+            true
+          ]
+        ],
+        "distance": [
+          3,
+          3
+        ],
+        "distanceToD": [
+          0,
+          0
+        ],
+        "registered": [],
+        "physical": [],
+        "markers": [],
+        "cards": {
+          "chitu": "B:e",
+          "jueying": "s",
+          "dawan": "s"
+        }
+      }
+    },
+    {
+      "name": "equip-jueying",
+      "B": {
+        "enabled": [
+          1,
+          0,
+          1
+        ],
+        "disabled": [
+          0,
+          0,
+          0
+        ],
+        "empty": [
+          0,
+          0,
+          0
+        ],
+        "equipable": [
+          1,
+          0,
+          1
+        ],
+        "horse": [
+          true,
+          false,
+          false
+        ],
+        "canEquip": [
+          [
+            false,
+            true
+          ],
+          [
+            false,
+            true
+          ]
+        ],
+        "distance": [
+          2,
+          1
+        ],
+        "distanceToD": [
+          3,
+          2
+        ],
+        "registered": [
+          {
+            "ids": [
+              "jueying"
+            ],
+            "name": "jueying",
+            "subtypes": [
+              "equip3"
+            ]
+          }
+        ],
+        "physical": [
+          {
+            "ids": [
+              "jueying"
+            ],
+            "name": "jueying",
+            "subtypes": [
+              "equip3"
+            ]
+          }
+        ],
+        "markers": [],
+        "cards": {
+          "chitu": "d",
+          "jueying": "B:e",
+          "dawan": "s"
+        }
+      },
+      "D": {
+        "enabled": [
+          1,
+          0,
+          1
+        ],
+        "disabled": [
+          0,
+          0,
+          0
+        ],
+        "empty": [
+          1,
+          0,
+          1
+        ],
+        "equipable": [
+          1,
+          0,
+          1
+        ],
+        "horse": [
+          true,
+          true,
+          false
+        ],
+        "canEquip": [
+          [
+            true,
+            true
+          ],
+          [
+            true,
+            true
+          ]
+        ],
+        "distance": [
+          3,
+          3
+        ],
+        "distanceToD": [
+          0,
+          0
+        ],
+        "registered": [],
+        "physical": [],
+        "markers": [],
+        "cards": {
+          "chitu": "d",
+          "jueying": "B:e",
+          "dawan": "s"
+        }
+      }
+    },
+    {
+      "name": "expand-3-4",
+      "B": {
+        "enabled": [
+          2,
+          0,
+          1
+        ],
+        "disabled": [
+          0,
+          0,
+          0
+        ],
+        "empty": [
+          1,
+          0,
+          1
+        ],
+        "equipable": [
+          2,
+          0,
+          2
+        ],
+        "horse": [
+          true,
+          true,
+          false
+        ],
+        "canEquip": [
+          [
+            true,
+            true
+          ],
+          [
+            true,
+            true
+          ]
+        ],
+        "distance": [
+          2,
+          1
+        ],
+        "distanceToD": [
+          3,
+          2
+        ],
+        "registered": [
+          {
+            "ids": [
+              "jueying"
+            ],
+            "name": "jueying",
+            "subtypes": [
+              "equip3"
+            ]
+          }
+        ],
+        "physical": [
+          {
+            "ids": [
+              "jueying"
+            ],
+            "name": "jueying",
+            "subtypes": [
+              "equip3"
+            ]
+          }
+        ],
+        "markers": [],
+        "cards": {
+          "chitu": "d",
+          "jueying": "B:e",
+          "dawan": "s"
+        }
+      },
+      "D": {
+        "enabled": [
+          1,
+          0,
+          1
+        ],
+        "disabled": [
+          0,
+          0,
+          0
+        ],
+        "empty": [
+          1,
+          0,
+          1
+        ],
+        "equipable": [
+          1,
+          0,
+          1
+        ],
+        "horse": [
+          true,
+          true,
+          false
+        ],
+        "canEquip": [
+          [
+            true,
+            true
+          ],
+          [
+            true,
+            true
+          ]
+        ],
+        "distance": [
+          3,
+          3
+        ],
+        "distanceToD": [
+          0,
+          0
+        ],
+        "registered": [],
+        "physical": [],
+        "markers": [],
+        "cards": {
+          "chitu": "d",
+          "jueying": "B:e",
+          "dawan": "s"
+        }
+      }
+    },
+    {
+      "name": "equip-chitu-again",
+      "B": {
+        "enabled": [
+          2,
+          0,
+          1
+        ],
+        "disabled": [
+          0,
+          0,
+          0
+        ],
+        "empty": [
+          1,
+          0,
+          1
+        ],
+        "equipable": [
+          2,
+          0,
+          2
+        ],
+        "horse": [
+          true,
+          true,
+          false
+        ],
+        "canEquip": [
+          [
+            false,
+            true
+          ],
+          [
+            false,
+            true
+          ]
+        ],
+        "distance": [
+          2,
+          1
+        ],
+        "distanceToD": [
+          3,
+          1
+        ],
+        "registered": [
+          {
+            "ids": [
+              "jueying"
+            ],
+            "name": "jueying",
+            "subtypes": [
+              "equip3"
+            ]
+          },
+          {
+            "ids": [
+              "chitu"
+            ],
+            "name": "chitu",
+            "subtypes": [
+              "equip4"
+            ]
+          }
+        ],
+        "physical": [
+          {
+            "ids": [
+              "jueying"
+            ],
+            "name": "jueying",
+            "subtypes": [
+              "equip3"
+            ]
+          },
+          {
+            "ids": [
+              "chitu"
+            ],
+            "name": "chitu",
+            "subtypes": [
+              "equip4"
+            ]
+          }
+        ],
+        "markers": [],
+        "cards": {
+          "chitu": "B:e",
+          "jueying": "B:e",
+          "dawan": "s"
+        }
+      },
+      "D": {
+        "enabled": [
+          1,
+          0,
+          1
+        ],
+        "disabled": [
+          0,
+          0,
+          0
+        ],
+        "empty": [
+          1,
+          0,
+          1
+        ],
+        "equipable": [
+          1,
+          0,
+          1
+        ],
+        "horse": [
+          true,
+          true,
+          false
+        ],
+        "canEquip": [
+          [
+            true,
+            true
+          ],
+          [
+            true,
+            true
+          ]
+        ],
+        "distance": [
+          3,
+          3
+        ],
+        "distanceToD": [
+          0,
+          0
+        ],
+        "registered": [],
+        "physical": [],
+        "markers": [],
+        "cards": {
+          "chitu": "B:e",
+          "jueying": "B:e",
+          "dawan": "s"
+        }
+      }
+    },
+    {
+      "name": "equip-third",
+      "B": {
+        "enabled": [
+          2,
+          0,
+          1
+        ],
+        "disabled": [
+          0,
+          0,
+          0
+        ],
+        "empty": [
+          1,
+          0,
+          1
+        ],
+        "equipable": [
+          2,
+          0,
+          2
+        ],
+        "horse": [
+          true,
+          true,
+          false
+        ],
+        "canEquip": [
+          [
+            false,
+            true
+          ],
+          [
+            false,
+            true
+          ]
+        ],
+        "distance": [
+          2,
+          1
+        ],
+        "distanceToD": [
+          3,
+          1
+        ],
+        "registered": [
+          {
+            "ids": [
+              "jueying"
+            ],
+            "name": "jueying",
+            "subtypes": [
+              "equip3"
+            ]
+          },
+          {
+            "ids": [
+              "dawan"
+            ],
+            "name": "dawan",
+            "subtypes": [
+              "equip4"
+            ]
+          }
+        ],
+        "physical": [
+          {
+            "ids": [
+              "jueying"
+            ],
+            "name": "jueying",
+            "subtypes": [
+              "equip3"
+            ]
+          },
+          {
+            "ids": [
+              "dawan"
+            ],
+            "name": "dawan",
+            "subtypes": [
+              "equip4"
+            ]
+          }
+        ],
+        "markers": [],
+        "cards": {
+          "chitu": "d",
+          "jueying": "B:e",
+          "dawan": "B:e"
+        }
+      },
+      "D": {
+        "enabled": [
+          1,
+          0,
+          1
+        ],
+        "disabled": [
+          0,
+          0,
+          0
+        ],
+        "empty": [
+          1,
+          0,
+          1
+        ],
+        "equipable": [
+          1,
+          0,
+          1
+        ],
+        "horse": [
+          true,
+          true,
+          false
+        ],
+        "canEquip": [
+          [
+            true,
+            true
+          ],
+          [
+            true,
+            true
+          ]
+        ],
+        "distance": [
+          3,
+          3
+        ],
+        "distanceToD": [
+          0,
+          0
+        ],
+        "registered": [],
+        "physical": [],
+        "markers": [],
+        "cards": {
+          "chitu": "d",
+          "jueying": "B:e",
+          "dawan": "B:e"
+        }
+      }
+    },
+    {
+      "name": "disable-3-3-4",
+      "B": {
+        "enabled": [
+          1,
+          0,
+          1
+        ],
+        "disabled": [
+          1,
+          0,
+          0
+        ],
+        "empty": [
+          1,
+          0,
+          1
+        ],
+        "equipable": [
+          1,
+          0,
+          1
+        ],
+        "horse": [
+          true,
+          true,
+          true
+        ],
+        "canEquip": [
+          [
+            true,
+            true
+          ],
+          [
+            true,
+            true
+          ]
+        ],
+        "distance": [
+          1,
+          1
+        ],
+        "distanceToD": [
+          2,
+          2
+        ],
+        "registered": [],
+        "physical": [],
+        "markers": [
+          "feichu_equip3"
+        ],
+        "cards": {
+          "chitu": "d",
+          "jueying": "d",
+          "dawan": "d"
+        }
+      },
+      "D": {
+        "enabled": [
+          1,
+          0,
+          1
+        ],
+        "disabled": [
+          0,
+          0,
+          0
+        ],
+        "empty": [
+          1,
+          0,
+          1
+        ],
+        "equipable": [
+          1,
+          0,
+          1
+        ],
+        "horse": [
+          true,
+          true,
+          false
+        ],
+        "canEquip": [
+          [
+            true,
+            true
+          ],
+          [
+            true,
+            true
+          ]
+        ],
+        "distance": [
+          3,
+          3
+        ],
+        "distanceToD": [
+          0,
+          0
+        ],
+        "registered": [],
+        "physical": [],
+        "markers": [],
+        "cards": {
+          "chitu": "d",
+          "jueying": "d",
+          "dawan": "d"
+        }
+      }
+    },
+    {
+      "name": "disable-3-4-first",
+      "B": {
+        "enabled": [
+          0,
+          0,
+          1
+        ],
+        "disabled": [
+          2,
+          0,
+          0
+        ],
+        "empty": [
+          0,
+          0,
+          0
+        ],
+        "equipable": [
+          0,
+          0,
+          0
+        ],
+        "horse": [
+          false,
+          false,
+          true
+        ],
+        "canEquip": [
+          [
+            false,
+            false
+          ],
+          [
+            false,
+            false
+          ]
+        ],
+        "distance": [
+          1,
+          1
+        ],
+        "distanceToD": [
+          2,
+          2
+        ],
+        "registered": [],
+        "physical": [],
+        "markers": [
+          "feichu_equip3",
+          "feichu_equip3"
+        ],
+        "cards": {
+          "chitu": "d",
+          "jueying": "d",
+          "dawan": "d"
+        }
+      },
+      "D": {
+        "enabled": [
+          1,
+          0,
+          1
+        ],
+        "disabled": [
+          0,
+          0,
+          0
+        ],
+        "empty": [
+          1,
+          0,
+          1
+        ],
+        "equipable": [
+          1,
+          0,
+          1
+        ],
+        "horse": [
+          true,
+          true,
+          false
+        ],
+        "canEquip": [
+          [
+            true,
+            true
+          ],
+          [
+            true,
+            true
+          ]
+        ],
+        "distance": [
+          3,
+          3
+        ],
+        "distanceToD": [
+          0,
+          0
+        ],
+        "registered": [],
+        "physical": [],
+        "markers": [],
+        "cards": {
+          "chitu": "d",
+          "jueying": "d",
+          "dawan": "d"
+        }
+      }
+    },
+    {
+      "name": "disable-3-4-second",
+      "B": {
+        "enabled": [
+          -1,
+          0,
+          1
+        ],
+        "disabled": [
+          3,
+          0,
+          0
+        ],
+        "empty": [
+          0,
+          0,
+          0
+        ],
+        "equipable": [
+          0,
+          0,
+          0
+        ],
+        "horse": [
+          false,
+          false,
+          true
+        ],
+        "canEquip": [
+          [
+            false,
+            false
+          ],
+          [
+            false,
+            false
+          ]
+        ],
+        "distance": [
+          1,
+          1
+        ],
+        "distanceToD": [
+          2,
+          2
+        ],
+        "registered": [],
+        "physical": [],
+        "markers": [
+          "feichu_equip3",
+          "feichu_equip3",
+          "feichu_equip3"
+        ],
+        "cards": {
+          "chitu": "d",
+          "jueying": "d",
+          "dawan": "d"
+        }
+      },
+      "D": {
+        "enabled": [
+          1,
+          0,
+          1
+        ],
+        "disabled": [
+          0,
+          0,
+          0
+        ],
+        "empty": [
+          1,
+          0,
+          1
+        ],
+        "equipable": [
+          1,
+          0,
+          1
+        ],
+        "horse": [
+          true,
+          true,
+          false
+        ],
+        "canEquip": [
+          [
+            true,
+            true
+          ],
+          [
+            true,
+            true
+          ]
+        ],
+        "distance": [
+          3,
+          3
+        ],
+        "distanceToD": [
+          0,
+          0
+        ],
+        "registered": [],
+        "physical": [],
+        "markers": [],
+        "cards": {
+          "chitu": "d",
+          "jueying": "d",
+          "dawan": "d"
+        }
+      }
+    },
+    {
+      "name": "enable-3-4-4",
+      "B": {
+        "enabled": [
+          1,
+          0,
+          1
+        ],
+        "disabled": [
+          1,
+          0,
+          0
+        ],
+        "empty": [
+          1,
+          0,
+          1
+        ],
+        "equipable": [
+          1,
+          0,
+          1
+        ],
+        "horse": [
+          true,
+          true,
+          true
+        ],
+        "canEquip": [
+          [
+            true,
+            true
+          ],
+          [
+            true,
+            true
+          ]
+        ],
+        "distance": [
+          1,
+          1
+        ],
+        "distanceToD": [
+          2,
+          2
+        ],
+        "registered": [],
+        "physical": [],
+        "markers": [
+          "feichu_equip3"
+        ],
+        "cards": {
+          "chitu": "d",
+          "jueying": "d",
+          "dawan": "d"
+        }
+      },
+      "D": {
+        "enabled": [
+          1,
+          0,
+          1
+        ],
+        "disabled": [
+          0,
+          0,
+          0
+        ],
+        "empty": [
+          1,
+          0,
+          1
+        ],
+        "equipable": [
+          1,
+          0,
+          1
+        ],
+        "horse": [
+          true,
+          true,
+          false
+        ],
+        "canEquip": [
+          [
+            true,
+            true
+          ],
+          [
+            true,
+            true
+          ]
+        ],
+        "distance": [
+          3,
+          3
+        ],
+        "distanceToD": [
+          0,
+          0
+        ],
+        "registered": [],
+        "physical": [],
+        "markers": [],
+        "cards": {
+          "chitu": "d",
+          "jueying": "d",
+          "dawan": "d"
+        }
+      }
+    },
+    {
+      "name": "enable-4",
+      "B": {
+        "enabled": [
+          2,
+          0,
+          1
+        ],
+        "disabled": [
+          0,
+          0,
+          0
+        ],
+        "empty": [
+          2,
+          0,
+          2
+        ],
+        "equipable": [
+          2,
+          0,
+          2
+        ],
+        "horse": [
+          true,
+          true,
+          false
+        ],
+        "canEquip": [
+          [
+            true,
+            true
+          ],
+          [
+            true,
+            true
+          ]
+        ],
+        "distance": [
+          1,
+          1
+        ],
+        "distanceToD": [
+          2,
+          2
+        ],
+        "registered": [],
+        "physical": [],
+        "markers": [],
+        "cards": {
+          "chitu": "d",
+          "jueying": "d",
+          "dawan": "d"
+        }
+      },
+      "D": {
+        "enabled": [
+          1,
+          0,
+          1
+        ],
+        "disabled": [
+          0,
+          0,
+          0
+        ],
+        "empty": [
+          1,
+          0,
+          1
+        ],
+        "equipable": [
+          1,
+          0,
+          1
+        ],
+        "horse": [
+          true,
+          true,
+          false
+        ],
+        "canEquip": [
+          [
+            true,
+            true
+          ],
+          [
+            true,
+            true
+          ]
+        ],
+        "distance": [
+          3,
+          3
+        ],
+        "distanceToD": [
+          0,
+          0
+        ],
+        "registered": [],
+        "physical": [],
+        "markers": [],
+        "cards": {
+          "chitu": "d",
+          "jueying": "d",
+          "dawan": "d"
+        }
+      }
+    },
+    {
+      "name": "expand-d-3-4-4",
+      "B": {
+        "enabled": [
+          2,
+          0,
+          1
+        ],
+        "disabled": [
+          0,
+          0,
+          0
+        ],
+        "empty": [
+          2,
+          0,
+          2
+        ],
+        "equipable": [
+          2,
+          0,
+          2
+        ],
+        "horse": [
+          true,
+          true,
+          false
+        ],
+        "canEquip": [
+          [
+            true,
+            true
+          ],
+          [
+            true,
+            true
+          ]
+        ],
+        "distance": [
+          1,
+          1
+        ],
+        "distanceToD": [
+          2,
+          2
+        ],
+        "registered": [],
+        "physical": [],
+        "markers": [],
+        "cards": {
+          "chitu": "d",
+          "jueying": "d",
+          "dawan": "d"
+        }
+      },
+      "D": {
+        "enabled": [
+          3,
+          0,
+          1
+        ],
+        "disabled": [
+          0,
+          0,
+          0
+        ],
+        "empty": [
+          3,
+          0,
+          3
+        ],
+        "equipable": [
+          3,
+          0,
+          3
+        ],
+        "horse": [
+          true,
+          true,
+          false
+        ],
+        "canEquip": [
+          [
+            true,
+            true
+          ],
+          [
+            true,
+            true
+          ]
+        ],
+        "distance": [
+          3,
+          3
+        ],
+        "distanceToD": [
+          0,
+          0
+        ],
+        "registered": [],
+        "physical": [],
+        "markers": [],
+        "cards": {
+          "chitu": "d",
+          "jueying": "d",
+          "dawan": "d"
+        }
+      }
+    }
+  ]
+}

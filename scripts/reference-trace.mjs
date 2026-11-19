@@ -20,6 +20,7 @@ import { checkJudgeArea, installJudgeArea } from './reference-judge-area.mjs';
 import { checkJudgeInterruptions, installJudgeInterruptions } from './reference-judge-interruptions.mjs';
 import { checkJudgePayment, installJudgePayment } from './reference-judge-payment.mjs';
 import { checkEquipSlots, installEquipSlots } from './reference-equip-slots.mjs';
+import { checkCombinedMounts, installCombinedMounts } from './reference-combined-mounts.mjs';
 import { checkMultiWeaponCombat, installMultiWeaponCombat } from './reference-multi-weapon-combat.mjs';
 import { checkVirtualEquipProbe, installVirtualEquipProbe } from './reference-virtual-equip-probe.mjs';
 import { checkVirtualEquipCombat, installVirtualEquipCombat } from './reference-virtual-equip-combat.mjs';
@@ -88,6 +89,7 @@ const descriptions = new Map([
   ['judge-interruptions', 'judgment-area interruptions, retained cards and lightning return'],
   ['judge-payment', 'delayed-card payment interruptions and judgment-zone card movement'],
   ['equip-slots', 'ordinary, disabled and expanded equipment slots'],
+  ['combined-mounts', 'combined mount slot behavior and real equipment choices'],
   ['multi-weapon-combat', 'multiple weapon combat and trigger ordering'],
   ['virtual-equip-discard-first', 'virtual judgment material equipped during discard then loss'],
   ['virtual-equip-lose-first', 'virtual judgment material equipped during loss then discard'],
@@ -198,6 +200,8 @@ try {
     await context.addInitScript(installMultiWeaponCombat);
   } else if (scenario === 'equip-slots') {
     await context.addInitScript(installEquipSlots);
+  } else if (scenario === 'combined-mounts') {
+    await context.addInitScript(installCombinedMounts);
   } else if (scenario === 'virtual-equip-combat') {
     await context.addInitScript(installVirtualEquipCombat);
   } else if (scenario === 'virtual-judge-tricks') {
@@ -329,6 +333,11 @@ try {
           }
           if (scenario === 'multi-weapon-combat') {
             window.__referenceResult = await window.__runMultiWeaponCombat({ lib, game, ui, get, _status, actor });
+            game.pause();
+            return;
+          }
+          if (scenario === 'combined-mounts') {
+            window.__referenceResult = await window.__runCombinedMounts({ lib, game, ui, get, _status, actor });
             game.pause();
             return;
           }
@@ -550,6 +559,7 @@ try {
   if (scenario === 'judge-interruptions') checkJudgeInterruptions(captured.value);
   if (scenario === 'judge-payment') checkJudgePayment(captured.value);
   if (scenario === 'equip-slots') checkEquipSlots(captured.value);
+  if (scenario === 'combined-mounts') checkCombinedMounts(captured.value);
   if (scenario === 'multi-weapon-combat') { captured.value.humanAxeClick = humanAxeClick; checkMultiWeaponCombat(captured.value); }
   if (scenario === 'virtual-judge-probe') checkVirtualJudgeProbe(captured.value);
   else if (scenario === 'virtual-judge-tricks') checkVirtualJudgeTricks(captured.value);

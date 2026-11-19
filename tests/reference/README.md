@@ -8,6 +8,8 @@
 
 `multi-weapon-combat.json` 记录八席真实装备与结算的 142 条请求/回调和 12 条装备技能执行边界。红判定八卦抵消基线黑杀；连弩和两把青釭并存后射程从 1 增至 2，同名技能只登记一次。真实出牌阶段先后使用两张杀，第一张后失去一把青釭、第二张后失去连弩，第三张仍在手中。另以真实 `arrangeTrigger` 选择贯石斧先或青龙先：前者支付两张牌使原杀命中，后者先结算追加杀、再支付两张牌使命中原杀。贯石斧先的顺序由 Playwright 实际点击真人控制的“贯石斧”选项，记录当时玩家为本机且自动模式关闭；青龙先及后续费用选择使用 AI 偏好。牌、费用与伤害均由上游事件结算；事件请求与实际回调分别记录。
 
+`combined-mounts.json` 在清场后启用上游合并坐骑栏，并在结束时恢复原设置。B 依次真实装备赤兔、绝影，扩栏后重新装备赤兔，再由 B 的真实选择事件替换为大宛；记录两类坐骑的原始 subtype、登记、实体、候选、选择和双向距离。统计数组依次对应 `3`、`4`、`equip3_4`，三种查询的结果并不总是相同。扩栏后废除 `[3,3,4]` 的样例一次弃掉两匹马，但 `countEnabledSlot(3)` 仍为 1；随后两次独立废除 `[3,4]` 使该值依次为 0、-1。恢复 `[3,4,4]` 和 `[4]` 后依次为 1、2。空席 D 扩展 `[3,4,4]` 后该值为 3。上述数字是固定上游的实测结果，不是对普通分马模式的推断。
+
 `trigger-order-cancel.json` 使用同样的实体杀局面，再给 B 一张桃作为费用材料。上游 `finishSkill` 和 `addSkill` 注册诊断技能：伤害 `damageBegin4` 的 firstDo 先执行；A 的两个同优先级 source 技能通过真实 `chooseControl` 选择第二项 Beta，Beta 使低优先级候选失效；B 的 player 技能尽管数值优先级更高，仍在 A 的普通技能之后执行，并在真实 cost 事件中弃置桃；最后 A 的 global lastDo 取消伤害。`filterResults` 记录候选筛选的真实结果，`skillSequence` 和事件的 `parent` 列记录父事件。此轨迹观察到 `damageCancelled` 而没有 `damageEnd` / `damageAfter`，但仍有 `shaDamage`、`useCardAfter` 和处理区清理；B 的体力保持 4，杀的使用次数为 1。事件名 `shaDamage` 本身不证明体力发生变化。
 
 `damage-callback-cancel.json` 在同样的杀局面注册诊断技能，在 `damage` 技能回调中取消伤害。`events` 记录的 `damage` 请求发生时体力仍为 4；`skillCallbacks` 记录实际执行回调时体力已降至 3，并记录回调和伤害事件的父事件。取消保留已扣体力，随后执行 `damageCancelled`、`shaDamage` 和 `useCardAfter`，不执行 `damageSource`、`damageEnd` 或 `damageAfter`。
@@ -139,6 +141,7 @@
    node scripts/reference-trace.mjs --scenario judge-interruptions --check tests/reference/judge-interruptions.json
    node scripts/reference-trace.mjs --scenario judge-payment --check tests/reference/judge-payment.json
    node scripts/reference-trace.mjs --scenario equip-slots --check tests/reference/equip-slots.json
+   node scripts/reference-trace.mjs --scenario combined-mounts --check tests/reference/combined-mounts.json
    node scripts/reference-trace.mjs --scenario multi-weapon-combat --check tests/reference/multi-weapon-combat.json
    node scripts/reference-trace.mjs --scenario virtual-equip-discard-first --check tests/reference/virtual-equip-discard-first.json
    node scripts/reference-trace.mjs --scenario virtual-equip-lose-first --check tests/reference/virtual-equip-lose-first.json
