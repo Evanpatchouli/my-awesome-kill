@@ -78,7 +78,7 @@ impl Game {
         let male = |seat| {
             self.seat(seat)
                 .ok()
-                .and_then(|s| s.hero)
+                .and_then(|seat| self.general(seat))
                 .is_some_and(|hero| hero.gender == "male")
         };
         let mut plays = Vec::new();
@@ -309,7 +309,7 @@ impl Game {
                                     && self
                                         .seat(candidate)
                                         .ok()
-                                        .and_then(|seat| seat.hero)
+                                        .and_then(|seat| self.general(seat))
                                         .is_some_and(|hero| hero.gender == "male")
                             })
                             .collect();

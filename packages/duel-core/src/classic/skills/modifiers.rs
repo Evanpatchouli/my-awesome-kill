@@ -63,7 +63,7 @@ impl Game {
     pub(super) fn hero_faction_is(&self, seat: SeatId, faction: &str) -> bool {
         self.seat(seat)
             .ok()
-            .and_then(|seat| seat.hero)
+            .and_then(|seat| self.general(seat))
             .is_some_and(|hero| hero.faction == faction)
     }
 

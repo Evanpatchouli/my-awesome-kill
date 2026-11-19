@@ -32,6 +32,7 @@ mod tricks_tests;
 pub(crate) mod turns;
 
 use crate::classic_data::{self, Role, Side};
+use crate::content::{Catalog, ContentPack};
 use crate::{
     Action, Card, CardFace, CardId, CardKind, CardZone, ChoiceKind, Command, CounterContext,
     Decision, EventKind, Game, Program, RuleError, Seat, SeatId, TurnView,
@@ -135,16 +136,51 @@ impl Game {
         mode: crate::MountSlots,
         registrations: Vec<crate::TriggerRegistration>,
     ) -> Result<Self, RuleError> {
+        Self::classic_table(seed, human, hero_id, count, mode, registrations, None)
+    }
+
+    pub fn classic_with_content(
+        seed: u32,
+        human: SeatId,
+        hero_id: &str,
+        count: usize,
+        content: &ContentPack,
+    ) -> Result<Self, RuleError> {
+        Self::classic_table(
+            seed,
+            human,
+            hero_id,
+            count,
+            crate::MountSlots::Separate,
+            Vec::new(),
+            Some(content),
+        )
+    }
+
+    fn classic_table(
+        seed: u32,
+        human: SeatId,
+        hero_id: &str,
+        count: usize,
+        mode: crate::MountSlots,
+        registrations: Vec<crate::TriggerRegistration>,
+        pack: Option<&ContentPack>,
+    ) -> Result<Self, RuleError> {
         let mut roles =
             classic_data::deal_roles(count).ok_or(RuleError::UnsupportedSeatCount { count })?;
         if human as usize >= count {
             return Err(RuleError::UnknownSeat { seat: human });
         }
         let roster = classic_data::roster();
-        let hero = roster
-            .iter()
-            .find(|hero| hero.id == hero_id)
-            .ok_or(RuleError::UnknownHero)?;
+        let catalog = pack
+            .map(ContentPack::compile)
+            .transpose()?
+            .unwrap_or_else(Catalog::default);
+        let custom = catalog.generals.iter().position(|hero| hero.id == hero_id);
+        let hero = roster.iter().find(|hero| hero.id == hero_id);
+        if hero.is_none() && custom.is_none() {
+            return Err(RuleError::UnknownHero);
+        }
 
         let mut random = TableRandom(u64::from(seed));
         random.shuffle(&mut roles);
@@ -155,6 +191,15 @@ impl Game {
         let mut others: Vec<_> = roster
             .iter()
             .filter(|candidate| candidate.id != hero_id)
+            .map(|candidate| (Some(candidate), None))
+            .chain(
+                catalog
+                    .generals
+                    .iter()
+                    .enumerate()
+                    .filter(|(_, candidate)| candidate.id != hero_id)
+                    .map(|(index, _)| (None, Some(index))),
+            )
             .collect();
         random.shuffle(&mut others);
         let seats = roles
@@ -162,11 +207,14 @@ impl Game {
             .enumerate()
             .map(|(index, role)| {
                 let id = index as SeatId;
-                let general = if id == human {
-                    hero
+                let (hero, content_hero) = if id == human {
+                    (hero, custom)
                 } else {
                     others.pop().expect("there are enough generals")
                 };
+                let general = hero
+                    .or_else(|| catalog.generals.get(content_hero?))
+                    .expect("validated general");
                 let max_hp = i32::from(general.max_hp) + i32::from(role == Role::Lord && count > 4);
                 Seat {
                     id,
@@ -182,7 +230,8 @@ impl Game {
                     linked: false,
                     turned_over: false,
                     armor: 0,
-                    hero: Some(general),
+                    hero,
+                    content_hero,
                     role: Some(role),
                     role_shown: role == Role::Lord,
                     turn_kills: 0,
@@ -217,9 +266,26 @@ impl Game {
                 }
             })
             .collect();
+        if let Some(pack) = pack {
+            for entry in &pack.deck {
+                for _ in 0..entry.copies {
+                    let id = deck.len() as CardId;
+                    faces.push(CardFace {
+                        id,
+                        suit: entry.suit,
+                        rank: entry.rank,
+                    });
+                    deck.push(Card {
+                        id,
+                        kind: CardKind::Content(entry.card),
+                    });
+                }
+            }
+        }
         random.shuffle(&mut deck);
 
         let mut game = Self::with_seats(seats, lord);
+        game.content = catalog;
         game.mount_slots = mode;
         game.classic = Some(Classic {
             human,
@@ -235,6 +301,24 @@ impl Game {
         });
         for registration in registrations {
             game.register_trigger(registration)?;
+        }
+        if let Some(pack) = pack {
+            let assignments: Vec<_> = game
+                .seats
+                .iter()
+                .filter_map(|seat| {
+                    let index = seat.content_hero?;
+                    Some((seat.id, &pack.generals[index].skills))
+                })
+                .collect();
+            for (seat, ids) in assignments {
+                crate::content_skills::install(
+                    &mut game,
+                    seat,
+                    ids.iter()
+                        .filter_map(|id| pack.skills.iter().find(|skill| &skill.id == id)),
+                )?;
+            }
         }
         game.scheduler
             .start(Program::event(EventKind::Opening { lord }));
@@ -601,7 +685,7 @@ impl Game {
         let target_attitude = attitude(context.target);
         let source_attitude = context.source.map_or(0, attitude);
         let value = match context.card_kind {
-            Wuzhong | Wugu => target_attitude,
+            Wuzhong | Wugu | Content(_) => target_attitude,
             Taoyuan
                 if self
                     .seat(context.target)
@@ -632,6 +716,14 @@ impl Game {
         let targets_lord = targets.contains(&lord);
         match kind {
             Wuzhong => (5, 0),
+            Content(_) => {
+                let target = targets.first().copied();
+                if target == Some(actor.id) || (target == Some(lord) && court) {
+                    (5, 0)
+                } else {
+                    (0, 0)
+                }
+            }
             Sha | Juedou | Guohe | Shunshou | Lebu | Jiedao => {
                 let target = if kind == Jiedao {
                     targets.get(1)

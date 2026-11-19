@@ -1,6 +1,7 @@
 use super::add_judge::{self, DelayedPlacement};
 use super::judge_registry::Judgment;
 use super::PlannedUse;
+use crate::content::TargetRule;
 use crate::scheduler::{EventRef, Outcome};
 use crate::{
     Card, CardKind, CardTargetTiming, ChoiceBranch, ChoiceRequest, DrawReason, EventKind, Game,
@@ -47,6 +48,7 @@ enum TrickStage {
     Counter,
     CounterWait,
     Effect,
+    ContentEffect(usize),
     Response { actor: SeatId },
     Duel { actor: SeatId, remaining: u8 },
     Select(Vec<Judgment>),
@@ -143,64 +145,77 @@ impl Game {
             .copied()
             .filter(|target| *target != seat)
             .collect();
-        let target_lists: Vec<Vec<SeatId>> = match card.kind {
-            Tiesuo => {
-                let mut choices = Vec::new();
-                for (i, &first) in living.iter().enumerate() {
-                    choices.push(vec![first]);
-                    choices.extend(living[i + 1..].iter().map(|&second| vec![first, second]));
-                }
-                choices
+        let target_lists: Vec<Vec<SeatId>> = if let Some(definition) = self.content.card(card.kind)
+        {
+            match definition.target {
+                TargetRule::SelfOnly => vec![vec![seat]],
+                TargetRule::Other => others
+                    .into_iter()
+                    .filter(|&target| self.hero_allows_target(target, card.kind))
+                    .map(|target| vec![target])
+                    .collect(),
             }
-            Wugu | Taoyuan => vec![living],
-            Nanman | Wanjian => vec![others],
-            Wuzhong => vec![vec![seat]],
-            Shandian if self.is_in(seat) && self.can_add_judge(seat, Shandian) => vec![vec![seat]],
-            Shandian => vec![],
-            Juedou => others
-                .into_iter()
-                .filter(|target| self.hero_allows_target(*target, Juedou))
-                .map(|target| vec![target])
-                .collect(),
-            Lebu => others
-                .into_iter()
-                .filter(|target| {
-                    self.hero_allows_target(*target, Lebu) && self.can_add_judge(*target, Lebu)
-                })
-                .map(|target| vec![target])
-                .collect(),
-            Shunshou | Guohe => others
-                .into_iter()
-                .filter(|target| {
-                    let p = self.seat(*target).expect("living target");
-                    self.hero_allows_target(*target, card.kind)
-                        && (card.kind != Shunshou
-                            || self.hero_trick_unlimited_range(seat)
-                            || (!self.has_skill(seat, "undist")
-                                && !self.has_skill(*target, "undist")
-                                && self.distance(seat, *target) == Ok(1)))
-                        && (!p.hand.is_empty()
-                            || !p.equipment.is_empty()
-                            || self.judgments(*target).next().is_some())
-                })
-                .map(|target| vec![target])
-                .collect(),
-            Jiedao => others
-                .into_iter()
-                .flat_map(|holder| {
-                    self.in_order_from(holder)
-                        .into_iter()
-                        .filter(move |target| {
-                            *target != holder
-                                && self.weapon(holder).is_some()
-                                && self.hero_allows_target(*target, Sha)
-                                && self.in_sha_range(holder, *target)
-                        })
-                        .map(move |target| vec![holder, target])
-                })
-                .collect(),
-            Wuxie => Vec::new(),
-            _ => return None,
+        } else {
+            match card.kind {
+                Tiesuo => {
+                    let mut choices = Vec::new();
+                    for (i, &first) in living.iter().enumerate() {
+                        choices.push(vec![first]);
+                        choices.extend(living[i + 1..].iter().map(|&second| vec![first, second]));
+                    }
+                    choices
+                }
+                Wugu | Taoyuan => vec![living],
+                Nanman | Wanjian => vec![others],
+                Shandian if self.is_in(seat) && self.can_add_judge(seat, Shandian) => {
+                    vec![vec![seat]]
+                }
+                Shandian => vec![],
+                Juedou => others
+                    .into_iter()
+                    .filter(|target| self.hero_allows_target(*target, Juedou))
+                    .map(|target| vec![target])
+                    .collect(),
+                Lebu => others
+                    .into_iter()
+                    .filter(|target| {
+                        self.hero_allows_target(*target, Lebu) && self.can_add_judge(*target, Lebu)
+                    })
+                    .map(|target| vec![target])
+                    .collect(),
+                Shunshou | Guohe => others
+                    .into_iter()
+                    .filter(|target| {
+                        let p = self.seat(*target).expect("living target");
+                        self.hero_allows_target(*target, card.kind)
+                            && (card.kind != Shunshou
+                                || self.hero_trick_unlimited_range(seat)
+                                || (!self.has_skill(seat, "undist")
+                                    && !self.has_skill(*target, "undist")
+                                    && self.distance(seat, *target) == Ok(1)))
+                            && (!p.hand.is_empty()
+                                || !p.equipment.is_empty()
+                                || self.judgments(*target).next().is_some())
+                    })
+                    .map(|target| vec![target])
+                    .collect(),
+                Jiedao => others
+                    .into_iter()
+                    .flat_map(|holder| {
+                        self.in_order_from(holder)
+                            .into_iter()
+                            .filter(move |target| {
+                                *target != holder
+                                    && self.weapon(holder).is_some()
+                                    && self.hero_allows_target(*target, Sha)
+                                    && self.in_sha_range(holder, *target)
+                            })
+                            .map(move |target| vec![holder, target])
+                    })
+                    .collect(),
+                Wuxie => Vec::new(),
+                _ => return None,
+            }
         };
         Some(
             target_lists
@@ -569,6 +584,11 @@ impl Game {
             }
             Effect => {
                 let target = flow.targets[flow.target_index];
+                if self.content.card(flow.kind).is_some() {
+                    flow.stage = ContentEffect(0);
+                    self.scheduler.replace_current(Program::Trick(flow));
+                    return;
+                }
                 match flow.kind {
                     Tiesuo => {
                         self.scheduler
@@ -576,10 +596,6 @@ impl Game {
                                 seat: flow.seat,
                                 target,
                             }));
-                        self.advance_trick(flow);
-                    }
-                    Wuzhong => {
-                        self.queue_draw(target, 2, DrawReason::CardEffect);
                         self.advance_trick(flow);
                     }
                     Taoyuan => {
@@ -952,6 +968,31 @@ impl Game {
                 flow.borrowed_victims.push(victim);
                 flow.stage = BorrowedPrepare(index + 1);
                 self.scheduler.replace_current(Program::Trick(flow));
+            }
+            ContentEffect(index) => {
+                let target = flow.targets[flow.target_index];
+                let effect = self
+                    .content
+                    .card(flow.kind)
+                    .and_then(|definition| definition.effects.get(index))
+                    .copied();
+                let Some(effect) =
+                    effect.filter(|_| self.match_result().is_none() && self.is_in(target))
+                else {
+                    self.advance_trick(flow);
+                    return;
+                };
+                let program = match effect {
+                    crate::content::Effect::Draw { count } if flow.kind != Wuzhong => {
+                        self.draw_many_program(target, count, DrawReason::CardEffect)
+                    }
+                    effect => {
+                        Program::event(effect.event(flow.seat, target, DrawReason::CardEffect))
+                    }
+                };
+                flow.stage = ContentEffect(index + 1);
+                self.scheduler.replace_current(Program::Trick(flow));
+                self.scheduler.next(program);
             }
             ApplyJudgment(judged) => {
                 let material = flow.card.expect("delayed material");

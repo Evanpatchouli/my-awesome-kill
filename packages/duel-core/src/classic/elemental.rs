@@ -126,10 +126,19 @@ pub(crate) enum ContentAction {
         seat: SeatId,
         count: u16,
     },
+    Recover {
+        seat: SeatId,
+        count: u16,
+    },
 }
 
 impl ContentAction {
     pub(crate) fn program(self, game: &Game) -> Option<Program> {
+        if game.match_result().is_some()
+            && matches!(self, Self::DrawMany { .. } | Self::Recover { .. })
+        {
+            return None;
+        }
         let seat = match &self {
             Self::Link { seat, .. }
             | Self::TurnOver { seat, .. }
@@ -137,6 +146,7 @@ impl ContentAction {
             | Self::LoseHp { seat, .. }
             | Self::Draw { seat }
             | Self::DrawMany { seat, .. }
+            | Self::Recover { seat, .. }
             | Self::GainCreated { seat, .. } => *seat,
             Self::Damage { target, .. } => *target,
         };
@@ -159,6 +169,11 @@ impl ContentAction {
             Self::DrawMany { count, .. } => {
                 Some(game.draw_many_program(seat, count, crate::DrawReason::CardEffect))
             }
+            Self::Recover { count, .. } => Some(Program::event(crate::EventKind::Recover {
+                seat,
+                target: seat,
+                amount: count,
+            })),
             Self::GainCreated { card, .. } => Some(game.created_gain_program(seat, card)),
         }
     }
@@ -239,6 +254,10 @@ impl crate::TriggerContext<'_> {
             return Err(RuleError::InvalidSelection);
         }
         self.enqueue_elemental(seat, ContentAction::DrawMany { seat, count })
+    }
+
+    pub(crate) fn recover(&mut self, seat: SeatId, count: u16) -> Result<(), RuleError> {
+        self.enqueue_elemental(seat, ContentAction::Recover { seat, count })
     }
 }
 

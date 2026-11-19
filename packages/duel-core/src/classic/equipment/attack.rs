@@ -704,7 +704,7 @@ impl Game {
             let gender = |id| {
                 self.seat(id)
                     .ok()
-                    .and_then(|actor| actor.hero)
+                    .and_then(|actor| self.general(actor))
                     .map(|hero| hero.gender.as_str())
             };
             return matches!((gender(source), gender(target)), (Some(a), Some(b)) if a != b);

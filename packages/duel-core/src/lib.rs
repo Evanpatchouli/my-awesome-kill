@@ -14,6 +14,8 @@ mod marks;
 pub use marks::SkillMark;
 mod classic;
 pub mod classic_data;
+pub mod content;
+mod content_skills;
 #[cfg(any(test, feature = "content-mingdian"))]
 pub mod mingdian;
 mod move_choice;
@@ -391,6 +393,7 @@ struct Seat {
     turned_over: bool,
     armor: u16,
     hero: Option<&'static General>,
+    content_hero: Option<usize>,
     role: Option<Role>,
     role_shown: bool,
     turn_kills: u64,
@@ -445,6 +448,7 @@ impl From<SeatSetup> for Seat {
             turned_over: false,
             armor: 0,
             hero: None,
+            content_hero: None,
             role: None,
             role_shown: false,
             turn_kills: 0,
@@ -499,6 +503,7 @@ pub struct Game {
     scheduler: Scheduler<Program, Resolution>,
     events: Vec<GameEvent>,
     classic: Option<Classic>,
+    content: content::Catalog,
     trigger_registrations: HashMap<TriggerId, TriggerRegistration>,
     next_trigger_id: TriggerId,
 }
@@ -522,6 +527,9 @@ impl Game {
                 return Err(RuleError::DuplicateSeat { seat: seat.id });
             }
             for card in &seat.hand {
+                if matches!(card.kind, CardKind::Content(_)) {
+                    return Err(RuleError::UnsupportedCard);
+                }
                 if !cards.insert(card.id) {
                     return Err(RuleError::DuplicateCard { card: card.id });
                 }
@@ -586,9 +594,15 @@ impl Game {
             scheduler: Scheduler::new(),
             events: Vec::new(),
             classic: None,
+            content: content::Catalog::default(),
             trigger_registrations: HashMap::new(),
             next_trigger_id: 0,
         }
+    }
+
+    fn general<'a>(&'a self, seat: &'a Seat) -> Option<&'a General> {
+        seat.hero
+            .or_else(|| self.content.generals.get(seat.content_hero?))
     }
 
     /// Assign a mode-defined team. Classic identity games have no explicit teams.
@@ -799,7 +813,7 @@ impl Game {
                     linked: seat.linked,
                     turned_over: seat.turned_over,
                     armor: seat.armor,
-                    hero: seat.hero.map(|hero| hero.id.clone()),
+                    hero: self.general(seat).map(|hero| hero.id.clone()),
                     role: seat.role.filter(|_| role_visible),
                     hand_count: seat.hand.len(),
                     hand: own.then(|| seat.hand.clone()),
@@ -900,6 +914,7 @@ impl Game {
             .map(|(&id, &nature)| (id, nature))
             .collect();
         Ok(GameView {
+            content: self.content.preview(),
             mount_combined: self.mount_slots == MountSlots::Combined,
             round_suspended: self.round_suspended(),
             group_updates: self.group_updates.clone(),

@@ -110,8 +110,8 @@ impl Game {
 
     pub(crate) fn seat_has_non_equipment_skill(&self, player: &Seat, id: &str) -> bool {
         (id == "undist" && player.rest_undist)
-            || player
-                .hero
+            || self
+                .general(player)
                 .is_some_and(|hero| hero.skills.iter().any(|skill| skill.id == id))
             || self.owns_active_skill(player.id, id)
             || self

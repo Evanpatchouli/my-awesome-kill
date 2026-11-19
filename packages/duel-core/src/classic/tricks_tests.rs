@@ -6,6 +6,63 @@ fn card(id: u32, kind: CardKind) -> Card {
 }
 
 #[test]
+fn declarative_trick_stops_effects_when_the_deck_exhausts() {
+    use crate::content::{ContentPack, Effect};
+    let mut pack =
+        ContentPack::parse(include_str!("../../data/example-content-pack.json")).unwrap();
+    pack.cards[0].effects = vec![Effect::Draw { count: 8 }, Effect::Draw { count: 1 }];
+    let mut game = scene();
+    game.content = pack.compile().unwrap();
+    let trick = card(104, CardKind::Content(pack.cards[0].id));
+    let remaining = card(105, CardKind::Shan);
+    game.classic.as_mut().unwrap().deck = vec![remaining];
+    start_trick(&mut game, trick, vec![0]);
+    pass_counters(&mut game);
+    let view = game.view(Some(0)).unwrap();
+    assert!(view.drawn);
+    assert!(!game.seat(0).unwrap().hand.contains(&remaining));
+    assert_eq!(view.deck_count, 1);
+}
+
+#[test]
+fn counterspell_suppresses_all_declarative_card_effects() {
+    use crate::content::{ContentPack, Effect};
+    let mut pack =
+        ContentPack::parse(include_str!("../../data/example-content-pack.json")).unwrap();
+    pack.cards[0].effects = vec![Effect::Draw { count: 3 }, Effect::Recover { count: 1 }];
+    let mut game = scene();
+    game.content = pack.compile().unwrap();
+    let trick = card(104, CardKind::Content(pack.cards[0].id));
+    let counter = card(105, CardKind::Wuxie);
+    game.seat_mut(0).hp = 2;
+    game.seat_mut(1).hand.push(counter);
+    start_trick(&mut game, trick, vec![0]);
+    pass_counters_until(&mut game, |choice| choice.seat == 1);
+    let view = game.view(Some(1)).unwrap();
+    let choice = view.choice.unwrap();
+    let branch = choice
+        .branches
+        .iter()
+        .find(|branch| branch.cards.contains(&counter.id))
+        .unwrap();
+    game.submit(Command {
+        version: view.version,
+        seat: 1,
+        action: Action::Select {
+            event: choice.event,
+            branch: branch.id,
+            cards: vec![counter.id],
+            targets: vec![],
+        },
+    })
+    .unwrap();
+    pass_counters(&mut game);
+    assert_eq!(game.seat(0).unwrap().hp, 2);
+    assert!(game.seat(0).unwrap().hand.is_empty());
+    assert!(game.discard.contains(&trick));
+}
+
+#[test]
 fn target_eligibility_obeys_distance_empty_zones_and_delayed_duplicates() {
     let mut game = Game::classic(3, 0, "zhangfei", 4).unwrap();
     for seat in &mut game.seats {

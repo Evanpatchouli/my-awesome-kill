@@ -782,7 +782,7 @@ impl Game {
             Candidate::Native(owner, skill) => self
                 .seat(*owner)
                 .ok()
-                .and_then(|seat| seat.hero)
+                .and_then(|seat| self.general(seat))
                 .and_then(|hero| {
                     hero.skills
                         .iter()

@@ -1,4 +1,5 @@
 //! WebView and browser bindings for the same authoritative Rust state machine.
+use duel_core::content::ContentPack;
 use duel_core::{Command, Game, GameSetup, SeatId};
 use wasm_bindgen::prelude::*;
 
@@ -9,6 +10,10 @@ pub use replay::RecordedDuel;
 mod qa_compare;
 #[cfg(feature = "qa-elemental")]
 mod qa_elemental;
+#[cfg(feature = "qa-equip-slots")]
+mod qa_equip_slots;
+#[cfg(feature = "qa-judge-area")]
+mod qa_judge_area;
 #[cfg(feature = "qa-mingdian")]
 mod qa_mingdian;
 #[cfg(feature = "qa-multi-compare")]
@@ -21,10 +26,6 @@ mod qa_qiaoshui;
 mod qa_recast;
 #[cfg(feature = "qa-rest")]
 mod qa_rest;
-#[cfg(feature = "qa-equip-slots")]
-mod qa_equip_slots;
-#[cfg(feature = "qa-judge-area")]
-mod qa_judge_area;
 #[cfg(feature = "qa-revival")]
 mod qa_revival;
 #[cfg(feature = "qa-vitality")]
@@ -41,6 +42,15 @@ pub struct Duel {
 
 #[wasm_bindgen]
 impl Duel {
+    #[wasm_bindgen(js_name = inspectContent)]
+    pub fn inspect_content(raw: &str) -> Result<String, JsError> {
+        let pack = ContentPack::parse(raw).map_err(|error| JsError::new(&error.to_string()))?;
+        let preview = pack
+            .preview()
+            .map_err(|error| JsError::new(&error.to_string()))?;
+        Ok(serde_json::to_string(&preview)?)
+    }
+
     /// Start a prescribed table, also used to replay cross-runtime conformance scenarios.
     #[wasm_bindgen(constructor)]
     pub fn new(setup: &str) -> Result<Duel, JsError> {

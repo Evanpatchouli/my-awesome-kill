@@ -92,6 +92,9 @@ impl Game {
             Sha | Juedou | Nanman | Wanjian => target != owner,
             Tao => player.hp < player.max_hp,
             Tiesuo | Wuzhong | Wugu | Taoyuan => true,
+            Content(_) => self.content.card(kind).is_some_and(|definition| {
+                definition.target == crate::content::TargetRule::Other && target != owner
+            }),
             Shunshou | Guohe => {
                 target != owner
                     && !(player.hand.is_empty()

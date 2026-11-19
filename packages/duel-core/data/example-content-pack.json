@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "id": "demo",
+  "version": "1.0.0",
+  "cards": [
+    {
+      "id": "demo:more",
+      "name": "满载而归",
+      "description": "出牌阶段，对自己使用。摸三张牌。",
+      "type": "trick",
+      "target": "self",
+      "effects": [{ "op": "draw", "count": 3 }]
+    }
+  ],
+  "deck": [{ "card": "demo:more", "suit": "heart", "rank": 7, "copies": 8 }],
+  "generals": [
+    {
+      "id": "demo:traveler",
+      "name": "云游客",
+      "faction": "qun",
+      "gender": "female",
+      "maxHp": 4,
+      "skills": ["demo:prepare", "demo:provision"]
+    }
+  ],
+  "skills": [
+    {
+      "id": "demo:prepare",
+      "name": "拾遗",
+      "description": "出牌阶段限一次，你可以摸一张牌。",
+      "timing": "playOnce",
+      "effects": [{ "op": "draw", "count": 1 }]
+    },
+    {
+      "id": "demo:provision",
+      "name": "备粮",
+      "description": "你的摸牌阶段结束后，你摸一张牌。",
+      "timing": "drawAfter",
+      "effects": [{ "op": "draw", "count": 1 }]
+    }
+  ]
+}

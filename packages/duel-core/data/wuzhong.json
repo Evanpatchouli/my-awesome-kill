@@ -1,0 +1,8 @@
+{
+  "id": "classic:wuzhong",
+  "name": "无中生有",
+  "description": "摸两张牌。",
+  "type": "trick",
+  "target": "self",
+  "effects": [{ "op": "draw", "count": 2 }]
+}

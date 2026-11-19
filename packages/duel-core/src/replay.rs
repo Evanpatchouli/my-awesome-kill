@@ -1,6 +1,7 @@
 //! Explicit, private command logs for deterministic reconstruction by a trusted host.
 use serde::{Deserialize, Serialize};
 
+use crate::content::ContentPack;
 use crate::{Command, Game, GameSetup, RuleError, SeatId};
 
 #[cfg(test)]
@@ -34,6 +35,13 @@ pub enum ReplaySetup {
         hero: String,
         seats: usize,
     },
+    SeededContent {
+        seed: u32,
+        human: SeatId,
+        hero: String,
+        seats: usize,
+        pack: ContentPack,
+    },
 }
 
 impl ReplaySetup {
@@ -61,6 +69,13 @@ impl ReplaySetup {
                 *seats,
                 crate::MountSlots::Combined,
             ),
+            Self::SeededContent {
+                seed,
+                human,
+                hero,
+                seats,
+                pack,
+            } => Game::classic_with_content(*seed, *human, hero, *seats, pack),
         }
     }
 }

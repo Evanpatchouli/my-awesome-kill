@@ -63,6 +63,8 @@ pub enum CardKind {
     Wuxie,
     Lebu,
     Shandian,
+    #[serde(untagged)]
+    Content(crate::content::CardKey),
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -80,6 +82,7 @@ impl CardKind {
             Sha | Shan | Tao => CardType::Basic,
             Wugu | Taoyuan | Nanman | Wanjian | Juedou | Wuzhong | Shunshou | Guohe | Jiedao
             | Tiesuo | Wuxie => CardType::Trick,
+            Content(_) => CardType::Trick,
             Lebu | Shandian => CardType::Delay,
             Bagua | Jueying | Dilu | Zhuahuang | Chitu | Dawan | Zixin | Zhuge | Cixiong
             | Qinggang | Qinglong | Zhangba | Guanshi | Fangtian | Qilin => CardType::Equipment,
@@ -154,6 +157,8 @@ pub enum Action {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GameView {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub content: Option<crate::content::ContentPreview>,
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub mount_combined: bool,
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
@@ -839,6 +844,7 @@ pub enum RuleError {
     NotEnoughSeats,
     UnsupportedSeatCount { count: usize },
     UnknownHero,
+    InvalidContent { reason: String },
     DuplicateSeat { seat: SeatId },
     UnknownSeat { seat: SeatId },
     DuplicateCard { card: CardId },
@@ -865,6 +871,7 @@ impl std::fmt::Display for RuleError {
                 write!(formatter, "unsupported table size {count}")
             }
             Self::UnknownHero => formatter.write_str("the selected hero is absent from the roster"),
+            Self::InvalidContent { reason } => write!(formatter, "内容包无效：{reason}"),
             Self::DuplicateSeat { seat } => write!(formatter, "seat {seat} appears twice"),
             Self::UnknownSeat { seat } => write!(formatter, "seat {seat} is absent"),
             Self::DuplicateCard { card } => write!(formatter, "card {card} appears twice"),
