@@ -52,7 +52,7 @@ async function assertCentered(board) {
   assert.ok(Math.abs(dx) <= 1 && Math.abs(dy) <= 2, `action group offset from table center: ${dx}, ${dy}`)
 }
 
-async function assertCardSizes(board, cards) {
+async function assertCardShape(board, cards) {
   const [hand, sizes] = await Promise.all([
     board.locator('[data-hand-gallery] .playing-card').first().boundingBox(),
     cards.evaluateAll((elements) => elements.map((card) => {
@@ -62,8 +62,8 @@ async function assertCardSizes(board, cards) {
   ])
   assert.ok(hand && sizes.length > 0)
   for (const { width, height } of sizes) {
-    assert.ok(Math.abs(hand.width - width) <= 0.5 && Math.abs(hand.height - height) <= 0.5,
-      `card ${width}×${height} matches hand ${hand.width}×${hand.height}`)
+    assert.ok(height <= hand.height && Math.abs(width / height - hand.width / hand.height) < .005,
+      `table card ${width}×${height} fits the table and uses the hand card aspect ratio`)
   }
 }
 
@@ -77,7 +77,7 @@ async function assertPlayedCard(board, id, name, rank) {
   assert.doesNotMatch(await surface.innerText(), /结算区/)
   const [frame, face] = await Promise.all([surface.boundingBox(), card.boundingBox()])
   assert.ok(frame && face && face.y >= frame.y && face.y + face.height <= frame.y + frame.height)
-  await assertCardSizes(board, card)
+  await assertCardShape(board, card)
 }
 
 try {
@@ -94,7 +94,7 @@ try {
       const gallery = board.locator('[data-hand-gallery]')
       const dismantle = gallery.getByRole('button', { name: /^过河拆桥 / }).first()
       await dismantle.click()
-      await assertCardSizes(board, board.locator('[data-effect="draw"] [data-effect-card]'))
+      await assertCardShape(board, board.locator('[data-effect="draw"] [data-effect-card]'))
       assert.match(await board.locator('[data-hand-rule]').innerText(), /过河拆桥.*弃置/s)
       if (evidence) await page.screenshot({ path: path.join(evidence, `selected-${viewport.width}.png`) })
 
@@ -106,7 +106,7 @@ try {
       const first = hidden.first()
       await first.waitFor()
       await assertPlayedCard(board, 90, '过河拆桥', '4♠')
-      await assertCardSizes(board, hidden)
+      await assertCardShape(board, hidden)
       assert.ok(await hidden.count() >= 2)
       assert.equal(await hidden.locator('.card-art, .card-rank, strong').count(), 0)
       assert.equal(await gallery.locator('button:enabled').count(), 0)
@@ -211,22 +211,22 @@ try {
     await button(animated, '确认').click()
     const frame = await animated.waitForFunction(() => {
       const card = document.querySelector('[data-effect="play"] [data-effect-card="90"]')
-      const hand = document.querySelector('[data-hand-gallery] .playing-card')
+      const resolving = document.querySelector('[data-resolving-card="90"]')
       const trace = card?.closest('[data-effect]').querySelector('.effect-trace')
-      if (!card || !hand || !trace || Number(getComputedStyle(card.parentElement).opacity) <= 0.05 ||
+      if (!card || !resolving || !trace || Number(getComputedStyle(card.parentElement).opacity) <= 0.05 ||
         Number(getComputedStyle(trace).opacity) <= 0.05) return null
       const { width, height } = card.getBoundingClientRect()
-      const handBox = hand.getBoundingClientRect()
+      const destination = resolving.getBoundingClientRect()
       return {
-        width, height, handWidth: handBox.width, handHeight: handBox.height,
+        width, height, destinationWidth: destination.width, destinationHeight: destination.height,
         name: card.querySelector('strong').textContent,
         whiteSpace: getComputedStyle(card.querySelector('strong')).whiteSpace,
       }
     })
-    const { width, height, handWidth, handHeight, name, whiteSpace } = await frame.jsonValue()
+    const { width, height, destinationWidth, destinationHeight, name, whiteSpace } = await frame.jsonValue()
     assert.equal(name, '过河拆桥')
     assert.equal(whiteSpace, 'normal')
-    assert.ok(Math.abs(width - handWidth) <= 0.5 && Math.abs(height - handHeight) <= 0.5)
+    assert.ok(Math.abs(width - destinationWidth) <= 0.5 && Math.abs(height - destinationHeight) <= 0.5)
     await animated.waitForFunction(() => {
       const card = document.querySelector('[data-resolving-card="90"]')
       return card && getComputedStyle(card).opacity === '1'

@@ -38,6 +38,7 @@ const measure = (page) => page.locator('[data-battle-table]').evaluate((board) =
     })),
     hand: rect(board.querySelector('[data-hand-gallery]')),
     handCard: rect(board.querySelector('[data-hand-gallery] .playing-card')),
+    handDock: rect(board.querySelector('.classic-hand-zone')),
     equipment: rect(board.querySelector('.classic-self-equipment')),
     equipmentRows: [...board.querySelectorAll('.classic-self-equipment .equipment-row')].map(rect),
     skills: rect(board.querySelector('.classic-own-skills')),
@@ -107,6 +108,10 @@ try {
       const { equipment, equipmentRows, skills, self, hand } = opening
       assert.ok(Math.abs(self[2] / self[3] - opening.handCard[2] / opening.handCard[3]) < .005,
         `${label} portrait and hand card use the same width-to-height ratio`)
+      const topGap = opening.handCard[1] - opening.handDock[1]
+      const bottomGap = bottom(opening.handDock) - bottom(opening.handCard)
+      assert.ok(topGap <= 7 && Math.abs(topGap - bottomGap) <= 1,
+        `${label} hand fills the dock with even top and bottom insets`)
       assert.deepEqual(opening.clippedNames, [], `${label} all standard names fit`)
       assert.equal(equipmentRows.length, 4, label)
       assert.ok(contains(screen, equipment), `${label} equipment column visible [${equipment}]`)

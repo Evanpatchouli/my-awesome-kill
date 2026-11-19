@@ -363,8 +363,8 @@ try {
     const first = await rowCards(row).first().boundingBox()
     assert.ok(first && first.y >= 0 && first.y + first.height <= surface.y + surface.height,
       `choice card ${JSON.stringify(first)} must fit inside ${JSON.stringify(surface)}`)
-    assert.equal(first.width, handCard.width, 'deck and hand cards share a width')
-    assert.equal(first.height, handCard.height, 'deck and hand cards share a height')
+    assert.ok(Math.abs(first.width / first.height - handCard.width / handCard.height) < .005,
+      'deck and hand cards share an aspect ratio')
   }
   await confirmOrder.click()
   await page.clock.runFor(1000)

@@ -159,6 +159,18 @@ const resolving = computed<PlayedFace[]>(() => {
   ]
 })
 const handControls = ref<HTMLElement | null>(null)
+const handGallery = ref<HTMLElement | null>(null)
+watch(handGallery, (gallery, _, onCleanup) => {
+  if (!gallery) return
+  // Balance a horizontal scrollbar with the same inset above the cards.
+  const alignCards = () => {
+    gallery.style.setProperty('--hand-scrollbar-height', `${gallery.offsetHeight - gallery.clientHeight}px`)
+  }
+  alignCards()
+  const observer = new ResizeObserver(alignCards)
+  observer.observe(gallery)
+  onCleanup(() => observer.disconnect())
+}, { flush: 'post' })
 const handResponse = computed(() => {
   const request = choice.value
   return request?.kind === 'shan' || request?.kind === 'save' ? request : null
@@ -785,7 +797,7 @@ function canPickCard(id: number) {
         :mount-combined="view.mountCombined"
       />
       <div class="classic-hand-zone">
-        <div class="classic-hand" role="group" aria-label="手牌" data-hand data-hand-gallery>
+        <div ref="handGallery" class="classic-hand" role="group" aria-label="手牌" data-hand data-hand-gallery>
           <button
             v-for="card in galleryCards"
             :key="card.id"

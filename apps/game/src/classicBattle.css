@@ -14,10 +14,9 @@
   --rail-height: clamp(36px, 5.8dvh, 57px);
   --dock-height: clamp(112px, 25dvh, 240px);
   --dock-gutter: clamp(5px, 1.05dvh, 12px);
-  --hand-clearance: clamp(12px, 1.5dvh, 17px);
   --hand-lift: 6px;
-  --hand-scroll-room: 12px;
-  --card-height: calc(var(--dock-height) - 2 * var(--dock-gutter) - var(--hand-clearance) - var(--hand-lift) - var(--hand-scroll-room));
+  --table-card-inset: clamp(24px, calc(1.5dvh + 12px), 29px);
+  --card-height: calc(var(--dock-height) - 2 * var(--dock-gutter) - var(--table-card-inset) - var(--hand-lift));
   --card-width: calc(var(--card-height) * var(--playing-card-ratio));
   --portrait-goal-height: clamp(78px, 22dvh, 223px);
   --board-gutter: clamp(10px, 2.2vw, 42px);
@@ -526,7 +525,7 @@
   transition: filter .16s;
 }
 .classic-board :is(.classic-control-row, .classic-result-actions, .move-choice-actions) button:not(.secondary),
-.classic-board :is(.classic-options .selected, .classic-own-skills [aria-pressed='true']) {
+.classic-board .classic-options .selected {
   background: var(--button-seal) center / 100% 100% no-repeat;
   color: #fff0d5;
 }
@@ -577,17 +576,49 @@
   grid-area: skills;
   display: grid;
   align-content: safe end;
+  justify-items: end;
   gap: 3px;
   min-height: 0;
   overflow: auto;
   scrollbar-width: thin;
 }
 .classic-board .classic-own-skills button {
+  position: relative;
+  isolation: isolate;
   min-width: 0;
-  min-height: 18px;
-  padding: 2px 4px;
+  min-height: 22px;
+  max-width: 100%;
+  padding: 2px clamp(7px, .8vw, 14px);
+  background: none;
   font-size: .85em;
-  color: var(--battle-paper);
+  color: #2e2419;
+}
+.classic-own-skills button::before {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(155deg, #f3e4c2, #baa16f);
+  mask: var(--button-seal) center / 100% 100% no-repeat;
+  content: '';
+}
+.classic-own-skills button::after {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--button-ink) center / 100% 100% no-repeat;
+  opacity: .65;
+  content: '';
+}
+.classic-board .classic-own-skills button[aria-pressed='true'] {
+  background: var(--button-seal) center / 100% 100% no-repeat;
+  color: #fff0d5;
+}
+.classic-own-skills button[aria-pressed='true']::before,
+.classic-own-skills button[aria-pressed='true']::after {
+  content: none;
+}
+.classic-board .classic-own-skills button:disabled {
+  opacity: .72;
 }
 .classic-hand-zone {
   grid-area: hand;
@@ -597,17 +628,19 @@
   flex-direction: column;
 }
 .classic-hand {
+  --card-height: calc(var(--dock-height) - 2 * var(--dock-gutter) - 1px - 2 * var(--hand-lift));
+  --card-width: calc(var(--card-height) * var(--playing-card-ratio));
   display: flex;
   flex: 1;
   min-height: 0;
-  align-items: end;
+  align-items: center;
   gap: clamp(3px, .5vw, 8px);
   overflow-x: auto;
   overflow-y: hidden;
-  padding: var(--hand-lift) 2px 2px;
-  scrollbar-width: thin;
-  scrollbar-color: #b89864 #232923;
+  padding: var(--hand-scrollbar-height, 0px) 2px 0;
 }
+.classic-hand::-webkit-scrollbar { height: 4px; }
+.classic-hand::-webkit-scrollbar-thumb { border-radius: 2px; background: #b89864; }
 
 .classic-board .playing-card {
   position: relative;
@@ -720,7 +753,7 @@
   .classic-board :is(.classic-self-equipment, .classic-own-skills) { font-size: 10px; }
   .classic-board .classic-self-equipment { grid-auto-rows: minmax(11px, 1fr); gap: 1px; }
   .classic-board .equipment-row { font-size: 9px; }
-  .classic-board .classic-own-skills button { min-height: 13px; padding: 0 4px; }
+  .classic-board .classic-own-skills button { min-height: 15px; padding: 0 6px; }
   .classic-board .classic-self .classic-zones { inset-block-end: calc(100% + 2px); }
   .classic-board .move-choice h2 { font-size: 12px; padding-bottom: 0; }
   .classic-board .move-choice-row { padding: 0; }
