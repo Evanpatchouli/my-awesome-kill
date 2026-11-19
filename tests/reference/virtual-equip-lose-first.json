@@ -1,0 +1,1357 @@
+{
+  "schema": "noname-reference-trace-v1",
+  "referenceCommit": "c73270948d72949aa80009536b9fd5400767d091",
+  "mode": "identity",
+  "scenario": "virtual judgment material equipped during loss then discard",
+  "order": [
+    "loseBefore",
+    "discardBefore"
+  ],
+  "columns": [
+    "trial",
+    "kind",
+    "timing",
+    "event",
+    "parent",
+    "player",
+    "state"
+  ],
+  "events": [
+    ["loseBefore","request","discardBefore","discard","disableJudge","B",{"material":{"name":"qinggang","position":"j","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[true,true],"enabled":1,"empty":1,"equipable":1,"vEquips":[],"physicalEquips":[],"vEquipByName":null,"equipByName":null,"equipRange":1,"physicalCount":0,"qinggangSkill":{"hasSkill":false,"inEquipSkills":false,"inAllSkills":false},"vJudges":[{"name":"lebu","position":"j","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"j","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"j","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"j","isMaterial":true}]}}]}],
+    ["loseBefore","callback","discardBefore","discard","disableJudge","B",{"material":{"name":"qinggang","position":"j","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[true,true],"enabled":1,"empty":1,"equipable":1,"vEquips":[],"physicalEquips":[],"vEquipByName":null,"equipByName":null,"equipRange":1,"physicalCount":0,"qinggangSkill":{"hasSkill":false,"inEquipSkills":false,"inAllSkills":false},"vJudges":[{"name":"lebu","position":"j","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"j","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"j","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"j","isMaterial":true}]}}]}],
+    ["loseBefore","request","loseBefore","lose","discard","B",{"material":{"name":"qinggang","position":"j","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[true,true],"enabled":1,"empty":1,"equipable":1,"vEquips":[],"physicalEquips":[],"vEquipByName":null,"equipByName":null,"equipRange":1,"physicalCount":0,"qinggangSkill":{"hasSkill":false,"inEquipSkills":false,"inAllSkills":false},"vJudges":[{"name":"lebu","position":"j","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"j","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"j","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"j","isMaterial":true}]}}]}],
+    ["loseBefore","callback","loseBefore","lose","discard","B",{"material":{"name":"qinggang","position":"j","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[true,true],"enabled":1,"empty":1,"equipable":1,"vEquips":[],"physicalEquips":[],"vEquipByName":null,"equipByName":null,"equipRange":1,"physicalCount":0,"qinggangSkill":{"hasSkill":false,"inEquipSkills":false,"inAllSkills":false},"vJudges":[{"name":"lebu","position":"j","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"j","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"j","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"j","isMaterial":true}]}}]}],
+    ["loseBefore","request","gainAfter","gain","reference_virtual_equip_probe_observer","B",{"material":{"name":"qinggang","position":"B:h","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[true,true],"enabled":1,"empty":1,"equipable":1,"vEquips":[],"physicalEquips":[],"vEquipByName":null,"equipByName":null,"equipRange":1,"physicalCount":0,"qinggangSkill":{"hasSkill":false,"inEquipSkills":false,"inAllSkills":false},"vJudges":[{"name":"lebu","position":"h","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}}]}],
+    ["loseBefore","callback","gainAfter","gain","reference_virtual_equip_probe_observer","B",{"material":{"name":"qinggang","position":"B:h","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[true,true],"enabled":1,"empty":1,"equipable":1,"vEquips":[],"physicalEquips":[],"vEquipByName":null,"equipByName":null,"equipRange":1,"physicalCount":0,"qinggangSkill":{"hasSkill":false,"inEquipSkills":false,"inAllSkills":false},"vJudges":[{"name":"lebu","position":"h","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}}]}],
+    ["loseBefore","request","equipBefore","equip","reference_virtual_equip_probe_observer","B",{"material":{"name":"qinggang","position":"B:h","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[true,true],"enabled":1,"empty":1,"equipable":1,"vEquips":[],"physicalEquips":[],"vEquipByName":null,"equipByName":null,"equipRange":1,"physicalCount":0,"qinggangSkill":{"hasSkill":false,"inEquipSkills":false,"inAllSkills":false},"vJudges":[{"name":"lebu","position":"h","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}}]}],
+    ["loseBefore","callback","equipBefore","equip","reference_virtual_equip_probe_observer","B",{"material":{"name":"qinggang","position":"B:h","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[true,true],"enabled":1,"empty":1,"equipable":1,"vEquips":[],"physicalEquips":[],"vEquipByName":null,"equipByName":null,"equipRange":1,"physicalCount":0,"qinggangSkill":{"hasSkill":false,"inEquipSkills":false,"inAllSkills":false},"vJudges":[{"name":"lebu","position":"h","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}}]}],
+    ["loseBefore","request","equipBegin","equip","reference_virtual_equip_probe_observer","B",{"material":{"name":"qinggang","position":"B:h","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[true,true],"enabled":1,"empty":1,"equipable":1,"vEquips":[],"physicalEquips":[],"vEquipByName":null,"equipByName":null,"equipRange":1,"physicalCount":0,"qinggangSkill":{"hasSkill":false,"inEquipSkills":false,"inAllSkills":false},"vJudges":[{"name":"lebu","position":"h","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}}]}],
+    ["loseBefore","callback","equipBegin","equip","reference_virtual_equip_probe_observer","B",{"material":{"name":"qinggang","position":"B:h","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[true,true],"enabled":1,"empty":1,"equipable":1,"vEquips":[],"physicalEquips":[],"vEquipByName":null,"equipByName":null,"equipRange":1,"physicalCount":0,"qinggangSkill":{"hasSkill":false,"inEquipSkills":false,"inAllSkills":false},"vJudges":[{"name":"lebu","position":"h","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}}]}],
+    ["loseBefore","request","loseBefore","lose","equip","B",{"material":{"name":"qinggang","position":"B:h","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[true,true],"enabled":1,"empty":1,"equipable":1,"vEquips":[],"physicalEquips":[],"vEquipByName":null,"equipByName":null,"equipRange":1,"physicalCount":0,"qinggangSkill":{"hasSkill":false,"inEquipSkills":false,"inAllSkills":false},"vJudges":[{"name":"lebu","position":"h","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}}]}],
+    ["loseBefore","callback","loseBefore","lose","equip","B",{"material":{"name":"qinggang","position":"B:h","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[true,true],"enabled":1,"empty":1,"equipable":1,"vEquips":[],"physicalEquips":[],"vEquipByName":null,"equipByName":null,"equipRange":1,"physicalCount":0,"qinggangSkill":{"hasSkill":false,"inEquipSkills":false,"inAllSkills":false},"vJudges":[{"name":"lebu","position":"h","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}}]}],
+    ["loseBefore","request","replaceEquipBefore","replaceEquip","equip","B",{"material":{"name":"qinggang","position":"s","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[true,true],"enabled":1,"empty":1,"equipable":1,"vEquips":[],"physicalEquips":[],"vEquipByName":null,"equipByName":null,"equipRange":1,"physicalCount":0,"qinggangSkill":{"hasSkill":false,"inEquipSkills":false,"inAllSkills":false},"vJudges":[{"name":"lebu","position":"s","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"s","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"s","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"s","isMaterial":true}]}}]}],
+    ["loseBefore","callback","replaceEquipBefore","replaceEquip","equip","B",{"material":{"name":"qinggang","position":"s","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[true,true],"enabled":1,"empty":1,"equipable":1,"vEquips":[],"physicalEquips":[],"vEquipByName":null,"equipByName":null,"equipRange":1,"physicalCount":0,"qinggangSkill":{"hasSkill":false,"inEquipSkills":false,"inAllSkills":false},"vJudges":[{"name":"lebu","position":"s","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"s","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"s","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"s","isMaterial":true}]}}]}],
+    ["loseBefore","request","replaceEquipAfter","replaceEquip","equip","B",{"material":{"name":"qinggang","position":"s","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[true,true],"enabled":1,"empty":1,"equipable":1,"vEquips":[],"physicalEquips":[],"vEquipByName":null,"equipByName":null,"equipRange":1,"physicalCount":0,"qinggangSkill":{"hasSkill":false,"inEquipSkills":false,"inAllSkills":false},"vJudges":[{"name":"lebu","position":"s","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"s","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"s","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"s","isMaterial":true}]}}]}],
+    ["loseBefore","callback","replaceEquipAfter","replaceEquip","equip","B",{"material":{"name":"qinggang","position":"s","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[true,true],"enabled":1,"empty":1,"equipable":1,"vEquips":[],"physicalEquips":[],"vEquipByName":null,"equipByName":null,"equipRange":1,"physicalCount":0,"qinggangSkill":{"hasSkill":false,"inEquipSkills":false,"inAllSkills":false},"vJudges":[{"name":"lebu","position":"s","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"s","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"s","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"s","isMaterial":true}]}}]}],
+    ["loseBefore","request","equipEnd","equip","reference_virtual_equip_probe_observer","B",{"material":{"name":"qinggang","position":"B:e","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":{"name":"qinggang","materials":[{"name":"qinggang","position":"B:e","isMaterial":true}]}},"isMin":false,"canEquip":[false,true],"enabled":1,"empty":0,"equipable":1,"vEquips":[{"name":"qinggang","position":"e","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"B:e","isMaterial":true}],"binding":null}],"physicalEquips":[{"name":"qinggang","position":"B:e","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":{"name":"qinggang","materials":[{"name":"qinggang","position":"B:e","isMaterial":true}]}}],"vEquipByName":{"name":"qinggang","position":"e","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"B:e","isMaterial":true}],"binding":null},"equipByName":{"name":"qinggang","position":"B:e","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":{"name":"qinggang","materials":[{"name":"qinggang","position":"B:e","isMaterial":true}]}},"equipRange":2,"physicalCount":1,"qinggangSkill":{"hasSkill":true,"inEquipSkills":true,"inAllSkills":true},"vJudges":[{"name":"lebu","position":"e","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"B:e","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"B:e","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"B:e","isMaterial":true}]}}]}],
+    ["loseBefore","callback","equipEnd","equip","reference_virtual_equip_probe_observer","B",{"material":{"name":"qinggang","position":"B:e","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":{"name":"qinggang","materials":[{"name":"qinggang","position":"B:e","isMaterial":true}]}},"isMin":false,"canEquip":[false,true],"enabled":1,"empty":0,"equipable":1,"vEquips":[{"name":"qinggang","position":"e","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"B:e","isMaterial":true}],"binding":null}],"physicalEquips":[{"name":"qinggang","position":"B:e","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":{"name":"qinggang","materials":[{"name":"qinggang","position":"B:e","isMaterial":true}]}}],"vEquipByName":{"name":"qinggang","position":"e","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"B:e","isMaterial":true}],"binding":null},"equipByName":{"name":"qinggang","position":"B:e","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":{"name":"qinggang","materials":[{"name":"qinggang","position":"B:e","isMaterial":true}]}},"equipRange":2,"physicalCount":1,"qinggangSkill":{"hasSkill":true,"inEquipSkills":true,"inAllSkills":true},"vJudges":[{"name":"lebu","position":"e","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"B:e","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"B:e","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"B:e","isMaterial":true}]}}]}],
+    ["loseBefore","request","disableJudgeEnd","disableJudge","reference_fixture_use","B",{"material":{"name":"qinggang","position":"d","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":{"name":"qinggang","materials":[{"name":"qinggang","position":"d","isMaterial":true}]}},"isMin":false,"canEquip":[false,true],"enabled":1,"empty":0,"equipable":1,"vEquips":[{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":true}],"binding":null}],"physicalEquips":[],"vEquipByName":{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":true}],"binding":null},"equipByName":null,"equipRange":2,"physicalCount":0,"qinggangSkill":{"hasSkill":true,"inEquipSkills":true,"inAllSkills":true},"vJudges":[],"physicalJudges":[]}],
+    ["loseBefore","callback","disableJudgeEnd","disableJudge","reference_fixture_use","B",{"material":{"name":"qinggang","position":"d","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":{"name":"qinggang","materials":[{"name":"qinggang","position":"d","isMaterial":true}]}},"isMin":false,"canEquip":[false,true],"enabled":1,"empty":0,"equipable":1,"vEquips":[{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":true}],"binding":null}],"physicalEquips":[],"vEquipByName":{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":true}],"binding":null},"equipByName":null,"equipRange":2,"physicalCount":0,"qinggangSkill":{"hasSkill":true,"inEquipSkills":true,"inAllSkills":true},"vJudges":[],"physicalJudges":[]}],
+    ["discardBefore","request","discardBefore","discard","disableJudge","B",{"material":{"name":"qinggang","position":"j","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[false,true],"enabled":1,"empty":0,"equipable":1,"vEquips":[{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null}],"physicalEquips":[],"vEquipByName":{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null},"equipByName":null,"equipRange":2,"physicalCount":0,"qinggangSkill":{"hasSkill":true,"inEquipSkills":true,"inAllSkills":true},"vJudges":[{"name":"lebu","position":"j","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"j","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"j","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"j","isMaterial":true}]}}]}],
+    ["discardBefore","callback","discardBefore","discard","disableJudge","B",{"material":{"name":"qinggang","position":"j","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[false,true],"enabled":1,"empty":0,"equipable":1,"vEquips":[{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null}],"physicalEquips":[],"vEquipByName":{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null},"equipByName":null,"equipRange":2,"physicalCount":0,"qinggangSkill":{"hasSkill":true,"inEquipSkills":true,"inAllSkills":true},"vJudges":[{"name":"lebu","position":"j","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"j","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"j","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"j","isMaterial":true}]}}]}],
+    ["discardBefore","request","gainAfter","gain","reference_virtual_equip_probe_observer","B",{"material":{"name":"qinggang","position":"B:h","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[false,true],"enabled":1,"empty":0,"equipable":1,"vEquips":[{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null}],"physicalEquips":[],"vEquipByName":{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null},"equipByName":null,"equipRange":2,"physicalCount":0,"qinggangSkill":{"hasSkill":true,"inEquipSkills":true,"inAllSkills":true},"vJudges":[{"name":"lebu","position":"h","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}}]}],
+    ["discardBefore","callback","gainAfter","gain","reference_virtual_equip_probe_observer","B",{"material":{"name":"qinggang","position":"B:h","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[false,true],"enabled":1,"empty":0,"equipable":1,"vEquips":[{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null}],"physicalEquips":[],"vEquipByName":{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null},"equipByName":null,"equipRange":2,"physicalCount":0,"qinggangSkill":{"hasSkill":true,"inEquipSkills":true,"inAllSkills":true},"vJudges":[{"name":"lebu","position":"h","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}}]}],
+    ["discardBefore","request","equipBefore","equip","reference_virtual_equip_probe_observer","B",{"material":{"name":"qinggang","position":"B:h","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[false,true],"enabled":1,"empty":0,"equipable":1,"vEquips":[{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null}],"physicalEquips":[],"vEquipByName":{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null},"equipByName":null,"equipRange":2,"physicalCount":0,"qinggangSkill":{"hasSkill":true,"inEquipSkills":true,"inAllSkills":true},"vJudges":[{"name":"lebu","position":"h","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}}]}],
+    ["discardBefore","callback","equipBefore","equip","reference_virtual_equip_probe_observer","B",{"material":{"name":"qinggang","position":"B:h","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[false,true],"enabled":1,"empty":0,"equipable":1,"vEquips":[{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null}],"physicalEquips":[],"vEquipByName":{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null},"equipByName":null,"equipRange":2,"physicalCount":0,"qinggangSkill":{"hasSkill":true,"inEquipSkills":true,"inAllSkills":true},"vJudges":[{"name":"lebu","position":"h","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}}]}],
+    ["discardBefore","request","equipBegin","equip","reference_virtual_equip_probe_observer","B",{"material":{"name":"qinggang","position":"B:h","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[false,true],"enabled":1,"empty":0,"equipable":1,"vEquips":[{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null}],"physicalEquips":[],"vEquipByName":{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null},"equipByName":null,"equipRange":2,"physicalCount":0,"qinggangSkill":{"hasSkill":true,"inEquipSkills":true,"inAllSkills":true},"vJudges":[{"name":"lebu","position":"h","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}}]}],
+    ["discardBefore","callback","equipBegin","equip","reference_virtual_equip_probe_observer","B",{"material":{"name":"qinggang","position":"B:h","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[false,true],"enabled":1,"empty":0,"equipable":1,"vEquips":[{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null}],"physicalEquips":[],"vEquipByName":{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null},"equipByName":null,"equipRange":2,"physicalCount":0,"qinggangSkill":{"hasSkill":true,"inEquipSkills":true,"inAllSkills":true},"vJudges":[{"name":"lebu","position":"h","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}}]}],
+    ["discardBefore","request","loseBefore","lose","equip","B",{"material":{"name":"qinggang","position":"B:h","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[false,true],"enabled":1,"empty":0,"equipable":1,"vEquips":[{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null}],"physicalEquips":[],"vEquipByName":{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null},"equipByName":null,"equipRange":2,"physicalCount":0,"qinggangSkill":{"hasSkill":true,"inEquipSkills":true,"inAllSkills":true},"vJudges":[{"name":"lebu","position":"h","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}}]}],
+    ["discardBefore","callback","loseBefore","lose","equip","B",{"material":{"name":"qinggang","position":"B:h","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[false,true],"enabled":1,"empty":0,"equipable":1,"vEquips":[{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null}],"physicalEquips":[],"vEquipByName":{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null},"equipByName":null,"equipRange":2,"physicalCount":0,"qinggangSkill":{"hasSkill":true,"inEquipSkills":true,"inAllSkills":true},"vJudges":[{"name":"lebu","position":"h","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}}]}],
+    ["discardBefore","request","replaceEquipBefore","replaceEquip","equip","B",{"material":{"name":"qinggang","position":"s","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[false,true],"enabled":1,"empty":0,"equipable":1,"vEquips":[{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null}],"physicalEquips":[],"vEquipByName":{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null},"equipByName":null,"equipRange":2,"physicalCount":0,"qinggangSkill":{"hasSkill":true,"inEquipSkills":true,"inAllSkills":true},"vJudges":[{"name":"lebu","position":"s","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"s","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"s","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"s","isMaterial":true}]}}]}],
+    ["discardBefore","callback","replaceEquipBefore","replaceEquip","equip","B",{"material":{"name":"qinggang","position":"s","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[false,true],"enabled":1,"empty":0,"equipable":1,"vEquips":[{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null}],"physicalEquips":[],"vEquipByName":{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null},"equipByName":null,"equipRange":2,"physicalCount":0,"qinggangSkill":{"hasSkill":true,"inEquipSkills":true,"inAllSkills":true},"vJudges":[{"name":"lebu","position":"s","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"s","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"s","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"s","isMaterial":true}]}}]}],
+    ["discardBefore","request","replaceEquipAfter","replaceEquip","equip","B",{"material":{"name":"qinggang","position":"s","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[false,true],"enabled":1,"empty":0,"equipable":1,"vEquips":[{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null}],"physicalEquips":[],"vEquipByName":{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null},"equipByName":null,"equipRange":2,"physicalCount":0,"qinggangSkill":{"hasSkill":true,"inEquipSkills":true,"inAllSkills":true},"vJudges":[{"name":"lebu","position":"s","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"s","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"s","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"s","isMaterial":true}]}}]}],
+    ["discardBefore","callback","replaceEquipAfter","replaceEquip","equip","B",{"material":{"name":"qinggang","position":"s","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[false,true],"enabled":1,"empty":0,"equipable":1,"vEquips":[{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null}],"physicalEquips":[],"vEquipByName":{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null},"equipByName":null,"equipRange":2,"physicalCount":0,"qinggangSkill":{"hasSkill":true,"inEquipSkills":true,"inAllSkills":true},"vJudges":[{"name":"lebu","position":"s","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"s","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"s","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"s","isMaterial":true}]}}]}],
+    ["discardBefore","request","cardsDiscardBefore","cardsDiscard","equip",null,{"material":{"name":"qinggang","position":"s","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[false,true],"enabled":1,"empty":0,"equipable":1,"vEquips":[{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null}],"physicalEquips":[],"vEquipByName":{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null},"equipByName":null,"equipRange":2,"physicalCount":0,"qinggangSkill":{"hasSkill":true,"inEquipSkills":true,"inAllSkills":true},"vJudges":[{"name":"lebu","position":"s","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"s","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"s","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"s","isMaterial":true}]}}]}],
+    ["discardBefore","callback","cardsDiscardBefore","cardsDiscard","equip",null,{"material":{"name":"qinggang","position":"s","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[false,true],"enabled":1,"empty":0,"equipable":1,"vEquips":[{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null}],"physicalEquips":[],"vEquipByName":{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null},"equipByName":null,"equipRange":2,"physicalCount":0,"qinggangSkill":{"hasSkill":true,"inEquipSkills":true,"inAllSkills":true},"vJudges":[{"name":"lebu","position":"s","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"s","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"s","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"s","isMaterial":true}]}}]}],
+    ["discardBefore","request","cardsDiscardAfter","cardsDiscard","equip",null,{"material":{"name":"qinggang","position":"d","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[false,true],"enabled":1,"empty":0,"equipable":1,"vEquips":[{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null}],"physicalEquips":[],"vEquipByName":{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null},"equipByName":null,"equipRange":2,"physicalCount":0,"qinggangSkill":{"hasSkill":true,"inEquipSkills":true,"inAllSkills":true},"vJudges":[{"name":"lebu","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"d","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"d","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"d","isMaterial":true}]}}]}],
+    ["discardBefore","callback","cardsDiscardAfter","cardsDiscard","equip",null,{"material":{"name":"qinggang","position":"d","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[false,true],"enabled":1,"empty":0,"equipable":1,"vEquips":[{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null}],"physicalEquips":[],"vEquipByName":{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null},"equipByName":null,"equipRange":2,"physicalCount":0,"qinggangSkill":{"hasSkill":true,"inEquipSkills":true,"inAllSkills":true},"vJudges":[{"name":"lebu","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"d","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"d","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"d","isMaterial":true}]}}]}],
+    ["discardBefore","request","equipEnd","equip","reference_virtual_equip_probe_observer","B",{"material":{"name":"qinggang","position":"d","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[false,true],"enabled":1,"empty":0,"equipable":1,"vEquips":[{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null}],"physicalEquips":[],"vEquipByName":{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null},"equipByName":null,"equipRange":2,"physicalCount":0,"qinggangSkill":{"hasSkill":true,"inEquipSkills":true,"inAllSkills":true},"vJudges":[{"name":"lebu","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"d","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"d","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"d","isMaterial":true}]}}]}],
+    ["discardBefore","callback","equipEnd","equip","reference_virtual_equip_probe_observer","B",{"material":{"name":"qinggang","position":"d","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[false,true],"enabled":1,"empty":0,"equipable":1,"vEquips":[{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null}],"physicalEquips":[],"vEquipByName":{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null},"equipByName":null,"equipRange":2,"physicalCount":0,"qinggangSkill":{"hasSkill":true,"inEquipSkills":true,"inAllSkills":true},"vJudges":[{"name":"lebu","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"d","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"d","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"d","isMaterial":true}]}}]}],
+    ["discardBefore","request","loseBefore","lose","discard","B",{"material":{"name":"qinggang","position":"d","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[false,true],"enabled":1,"empty":0,"equipable":1,"vEquips":[{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null}],"physicalEquips":[],"vEquipByName":{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null},"equipByName":null,"equipRange":2,"physicalCount":0,"qinggangSkill":{"hasSkill":true,"inEquipSkills":true,"inAllSkills":true},"vJudges":[{"name":"lebu","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"d","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"d","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"d","isMaterial":true}]}}]}],
+    ["discardBefore","callback","loseBefore","lose","discard","B",{"material":{"name":"qinggang","position":"d","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[false,true],"enabled":1,"empty":0,"equipable":1,"vEquips":[{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null}],"physicalEquips":[],"vEquipByName":{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null},"equipByName":null,"equipRange":2,"physicalCount":0,"qinggangSkill":{"hasSkill":true,"inEquipSkills":true,"inAllSkills":true},"vJudges":[{"name":"lebu","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"d","isMaterial":true}],"binding":null}],"physicalJudges":[{"name":"lebu","position":"B:j","itemType":"card","viewAsCard":true,"isMaterial":false,"subtypes":[],"materials":[{"name":"qinggang","position":"d","isMaterial":true}],"binding":{"name":"lebu","materials":[{"name":"qinggang","position":"d","isMaterial":true}]}}]}],
+    ["discardBefore","request","disableJudgeEnd","disableJudge","reference_fixture_use","B",{"material":{"name":"qinggang","position":"d","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[false,true],"enabled":1,"empty":0,"equipable":1,"vEquips":[{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null}],"physicalEquips":[],"vEquipByName":{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null},"equipByName":null,"equipRange":2,"physicalCount":0,"qinggangSkill":{"hasSkill":true,"inEquipSkills":true,"inAllSkills":true},"vJudges":[],"physicalJudges":[]}],
+    ["discardBefore","callback","disableJudgeEnd","disableJudge","reference_fixture_use","B",{"material":{"name":"qinggang","position":"d","itemType":"card","viewAsCard":false,"isMaterial":true,"subtypes":["equip1"],"materials":[],"binding":null},"isMin":false,"canEquip":[false,true],"enabled":1,"empty":0,"equipable":1,"vEquips":[{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null}],"physicalEquips":[],"vEquipByName":{"name":"qinggang","position":"d","itemType":"vcard","viewAsCard":false,"isMaterial":false,"subtypes":["equip1"],"materials":[{"name":"qinggang","position":"d","isMaterial":false}],"binding":null},"equipByName":null,"equipRange":2,"physicalCount":0,"qinggangSkill":{"hasSkill":true,"inEquipSkills":true,"inAllSkills":true},"vJudges":[],"physicalJudges":[]}]
+  ],
+  "canCalls": [
+    {
+      "trial": "loseBefore",
+      "event": "equip",
+      "parent": "reference_virtual_equip_probe_observer",
+      "replace": false,
+      "argument": {
+        "name": "qinggang",
+        "position": "s",
+        "itemType": "vcard",
+        "viewAsCard": false,
+        "isMaterial": false,
+        "subtypes": [
+          "equip1"
+        ],
+        "materials": [
+          {
+            "name": "qinggang",
+            "position": "s",
+            "isMaterial": true
+          }
+        ],
+        "binding": null
+      },
+      "result": true,
+      "state": {
+        "material": {
+          "name": "qinggang",
+          "position": "s",
+          "itemType": "card",
+          "viewAsCard": false,
+          "isMaterial": true,
+          "subtypes": [
+            "equip1"
+          ],
+          "materials": [],
+          "binding": null
+        },
+        "isMin": false,
+        "canEquip": [
+          true,
+          true
+        ],
+        "enabled": 1,
+        "empty": 1,
+        "equipable": 1,
+        "vEquips": [],
+        "physicalEquips": [],
+        "vEquipByName": null,
+        "equipByName": null,
+        "equipRange": 1,
+        "physicalCount": 0,
+        "qinggangSkill": {
+          "hasSkill": false,
+          "inEquipSkills": false,
+          "inAllSkills": false
+        },
+        "vJudges": [
+          {
+            "name": "lebu",
+            "position": "s",
+            "itemType": "vcard",
+            "viewAsCard": false,
+            "isMaterial": false,
+            "subtypes": [],
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "s",
+                "isMaterial": true
+              }
+            ],
+            "binding": null
+          }
+        ],
+        "physicalJudges": [
+          {
+            "name": "lebu",
+            "position": "B:j",
+            "itemType": "card",
+            "viewAsCard": true,
+            "isMaterial": false,
+            "subtypes": [],
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "s",
+                "isMaterial": true
+              }
+            ],
+            "binding": {
+              "name": "lebu",
+              "materials": [
+                {
+                  "name": "qinggang",
+                  "position": "s",
+                  "isMaterial": true
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "trial": "discardBefore",
+      "event": "equip",
+      "parent": "reference_virtual_equip_probe_observer",
+      "replace": false,
+      "argument": {
+        "name": "qinggang",
+        "position": "s",
+        "itemType": "vcard",
+        "viewAsCard": false,
+        "isMaterial": false,
+        "subtypes": [
+          "equip1"
+        ],
+        "materials": [
+          {
+            "name": "qinggang",
+            "position": "s",
+            "isMaterial": true
+          }
+        ],
+        "binding": null
+      },
+      "result": false,
+      "state": {
+        "material": {
+          "name": "qinggang",
+          "position": "s",
+          "itemType": "card",
+          "viewAsCard": false,
+          "isMaterial": true,
+          "subtypes": [
+            "equip1"
+          ],
+          "materials": [],
+          "binding": null
+        },
+        "isMin": false,
+        "canEquip": [
+          false,
+          true
+        ],
+        "enabled": 1,
+        "empty": 0,
+        "equipable": 1,
+        "vEquips": [
+          {
+            "name": "qinggang",
+            "position": "d",
+            "itemType": "vcard",
+            "viewAsCard": false,
+            "isMaterial": false,
+            "subtypes": [
+              "equip1"
+            ],
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "d",
+                "isMaterial": false
+              }
+            ],
+            "binding": null
+          }
+        ],
+        "physicalEquips": [],
+        "vEquipByName": {
+          "name": "qinggang",
+          "position": "d",
+          "itemType": "vcard",
+          "viewAsCard": false,
+          "isMaterial": false,
+          "subtypes": [
+            "equip1"
+          ],
+          "materials": [
+            {
+              "name": "qinggang",
+              "position": "d",
+              "isMaterial": false
+            }
+          ],
+          "binding": null
+        },
+        "equipByName": null,
+        "equipRange": 2,
+        "physicalCount": 0,
+        "qinggangSkill": {
+          "hasSkill": true,
+          "inEquipSkills": true,
+          "inAllSkills": true
+        },
+        "vJudges": [
+          {
+            "name": "lebu",
+            "position": "s",
+            "itemType": "vcard",
+            "viewAsCard": false,
+            "isMaterial": false,
+            "subtypes": [],
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "s",
+                "isMaterial": true
+              }
+            ],
+            "binding": null
+          }
+        ],
+        "physicalJudges": [
+          {
+            "name": "lebu",
+            "position": "B:j",
+            "itemType": "card",
+            "viewAsCard": true,
+            "isMaterial": false,
+            "subtypes": [],
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "s",
+                "isMaterial": true
+              }
+            ],
+            "binding": {
+              "name": "lebu",
+              "materials": [
+                {
+                  "name": "qinggang",
+                  "position": "s",
+                  "isMaterial": true
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "trials": [
+    {
+      "timing": "loseBefore",
+      "points": [
+        {
+          "point": "initial",
+          "state": {
+            "material": {
+              "name": "qinggang",
+              "position": "j",
+              "itemType": "card",
+              "viewAsCard": false,
+              "isMaterial": true,
+              "subtypes": [
+                "equip1"
+              ],
+              "materials": [],
+              "binding": null
+            },
+            "isMin": false,
+            "canEquip": [
+              true,
+              true
+            ],
+            "enabled": 1,
+            "empty": 1,
+            "equipable": 1,
+            "vEquips": [],
+            "physicalEquips": [],
+            "vEquipByName": null,
+            "equipByName": null,
+            "equipRange": 1,
+            "physicalCount": 0,
+            "qinggangSkill": {
+              "hasSkill": false,
+              "inEquipSkills": false,
+              "inAllSkills": false
+            },
+            "vJudges": [
+              {
+                "name": "lebu",
+                "position": "j",
+                "itemType": "vcard",
+                "viewAsCard": false,
+                "isMaterial": false,
+                "subtypes": [],
+                "materials": [
+                  {
+                    "name": "qinggang",
+                    "position": "j",
+                    "isMaterial": true
+                  }
+                ],
+                "binding": null
+              }
+            ],
+            "physicalJudges": [
+              {
+                "name": "lebu",
+                "position": "B:j",
+                "itemType": "card",
+                "viewAsCard": true,
+                "isMaterial": false,
+                "subtypes": [],
+                "materials": [
+                  {
+                    "name": "qinggang",
+                    "position": "j",
+                    "isMaterial": true
+                  }
+                ],
+                "binding": {
+                  "name": "lebu",
+                  "materials": [
+                    {
+                      "name": "qinggang",
+                      "position": "j",
+                      "isMaterial": true
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "point": "before-gain",
+          "state": {
+            "material": {
+              "name": "qinggang",
+              "position": "j",
+              "itemType": "card",
+              "viewAsCard": false,
+              "isMaterial": true,
+              "subtypes": [
+                "equip1"
+              ],
+              "materials": [],
+              "binding": null
+            },
+            "isMin": false,
+            "canEquip": [
+              true,
+              true
+            ],
+            "enabled": 1,
+            "empty": 1,
+            "equipable": 1,
+            "vEquips": [],
+            "physicalEquips": [],
+            "vEquipByName": null,
+            "equipByName": null,
+            "equipRange": 1,
+            "physicalCount": 0,
+            "qinggangSkill": {
+              "hasSkill": false,
+              "inEquipSkills": false,
+              "inAllSkills": false
+            },
+            "vJudges": [
+              {
+                "name": "lebu",
+                "position": "j",
+                "itemType": "vcard",
+                "viewAsCard": false,
+                "isMaterial": false,
+                "subtypes": [],
+                "materials": [
+                  {
+                    "name": "qinggang",
+                    "position": "j",
+                    "isMaterial": true
+                  }
+                ],
+                "binding": null
+              }
+            ],
+            "physicalJudges": [
+              {
+                "name": "lebu",
+                "position": "B:j",
+                "itemType": "card",
+                "viewAsCard": true,
+                "isMaterial": false,
+                "subtypes": [],
+                "materials": [
+                  {
+                    "name": "qinggang",
+                    "position": "j",
+                    "isMaterial": true
+                  }
+                ],
+                "binding": {
+                  "name": "lebu",
+                  "materials": [
+                    {
+                      "name": "qinggang",
+                      "position": "j",
+                      "isMaterial": true
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "point": "after-gain",
+          "state": {
+            "material": {
+              "name": "qinggang",
+              "position": "B:h",
+              "itemType": "card",
+              "viewAsCard": false,
+              "isMaterial": true,
+              "subtypes": [
+                "equip1"
+              ],
+              "materials": [],
+              "binding": null
+            },
+            "isMin": false,
+            "canEquip": [
+              true,
+              true
+            ],
+            "enabled": 1,
+            "empty": 1,
+            "equipable": 1,
+            "vEquips": [],
+            "physicalEquips": [],
+            "vEquipByName": null,
+            "equipByName": null,
+            "equipRange": 1,
+            "physicalCount": 0,
+            "qinggangSkill": {
+              "hasSkill": false,
+              "inEquipSkills": false,
+              "inAllSkills": false
+            },
+            "vJudges": [
+              {
+                "name": "lebu",
+                "position": "h",
+                "itemType": "vcard",
+                "viewAsCard": false,
+                "isMaterial": false,
+                "subtypes": [],
+                "materials": [
+                  {
+                    "name": "qinggang",
+                    "position": "B:h",
+                    "isMaterial": true
+                  }
+                ],
+                "binding": null
+              }
+            ],
+            "physicalJudges": [
+              {
+                "name": "lebu",
+                "position": "B:j",
+                "itemType": "card",
+                "viewAsCard": true,
+                "isMaterial": false,
+                "subtypes": [],
+                "materials": [
+                  {
+                    "name": "qinggang",
+                    "position": "B:h",
+                    "isMaterial": true
+                  }
+                ],
+                "binding": {
+                  "name": "lebu",
+                  "materials": [
+                    {
+                      "name": "qinggang",
+                      "position": "B:h",
+                      "isMaterial": true
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "point": "after-equip",
+          "state": {
+            "material": {
+              "name": "qinggang",
+              "position": "B:e",
+              "itemType": "card",
+              "viewAsCard": false,
+              "isMaterial": true,
+              "subtypes": [
+                "equip1"
+              ],
+              "materials": [],
+              "binding": {
+                "name": "qinggang",
+                "materials": [
+                  {
+                    "name": "qinggang",
+                    "position": "B:e",
+                    "isMaterial": true
+                  }
+                ]
+              }
+            },
+            "isMin": false,
+            "canEquip": [
+              false,
+              true
+            ],
+            "enabled": 1,
+            "empty": 0,
+            "equipable": 1,
+            "vEquips": [
+              {
+                "name": "qinggang",
+                "position": "e",
+                "itemType": "vcard",
+                "viewAsCard": false,
+                "isMaterial": false,
+                "subtypes": [
+                  "equip1"
+                ],
+                "materials": [
+                  {
+                    "name": "qinggang",
+                    "position": "B:e",
+                    "isMaterial": true
+                  }
+                ],
+                "binding": null
+              }
+            ],
+            "physicalEquips": [
+              {
+                "name": "qinggang",
+                "position": "B:e",
+                "itemType": "card",
+                "viewAsCard": false,
+                "isMaterial": true,
+                "subtypes": [
+                  "equip1"
+                ],
+                "materials": [],
+                "binding": {
+                  "name": "qinggang",
+                  "materials": [
+                    {
+                      "name": "qinggang",
+                      "position": "B:e",
+                      "isMaterial": true
+                    }
+                  ]
+                }
+              }
+            ],
+            "vEquipByName": {
+              "name": "qinggang",
+              "position": "e",
+              "itemType": "vcard",
+              "viewAsCard": false,
+              "isMaterial": false,
+              "subtypes": [
+                "equip1"
+              ],
+              "materials": [
+                {
+                  "name": "qinggang",
+                  "position": "B:e",
+                  "isMaterial": true
+                }
+              ],
+              "binding": null
+            },
+            "equipByName": {
+              "name": "qinggang",
+              "position": "B:e",
+              "itemType": "card",
+              "viewAsCard": false,
+              "isMaterial": true,
+              "subtypes": [
+                "equip1"
+              ],
+              "materials": [],
+              "binding": {
+                "name": "qinggang",
+                "materials": [
+                  {
+                    "name": "qinggang",
+                    "position": "B:e",
+                    "isMaterial": true
+                  }
+                ]
+              }
+            },
+            "equipRange": 2,
+            "physicalCount": 1,
+            "qinggangSkill": {
+              "hasSkill": true,
+              "inEquipSkills": true,
+              "inAllSkills": true
+            },
+            "vJudges": [
+              {
+                "name": "lebu",
+                "position": "e",
+                "itemType": "vcard",
+                "viewAsCard": false,
+                "isMaterial": false,
+                "subtypes": [],
+                "materials": [
+                  {
+                    "name": "qinggang",
+                    "position": "B:e",
+                    "isMaterial": true
+                  }
+                ],
+                "binding": null
+              }
+            ],
+            "physicalJudges": [
+              {
+                "name": "lebu",
+                "position": "B:j",
+                "itemType": "card",
+                "viewAsCard": true,
+                "isMaterial": false,
+                "subtypes": [],
+                "materials": [
+                  {
+                    "name": "qinggang",
+                    "position": "B:e",
+                    "isMaterial": true
+                  }
+                ],
+                "binding": {
+                  "name": "lebu",
+                  "materials": [
+                    {
+                      "name": "qinggang",
+                      "position": "B:e",
+                      "isMaterial": true
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "point": "after-disable",
+          "state": {
+            "material": {
+              "name": "qinggang",
+              "position": "d",
+              "itemType": "card",
+              "viewAsCard": false,
+              "isMaterial": true,
+              "subtypes": [
+                "equip1"
+              ],
+              "materials": [],
+              "binding": {
+                "name": "qinggang",
+                "materials": [
+                  {
+                    "name": "qinggang",
+                    "position": "d",
+                    "isMaterial": true
+                  }
+                ]
+              }
+            },
+            "isMin": false,
+            "canEquip": [
+              false,
+              true
+            ],
+            "enabled": 1,
+            "empty": 0,
+            "equipable": 1,
+            "vEquips": [
+              {
+                "name": "qinggang",
+                "position": "d",
+                "itemType": "vcard",
+                "viewAsCard": false,
+                "isMaterial": false,
+                "subtypes": [
+                  "equip1"
+                ],
+                "materials": [
+                  {
+                    "name": "qinggang",
+                    "position": "d",
+                    "isMaterial": true
+                  }
+                ],
+                "binding": null
+              }
+            ],
+            "physicalEquips": [],
+            "vEquipByName": {
+              "name": "qinggang",
+              "position": "d",
+              "itemType": "vcard",
+              "viewAsCard": false,
+              "isMaterial": false,
+              "subtypes": [
+                "equip1"
+              ],
+              "materials": [
+                {
+                  "name": "qinggang",
+                  "position": "d",
+                  "isMaterial": true
+                }
+              ],
+              "binding": null
+            },
+            "equipByName": null,
+            "equipRange": 2,
+            "physicalCount": 0,
+            "qinggangSkill": {
+              "hasSkill": true,
+              "inEquipSkills": true,
+              "inAllSkills": true
+            },
+            "vJudges": [],
+            "physicalJudges": []
+          }
+        }
+      ]
+    },
+    {
+      "timing": "discardBefore",
+      "points": [
+        {
+          "point": "initial",
+          "state": {
+            "material": {
+              "name": "qinggang",
+              "position": "j",
+              "itemType": "card",
+              "viewAsCard": false,
+              "isMaterial": true,
+              "subtypes": [
+                "equip1"
+              ],
+              "materials": [],
+              "binding": null
+            },
+            "isMin": false,
+            "canEquip": [
+              false,
+              true
+            ],
+            "enabled": 1,
+            "empty": 0,
+            "equipable": 1,
+            "vEquips": [
+              {
+                "name": "qinggang",
+                "position": "d",
+                "itemType": "vcard",
+                "viewAsCard": false,
+                "isMaterial": false,
+                "subtypes": [
+                  "equip1"
+                ],
+                "materials": [
+                  {
+                    "name": "qinggang",
+                    "position": "d",
+                    "isMaterial": false
+                  }
+                ],
+                "binding": null
+              }
+            ],
+            "physicalEquips": [],
+            "vEquipByName": {
+              "name": "qinggang",
+              "position": "d",
+              "itemType": "vcard",
+              "viewAsCard": false,
+              "isMaterial": false,
+              "subtypes": [
+                "equip1"
+              ],
+              "materials": [
+                {
+                  "name": "qinggang",
+                  "position": "d",
+                  "isMaterial": false
+                }
+              ],
+              "binding": null
+            },
+            "equipByName": null,
+            "equipRange": 2,
+            "physicalCount": 0,
+            "qinggangSkill": {
+              "hasSkill": true,
+              "inEquipSkills": true,
+              "inAllSkills": true
+            },
+            "vJudges": [
+              {
+                "name": "lebu",
+                "position": "j",
+                "itemType": "vcard",
+                "viewAsCard": false,
+                "isMaterial": false,
+                "subtypes": [],
+                "materials": [
+                  {
+                    "name": "qinggang",
+                    "position": "j",
+                    "isMaterial": true
+                  }
+                ],
+                "binding": null
+              }
+            ],
+            "physicalJudges": [
+              {
+                "name": "lebu",
+                "position": "B:j",
+                "itemType": "card",
+                "viewAsCard": true,
+                "isMaterial": false,
+                "subtypes": [],
+                "materials": [
+                  {
+                    "name": "qinggang",
+                    "position": "j",
+                    "isMaterial": true
+                  }
+                ],
+                "binding": {
+                  "name": "lebu",
+                  "materials": [
+                    {
+                      "name": "qinggang",
+                      "position": "j",
+                      "isMaterial": true
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "point": "before-gain",
+          "state": {
+            "material": {
+              "name": "qinggang",
+              "position": "j",
+              "itemType": "card",
+              "viewAsCard": false,
+              "isMaterial": true,
+              "subtypes": [
+                "equip1"
+              ],
+              "materials": [],
+              "binding": null
+            },
+            "isMin": false,
+            "canEquip": [
+              false,
+              true
+            ],
+            "enabled": 1,
+            "empty": 0,
+            "equipable": 1,
+            "vEquips": [
+              {
+                "name": "qinggang",
+                "position": "d",
+                "itemType": "vcard",
+                "viewAsCard": false,
+                "isMaterial": false,
+                "subtypes": [
+                  "equip1"
+                ],
+                "materials": [
+                  {
+                    "name": "qinggang",
+                    "position": "d",
+                    "isMaterial": false
+                  }
+                ],
+                "binding": null
+              }
+            ],
+            "physicalEquips": [],
+            "vEquipByName": {
+              "name": "qinggang",
+              "position": "d",
+              "itemType": "vcard",
+              "viewAsCard": false,
+              "isMaterial": false,
+              "subtypes": [
+                "equip1"
+              ],
+              "materials": [
+                {
+                  "name": "qinggang",
+                  "position": "d",
+                  "isMaterial": false
+                }
+              ],
+              "binding": null
+            },
+            "equipByName": null,
+            "equipRange": 2,
+            "physicalCount": 0,
+            "qinggangSkill": {
+              "hasSkill": true,
+              "inEquipSkills": true,
+              "inAllSkills": true
+            },
+            "vJudges": [
+              {
+                "name": "lebu",
+                "position": "j",
+                "itemType": "vcard",
+                "viewAsCard": false,
+                "isMaterial": false,
+                "subtypes": [],
+                "materials": [
+                  {
+                    "name": "qinggang",
+                    "position": "j",
+                    "isMaterial": true
+                  }
+                ],
+                "binding": null
+              }
+            ],
+            "physicalJudges": [
+              {
+                "name": "lebu",
+                "position": "B:j",
+                "itemType": "card",
+                "viewAsCard": true,
+                "isMaterial": false,
+                "subtypes": [],
+                "materials": [
+                  {
+                    "name": "qinggang",
+                    "position": "j",
+                    "isMaterial": true
+                  }
+                ],
+                "binding": {
+                  "name": "lebu",
+                  "materials": [
+                    {
+                      "name": "qinggang",
+                      "position": "j",
+                      "isMaterial": true
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "point": "after-gain",
+          "state": {
+            "material": {
+              "name": "qinggang",
+              "position": "B:h",
+              "itemType": "card",
+              "viewAsCard": false,
+              "isMaterial": true,
+              "subtypes": [
+                "equip1"
+              ],
+              "materials": [],
+              "binding": null
+            },
+            "isMin": false,
+            "canEquip": [
+              false,
+              true
+            ],
+            "enabled": 1,
+            "empty": 0,
+            "equipable": 1,
+            "vEquips": [
+              {
+                "name": "qinggang",
+                "position": "d",
+                "itemType": "vcard",
+                "viewAsCard": false,
+                "isMaterial": false,
+                "subtypes": [
+                  "equip1"
+                ],
+                "materials": [
+                  {
+                    "name": "qinggang",
+                    "position": "d",
+                    "isMaterial": false
+                  }
+                ],
+                "binding": null
+              }
+            ],
+            "physicalEquips": [],
+            "vEquipByName": {
+              "name": "qinggang",
+              "position": "d",
+              "itemType": "vcard",
+              "viewAsCard": false,
+              "isMaterial": false,
+              "subtypes": [
+                "equip1"
+              ],
+              "materials": [
+                {
+                  "name": "qinggang",
+                  "position": "d",
+                  "isMaterial": false
+                }
+              ],
+              "binding": null
+            },
+            "equipByName": null,
+            "equipRange": 2,
+            "physicalCount": 0,
+            "qinggangSkill": {
+              "hasSkill": true,
+              "inEquipSkills": true,
+              "inAllSkills": true
+            },
+            "vJudges": [
+              {
+                "name": "lebu",
+                "position": "h",
+                "itemType": "vcard",
+                "viewAsCard": false,
+                "isMaterial": false,
+                "subtypes": [],
+                "materials": [
+                  {
+                    "name": "qinggang",
+                    "position": "B:h",
+                    "isMaterial": true
+                  }
+                ],
+                "binding": null
+              }
+            ],
+            "physicalJudges": [
+              {
+                "name": "lebu",
+                "position": "B:j",
+                "itemType": "card",
+                "viewAsCard": true,
+                "isMaterial": false,
+                "subtypes": [],
+                "materials": [
+                  {
+                    "name": "qinggang",
+                    "position": "B:h",
+                    "isMaterial": true
+                  }
+                ],
+                "binding": {
+                  "name": "lebu",
+                  "materials": [
+                    {
+                      "name": "qinggang",
+                      "position": "B:h",
+                      "isMaterial": true
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "point": "after-equip",
+          "state": {
+            "material": {
+              "name": "qinggang",
+              "position": "d",
+              "itemType": "card",
+              "viewAsCard": false,
+              "isMaterial": true,
+              "subtypes": [
+                "equip1"
+              ],
+              "materials": [],
+              "binding": null
+            },
+            "isMin": false,
+            "canEquip": [
+              false,
+              true
+            ],
+            "enabled": 1,
+            "empty": 0,
+            "equipable": 1,
+            "vEquips": [
+              {
+                "name": "qinggang",
+                "position": "d",
+                "itemType": "vcard",
+                "viewAsCard": false,
+                "isMaterial": false,
+                "subtypes": [
+                  "equip1"
+                ],
+                "materials": [
+                  {
+                    "name": "qinggang",
+                    "position": "d",
+                    "isMaterial": false
+                  }
+                ],
+                "binding": null
+              }
+            ],
+            "physicalEquips": [],
+            "vEquipByName": {
+              "name": "qinggang",
+              "position": "d",
+              "itemType": "vcard",
+              "viewAsCard": false,
+              "isMaterial": false,
+              "subtypes": [
+                "equip1"
+              ],
+              "materials": [
+                {
+                  "name": "qinggang",
+                  "position": "d",
+                  "isMaterial": false
+                }
+              ],
+              "binding": null
+            },
+            "equipByName": null,
+            "equipRange": 2,
+            "physicalCount": 0,
+            "qinggangSkill": {
+              "hasSkill": true,
+              "inEquipSkills": true,
+              "inAllSkills": true
+            },
+            "vJudges": [
+              {
+                "name": "lebu",
+                "position": "d",
+                "itemType": "vcard",
+                "viewAsCard": false,
+                "isMaterial": false,
+                "subtypes": [],
+                "materials": [
+                  {
+                    "name": "qinggang",
+                    "position": "d",
+                    "isMaterial": true
+                  }
+                ],
+                "binding": null
+              }
+            ],
+            "physicalJudges": [
+              {
+                "name": "lebu",
+                "position": "B:j",
+                "itemType": "card",
+                "viewAsCard": true,
+                "isMaterial": false,
+                "subtypes": [],
+                "materials": [
+                  {
+                    "name": "qinggang",
+                    "position": "d",
+                    "isMaterial": true
+                  }
+                ],
+                "binding": {
+                  "name": "lebu",
+                  "materials": [
+                    {
+                      "name": "qinggang",
+                      "position": "d",
+                      "isMaterial": true
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "point": "after-disable",
+          "state": {
+            "material": {
+              "name": "qinggang",
+              "position": "d",
+              "itemType": "card",
+              "viewAsCard": false,
+              "isMaterial": true,
+              "subtypes": [
+                "equip1"
+              ],
+              "materials": [],
+              "binding": null
+            },
+            "isMin": false,
+            "canEquip": [
+              false,
+              true
+            ],
+            "enabled": 1,
+            "empty": 0,
+            "equipable": 1,
+            "vEquips": [
+              {
+                "name": "qinggang",
+                "position": "d",
+                "itemType": "vcard",
+                "viewAsCard": false,
+                "isMaterial": false,
+                "subtypes": [
+                  "equip1"
+                ],
+                "materials": [
+                  {
+                    "name": "qinggang",
+                    "position": "d",
+                    "isMaterial": false
+                  }
+                ],
+                "binding": null
+              }
+            ],
+            "physicalEquips": [],
+            "vEquipByName": {
+              "name": "qinggang",
+              "position": "d",
+              "itemType": "vcard",
+              "viewAsCard": false,
+              "isMaterial": false,
+              "subtypes": [
+                "equip1"
+              ],
+              "materials": [
+                {
+                  "name": "qinggang",
+                  "position": "d",
+                  "isMaterial": false
+                }
+              ],
+              "binding": null
+            },
+            "equipByName": null,
+            "equipRange": 2,
+            "physicalCount": 0,
+            "qinggangSkill": {
+              "hasSkill": true,
+              "inEquipSkills": true,
+              "inAllSkills": true
+            },
+            "vJudges": [],
+            "physicalJudges": []
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -132,6 +132,15 @@
    node scripts/reference-trace.mjs --scenario max-hp --check tests/reference/max-hp.json
    node scripts/reference-trace.mjs --scenario revival --check tests/reference/revival.json
    node scripts/reference-trace.mjs --scenario rest --check tests/reference/rest.json
+   node scripts/reference-trace.mjs --scenario rest-interruptions --check tests/reference/rest-interruptions.json
+   node scripts/reference-trace.mjs --scenario judge-area --check tests/reference/judge-area.json
+   node scripts/reference-trace.mjs --scenario judge-interruptions --check tests/reference/judge-interruptions.json
+   node scripts/reference-trace.mjs --scenario judge-payment --check tests/reference/judge-payment.json
+   node scripts/reference-trace.mjs --scenario equip-slots --check tests/reference/equip-slots.json
+   node scripts/reference-trace.mjs --scenario virtual-equip-discard-first --check tests/reference/virtual-equip-discard-first.json
+   node scripts/reference-trace.mjs --scenario virtual-equip-lose-first --check tests/reference/virtual-equip-lose-first.json
+   node scripts/reference-trace.mjs --scenario virtual-equip-combat --check tests/reference/virtual-equip-combat.json
+   node scripts/reference-trace.mjs --scenario virtual-judge-probe --check tests/reference/virtual-judge-probe.json
    node scripts/reference-trace.mjs --scenario tiesuo-recast --check tests/reference/tiesuo-recast.json
    node scripts/reference-trace.mjs --scenario recast-callbacks --check tests/reference/recast-callbacks.json
    node scripts/reference-trace.mjs --scenario recast-batch --check tests/reference/recast-batch.json

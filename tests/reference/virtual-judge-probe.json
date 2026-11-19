@@ -1,0 +1,1584 @@
+{
+  "schema": "noname-reference-trace-v1",
+  "referenceCommit": "c73270948d72949aa80009536b9fd5400767d091",
+  "mode": "identity",
+  "scenario": "virtual judgment wrappers separated from their materials and equipment visibility",
+  "columns": [
+    "trial",
+    "kind",
+    "timing",
+    "event",
+    "parent",
+    "player",
+    "finished",
+    "cancelled",
+    "state"
+  ],
+  "events": [
+    ["B:phaseJudge","request","gainBefore","gain","reference_fixture_use","B",false,false,{"material":"j","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"j","isMaterial":false,"materials":[{"name":"qinggang","position":"j","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"j","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:phaseJudge","callback","gainBefore","gain","reference_fixture_use","B",false,false,{"material":"j","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"j","isMaterial":false,"materials":[{"name":"qinggang","position":"j","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"j","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:phaseJudge","request","gainBegin","gain","reference_fixture_use","B",false,false,{"material":"j","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"j","isMaterial":false,"materials":[{"name":"qinggang","position":"j","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"j","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:phaseJudge","callback","gainBegin","gain","reference_fixture_use","B",false,false,{"material":"j","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"j","isMaterial":false,"materials":[{"name":"qinggang","position":"j","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"j","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:phaseJudge","request","gainEnd","gain","reference_fixture_use","B",true,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:phaseJudge","callback","gainEnd","gain","reference_fixture_use","B",true,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:phaseJudge","request","gainAfter","gain","reference_fixture_use","B",true,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:phaseJudge","callback","gainAfter","gain","reference_fixture_use","B",true,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:phaseJudge","request","phaseJudgeBefore","phaseJudge","reference_fixture_use","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["B:phaseJudge","callback","phaseJudgeBefore","phaseJudge","reference_fixture_use","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["B:phaseJudge","request","phaseJudgeBegin","phaseJudge","reference_fixture_use","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["B:phaseJudge","callback","phaseJudgeBegin","phaseJudge","reference_fixture_use","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["B:phaseJudge","request","loseBefore","lose","phaseJudge","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["B:phaseJudge","callback","loseBefore","lose","phaseJudge","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["B:phaseJudge","request","loseBegin","lose","phaseJudge","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["B:phaseJudge","callback","loseBegin","lose","phaseJudge","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["B:phaseJudge","request","loseEnd","lose","phaseJudge","B",true,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["B:phaseJudge","callback","loseEnd","lose","phaseJudge","B",true,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["B:phaseJudge","request","loseAfter","lose","phaseJudge","B",true,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["B:phaseJudge","callback","loseAfter","lose","phaseJudge","B",true,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["B:phaseJudge","request","phaseJudge","phaseJudge","reference_fixture_use","B",false,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["B:phaseJudge","callback","phaseJudge","phaseJudge","reference_fixture_use","B",false,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["B:phaseJudge","request","judgeBefore","judge","phaseJudge","B",false,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["B:phaseJudge","callback","judgeBefore","judge","phaseJudge","B",false,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["B:phaseJudge","request","judgeBegin","judge","phaseJudge","B",false,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["B:phaseJudge","callback","judgeBegin","judge","phaseJudge","B",false,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["B:phaseJudge","request","judge","judge","phaseJudge","B",false,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:phaseJudge","callback","judge","judge","phaseJudge","B",false,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"B:o","equipment":[]}],
+    ["B:phaseJudge","request","judgeEnd","judge","phaseJudge","B",true,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"o","equipment":[]}],
+    ["B:phaseJudge","callback","judgeEnd","judge","phaseJudge","B",true,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"o","equipment":[]}],
+    ["B:phaseJudge","request","judgeAfter","judge","phaseJudge","B",true,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"o","equipment":[]}],
+    ["B:phaseJudge","callback","judgeAfter","judge","phaseJudge","B",true,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"o","equipment":[]}],
+    ["B:phaseJudge","request","cardsDiscardBefore","cardsDiscard","orderingDiscard",null,false,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"o","equipment":[]}],
+    ["B:phaseJudge","callback","cardsDiscardBefore","cardsDiscard","orderingDiscard",null,false,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"o","equipment":[]}],
+    ["B:phaseJudge","request","cardsDiscardBegin","cardsDiscard","orderingDiscard",null,false,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"o","equipment":[]}],
+    ["B:phaseJudge","callback","cardsDiscardBegin","cardsDiscard","orderingDiscard",null,false,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"o","equipment":[]}],
+    ["B:phaseJudge","request","cardsDiscardEnd","cardsDiscard","orderingDiscard",null,true,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["B:phaseJudge","callback","cardsDiscardEnd","cardsDiscard","orderingDiscard",null,true,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["B:phaseJudge","request","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,true,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["B:phaseJudge","callback","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,true,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["B:phaseJudge","request","phaseJudgeEnd","phaseJudge","reference_fixture_use","B",true,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["B:phaseJudge","callback","phaseJudgeEnd","phaseJudge","reference_fixture_use","B",true,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["B:phaseJudge","request","phaseJudgeAfter","phaseJudge","reference_fixture_use","B",true,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["B:phaseJudge","callback","phaseJudgeAfter","phaseJudge","reference_fixture_use","B",true,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["B:phaseJudge","request","cardsDiscardBefore","cardsDiscard","orderingDiscard",null,false,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["B:phaseJudge","callback","cardsDiscardBefore","cardsDiscard","orderingDiscard",null,false,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["B:phaseJudge","request","cardsDiscardBegin","cardsDiscard","orderingDiscard",null,false,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["B:phaseJudge","callback","cardsDiscardBegin","cardsDiscard","orderingDiscard",null,false,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["B:phaseJudge","request","cardsDiscardEnd","cardsDiscard","orderingDiscard",null,true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["B:phaseJudge","callback","cardsDiscardEnd","cardsDiscard","orderingDiscard",null,true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["B:phaseJudge","request","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["B:phaseJudge","callback","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["B:disableJudge","request","gainBefore","gain","reference_fixture_use","B",false,false,{"material":"j","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"j","isMaterial":false,"materials":[{"name":"qinggang","position":"j","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"j","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:disableJudge","callback","gainBefore","gain","reference_fixture_use","B",false,false,{"material":"j","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"j","isMaterial":false,"materials":[{"name":"qinggang","position":"j","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"j","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:disableJudge","request","gainBegin","gain","reference_fixture_use","B",false,false,{"material":"j","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"j","isMaterial":false,"materials":[{"name":"qinggang","position":"j","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"j","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:disableJudge","callback","gainBegin","gain","reference_fixture_use","B",false,false,{"material":"j","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"j","isMaterial":false,"materials":[{"name":"qinggang","position":"j","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"j","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:disableJudge","request","gainEnd","gain","reference_fixture_use","B",true,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:disableJudge","callback","gainEnd","gain","reference_fixture_use","B",true,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:disableJudge","request","gainAfter","gain","reference_fixture_use","B",true,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:disableJudge","callback","gainAfter","gain","reference_fixture_use","B",true,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:disableJudge","request","disableJudgeBefore","disableJudge","reference_fixture_use","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:disableJudge","callback","disableJudgeBefore","disableJudge","reference_fixture_use","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:disableJudge","request","disableJudgeBegin","disableJudge","reference_fixture_use","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:disableJudge","callback","disableJudgeBegin","disableJudge","reference_fixture_use","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:disableJudge","request","discardBefore","discard","disableJudge","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:disableJudge","callback","discardBefore","discard","disableJudge","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:disableJudge","request","discardBegin","discard","disableJudge","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:disableJudge","callback","discardBegin","discard","disableJudge","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:disableJudge","request","loseBefore","lose","discard","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:disableJudge","callback","loseBefore","lose","discard","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:disableJudge","request","loseBegin","lose","discard","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:disableJudge","callback","loseBegin","lose","discard","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:disableJudge","request","loseEnd","lose","discard","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:disableJudge","callback","loseEnd","lose","discard","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:disableJudge","request","loseAfter","lose","discard","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:disableJudge","callback","loseAfter","lose","discard","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:disableJudge","request","discard","discard","disableJudge","B",false,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:disableJudge","callback","discard","discard","disableJudge","B",false,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:disableJudge","request","discardEnd","discard","disableJudge","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:disableJudge","callback","discardEnd","discard","disableJudge","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:disableJudge","request","discardAfter","discard","disableJudge","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:disableJudge","callback","discardAfter","discard","disableJudge","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["B:disableJudge","request","disableJudgeEnd","disableJudge","reference_fixture_use","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":false,"disabled":true,"placeholder":1,"revealed":null,"equipment":[]}],
+    ["B:disableJudge","callback","disableJudgeEnd","disableJudge","reference_fixture_use","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":false,"disabled":true,"placeholder":1,"revealed":null,"equipment":[]}],
+    ["B:disableJudge","request","disableJudgeAfter","disableJudge","reference_fixture_use","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":false,"disabled":true,"placeholder":1,"revealed":null,"equipment":[]}],
+    ["B:disableJudge","callback","disableJudgeAfter","disableJudge","reference_fixture_use","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":false,"disabled":true,"placeholder":1,"revealed":null,"equipment":[]}],
+    ["C:phaseJudge","request","gainBefore","gain","reference_fixture_use","C",false,false,{"material":"j","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"j","isMaterial":false,"materials":[{"name":"qinggang","position":"j","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"j","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:phaseJudge","callback","gainBefore","gain","reference_fixture_use","C",false,false,{"material":"j","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"j","isMaterial":false,"materials":[{"name":"qinggang","position":"j","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"j","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:phaseJudge","request","gainBegin","gain","reference_fixture_use","C",false,false,{"material":"j","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"j","isMaterial":false,"materials":[{"name":"qinggang","position":"j","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"j","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:phaseJudge","callback","gainBegin","gain","reference_fixture_use","C",false,false,{"material":"j","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"j","isMaterial":false,"materials":[{"name":"qinggang","position":"j","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"j","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:phaseJudge","request","gainEnd","gain","reference_fixture_use","C",true,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:phaseJudge","callback","gainEnd","gain","reference_fixture_use","C",true,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:phaseJudge","request","gainAfter","gain","reference_fixture_use","C",true,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:phaseJudge","callback","gainAfter","gain","reference_fixture_use","C",true,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:phaseJudge","request","phaseJudgeBefore","phaseJudge","reference_fixture_use","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["C:phaseJudge","callback","phaseJudgeBefore","phaseJudge","reference_fixture_use","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["C:phaseJudge","request","phaseJudgeBegin","phaseJudge","reference_fixture_use","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["C:phaseJudge","callback","phaseJudgeBegin","phaseJudge","reference_fixture_use","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["C:phaseJudge","request","loseBefore","lose","phaseJudge","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["C:phaseJudge","callback","loseBefore","lose","phaseJudge","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["C:phaseJudge","request","loseBegin","lose","phaseJudge","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["C:phaseJudge","callback","loseBegin","lose","phaseJudge","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["C:phaseJudge","request","loseEnd","lose","phaseJudge","B",true,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["C:phaseJudge","callback","loseEnd","lose","phaseJudge","B",true,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["C:phaseJudge","request","loseAfter","lose","phaseJudge","B",true,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["C:phaseJudge","callback","loseAfter","lose","phaseJudge","B",true,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["C:phaseJudge","request","phaseJudge","phaseJudge","reference_fixture_use","B",false,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["C:phaseJudge","callback","phaseJudge","phaseJudge","reference_fixture_use","B",false,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["C:phaseJudge","request","judgeBefore","judge","phaseJudge","B",false,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["C:phaseJudge","callback","judgeBefore","judge","phaseJudge","B",false,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["C:phaseJudge","request","judgeBegin","judge","phaseJudge","B",false,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["C:phaseJudge","callback","judgeBegin","judge","phaseJudge","B",false,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["C:phaseJudge","request","judge","judge","phaseJudge","B",false,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:phaseJudge","callback","judge","judge","phaseJudge","B",false,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"B:o","equipment":[]}],
+    ["C:phaseJudge","request","judgeEnd","judge","phaseJudge","B",true,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"o","equipment":[]}],
+    ["C:phaseJudge","callback","judgeEnd","judge","phaseJudge","B",true,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"o","equipment":[]}],
+    ["C:phaseJudge","request","judgeAfter","judge","phaseJudge","B",true,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"o","equipment":[]}],
+    ["C:phaseJudge","callback","judgeAfter","judge","phaseJudge","B",true,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"o","equipment":[]}],
+    ["C:phaseJudge","request","cardsDiscardBefore","cardsDiscard","orderingDiscard",null,false,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"o","equipment":[]}],
+    ["C:phaseJudge","callback","cardsDiscardBefore","cardsDiscard","orderingDiscard",null,false,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"o","equipment":[]}],
+    ["C:phaseJudge","request","cardsDiscardBegin","cardsDiscard","orderingDiscard",null,false,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"o","equipment":[]}],
+    ["C:phaseJudge","callback","cardsDiscardBegin","cardsDiscard","orderingDiscard",null,false,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"o","equipment":[]}],
+    ["C:phaseJudge","request","cardsDiscardEnd","cardsDiscard","orderingDiscard",null,true,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["C:phaseJudge","callback","cardsDiscardEnd","cardsDiscard","orderingDiscard",null,true,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["C:phaseJudge","request","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,true,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["C:phaseJudge","callback","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,true,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["C:phaseJudge","request","phaseJudgeEnd","phaseJudge","reference_fixture_use","B",true,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["C:phaseJudge","callback","phaseJudgeEnd","phaseJudge","reference_fixture_use","B",true,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["C:phaseJudge","request","phaseJudgeAfter","phaseJudge","reference_fixture_use","B",true,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["C:phaseJudge","callback","phaseJudgeAfter","phaseJudge","reference_fixture_use","B",true,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["C:phaseJudge","request","cardsDiscardBefore","cardsDiscard","orderingDiscard",null,false,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["C:phaseJudge","callback","cardsDiscardBefore","cardsDiscard","orderingDiscard",null,false,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["C:phaseJudge","request","cardsDiscardBegin","cardsDiscard","orderingDiscard",null,false,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["C:phaseJudge","callback","cardsDiscardBegin","cardsDiscard","orderingDiscard",null,false,false,{"material":"o","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["C:phaseJudge","request","cardsDiscardEnd","cardsDiscard","orderingDiscard",null,true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["C:phaseJudge","callback","cardsDiscardEnd","cardsDiscard","orderingDiscard",null,true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["C:phaseJudge","request","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["C:phaseJudge","callback","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["C:disableJudge","request","gainBefore","gain","reference_fixture_use","C",false,false,{"material":"j","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"j","isMaterial":false,"materials":[{"name":"qinggang","position":"j","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"j","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:disableJudge","callback","gainBefore","gain","reference_fixture_use","C",false,false,{"material":"j","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"j","isMaterial":false,"materials":[{"name":"qinggang","position":"j","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"j","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:disableJudge","request","gainBegin","gain","reference_fixture_use","C",false,false,{"material":"j","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"j","isMaterial":false,"materials":[{"name":"qinggang","position":"j","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"j","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:disableJudge","callback","gainBegin","gain","reference_fixture_use","C",false,false,{"material":"j","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"j","isMaterial":false,"materials":[{"name":"qinggang","position":"j","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"j","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:disableJudge","request","gainEnd","gain","reference_fixture_use","C",true,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:disableJudge","callback","gainEnd","gain","reference_fixture_use","C",true,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:disableJudge","request","gainAfter","gain","reference_fixture_use","C",true,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:disableJudge","callback","gainAfter","gain","reference_fixture_use","C",true,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:disableJudge","request","disableJudgeBefore","disableJudge","reference_fixture_use","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:disableJudge","callback","disableJudgeBefore","disableJudge","reference_fixture_use","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:disableJudge","request","disableJudgeBegin","disableJudge","reference_fixture_use","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:disableJudge","callback","disableJudgeBegin","disableJudge","reference_fixture_use","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:disableJudge","request","discardBefore","discard","disableJudge","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:disableJudge","callback","discardBefore","discard","disableJudge","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:disableJudge","request","discardBegin","discard","disableJudge","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:disableJudge","callback","discardBegin","discard","disableJudge","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:disableJudge","request","loseBefore","lose","discard","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:disableJudge","callback","loseBefore","lose","discard","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:disableJudge","request","loseBegin","lose","discard","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:disableJudge","callback","loseBegin","lose","discard","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:disableJudge","request","loseEnd","lose","discard","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:disableJudge","callback","loseEnd","lose","discard","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:disableJudge","request","loseAfter","lose","discard","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:disableJudge","callback","loseAfter","lose","discard","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:disableJudge","request","discard","discard","disableJudge","B",false,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:disableJudge","callback","discard","discard","disableJudge","B",false,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:disableJudge","request","discardEnd","discard","disableJudge","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:disableJudge","callback","discardEnd","discard","disableJudge","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:disableJudge","request","discardAfter","discard","disableJudge","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:disableJudge","callback","discardAfter","discard","disableJudge","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["C:disableJudge","request","disableJudgeEnd","disableJudge","reference_fixture_use","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":false,"disabled":true,"placeholder":1,"revealed":null,"equipment":[]}],
+    ["C:disableJudge","callback","disableJudgeEnd","disableJudge","reference_fixture_use","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":false,"disabled":true,"placeholder":1,"revealed":null,"equipment":[]}],
+    ["C:disableJudge","request","disableJudgeAfter","disableJudge","reference_fixture_use","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":false,"disabled":true,"placeholder":1,"revealed":null,"equipment":[]}],
+    ["C:disableJudge","callback","disableJudgeAfter","disableJudge","reference_fixture_use","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":false,"disabled":true,"placeholder":1,"revealed":null,"equipment":[]}],
+    ["discard:B:material","request","discardBefore","discard","reference_fixture_use","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:B:material","callback","discardBefore","discard","reference_fixture_use","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:B:material","request","discardBegin","discard","reference_fixture_use","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:B:material","callback","discardBegin","discard","reference_fixture_use","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:B:material","request","loseBefore","lose","discard","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:B:material","callback","loseBefore","lose","discard","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:B:material","request","loseBegin","lose","discard","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:B:material","callback","loseBegin","lose","discard","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:B:material","request","loseEnd","lose","discard","B",true,false,{"material":"d","visible":[false,false,false],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"d","isMaterial":false,"materials":[{"name":"qinggang","position":"d","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"d","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:B:material","callback","loseEnd","lose","discard","B",true,false,{"material":"d","visible":[false,false,false],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"d","isMaterial":false,"materials":[{"name":"qinggang","position":"d","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"d","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:B:material","request","loseAfter","lose","discard","B",true,false,{"material":"d","visible":[false,false,false],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"d","isMaterial":false,"materials":[{"name":"qinggang","position":"d","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"d","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:B:material","callback","loseAfter","lose","discard","B",true,false,{"material":"d","visible":[false,false,false],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"d","isMaterial":false,"materials":[{"name":"qinggang","position":"d","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"d","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:B:material","request","discard","discard","reference_fixture_use","B",false,false,{"material":"d","visible":[false,false,false],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"d","isMaterial":false,"materials":[{"name":"qinggang","position":"d","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"d","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:B:material","callback","discard","discard","reference_fixture_use","B",false,false,{"material":"d","visible":[false,false,false],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"d","isMaterial":false,"materials":[{"name":"qinggang","position":"d","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"d","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:B:material","request","discardEnd","discard","reference_fixture_use","B",true,false,{"material":"d","visible":[false,false,false],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"d","isMaterial":false,"materials":[{"name":"qinggang","position":"d","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"d","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:B:material","callback","discardEnd","discard","reference_fixture_use","B",true,false,{"material":"d","visible":[false,false,false],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"d","isMaterial":false,"materials":[{"name":"qinggang","position":"d","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"d","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:B:material","request","discardAfter","discard","reference_fixture_use","B",true,false,{"material":"d","visible":[false,false,false],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"d","isMaterial":false,"materials":[{"name":"qinggang","position":"d","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"d","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:B:material","callback","discardAfter","discard","reference_fixture_use","B",true,false,{"material":"d","visible":[false,false,false],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"d","isMaterial":false,"materials":[{"name":"qinggang","position":"d","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"d","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:B:wrapper","request","discardBefore","discard","reference_fixture_use","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:B:wrapper","callback","discardBefore","discard","reference_fixture_use","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:B:wrapper","request","discardBegin","discard","reference_fixture_use","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:B:wrapper","callback","discardBegin","discard","reference_fixture_use","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:B:wrapper","request","loseBefore","lose","discard","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:B:wrapper","callback","loseBefore","lose","discard","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:B:wrapper","request","loseBegin","lose","discard","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:B:wrapper","callback","loseBegin","lose","discard","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:B:wrapper","request","loseEnd","lose","discard","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:B:wrapper","callback","loseEnd","lose","discard","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:B:wrapper","request","loseAfter","lose","discard","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:B:wrapper","callback","loseAfter","lose","discard","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:B:wrapper","request","discard","discard","reference_fixture_use","B",false,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:B:wrapper","callback","discard","discard","reference_fixture_use","B",false,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:B:wrapper","request","discardEnd","discard","reference_fixture_use","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:B:wrapper","callback","discardEnd","discard","reference_fixture_use","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:B:wrapper","request","discardAfter","discard","reference_fixture_use","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:B:wrapper","callback","discardAfter","discard","reference_fixture_use","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:C:material","request","discardBefore","discard","reference_fixture_use","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:C:material","callback","discardBefore","discard","reference_fixture_use","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:C:material","request","discardBegin","discard","reference_fixture_use","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:C:material","callback","discardBegin","discard","reference_fixture_use","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:C:material","request","discard","discard","reference_fixture_use","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:C:material","callback","discard","discard","reference_fixture_use","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:C:material","request","discardEnd","discard","reference_fixture_use","B",true,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:C:material","callback","discardEnd","discard","reference_fixture_use","B",true,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:C:material","request","discardAfter","discard","reference_fixture_use","B",true,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:C:material","callback","discardAfter","discard","reference_fixture_use","B",true,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:C:wrapper","request","discardBefore","discard","reference_fixture_use","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:C:wrapper","callback","discardBefore","discard","reference_fixture_use","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:C:wrapper","request","discardBegin","discard","reference_fixture_use","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:C:wrapper","callback","discardBegin","discard","reference_fixture_use","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:C:wrapper","request","loseBefore","lose","discard","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:C:wrapper","callback","loseBefore","lose","discard","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:C:wrapper","request","loseBegin","lose","discard","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:C:wrapper","callback","loseBegin","lose","discard","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:C:wrapper","request","loseEnd","lose","discard","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:C:wrapper","callback","loseEnd","lose","discard","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:C:wrapper","request","loseAfter","lose","discard","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:C:wrapper","callback","loseAfter","lose","discard","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:C:wrapper","request","discard","discard","reference_fixture_use","B",false,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:C:wrapper","callback","discard","discard","reference_fixture_use","B",false,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:C:wrapper","request","discardEnd","discard","reference_fixture_use","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:C:wrapper","callback","discardEnd","discard","reference_fixture_use","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:C:wrapper","request","discardAfter","discard","reference_fixture_use","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["discard:C:wrapper","callback","discardAfter","discard","reference_fixture_use","B",true,false,{"material":"d","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:B:phaseJudge","request","phaseJudgeBefore","phaseJudge","reference_fixture_use","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["cancel-inner:B:phaseJudge","callback","phaseJudgeBefore","phaseJudge","reference_fixture_use","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["cancel-inner:B:phaseJudge","request","phaseJudgeBegin","phaseJudge","reference_fixture_use","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["cancel-inner:B:phaseJudge","callback","phaseJudgeBegin","phaseJudge","reference_fixture_use","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["cancel-inner:B:phaseJudge","request","loseBefore","lose","phaseJudge","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["cancel-inner:B:phaseJudge","callback","loseBefore","lose","phaseJudge","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["cancel-inner:B:phaseJudge","request","loseCancelled","lose","phaseJudge","B",false,true,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["cancel-inner:B:phaseJudge","callback","loseCancelled","lose","phaseJudge","B",true,true,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["cancel-inner:B:phaseJudge","request","phaseJudge","phaseJudge","reference_fixture_use","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["cancel-inner:B:phaseJudge","callback","phaseJudge","phaseJudge","reference_fixture_use","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["cancel-inner:B:phaseJudge","request","judgeBefore","judge","phaseJudge","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["cancel-inner:B:phaseJudge","callback","judgeBefore","judge","phaseJudge","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["cancel-inner:B:phaseJudge","request","judgeBegin","judge","phaseJudge","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["cancel-inner:B:phaseJudge","callback","judgeBegin","judge","phaseJudge","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["cancel-inner:B:phaseJudge","request","judge","judge","phaseJudge","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:B:phaseJudge","callback","judge","judge","phaseJudge","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"B:o","equipment":[]}],
+    ["cancel-inner:B:phaseJudge","request","judgeEnd","judge","phaseJudge","B",true,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"o","equipment":[]}],
+    ["cancel-inner:B:phaseJudge","callback","judgeEnd","judge","phaseJudge","B",true,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"o","equipment":[]}],
+    ["cancel-inner:B:phaseJudge","request","judgeAfter","judge","phaseJudge","B",true,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"o","equipment":[]}],
+    ["cancel-inner:B:phaseJudge","callback","judgeAfter","judge","phaseJudge","B",true,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"o","equipment":[]}],
+    ["cancel-inner:B:phaseJudge","request","cardsDiscardBefore","cardsDiscard","orderingDiscard",null,false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"o","equipment":[]}],
+    ["cancel-inner:B:phaseJudge","callback","cardsDiscardBefore","cardsDiscard","orderingDiscard",null,false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"o","equipment":[]}],
+    ["cancel-inner:B:phaseJudge","request","cardsDiscardBegin","cardsDiscard","orderingDiscard",null,false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"o","equipment":[]}],
+    ["cancel-inner:B:phaseJudge","callback","cardsDiscardBegin","cardsDiscard","orderingDiscard",null,false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"o","equipment":[]}],
+    ["cancel-inner:B:phaseJudge","request","cardsDiscardEnd","cardsDiscard","orderingDiscard",null,true,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["cancel-inner:B:phaseJudge","callback","cardsDiscardEnd","cardsDiscard","orderingDiscard",null,true,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["cancel-inner:B:phaseJudge","request","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,true,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["cancel-inner:B:phaseJudge","callback","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,true,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["cancel-inner:B:phaseJudge","request","phaseJudgeEnd","phaseJudge","reference_fixture_use","B",true,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["cancel-inner:B:phaseJudge","callback","phaseJudgeEnd","phaseJudge","reference_fixture_use","B",true,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["cancel-inner:B:phaseJudge","request","phaseJudgeAfter","phaseJudge","reference_fixture_use","B",true,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["cancel-inner:B:phaseJudge","callback","phaseJudgeAfter","phaseJudge","reference_fixture_use","B",true,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["cancel-inner:B:disableJudge","request","disableJudgeBefore","disableJudge","reference_fixture_use","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:B:disableJudge","callback","disableJudgeBefore","disableJudge","reference_fixture_use","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:B:disableJudge","request","disableJudgeBegin","disableJudge","reference_fixture_use","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:B:disableJudge","callback","disableJudgeBegin","disableJudge","reference_fixture_use","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:B:disableJudge","request","discardBefore","discard","disableJudge","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:B:disableJudge","callback","discardBefore","discard","disableJudge","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:B:disableJudge","request","discardBegin","discard","disableJudge","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:B:disableJudge","callback","discardBegin","discard","disableJudge","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:B:disableJudge","request","loseBefore","lose","discard","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:B:disableJudge","callback","loseBefore","lose","discard","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:B:disableJudge","request","loseCancelled","lose","discard","B",false,true,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:B:disableJudge","callback","loseCancelled","lose","discard","B",true,true,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:B:disableJudge","request","discard","discard","disableJudge","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:B:disableJudge","callback","discard","discard","disableJudge","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:B:disableJudge","request","discardEnd","discard","disableJudge","B",true,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:B:disableJudge","callback","discardEnd","discard","disableJudge","B",true,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:B:disableJudge","request","discardAfter","discard","disableJudge","B",true,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:B:disableJudge","callback","discardAfter","discard","disableJudge","B",true,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:B:disableJudge","request","disableJudgeEnd","disableJudge","reference_fixture_use","B",true,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":1,"revealed":null,"equipment":[]}],
+    ["cancel-inner:B:disableJudge","callback","disableJudgeEnd","disableJudge","reference_fixture_use","B",true,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":1,"revealed":null,"equipment":[]}],
+    ["cancel-inner:B:disableJudge","request","disableJudgeAfter","disableJudge","reference_fixture_use","B",true,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":1,"revealed":null,"equipment":[]}],
+    ["cancel-inner:B:disableJudge","callback","disableJudgeAfter","disableJudge","reference_fixture_use","B",true,false,{"material":"B:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"B:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":1,"revealed":null,"equipment":[]}],
+    ["cancel-inner:C:phaseJudge","request","phaseJudgeBefore","phaseJudge","reference_fixture_use","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["cancel-inner:C:phaseJudge","callback","phaseJudgeBefore","phaseJudge","reference_fixture_use","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["cancel-inner:C:phaseJudge","request","phaseJudgeBegin","phaseJudge","reference_fixture_use","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["cancel-inner:C:phaseJudge","callback","phaseJudgeBegin","phaseJudge","reference_fixture_use","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["cancel-inner:C:phaseJudge","request","loseBefore","lose","phaseJudge","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["cancel-inner:C:phaseJudge","callback","loseBefore","lose","phaseJudge","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["cancel-inner:C:phaseJudge","request","loseCancelled","lose","phaseJudge","B",false,true,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["cancel-inner:C:phaseJudge","callback","loseCancelled","lose","phaseJudge","B",true,true,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["cancel-inner:C:phaseJudge","request","phaseJudge","phaseJudge","reference_fixture_use","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["cancel-inner:C:phaseJudge","callback","phaseJudge","phaseJudge","reference_fixture_use","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["cancel-inner:C:phaseJudge","request","judgeBefore","judge","phaseJudge","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["cancel-inner:C:phaseJudge","callback","judgeBefore","judge","phaseJudge","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["cancel-inner:C:phaseJudge","request","judgeBegin","judge","phaseJudge","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["cancel-inner:C:phaseJudge","callback","judgeBegin","judge","phaseJudge","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"c","equipment":[]}],
+    ["cancel-inner:C:phaseJudge","request","judge","judge","phaseJudge","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:C:phaseJudge","callback","judge","judge","phaseJudge","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"B:o","equipment":[]}],
+    ["cancel-inner:C:phaseJudge","request","judgeEnd","judge","phaseJudge","B",true,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"o","equipment":[]}],
+    ["cancel-inner:C:phaseJudge","callback","judgeEnd","judge","phaseJudge","B",true,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"o","equipment":[]}],
+    ["cancel-inner:C:phaseJudge","request","judgeAfter","judge","phaseJudge","B",true,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"o","equipment":[]}],
+    ["cancel-inner:C:phaseJudge","callback","judgeAfter","judge","phaseJudge","B",true,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"o","equipment":[]}],
+    ["cancel-inner:C:phaseJudge","request","cardsDiscardBefore","cardsDiscard","orderingDiscard",null,false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"o","equipment":[]}],
+    ["cancel-inner:C:phaseJudge","callback","cardsDiscardBefore","cardsDiscard","orderingDiscard",null,false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"o","equipment":[]}],
+    ["cancel-inner:C:phaseJudge","request","cardsDiscardBegin","cardsDiscard","orderingDiscard",null,false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"o","equipment":[]}],
+    ["cancel-inner:C:phaseJudge","callback","cardsDiscardBegin","cardsDiscard","orderingDiscard",null,false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"o","equipment":[]}],
+    ["cancel-inner:C:phaseJudge","request","cardsDiscardEnd","cardsDiscard","orderingDiscard",null,true,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["cancel-inner:C:phaseJudge","callback","cardsDiscardEnd","cardsDiscard","orderingDiscard",null,true,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["cancel-inner:C:phaseJudge","request","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,true,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["cancel-inner:C:phaseJudge","callback","cardsDiscardAfter","cardsDiscard","orderingDiscard",null,true,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["cancel-inner:C:phaseJudge","request","phaseJudgeEnd","phaseJudge","reference_fixture_use","B",true,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["cancel-inner:C:phaseJudge","callback","phaseJudgeEnd","phaseJudge","reference_fixture_use","B",true,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["cancel-inner:C:phaseJudge","request","phaseJudgeAfter","phaseJudge","reference_fixture_use","B",true,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["cancel-inner:C:phaseJudge","callback","phaseJudgeAfter","phaseJudge","reference_fixture_use","B",true,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":"d","equipment":[]}],
+    ["cancel-inner:C:disableJudge","request","disableJudgeBefore","disableJudge","reference_fixture_use","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:C:disableJudge","callback","disableJudgeBefore","disableJudge","reference_fixture_use","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:C:disableJudge","request","disableJudgeBegin","disableJudge","reference_fixture_use","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:C:disableJudge","callback","disableJudgeBegin","disableJudge","reference_fixture_use","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:C:disableJudge","request","discardBefore","discard","disableJudge","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:C:disableJudge","callback","discardBefore","discard","disableJudge","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:C:disableJudge","request","discardBegin","discard","disableJudge","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:C:disableJudge","callback","discardBegin","discard","disableJudge","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:C:disableJudge","request","loseBefore","lose","discard","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:C:disableJudge","callback","loseBefore","lose","discard","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:C:disableJudge","request","loseCancelled","lose","discard","B",false,true,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:C:disableJudge","callback","loseCancelled","lose","discard","B",true,true,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:C:disableJudge","request","discard","discard","disableJudge","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:C:disableJudge","callback","discard","discard","disableJudge","B",false,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:C:disableJudge","request","discardEnd","discard","disableJudge","B",true,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:C:disableJudge","callback","discardEnd","discard","disableJudge","B",true,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:C:disableJudge","request","discardAfter","discard","disableJudge","B",true,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:C:disableJudge","callback","discardAfter","discard","disableJudge","B",true,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["cancel-inner:C:disableJudge","request","disableJudgeEnd","disableJudge","reference_fixture_use","B",true,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":1,"revealed":null,"equipment":[]}],
+    ["cancel-inner:C:disableJudge","callback","disableJudgeEnd","disableJudge","reference_fixture_use","B",true,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":1,"revealed":null,"equipment":[]}],
+    ["cancel-inner:C:disableJudge","request","disableJudgeAfter","disableJudge","reference_fixture_use","B",true,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":1,"revealed":null,"equipment":[]}],
+    ["cancel-inner:C:disableJudge","callback","disableJudgeAfter","disableJudge","reference_fixture_use","B",true,false,{"material":"C:h","visible":[true,true,true],"judges":[{"name":"lebu","itemType":"vcard","isViewAsCard":false,"position":"h","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"rawJudges":[{"name":"lebu","itemType":"card","isViewAsCard":true,"position":"B:j","isMaterial":false,"materials":[{"name":"qinggang","position":"C:h","isMaterial":true}]}],"canAddLebu":false,"disabled":true,"placeholder":1,"revealed":null,"equipment":[]}],
+    ["equip-cancel","request","equipBefore","equip","reference_fixture_use","B",false,false,{"material":"B:h","visible":[false,true,false],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["equip-cancel","callback","equipBefore","equip","reference_fixture_use","B",false,false,{"material":"B:h","visible":[false,true,false],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["equip-cancel","request","equipCancelled","equip","reference_fixture_use","B",false,true,{"material":"B:h","visible":[false,true,false],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["equip-cancel","callback","equipCancelled","equip","reference_fixture_use","B",true,true,{"material":"B:h","visible":[false,true,false],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["equip-success","request","equipBefore","equip","reference_fixture_use","B",false,false,{"material":"B:h","visible":[false,true,false],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["equip-success","callback","equipBefore","equip","reference_fixture_use","B",false,false,{"material":"B:h","visible":[false,true,false],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["equip-success","request","equipBegin","equip","reference_fixture_use","B",false,false,{"material":"B:h","visible":[false,true,false],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["equip-success","callback","equipBegin","equip","reference_fixture_use","B",false,false,{"material":"B:h","visible":[false,true,false],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["equip-success","request","loseBefore","lose","equip","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["equip-success","callback","loseBefore","lose","equip","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["equip-success","request","loseBegin","lose","equip","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["equip-success","callback","loseBegin","lose","equip","B",false,false,{"material":"B:h","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["equip-success","request","loseEnd","lose","equip","B",true,false,{"material":"s","visible":[false,false,false],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["equip-success","callback","loseEnd","lose","equip","B",true,false,{"material":"s","visible":[false,false,false],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["equip-success","request","loseAfter","lose","equip","B",true,false,{"material":"s","visible":[false,false,false],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["equip-success","callback","loseAfter","lose","equip","B",true,false,{"material":"s","visible":[false,false,false],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[]}],
+    ["equip-success","request","equipEnd","equip","reference_fixture_use","B",true,false,{"material":"B:e","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[{"name":"qinggang","itemType":"card","isViewAsCard":false,"position":"B:e","isMaterial":true,"materials":[]}]}],
+    ["equip-success","callback","equipEnd","equip","reference_fixture_use","B",true,false,{"material":"B:e","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[{"name":"qinggang","itemType":"card","isViewAsCard":false,"position":"B:e","isMaterial":true,"materials":[]}]}],
+    ["equip-success","request","equipAfter","equip","reference_fixture_use","B",true,false,{"material":"B:e","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[{"name":"qinggang","itemType":"card","isViewAsCard":false,"position":"B:e","isMaterial":true,"materials":[]}]}],
+    ["equip-success","callback","equipAfter","equip","reference_fixture_use","B",true,false,{"material":"B:e","visible":[true,true,true],"judges":[],"rawJudges":[],"canAddLebu":true,"disabled":false,"placeholder":0,"revealed":null,"equipment":[{"name":"qinggang","itemType":"card","isViewAsCard":false,"position":"B:e","isMaterial":true,"materials":[]}]}]
+  ],
+  "trials": [
+    {
+      "name": "B:phaseJudge",
+      "beforeGain": {
+        "material": "j",
+        "visible": [
+          true,
+          true,
+          true
+        ],
+        "judges": [
+          {
+            "name": "lebu",
+            "itemType": "vcard",
+            "isViewAsCard": false,
+            "position": "j",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "j",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "rawJudges": [
+          {
+            "name": "lebu",
+            "itemType": "card",
+            "isViewAsCard": true,
+            "position": "B:j",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "j",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "canAddLebu": false,
+        "disabled": false,
+        "placeholder": 0,
+        "revealed": null,
+        "equipment": []
+      },
+      "afterGain": {
+        "material": "B:h",
+        "visible": [
+          true,
+          true,
+          true
+        ],
+        "judges": [
+          {
+            "name": "lebu",
+            "itemType": "vcard",
+            "isViewAsCard": false,
+            "position": "h",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "B:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "rawJudges": [
+          {
+            "name": "lebu",
+            "itemType": "card",
+            "isViewAsCard": true,
+            "position": "B:j",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "B:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "canAddLebu": false,
+        "disabled": false,
+        "placeholder": 0,
+        "revealed": null,
+        "equipment": []
+      },
+      "afterNext": {
+        "material": "d",
+        "visible": [
+          true,
+          true,
+          true
+        ],
+        "judges": [],
+        "rawJudges": [],
+        "canAddLebu": true,
+        "disabled": false,
+        "placeholder": 0,
+        "revealed": "d",
+        "equipment": []
+      }
+    },
+    {
+      "name": "B:disableJudge",
+      "beforeGain": {
+        "material": "j",
+        "visible": [
+          true,
+          true,
+          true
+        ],
+        "judges": [
+          {
+            "name": "lebu",
+            "itemType": "vcard",
+            "isViewAsCard": false,
+            "position": "j",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "j",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "rawJudges": [
+          {
+            "name": "lebu",
+            "itemType": "card",
+            "isViewAsCard": true,
+            "position": "B:j",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "j",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "canAddLebu": false,
+        "disabled": false,
+        "placeholder": 0,
+        "revealed": null,
+        "equipment": []
+      },
+      "afterGain": {
+        "material": "B:h",
+        "visible": [
+          true,
+          true,
+          true
+        ],
+        "judges": [
+          {
+            "name": "lebu",
+            "itemType": "vcard",
+            "isViewAsCard": false,
+            "position": "h",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "B:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "rawJudges": [
+          {
+            "name": "lebu",
+            "itemType": "card",
+            "isViewAsCard": true,
+            "position": "B:j",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "B:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "canAddLebu": false,
+        "disabled": false,
+        "placeholder": 0,
+        "revealed": null,
+        "equipment": []
+      },
+      "afterNext": {
+        "material": "d",
+        "visible": [
+          true,
+          true,
+          true
+        ],
+        "judges": [],
+        "rawJudges": [],
+        "canAddLebu": false,
+        "disabled": true,
+        "placeholder": 1,
+        "revealed": null,
+        "equipment": []
+      }
+    },
+    {
+      "name": "C:phaseJudge",
+      "beforeGain": {
+        "material": "j",
+        "visible": [
+          true,
+          true,
+          true
+        ],
+        "judges": [
+          {
+            "name": "lebu",
+            "itemType": "vcard",
+            "isViewAsCard": false,
+            "position": "j",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "j",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "rawJudges": [
+          {
+            "name": "lebu",
+            "itemType": "card",
+            "isViewAsCard": true,
+            "position": "B:j",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "j",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "canAddLebu": false,
+        "disabled": false,
+        "placeholder": 0,
+        "revealed": null,
+        "equipment": []
+      },
+      "afterGain": {
+        "material": "C:h",
+        "visible": [
+          true,
+          true,
+          true
+        ],
+        "judges": [
+          {
+            "name": "lebu",
+            "itemType": "vcard",
+            "isViewAsCard": false,
+            "position": "h",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "C:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "rawJudges": [
+          {
+            "name": "lebu",
+            "itemType": "card",
+            "isViewAsCard": true,
+            "position": "B:j",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "C:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "canAddLebu": false,
+        "disabled": false,
+        "placeholder": 0,
+        "revealed": null,
+        "equipment": []
+      },
+      "afterNext": {
+        "material": "d",
+        "visible": [
+          true,
+          true,
+          true
+        ],
+        "judges": [],
+        "rawJudges": [],
+        "canAddLebu": true,
+        "disabled": false,
+        "placeholder": 0,
+        "revealed": "d",
+        "equipment": []
+      }
+    },
+    {
+      "name": "C:disableJudge",
+      "beforeGain": {
+        "material": "j",
+        "visible": [
+          true,
+          true,
+          true
+        ],
+        "judges": [
+          {
+            "name": "lebu",
+            "itemType": "vcard",
+            "isViewAsCard": false,
+            "position": "j",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "j",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "rawJudges": [
+          {
+            "name": "lebu",
+            "itemType": "card",
+            "isViewAsCard": true,
+            "position": "B:j",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "j",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "canAddLebu": false,
+        "disabled": false,
+        "placeholder": 0,
+        "revealed": null,
+        "equipment": []
+      },
+      "afterGain": {
+        "material": "C:h",
+        "visible": [
+          true,
+          true,
+          true
+        ],
+        "judges": [
+          {
+            "name": "lebu",
+            "itemType": "vcard",
+            "isViewAsCard": false,
+            "position": "h",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "C:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "rawJudges": [
+          {
+            "name": "lebu",
+            "itemType": "card",
+            "isViewAsCard": true,
+            "position": "B:j",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "C:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "canAddLebu": false,
+        "disabled": false,
+        "placeholder": 0,
+        "revealed": null,
+        "equipment": []
+      },
+      "afterNext": {
+        "material": "d",
+        "visible": [
+          true,
+          true,
+          true
+        ],
+        "judges": [],
+        "rawJudges": [],
+        "canAddLebu": false,
+        "disabled": true,
+        "placeholder": 1,
+        "revealed": null,
+        "equipment": []
+      }
+    },
+    {
+      "name": "discard:B:material",
+      "before": {
+        "material": "B:h",
+        "visible": [
+          true,
+          true,
+          true
+        ],
+        "judges": [
+          {
+            "name": "lebu",
+            "itemType": "vcard",
+            "isViewAsCard": false,
+            "position": "h",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "B:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "rawJudges": [
+          {
+            "name": "lebu",
+            "itemType": "card",
+            "isViewAsCard": true,
+            "position": "B:j",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "B:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "canAddLebu": false,
+        "disabled": false,
+        "placeholder": 0,
+        "revealed": null,
+        "equipment": []
+      },
+      "after": {
+        "material": "d",
+        "visible": [
+          false,
+          false,
+          false
+        ],
+        "judges": [
+          {
+            "name": "lebu",
+            "itemType": "vcard",
+            "isViewAsCard": false,
+            "position": "d",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "d",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "rawJudges": [
+          {
+            "name": "lebu",
+            "itemType": "card",
+            "isViewAsCard": true,
+            "position": "B:j",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "d",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "canAddLebu": false,
+        "disabled": false,
+        "placeholder": 0,
+        "revealed": null,
+        "equipment": []
+      }
+    },
+    {
+      "name": "discard:B:wrapper",
+      "before": {
+        "material": "B:h",
+        "visible": [
+          true,
+          true,
+          true
+        ],
+        "judges": [
+          {
+            "name": "lebu",
+            "itemType": "vcard",
+            "isViewAsCard": false,
+            "position": "h",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "B:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "rawJudges": [
+          {
+            "name": "lebu",
+            "itemType": "card",
+            "isViewAsCard": true,
+            "position": "B:j",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "B:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "canAddLebu": false,
+        "disabled": false,
+        "placeholder": 0,
+        "revealed": null,
+        "equipment": []
+      },
+      "after": {
+        "material": "d",
+        "visible": [
+          true,
+          true,
+          true
+        ],
+        "judges": [],
+        "rawJudges": [],
+        "canAddLebu": true,
+        "disabled": false,
+        "placeholder": 0,
+        "revealed": null,
+        "equipment": []
+      }
+    },
+    {
+      "name": "discard:C:material",
+      "before": {
+        "material": "C:h",
+        "visible": [
+          true,
+          true,
+          true
+        ],
+        "judges": [
+          {
+            "name": "lebu",
+            "itemType": "vcard",
+            "isViewAsCard": false,
+            "position": "h",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "C:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "rawJudges": [
+          {
+            "name": "lebu",
+            "itemType": "card",
+            "isViewAsCard": true,
+            "position": "B:j",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "C:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "canAddLebu": false,
+        "disabled": false,
+        "placeholder": 0,
+        "revealed": null,
+        "equipment": []
+      },
+      "after": {
+        "material": "C:h",
+        "visible": [
+          true,
+          true,
+          true
+        ],
+        "judges": [
+          {
+            "name": "lebu",
+            "itemType": "vcard",
+            "isViewAsCard": false,
+            "position": "h",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "C:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "rawJudges": [
+          {
+            "name": "lebu",
+            "itemType": "card",
+            "isViewAsCard": true,
+            "position": "B:j",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "C:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "canAddLebu": false,
+        "disabled": false,
+        "placeholder": 0,
+        "revealed": null,
+        "equipment": []
+      }
+    },
+    {
+      "name": "discard:C:wrapper",
+      "before": {
+        "material": "C:h",
+        "visible": [
+          true,
+          true,
+          true
+        ],
+        "judges": [
+          {
+            "name": "lebu",
+            "itemType": "vcard",
+            "isViewAsCard": false,
+            "position": "h",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "C:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "rawJudges": [
+          {
+            "name": "lebu",
+            "itemType": "card",
+            "isViewAsCard": true,
+            "position": "B:j",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "C:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "canAddLebu": false,
+        "disabled": false,
+        "placeholder": 0,
+        "revealed": null,
+        "equipment": []
+      },
+      "after": {
+        "material": "d",
+        "visible": [
+          true,
+          true,
+          true
+        ],
+        "judges": [],
+        "rawJudges": [],
+        "canAddLebu": true,
+        "disabled": false,
+        "placeholder": 0,
+        "revealed": null,
+        "equipment": []
+      }
+    },
+    {
+      "name": "cancel-inner:B:phaseJudge",
+      "before": {
+        "material": "B:h",
+        "visible": [
+          true,
+          true,
+          true
+        ],
+        "judges": [
+          {
+            "name": "lebu",
+            "itemType": "vcard",
+            "isViewAsCard": false,
+            "position": "h",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "B:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "rawJudges": [
+          {
+            "name": "lebu",
+            "itemType": "card",
+            "isViewAsCard": true,
+            "position": "B:j",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "B:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "canAddLebu": false,
+        "disabled": false,
+        "placeholder": 0,
+        "revealed": null,
+        "equipment": []
+      },
+      "after": {
+        "material": "B:h",
+        "visible": [
+          true,
+          true,
+          true
+        ],
+        "judges": [
+          {
+            "name": "lebu",
+            "itemType": "vcard",
+            "isViewAsCard": false,
+            "position": "h",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "B:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "rawJudges": [
+          {
+            "name": "lebu",
+            "itemType": "card",
+            "isViewAsCard": true,
+            "position": "B:j",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "B:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "canAddLebu": false,
+        "disabled": false,
+        "placeholder": 0,
+        "revealed": "d",
+        "equipment": []
+      },
+      "cancelledInner": true
+    },
+    {
+      "name": "cancel-inner:B:disableJudge",
+      "before": {
+        "material": "B:h",
+        "visible": [
+          true,
+          true,
+          true
+        ],
+        "judges": [
+          {
+            "name": "lebu",
+            "itemType": "vcard",
+            "isViewAsCard": false,
+            "position": "h",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "B:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "rawJudges": [
+          {
+            "name": "lebu",
+            "itemType": "card",
+            "isViewAsCard": true,
+            "position": "B:j",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "B:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "canAddLebu": false,
+        "disabled": false,
+        "placeholder": 0,
+        "revealed": null,
+        "equipment": []
+      },
+      "after": {
+        "material": "B:h",
+        "visible": [
+          true,
+          true,
+          true
+        ],
+        "judges": [
+          {
+            "name": "lebu",
+            "itemType": "vcard",
+            "isViewAsCard": false,
+            "position": "h",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "B:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "rawJudges": [
+          {
+            "name": "lebu",
+            "itemType": "card",
+            "isViewAsCard": true,
+            "position": "B:j",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "B:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "canAddLebu": false,
+        "disabled": true,
+        "placeholder": 1,
+        "revealed": null,
+        "equipment": []
+      },
+      "cancelledInner": true
+    },
+    {
+      "name": "cancel-inner:C:phaseJudge",
+      "before": {
+        "material": "C:h",
+        "visible": [
+          true,
+          true,
+          true
+        ],
+        "judges": [
+          {
+            "name": "lebu",
+            "itemType": "vcard",
+            "isViewAsCard": false,
+            "position": "h",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "C:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "rawJudges": [
+          {
+            "name": "lebu",
+            "itemType": "card",
+            "isViewAsCard": true,
+            "position": "B:j",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "C:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "canAddLebu": false,
+        "disabled": false,
+        "placeholder": 0,
+        "revealed": null,
+        "equipment": []
+      },
+      "after": {
+        "material": "C:h",
+        "visible": [
+          true,
+          true,
+          true
+        ],
+        "judges": [
+          {
+            "name": "lebu",
+            "itemType": "vcard",
+            "isViewAsCard": false,
+            "position": "h",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "C:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "rawJudges": [
+          {
+            "name": "lebu",
+            "itemType": "card",
+            "isViewAsCard": true,
+            "position": "B:j",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "C:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "canAddLebu": false,
+        "disabled": false,
+        "placeholder": 0,
+        "revealed": "d",
+        "equipment": []
+      },
+      "cancelledInner": true
+    },
+    {
+      "name": "cancel-inner:C:disableJudge",
+      "before": {
+        "material": "C:h",
+        "visible": [
+          true,
+          true,
+          true
+        ],
+        "judges": [
+          {
+            "name": "lebu",
+            "itemType": "vcard",
+            "isViewAsCard": false,
+            "position": "h",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "C:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "rawJudges": [
+          {
+            "name": "lebu",
+            "itemType": "card",
+            "isViewAsCard": true,
+            "position": "B:j",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "C:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "canAddLebu": false,
+        "disabled": false,
+        "placeholder": 0,
+        "revealed": null,
+        "equipment": []
+      },
+      "after": {
+        "material": "C:h",
+        "visible": [
+          true,
+          true,
+          true
+        ],
+        "judges": [
+          {
+            "name": "lebu",
+            "itemType": "vcard",
+            "isViewAsCard": false,
+            "position": "h",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "C:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "rawJudges": [
+          {
+            "name": "lebu",
+            "itemType": "card",
+            "isViewAsCard": true,
+            "position": "B:j",
+            "isMaterial": false,
+            "materials": [
+              {
+                "name": "qinggang",
+                "position": "C:h",
+                "isMaterial": true
+              }
+            ]
+          }
+        ],
+        "canAddLebu": false,
+        "disabled": true,
+        "placeholder": 1,
+        "revealed": null,
+        "equipment": []
+      },
+      "cancelledInner": true
+    },
+    {
+      "name": "equip-cancel",
+      "before": {
+        "material": "B:h",
+        "visible": [
+          false,
+          true,
+          false
+        ],
+        "judges": [],
+        "rawJudges": [],
+        "canAddLebu": true,
+        "disabled": false,
+        "placeholder": 0,
+        "revealed": null,
+        "equipment": []
+      },
+      "after": {
+        "material": "B:h",
+        "visible": [
+          false,
+          true,
+          false
+        ],
+        "judges": [],
+        "rawJudges": [],
+        "canAddLebu": true,
+        "disabled": false,
+        "placeholder": 0,
+        "revealed": null,
+        "equipment": []
+      },
+      "finished": true,
+      "cancelled": true
+    },
+    {
+      "name": "equip-success",
+      "before": {
+        "material": "B:h",
+        "visible": [
+          false,
+          true,
+          false
+        ],
+        "judges": [],
+        "rawJudges": [],
+        "canAddLebu": true,
+        "disabled": false,
+        "placeholder": 0,
+        "revealed": null,
+        "equipment": []
+      },
+      "after": {
+        "material": "B:e",
+        "visible": [
+          true,
+          true,
+          true
+        ],
+        "judges": [],
+        "rawJudges": [],
+        "canAddLebu": true,
+        "disabled": false,
+        "placeholder": 0,
+        "revealed": null,
+        "equipment": [
+          {
+            "name": "qinggang",
+            "itemType": "card",
+            "isViewAsCard": false,
+            "position": "B:e",
+            "isMaterial": true,
+            "materials": []
+          }
+        ]
+      },
+      "finished": true,
+      "cancelled": false
+    }
+  ]
+}

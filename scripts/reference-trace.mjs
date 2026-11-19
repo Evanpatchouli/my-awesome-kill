@@ -20,6 +20,9 @@ import { checkJudgeArea, installJudgeArea } from './reference-judge-area.mjs';
 import { checkJudgeInterruptions, installJudgeInterruptions } from './reference-judge-interruptions.mjs';
 import { checkJudgePayment, installJudgePayment } from './reference-judge-payment.mjs';
 import { checkEquipSlots, installEquipSlots } from './reference-equip-slots.mjs';
+import { checkVirtualEquipProbe, installVirtualEquipProbe } from './reference-virtual-equip-probe.mjs';
+import { checkVirtualEquipCombat, installVirtualEquipCombat } from './reference-virtual-equip-combat.mjs';
+import { checkVirtualJudgeProbe, installVirtualJudgeProbe } from './reference-virtual-judge-probe.mjs';
 import { checkReferenceExpansion, installReferenceExpansion } from './reference-expansion.mjs';
 import { checkZhongyiBoundaries, installZhongyiBoundaries } from './reference-zhongyi-boundaries.mjs';
 import { checkZhongyiTransitDeath, installZhongyiTransitDeath } from './reference-zhongyi-transit-death.mjs';
@@ -83,6 +86,10 @@ const descriptions = new Map([
   ['judge-interruptions', 'judgment-area interruptions, retained cards and lightning return'],
   ['judge-payment', 'delayed-card payment interruptions and judgment-zone card movement'],
   ['equip-slots', 'ordinary, disabled and expanded equipment slots'],
+  ['virtual-equip-discard-first', 'virtual judgment material equipped during discard then loss'],
+  ['virtual-equip-lose-first', 'virtual judgment material equipped during loss then discard'],
+  ['virtual-equip-combat', 'black attack against armor with and without an orphaned weapon'],
+  ['virtual-judge-probe', 'virtual judgment wrappers separated from their materials and equipment visibility'],
 ]);
 let scenario = 'sha-no-shan';
 const scenarioIndex = argv.indexOf('--scenario');
@@ -185,6 +192,12 @@ try {
     await context.addInitScript(installJudgePayment);
   } else if (scenario === 'equip-slots') {
     await context.addInitScript(installEquipSlots);
+  } else if (scenario === 'virtual-equip-combat') {
+    await context.addInitScript(installVirtualEquipCombat);
+  } else if (scenario === 'virtual-judge-probe') {
+    await context.addInitScript(installVirtualJudgeProbe);
+  } else if (scenario.startsWith('virtual-equip-')) {
+    await context.addInitScript(installVirtualEquipProbe);
   } else if (scenario === 'zhongyi-expansion') {
     await context.addInitScript(installReferenceExpansion);
   } else if (scenario === 'zhongyi-boundaries') {
@@ -308,6 +321,21 @@ try {
           }
           if (scenario === 'equip-slots') {
             window.__referenceResult = await window.__runEquipSlots({ lib, game, ui, get, _status, actor });
+            game.pause();
+            return;
+          }
+          if (scenario === 'virtual-equip-combat') {
+            window.__referenceResult = await window.__runVirtualEquipCombat({ lib, game, ui, get, _status, actor });
+            game.pause();
+            return;
+          }
+          if (scenario === 'virtual-judge-probe') {
+            window.__referenceResult = await window.__runVirtualJudgeProbe({ lib, game, ui, get, _status, actor });
+            game.pause();
+            return;
+          }
+          if (scenario.startsWith('virtual-equip-')) {
+            window.__referenceResult = await window.__runVirtualEquipProbe({ lib, game, ui, get, _status, actor, scenario });
             game.pause();
             return;
           }
@@ -495,6 +523,9 @@ try {
   if (scenario === 'judge-interruptions') checkJudgeInterruptions(captured.value);
   if (scenario === 'judge-payment') checkJudgePayment(captured.value);
   if (scenario === 'equip-slots') checkEquipSlots(captured.value);
+  if (scenario === 'virtual-judge-probe') checkVirtualJudgeProbe(captured.value);
+  else if (scenario === 'virtual-equip-combat') checkVirtualEquipCombat(captured.value);
+  else if (scenario.startsWith('virtual-equip-')) checkVirtualEquipProbe(captured.value);
   if (scenario === 'compare') checkReferenceCompare(captured.value);
   if (scenario === 'qiaoshui-targets') checkQiaoshuiTargets(captured.value);
   if (scenario === 'compare-boundaries') checkCompareBoundaries(captured.value);
