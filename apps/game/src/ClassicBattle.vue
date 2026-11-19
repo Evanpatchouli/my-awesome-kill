@@ -68,7 +68,6 @@ const inputReady = computed(
     props.view.waitingFor === props.view.humanSeat,
 )
 const hand = computed(() => (me.value?.hand ?? []).map((card) => faceOf(props.view, card)))
-const resolving = computed(() => props.view.resolving.map((card) => faceOf(props.view, card)))
 const selectedHand = computed(() => hand.value.find((card) => card.id === selectedCard.value))
 const choice = computed(() =>
   props.view.choice?.seat === props.view.humanSeat ? props.view.choice : null,
@@ -139,6 +138,9 @@ const branch = computed<Branch | null>(() => {
 })
 const handOptions = computed(() => new Set(choice.value?.cards ?? []))
 const branchCards = computed(() => new Set(branch.value?.cards ?? []))
+const resolving = computed(() => props.view.resolving
+  .filter((card) => !branchCards.value.has(card.id))
+  .map((card) => faceOf(props.view, card)))
 const handControls = ref<HTMLElement | null>(null)
 const handResponse = computed(() => {
   const request = choice.value
@@ -557,8 +559,16 @@ function canPickCard(id: number) {
         />
       </div>
     </div>
-    <div class="classic-center" :class="{ 'has-choice': centerChoice, 'has-preview': selectedPreview && !centerChoice, 'has-move': moveChoice }">
-      <p v-if="!centerChoice && !choice" class="classic-turn">
+    <div
+      class="classic-center"
+      :class="{
+        'has-choice': centerChoice,
+        'has-preview': selectedPreview && !centerChoice,
+        'has-move': moveChoice,
+        'has-resolving': resolving.length > 0,
+      }"
+    >
+      <p v-if="!centerChoice && !choice && !resolving.length" class="classic-turn">
         {{
           view.turn?.seat === view.humanSeat
             ? '你的回合'
@@ -583,48 +593,63 @@ function canPickCard(id: number) {
         />
         <template v-else>
           <h1 aria-live="polite">{{ prompt }}</h1>
-          <div v-if="resolving.length" class="classic-revealed classic-choice-context" aria-label="公开结算牌">
-            <span>结算区</span>
-            <span v-for="card in resolving" :key="card.id">{{ printedFace(card) }}</span>
-          </div>
-          <div v-if="randomHandCount" class="classic-pool classic-random-hand" aria-label="手牌区（随机）">
-            <button
-              v-for="index in randomHandCount"
-              :key="index"
-              type="button"
-              class="playing-card classic-choice-card card-back"
-              :class="{ selected: selectedRandomBack === index }"
-              :aria-label="`暗牌 ${index}（随机结算）`"
-              :aria-pressed="selectedRandomBack === index"
-              :disabled="!active"
-              @click="chooseRandomBack(index)"
-            >
-              <img :src="drawBack" alt="" />
-            </button>
-          </div>
-          <div v-if="pool.length" class="classic-pool" aria-label="候选牌">
-            <button
-              v-for="({ id, card }, index) in pool"
-              :key="id"
-              type="button"
-              class="playing-card classic-choice-card"
-              :data-card-id="id"
-              :data-nature="card ? view.cardNatures?.[id] : undefined"
-              :class="{
-                selected: isCardSelected(id),
-                'card-back': !card,
-                red: card?.suit === 'heart' || card?.suit === 'diamond',
-                'long-name': (card?.name.length ?? 0) > 2,
-              }"
-              :aria-label="card ? printedFace(card) : `暗牌 ${index + 1}`"
-              :aria-pressed="isCardSelected(id)"
-              :title="card?.description"
-              :disabled="!active"
-              @click="choosePool(id)"
-            >
-              <CardFace v-if="card" :card="card" />
-              <img v-else :src="drawBack" alt="" />
-            </button>
+          <div v-if="resolving.length || randomHandCount || pool.length" class="classic-pool">
+            <div v-if="resolving.length" class="classic-resolving" role="group" aria-label="已打出的牌">
+              <div
+                v-for="card in resolving"
+                :key="card.id"
+                class="playing-card classic-choice-card"
+                :class="{
+                  red: card.suit === 'heart' || card.suit === 'diamond',
+                  'long-name': card.name.length > 2,
+                }"
+                :data-resolving-card="card.id"
+                :data-nature="view.cardNatures?.[card.id]"
+                :aria-label="printedFace(card)"
+                role="img"
+              >
+                <CardFace :card="card" />
+              </div>
+            </div>
+            <div v-if="randomHandCount" class="classic-random-hand" role="group" aria-label="手牌区（随机）">
+              <button
+                v-for="index in randomHandCount"
+                :key="index"
+                type="button"
+                class="playing-card classic-choice-card card-back"
+                :class="{ selected: selectedRandomBack === index }"
+                :aria-label="`暗牌 ${index}（随机结算）`"
+                :aria-pressed="selectedRandomBack === index"
+                :disabled="!active"
+                @click="chooseRandomBack(index)"
+              >
+                <img :src="drawBack" alt="" />
+              </button>
+            </div>
+            <div v-if="pool.length" role="group" aria-label="候选牌">
+              <button
+                v-for="({ id, card }, index) in pool"
+                :key="id"
+                type="button"
+                class="playing-card classic-choice-card"
+                :data-card-id="id"
+                :data-nature="card ? view.cardNatures?.[id] : undefined"
+                :class="{
+                  selected: isCardSelected(id),
+                  'card-back': !card,
+                  red: card?.suit === 'heart' || card?.suit === 'diamond',
+                  'long-name': (card?.name.length ?? 0) > 2,
+                }"
+                :aria-label="card ? printedFace(card) : `暗牌 ${index + 1}`"
+                :aria-pressed="isCardSelected(id)"
+                :title="card?.description"
+                :disabled="!active"
+                @click="choosePool(id)"
+              >
+                <CardFace v-if="card" :card="card" />
+                <img v-else :src="drawBack" alt="" />
+              </button>
+            </div>
           </div>
         </template>
       </section>

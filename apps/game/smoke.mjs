@@ -325,7 +325,7 @@ try {
   const ids = async (row) => rowCards(row).evaluateAll((cards) => cards.map((card) => Number(card.dataset.cardId)))
   const initialPreview = await ids(topRow)
   assert.ok(initialPreview.length >= 2, 'the acting seat sees the private preview')
-  assert.equal(await page.locator('.classic-revealed').count(), 0)
+  assert.equal(await page.locator('[data-resolving-card]').count(), 0)
   const sendToBottom = async () => {
     await rowCards(topRow).first().click()
     await moveControls.getByRole('button', { name: '移动到牌堆底', exact: true }).click()

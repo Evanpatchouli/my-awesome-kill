@@ -38,6 +38,18 @@ async function assertToolbarPosition(board) {
   assert.ok(bounds.toolbarBottom <= bounds.galleryTop + 1, 'toolbar is above gallery')
 }
 
+async function assertPlayedCard(board, id, name, rank) {
+  const surface = board.locator('.classic-center-surface')
+  const card = surface.locator(`[data-resolving-card="${id}"]`)
+  assert.equal(await card.locator('strong').innerText(), name)
+  assert.equal(await card.locator('.card-rank').innerText(), rank)
+  await card.locator('.card-art').evaluate(img => img.decode())
+  assert.equal(await card.evaluate(element => element.tagName), 'DIV')
+  assert.doesNotMatch(await surface.innerText(), /结算区/)
+  const [frame, face] = await Promise.all([surface.boundingBox(), card.boundingBox()])
+  assert.ok(frame && face && face.y >= frame.y && face.y + face.height <= frame.y + frame.height)
+}
+
 try {
   for (const viewport of [{ width: 1280, height: 720 }, { width: 640, height: 272 }]) {
     const page = await browser.newPage({ viewport, locale: 'zh-CN' })
@@ -62,6 +74,7 @@ try {
       const hidden = central.locator('.card-back')
       const first = hidden.first()
       await first.waitFor()
+      await assertPlayedCard(board, 90, '过河拆桥', '4♠')
       assert.ok(await hidden.count() >= 2)
       assert.equal(await hidden.locator('.card-art, .card-rank, strong').count(), 0)
       assert.equal(await gallery.locator('button:enabled').count(), 0)
@@ -86,7 +99,7 @@ try {
       await page.close()
     }
 
-    for (const response of ['放弃', '使用闪', '龙胆']) {
+    for (const response of ['放弃', '使用闪', '龙胆', '万箭齐发']) {
       const page = await browser.newPage({ viewport, locale: 'zh-CN' })
       const errors = []
       page.on('pageerror', error => errors.push(error.message))
@@ -94,15 +107,16 @@ try {
         if (['error', 'warning'].includes(message.type())) errors.push(message.text())
       })
       try {
-        // Seed 166 gives Zhao Yun one Shan and two Sha when the first enemy attacks him.
-        await begin(page, 166, '赵云')
+        // These two seeds reach a Sha or Wanjian response through normal AI turns.
+        const groupAttack = response === '万箭齐发'
+        await begin(page, groupAttack ? 766 : 166, '赵云')
         const board = page.locator('[data-battle-table]')
         const toolbar = board.locator('.classic-hand-toolbar')
         const gallery = board.locator('[data-hand-gallery]')
-        const choice = button(toolbar, response)
+        const choice = button(toolbar, groupAttack ? '使用闪' : response)
         const confirm = button(toolbar, '确认')
-        await choice.waitFor()
-        assert.equal(await board.locator('.classic-choice-context').count(), 1)
+        await choice.and(toolbar.locator('button:enabled')).waitFor()
+        await assertPlayedCard(board, groupAttack ? 76 : 17, groupAttack ? '万箭齐发' : '杀', groupAttack ? 'A♥' : '10♣')
         assert.equal(await board.locator('[data-card-choice]').count(), 0)
         assert.equal(await confirm.count(), 0)
         await assertToolbarPosition(board)
@@ -116,6 +130,7 @@ try {
           const card = candidates.first()
           await card.click()
           assert.equal(await card.getAttribute('aria-pressed'), 'true')
+          await assertPlayedCard(board, 17, '杀', '10♣')
           await assertToolbarPosition(board)
           if (evidence) await page.screenshot({ path: path.join(evidence, `longdan-${viewport.width}.png`) })
           const id = await card.getAttribute('data-card-id')
@@ -129,8 +144,9 @@ try {
           await confirm.click()
           await material.waitFor({ state: 'detached' })
         } else {
+          if (groupAttack && evidence) await page.screenshot({ path: path.join(evidence, `wanjian-${viewport.width}.png`) })
           await choice.click()
-          const shan = gallery.locator('[data-card-id="41"]')
+          const shan = gallery.locator(`[data-card-id="${groupAttack ? 38 : 41}"]`)
           assert.equal(await shan.count(), response === '放弃' ? 1 : 0)
         }
         assert.ok(Number(await board.getAttribute('data-revision')) > before)
