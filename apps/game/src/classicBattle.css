@@ -1,6 +1,8 @@
 .classic-board {
   --self-height: clamp(105px, 22dvh, 164px);
   --dock-inset: 6px;
+  --card-height: calc(var(--self-height) - 34px);
+  --card-width: calc(var(--card-height) * .75);
   position: relative;
   display: flex;
   flex-direction: column;
@@ -385,6 +387,7 @@
   gap: 10px;
   padding: 2px 5px 0;
   font-size: 11px;
+  line-height: 16px;
   color: #e9cba0;
 }
 .classic-hand {
@@ -396,20 +399,30 @@
   overflow-y: hidden;
   scrollbar-width: thin;
   scrollbar-color: #967044 transparent;
-  padding: 8px 3px 2px;
+  padding: 6px 3px 0;
 }
-.classic-hand .playing-card {
-  flex: 0 0 calc(var(--self-height) * .64);
-  height: 100%;
+.classic-board .playing-card {
+  box-sizing: border-box;
+  flex: none;
+  width: var(--card-width);
+  height: var(--card-height);
   min-height: 0;
-  padding: 6px;
+  padding: clamp(3px, calc(var(--card-height) * .045), 6px);
+  text-shadow: none;
 }
-.classic-hand .playing-card strong {
-  font-size: clamp(19px, 2vw, 28px);
-  margin: 5px 0 0;
+.classic-board .playing-card .card-rank {
+  font-size: clamp(10px, calc(var(--card-height) * .12), 16px);
+  line-height: 1.15;
 }
-.classic-hand .playing-card.long-name strong {
-  font-size: clamp(14px, 1.5vw, 20px);
+.classic-board .playing-card > strong {
+  font-size: clamp(13px, calc(var(--card-height) * .2), 28px);
+  margin: clamp(0px, calc((var(--card-height) - 70px) * .09), 5px) 0 0;
+}
+.classic-board .playing-card.long-name > strong {
+  font-size: clamp(10px, calc(var(--card-height) * .15), 20px);
+}
+.classic-board .playing-card.long-name .card-art {
+  height: 33%;
 }
 .classic-controls {
   max-width: 100%;
@@ -465,6 +478,7 @@
   justify-content: safe center;
   max-width: min(520px, calc(100vw - 24px));
   overflow-x: auto;
+  overflow-y: hidden;
   padding: 8px 4px 3px;
   scrollbar-width: thin;
 }
@@ -478,20 +492,9 @@
   margin-right: 3px;
   padding-right: 9px;
 }
-.classic-pool .classic-choice-card {
-  flex: none;
-  width: clamp(48px, 8vw, 82px);
-  height: clamp(68px, 17dvh, 114px);
-  min-height: 0;
-  padding: 5px;
-  text-shadow: none;
-}
 .classic-resolving .classic-choice-card:hover { transform: none; }
-.classic-choice-card strong { font-size: clamp(14px, 2vw, 22px); margin: 6px 0 0; }
-.classic-pool .classic-choice-card.long-name strong { font-size: clamp(11px, 1.65vw, 16px); margin-top: 2px; }
-.classic-pool .classic-choice-card.long-name .card-art { height: 33%; }
-.classic-choice-card.card-back { padding: 1px; background: #53402d; }
-.classic-choice-card.card-back img { width: 100%; height: 100%; object-fit: fill; }
+.classic-board .playing-card.card-back { padding: 1px; background: #53402d; }
+.classic-board .playing-card.card-back img { width: 100%; height: 100%; object-fit: fill; }
 .classic-control-row {
   align-items: center;
   margin-top: 2px;
@@ -578,16 +581,7 @@
   .classic-own-skills button {
     font-size: 10px;
   }
-  .classic-hand .playing-card {
-    padding: 4px;
-  }
-  .classic-hand .playing-card strong {
-    font-size: 18px;
-    margin-top: 2px;
-  }
-  .classic-hand .playing-card.long-name strong {
-    font-size: 14px;
-  }
+  .classic-hand-heading { line-height: 14px; }
   .classic-center-surface[data-card-choice] {
     max-height: min(48dvh, 100%);
     padding: 4px 8px;
@@ -774,24 +768,7 @@
     max-height: 31px;
     padding: 2px 6px;
   }
-  .classic-pool .classic-choice-card {
-    width: 48px;
-    height: 56px;
-  }
-  .classic-pool .classic-choice-card:not(.card-back) {
-    padding: 4px;
-  }
-  .classic-choice-card .card-rank {
-    font-size: 11px;
-    line-height: 1.2;
-  }
-  .classic-choice-card strong {
-    margin-top: 3px;
-  }
-  .classic-pool .classic-choice-card.long-name strong {
-    max-width: 100%;
-    font-size: 10px;
-  }
+  .classic-board .playing-card.long-name .card-art { height: 24%; }
   .classic-center.has-resolving .classic-center-surface:not([data-card-choice]) h1 {
     width: fit-content;
     margin-inline: auto;
@@ -838,9 +815,7 @@
   padding: 6px; background: #f3e9da; border: 1px solid #b7a38b;
   max-width: min(70vw, 300px); max-height: 50vh; overflow: auto;
 }
-.classic-expansion-list > div { min-width: 68px; font-size: 10px; }
-.classic-expansion-list .playing-card { width: 68px; height: 96px; padding: 4px; }
-.classic-expansion-list .playing-card strong { font-size: 16px; }
+.classic-expansion-list > div { flex: 0 0 var(--card-width); font-size: 10px; }
 .classic-seat-mark { color: #742e1b; font-weight: 700; }
 
 /* The eight-seat long2 arena is measured against the viewport, not the space

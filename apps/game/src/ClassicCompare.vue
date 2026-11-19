@@ -136,7 +136,7 @@ onBeforeUnmount(() => clearTimeout(timer))
 .compare-bids {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: safe center;
   gap: 12px;
 }
 .compare-bids figure {
@@ -146,19 +146,7 @@ onBeforeUnmount(() => clearTimeout(timer))
   margin: 0;
 }
 .compare-card {
-  width: clamp(49px, 9dvh, 76px);
-  height: clamp(66px, 13dvh, 104px);
-  min-height: 0;
-  padding: 4px 6px;
-  line-height: 1.05;
   transform: none;
-}
-.compare-card :deep(strong) {
-  margin: 2px 0 0;
-  font-size: clamp(15px, 2.6dvh, 22px);
-}
-.compare-card.long-name :deep(strong) {
-  font-size: clamp(11px, 2dvh, 16px);
 }
 .compare-bids figcaption {
   font-size: 12px;

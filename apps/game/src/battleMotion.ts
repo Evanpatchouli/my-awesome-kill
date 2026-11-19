@@ -1,10 +1,10 @@
-import type { Card } from '@mak/rules'
+import type { CardPrint } from './classicProtocol'
 
 export type FeedbackEvent =
   | {
     type: 'play' | 'respond' | 'equip' | 'judge' | 'discard'
     seat: number
-    cards: Pick<Card, 'id' | 'kind' | 'name'>[]
+    cards: (CardPrint & { id: number })[]
   }
   | { type: 'draw' | 'damage' | 'heal'; seat: number; amount: number }
 

@@ -357,11 +357,14 @@ try {
   assert.ok(confirmBox && confirmBox.x >= 0 && confirmBox.y >= 0 &&
     confirmBox.x + confirmBox.width <= 640 && confirmBox.y + confirmBox.height <= 272)
   const surface = await page.locator('[data-card-choice]').boundingBox()
+  const handCard = await board.locator('[data-hand-gallery] .playing-card').first().boundingBox()
   await shot('private-choice-short-landscape')
   for (const row of [topRow, bottomRow]) {
     const first = await rowCards(row).first().boundingBox()
     assert.ok(first && first.y >= 0 && first.y + first.height <= surface.y + surface.height,
       `choice card ${JSON.stringify(first)} must fit inside ${JSON.stringify(surface)}`)
+    assert.equal(first.width, handCard.width, 'deck and hand cards share a width')
+    assert.equal(first.height, handCard.height, 'deck and hand cards share a height')
   }
   await confirmOrder.click()
   await page.clock.runFor(1000)

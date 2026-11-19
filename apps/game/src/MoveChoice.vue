@@ -154,10 +154,7 @@ function confirm() {
 .move-choice-row { flex: 1 1 auto; min-width: 0; padding-top: 4px; }
 .move-choice-row-heading { display: flex; gap: 8px; align-items: center; font-size: 12px; }
 .move-choice-row-heading strong { font-size: 14px; }
-.move-choice-cards { display: flex; align-items: flex-start; gap: 6px; overflow-x: auto; padding: 5px 3px 2px; scrollbar-width: thin; }
-.move-choice-card { flex: 0 0 66px; height: 94px; min-height: 0; padding: 5px; }
-.move-choice-card :deep(strong) { font-size: 17px; margin: 3px 0 0; }
-.move-choice-card.long-name :deep(strong) { font-size: 13px; }
+.move-choice-cards { display: flex; align-items: flex-start; gap: 6px; overflow-x: auto; overflow-y: hidden; padding: 6px 3px 2px; scrollbar-width: thin; }
 .move-choice-empty { color: #d3b99c; font-size: 12px; padding: 8px 2px; }
 
 .move-choice-controls { display: grid; gap: 4px; text-align: center; pointer-events: auto; }
@@ -177,16 +174,12 @@ function confirm() {
   .move-choice-rows { gap: 8px; }
   .move-choice-row { padding-top: 2px; }
   .move-choice-row-heading, .move-choice-row-heading strong { font-size: 11px; }
-  .move-choice-cards { padding: 2px 3px; }
-  .move-choice-card { flex-basis: 49px; height: 62px; padding: 3px; }
-  .move-choice-card :deep(strong) { font-size: 13px; margin: 1px 0 0; }
-  .move-choice-card.long-name :deep(strong) { font-size: 10px; }
+  .move-choice-cards { padding: 5px 3px 1px; }
   .move-choice-controls :is(button, select) { padding: 2px 4px; font-size: 11px; }
   .move-choice-controls select { max-width: 86px; }
   .move-choice-actions button { min-width: 55px; }
 }
 @media (max-height: 350px) {
-  .move-choice-card { height: 49px; }
   .move-choice-controls { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; }
 }
 </style>

@@ -10,11 +10,11 @@ const browser = await chromium.launch({ executablePath: process.env.MAK_QA_BROWS
 const button = (page, name) => page.getByRole('button', { name, exact: true })
 if (evidence) await fs.mkdir(evidence, { recursive: true })
 
-async function begin(page, seed, hero, seats = 8) {
-  await page.addInitScript((gameSeed) => {
+async function begin(page, seed, hero, seats = 8, reducedMotion = true) {
+  await page.addInitScript(({ gameSeed, reducedMotion }) => {
     Math.random = () => (gameSeed + 0.1) / 0x7fffffff
-    localStorage.setItem('mak-reduced-motion', 'true')
-  }, seed)
+    localStorage.setItem('mak-reduced-motion', String(reducedMotion))
+  }, { gameSeed: seed, reducedMotion })
   assert.ok((await page.goto(process.env.MAK_SMOKE_URL || 'http://127.0.0.1:1420'))?.ok())
   assert.equal(await page.title(), '随心杀')
   await page.getByRole('button', { name: /开始\s*游玩/ }).click()
@@ -52,6 +52,21 @@ async function assertCentered(board) {
   assert.ok(Math.abs(dx) <= 1 && Math.abs(dy) <= 2, `action group offset from table center: ${dx}, ${dy}`)
 }
 
+async function assertCardSizes(board, cards) {
+  const [hand, sizes] = await Promise.all([
+    board.locator('[data-hand-gallery] .playing-card').first().boundingBox(),
+    cards.evaluateAll((elements) => elements.map((card) => {
+      const { width, height } = card.getBoundingClientRect()
+      return { width, height }
+    })),
+  ])
+  assert.ok(hand && sizes.length > 0)
+  for (const { width, height } of sizes) {
+    assert.ok(Math.abs(hand.width - width) <= 0.5 && Math.abs(hand.height - height) <= 0.5,
+      `card ${width}×${height} matches hand ${hand.width}×${hand.height}`)
+  }
+}
+
 async function assertPlayedCard(board, id, name, rank) {
   const surface = board.locator('.classic-center-surface')
   const card = surface.locator(`[data-resolving-card="${id}"]`)
@@ -62,6 +77,7 @@ async function assertPlayedCard(board, id, name, rank) {
   assert.doesNotMatch(await surface.innerText(), /结算区/)
   const [frame, face] = await Promise.all([surface.boundingBox(), card.boundingBox()])
   assert.ok(frame && face && face.y >= frame.y && face.y + face.height <= frame.y + frame.height)
+  await assertCardSizes(board, card)
 }
 
 try {
@@ -78,6 +94,7 @@ try {
       const gallery = board.locator('[data-hand-gallery]')
       const dismantle = gallery.getByRole('button', { name: /^过河拆桥 / }).first()
       await dismantle.click()
+      await assertCardSizes(board, board.locator('[data-effect="draw"] [data-effect-card]'))
       assert.match(await board.locator('[data-hand-rule]').innerText(), /过河拆桥.*弃置/s)
       if (evidence) await page.screenshot({ path: path.join(evidence, `selected-${viewport.width}.png`) })
 
@@ -89,6 +106,7 @@ try {
       const first = hidden.first()
       await first.waitFor()
       await assertPlayedCard(board, 90, '过河拆桥', '4♠')
+      await assertCardSizes(board, hidden)
       assert.ok(await hidden.count() >= 2)
       assert.equal(await hidden.locator('.card-art, .card-rank, strong').count(), 0)
       assert.equal(await gallery.locator('button:enabled').count(), 0)
@@ -182,6 +200,34 @@ try {
         await page.close()
       }
     }
+  }
+
+  const animated = await browser.newPage({ viewport: { width: 1280, height: 720 }, locale: 'zh-CN' })
+  try {
+    await begin(animated, 20, '张飞', 8, false)
+    const board = animated.locator('[data-battle-table]')
+    await board.locator('[data-hand-gallery]').getByRole('button', { name: /^过河拆桥 / }).first().click()
+    await board.locator('.classic-seat .seat-select:enabled').first().click()
+    await button(animated, '确认').click()
+    const frame = await animated.waitForFunction(() => {
+      const card = document.querySelector('[data-effect="play"] [data-effect-card="90"]')
+      const hand = document.querySelector('[data-hand-gallery] .playing-card')
+      if (!card || !hand || Number(getComputedStyle(card.parentElement).opacity) <= 0.05) return null
+      const { width, height } = card.getBoundingClientRect()
+      const handBox = hand.getBoundingClientRect()
+      return {
+        width, height, handWidth: handBox.width, handHeight: handBox.height,
+        name: card.querySelector('strong').textContent,
+        whiteSpace: getComputedStyle(card.querySelector('strong')).whiteSpace,
+      }
+    })
+    const { width, height, handWidth, handHeight, name, whiteSpace } = await frame.jsonValue()
+    assert.equal(name, '过河拆桥')
+    assert.equal(whiteSpace, 'normal')
+    assert.ok(Math.abs(width - handWidth) <= 0.5 && Math.abs(height - handHeight) <= 0.5)
+    console.log('Moving card keeps the hand card dimensions')
+  } finally {
+    await animated.close()
   }
 
   const desktop = await browser.newPage({ viewport: { width: 1920, height: 1009 }, locale: 'zh-CN' })
