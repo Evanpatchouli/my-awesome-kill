@@ -71,7 +71,7 @@ fn row(game: &Game, e: &TriggerEvent, trial: &str, observation: &str) -> Value {
         p.alive,
         names(game.living_seats()),
         names(game.dead_seats()),
-        e.timing == "reviveCancelled"
+        game.revival_cancelled(e.subject).unwrap_or(false)
     ])
 }
 fn trigger(owner: SeatId, timing: &str) -> TriggerRegistration {
@@ -333,36 +333,33 @@ fn early_snapshot(
 ) -> Value {
     let p = game.seat(3).unwrap();
     assert_eq!(p.role, Some(Role::Rebel));
-    assert_eq!(
-        (
-            hand.kind,
-            game.face(hand.id).unwrap().suit,
-            game.face(hand.id).unwrap().rank
-        ),
-        (CardKind::Shan, Suit::Diamond, 6)
-    );
-    assert_eq!(
-        (
-            equip.kind,
-            game.face(equip.id).unwrap().suit,
-            game.face(equip.id).unwrap().rank
-        ),
-        (CardKind::Qinggang, Suit::Spade, 6)
-    );
-    for (i, reward) in rewards.iter().enumerate() {
-        let face = game.face(reward.id).unwrap();
-        assert_eq!(
-            (reward.kind, face.suit, face.rank),
-            (CardKind::Tao, Suit::Heart, 8 + i as u8)
-        );
-    }
-    json!({"name":name,"hp":p.hp,"maxHp":p.max_hp,"alive":p.alive,"identity":"fan","identityShown":p.role_shown,
-        "hand":if p.hand.contains(&hand) {json!([["shan","diamond",6]])} else {json!([])},
-        "equips":if p.equipment.contains(&equip) {json!([["qinggang","spade",6]])} else {json!([])},
-        "markCount":game.skill_mark_count(3,"gushe",None),"markShown":!game.skill_marks(3).is_empty(),
-        "tempSkill":game.has_skill(3,"early_temp"),"sourceHand":game.seat(0).unwrap().hand.len(),"sourceKill":game.turn_kills(0).unwrap(),
-        "rewardsInHand":rewards.iter().enumerate().filter(|(_,c)|game.seat(0).unwrap().hand.contains(c)).map(|(i,_)|json!(["tao","heart",8+i])).collect::<Vec<_>>(),
-        "players":names(game.living_seats()),"dead":names(game.dead_seats()),"ring":names(&game.living_seat_ring(0).unwrap()),"gameOver":game.match_result().is_some()})
+    assert_eq!(p.hand, [hand]);
+    assert_eq!(p.equipment, [equip]);
+    let face = |card: &crate::Card| {
+        let printed = game.face(card.id).unwrap();
+        json!([card.kind, printed.suit, printed.rank])
+    };
+    let source = game.seat(0).unwrap();
+    json!({
+        "name": name,
+        "hp": p.hp,
+        "maxHp": p.max_hp,
+        "alive": p.alive,
+        "identity": "fan",
+        "identityShown": game.view(None).unwrap().seats[3].role.is_some(),
+        "hand": p.hand.iter().map(face).collect::<Vec<_>>(),
+        "equips": p.equipment.iter().map(face).collect::<Vec<_>>(),
+        "markCount": game.skill_mark_count(3, "gushe", None),
+        "markShown": game.skill_marks(3).iter().any(|m| m.skill == "gushe"),
+        "tempSkill": game.has_skill(3, "early_temp"),
+        "sourceHand": source.hand.len(),
+        "sourceKill": game.turn_kills(0).unwrap(),
+        "rewardsInHand": rewards.iter().filter(|c| source.hand.contains(c)).map(face).collect::<Vec<_>>(),
+        "players": names(game.living_seats()),
+        "dead": names(game.dead_seats()),
+        "ring": names(&game.living_seat_ring(0).unwrap()),
+        "gameOver": game.match_result().is_some(),
+    })
 }
 #[test]
 fn revival_during_die_preserves_cards_marks_and_temporary_skill_and_pays_reward() {
@@ -492,8 +489,7 @@ fn revival_real_gushe_stored_mark_survives_full_death() {
     let reference: Value =
         serde_json::from_str(include_str!("../../../../../tests/reference/revival.json")).unwrap();
     let mut game = scene(&roles(), 0);
-    let gushe = game
-        .register_active_skill(crate::compare_content::gushe(1))
+    game.register_active_skill(crate::compare_content::gushe(1))
         .unwrap();
     let death = active(&mut game, "gushe_death", |ctx, _, _| {
         ctx.die(1, None).unwrap();
@@ -515,7 +511,19 @@ fn revival_real_gushe_stored_mark_survives_full_death() {
     activate(&mut game, death);
     activate(&mut game, first_revive);
     game.add_skill_mark(1, "gushe", None, 7).unwrap();
-    let capture = |g: &Game, name: &str| json!({"name": name, "hp": g.seat(1).unwrap().hp, "alive":g.is_alive(1), "count":g.skill_mark_count(1,"gushe",None), "shown":!g.skill_marks(1).is_empty(), "hasSkill":g.active_skill(gushe).is_some_and(|skill| skill.owner == 1 && skill.skill == "gushe"), "players":names(g.living_seats()), "dead":names(g.dead_seats()), "ring":names(&g.living_seat_ring(0).unwrap())});
+    let capture = |g: &Game, name: &str| {
+        json!({
+            "name": name,
+            "hp": g.seat(1).unwrap().hp,
+            "alive": g.is_alive(1),
+            "count": g.skill_mark_count(1, "gushe", None),
+            "shown": g.skill_marks(1).iter().any(|m| m.skill == "gushe"),
+            "hasSkill": g.has_skill(1, "gushe"),
+            "players": names(g.living_seats()),
+            "dead": names(g.dead_seats()),
+            "ring": names(&g.living_seat_ring(0).unwrap()),
+        })
+    };
     assert_eq!(
         capture(&game, "before-die"),
         reference["gushe"]["stages"][0]

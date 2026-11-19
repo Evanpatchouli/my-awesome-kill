@@ -108,7 +108,7 @@ impl Game {
         tag: String,
     ) -> Result<Program, RuleError> {
         let player = self.seat(owner)?;
-        if !player.alive {
+        if !self.is_in(owner) {
             return Err(RuleError::InactiveSeat { seat: owner });
         }
         let zone = if player.hand.contains(&card) {
@@ -160,7 +160,8 @@ impl Game {
         if !self.seat(from)?.expansions.contains(&card) {
             return Err(RuleError::InvalidCard);
         }
-        if !self.seat(to)?.alive {
+        self.seat(to)?;
+        if !self.is_in(to) {
             return Err(RuleError::InactiveSeat { seat: to });
         }
         Ok(self.expansion_gain_program(from, to, card))
@@ -198,7 +199,7 @@ impl Game {
                         }
                     }
                     AddStage::Lose => {
-                        if matches!(child, Some(Outcome::Cancelled)) {
+                        if matches!(child, Some(Outcome::Cancelled)) || !self.is_in(owner) {
                             self.scheduler.end(Outcome::Cancelled);
                             return;
                         }
@@ -229,8 +230,8 @@ impl Game {
                             self.scheduler.end(Outcome::Cancelled);
                             return;
                         };
-                        // The gain of a deceased owner finishes with the material still in special.
-                        if self.is_alive(owner) {
+                        // The gain finishes with the material still in special if the owner left play.
+                        if self.is_in(owner) {
                             let material = self.transferring.remove(index);
                             self.seat_mut(owner).expansions.push(material);
                             let tags = self.expansion_tags.entry(material.id).or_default();

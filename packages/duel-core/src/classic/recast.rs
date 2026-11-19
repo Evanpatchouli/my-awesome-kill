@@ -707,7 +707,7 @@ impl Game {
             return Err(RuleError::UnsupportedCard);
         }
         let player = self.seat(seat)?;
-        if !player.alive {
+        if !self.is_in(seat) {
             return Err(RuleError::InactiveSeat { seat });
         }
         Ok(player)
@@ -809,7 +809,8 @@ impl Game {
         visible: bool,
     ) -> Result<Program, RuleError> {
         let cards = self.held_materials(from, ids)?;
-        if from == to || !self.seat(to)?.alive {
+        self.seat(to)?;
+        if from == to || !self.is_in(to) {
             return Err(RuleError::InvalidTarget);
         }
         Ok(RecastChild::Batch(BatchMovement::give(from, to, cards, visible)).program())
@@ -845,7 +846,8 @@ impl Game {
         id: CardId,
     ) -> Result<Program, RuleError> {
         let card = self.recast_hand_card(from, id)?;
-        if from == to || !self.seat(to)?.alive {
+        self.seat(to)?;
+        if from == to || !self.is_in(to) {
             return Err(RuleError::InvalidTarget);
         }
         Ok(Program::Recast(Flow::Movement(Movement::new(
@@ -873,13 +875,8 @@ impl Game {
         }
     }
 
-    fn recast_alive(&self, seat: SeatId) -> bool {
-        self.seat(seat).is_ok_and(|s| s.alive)
-    }
-
     fn recast_held(&self, seat: SeatId, card: Card) -> bool {
-        self.seat(seat)
-            .is_ok_and(|s| s.alive && s.hand.contains(&card))
+        self.is_in(seat) && self.seat(seat).is_ok_and(|s| s.hand.contains(&card))
     }
 
     fn dispatch_recast_hook(&mut self, event: Option<crate::classic::skills::Dispatch>) -> bool {
@@ -951,7 +948,7 @@ impl Game {
                             RecastChild::Single(Movement::new(seat, MoveKind::DiscardToPile(*card)))
                         }
                         (RecastTerms::Single(card, _), RecastLoss::Give { to })
-                            if to != seat && self.recast_alive(to) =>
+                            if to != seat && self.is_in(to) =>
                         {
                             RecastChild::Single(Movement::new(
                                 to,
@@ -965,7 +962,7 @@ impl Game {
                             RecastChild::Batch(BatchMovement::discard(seat, cards.clone()))
                         }
                         (RecastTerms::Batch(cards, _), RecastLoss::Give { to })
-                            if to != seat && self.recast_alive(to) =>
+                            if to != seat && self.is_in(to) =>
                         {
                             RecastChild::Batch(BatchMovement::give(seat, to, cards.clone(), true))
                         }
@@ -1170,11 +1167,27 @@ impl Game {
                     }
                 }
                 Move => {
-                    if !self.recast_alive(seat)
+                    if !self.is_alive(seat)
                         && !matches!(
                             movement.kind,
                             Lose {
                                 zone: Zone::Expansion,
+                                ..
+                            }
+                        )
+                    {
+                        movement.stage = Cancel(MoveCancellation::InvalidMovement);
+                        continue;
+                    }
+                    if self.is_out(seat)
+                        && !matches!(
+                            movement.kind,
+                            Lose {
+                                zone: Zone::Expansion,
+                                ..
+                            } | Lose {
+                                destination: LossDestination::Compare(_)
+                                    | LossDestination::Ordering(_),
                                 ..
                             }
                         )
@@ -1242,7 +1255,7 @@ impl Game {
                             Zone::Equipment => s.equipment.contains(&card),
                             Zone::Judgment => s.judges.contains(&card),
                             Zone::Expansion => s.expansions.contains(&card),
-                        }) && !matches!(destination, LossDestination::Transfer { to, .. } if !self.recast_alive(to)) =>
+                        }) && !matches!(destination, LossDestination::Transfer { to, .. } if !self.is_in(to)) =>
                         {
                             let taken = self.take_card(seat, zone, card.id);
                             if matches!(zone, Zone::Hand)
@@ -1379,8 +1392,8 @@ impl Game {
                             continue;
                         };
                         let card = Self::remove_card(&mut self.transferring, card.id);
-                        if !self.recast_alive(seat) {
-                            if self.recast_alive(from) && !from_expansion {
+                        if !self.is_in(seat) {
+                            if self.is_alive(from) && !from_expansion {
                                 self.seat_mut(from).hand.push(card);
                                 if public {
                                     self.known_to_all.insert(card.id);

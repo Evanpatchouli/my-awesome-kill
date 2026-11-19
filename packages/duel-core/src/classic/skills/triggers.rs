@@ -165,6 +165,14 @@ impl Game {
     }
     pub(crate) fn dispatch_for_timing(&self, event: crate::TriggerEvent) -> Queue {
         let index_snapshot = self.snapshot_trigger_indices(&event);
+        // Before a new turn the previous active seat is still recorded for its statistics.
+        let anchor = if event.timing == "phaseBefore" {
+            self.current_phase_player()
+                .or(event.player)
+                .unwrap_or(self.active_seat)
+        } else {
+            self.active_seat
+        };
         Queue {
             moment: None,
             event,
@@ -172,7 +180,7 @@ impl Game {
             adjustment: HeroAdjustment::None,
             choosing: false,
             choice_indices: Vec::new(),
-            anchor: self.active_seat,
+            anchor,
             scanned_registrations: Default::default(),
             index_snapshot,
             completed: Default::default(),
@@ -210,7 +218,7 @@ impl Game {
             return false;
         }
         let has_bow = self.seat(source).is_ok_and(|seat| {
-            seat.alive
+            seat.is_in()
                 && seat
                     .equipment
                     .iter()
@@ -342,17 +350,17 @@ impl Game {
             }
         }
         let pending = queue.pending.as_ref().unwrap();
-        let key = |candidate: &Candidate| -> Option<(u8, usize, i64, usize)> {
+        let key = |game: &Game, candidate: &Candidate| -> Option<(u8, usize, i64, usize)> {
             let (owner, group, priority) = match candidate {
                 Candidate::Elemental(rule) => (
-                    rule.owner(self),
+                    rule.owner(game),
                     crate::TriggerOrder::Normal,
                     rule.priority(),
                 ),
                 Candidate::Native(owner, _) => (*owner, crate::TriggerOrder::Normal, 0),
                 Candidate::Qilin { source, .. } => (*source, crate::TriggerOrder::Normal, 0),
                 Candidate::Registered(id, _) => {
-                    let r = self.trigger_registrations.get(id)?;
+                    let r = game.trigger_registrations.get(id)?;
                     (r.owner, r.order, r.priority)
                 }
             };
@@ -360,7 +368,7 @@ impl Game {
             let subpriority = match candidate {
                 Candidate::Elemental(_) => -1,
                 Candidate::Qilin { .. } => 25,
-                Candidate::Registered(id, _) if self.trigger_registrations[id].silent => -1,
+                Candidate::Registered(id, _) if game.trigger_registrations[id].silent => -1,
                 _ => 0,
             };
             Some(match group {
@@ -377,20 +385,20 @@ impl Game {
             .moment
             .as_ref()
             .map(|moment| self.register_hero_triggers(moment));
-        let eligible = |c: &Candidate| match c {
-            Candidate::Elemental(rule) => rule.eligible(self),
+        let eligible = |game: &Game, c: &Candidate| match c {
+            Candidate::Elemental(rule) => rule.eligible(game),
             Candidate::Native(owner, skill) => {
-                self.seat(*owner).is_ok_and(|s| s.alive)
+                game.is_in(*owner)
                     && live_native
                         .as_ref()
                         .is_some_and(|skills| skills.contains(&(*owner, *skill)))
                     && queue
                         .moment
                         .as_ref()
-                        .is_some_and(|moment| self.native_trigger_eligible(*owner, *skill, moment))
+                        .is_some_and(|moment| game.native_trigger_eligible(*owner, *skill, moment))
             }
-            Candidate::Registered(id, _) => self.registered_matches(*id, &queue.event),
-            Candidate::Qilin { source, target } => self.qilin_program(*source, *target).is_some(),
+            Candidate::Registered(id, _) => game.registered_matches(*id, &queue.event),
+            Candidate::Qilin { source, target } => game.qilin_program(*source, *target).is_some(),
         };
         let selected = if queue.choosing {
             queue.choosing = false;
@@ -411,8 +419,7 @@ impl Game {
                 pending.get(i).is_some_and(|candidate| match candidate {
                     Candidate::Elemental(rule) => rule.eligible(self),
                     Candidate::Native(owner, skill) => {
-                        self.seat(*owner).is_ok_and(|s| s.alive)
-                            && self.has_skill(*owner, skill.as_str())
+                        self.is_in(*owner) && self.has_skill(*owner, skill.as_str())
                     }
                     Candidate::Registered(id, _) => self.registered_matches(*id, &queue.event),
                     Candidate::Qilin { source, target } => {
@@ -421,18 +428,32 @@ impl Game {
                 })
             }));
         } else {
+            let phase_before = queue.event.timing == "phaseBefore";
+            let mut filter_order = Vec::new();
+            if phase_before {
+                filter_order.extend(0..pending.len());
+                filter_order.sort_by_key(|&i| key(self, &pending[i]));
+            }
             let mut groups: Vec<_> = pending
                 .iter()
-                .filter_map(&key)
+                .filter_map(|candidate| key(self, candidate))
                 .map(|k| (k.0, k.1))
                 .collect();
             groups.sort_unstable();
             groups.dedup();
             for group in groups {
                 let mut seen = std::collections::HashMap::new();
-                for (i, candidate) in pending.iter().enumerate() {
-                    if !key(candidate).is_some_and(|k| (k.0, k.1) == group) || !eligible(candidate)
-                    {
+                for i in (0..pending.len()).map(|i| filter_order.get(i).copied().unwrap_or(i)) {
+                    let candidate = &pending[i];
+                    if !key(self, candidate).is_some_and(|k| (k.0, k.1) == group) {
+                        continue;
+                    }
+                    if phase_before {
+                        if let Candidate::Registered(id, _) = candidate {
+                            self.clear_stale_rest_clock(*id, queue.event.subject);
+                        }
+                    }
+                    if !eligible(self, candidate) {
                         continue;
                     }
                     let identity = match candidate {
@@ -445,7 +466,7 @@ impl Game {
                         }
                     };
                     if let Some(&index) = seen.get(&identity) {
-                        if key(candidate) < key(&pending[distinct[index]]) {
+                        if key(self, candidate) < key(self, &pending[distinct[index]]) {
                             distinct[index] = i;
                         }
                     } else {
@@ -465,7 +486,7 @@ impl Game {
         }
         let best = distinct
             .iter()
-            .filter_map(|&i| key(&pending[i]).map(|k| (i, k)))
+            .filter_map(|&i| key(self, &pending[i]).map(|k| (i, k)))
             .min_by_key(|(_, k)| *k);
         let Some((first, best_key)) = best else {
             if matches!(queue.moment, Some(HeroMoment::Draw { .. }))
@@ -488,7 +509,7 @@ impl Game {
         let tied: Vec<usize> = distinct
             .iter()
             .copied()
-            .filter(|i| key(&pending[*i]) == Some(best_key))
+            .filter(|i| key(self, &pending[*i]) == Some(best_key))
             .collect();
         let visible = |c: &Candidate| match c {
             Candidate::Elemental(_) => None,
@@ -520,7 +541,7 @@ impl Game {
         if selected.is_none()
             && best_key.0 == 1
             && tied.len() > 1
-            && self.is_alive(owner(&pending[first]))
+            && self.is_in(owner(&pending[first]))
             && tied.iter().all(|i| visible(&pending[*i]).is_some())
         {
             {
@@ -565,7 +586,7 @@ impl Game {
             .iter()
             .enumerate()
             .filter(|(i, c)| {
-                if *i == chosen || !key(c).is_some_and(|k| k >= best_key) {
+                if *i == chosen || !key(self, c).is_some_and(|k| k >= best_key) {
                     return false;
                 }
                 // Indexed native repeats are separate activations; duplicate registrations across roles are not.
@@ -637,7 +658,7 @@ impl Game {
             }
             (Fankui, HeroMoment::DamageAfter { source, .. }) => source.is_some_and(|source| {
                 self.seat(source).is_ok_and(|seat| {
-                    seat.alive
+                    seat.is_in()
                         && ((!seat.hand.is_empty() && source != owner)
                             || !seat.equipment.is_empty())
                 })
@@ -933,9 +954,7 @@ impl Game {
                 }
             }
             SkillId::Fankui => {
-                if let Some(source) =
-                    source.filter(|seat| self.seat(*seat).is_ok_and(|player| player.alive))
-                {
+                if let Some(source) = source.filter(|&seat| self.is_in(seat)) {
                     if self.resolve_fankui(trigger, source, child) {
                         return;
                     }
@@ -1016,9 +1035,7 @@ impl Game {
                 self.scheduler.next(self.judge_program(owner, false));
             }
             Stage::Judge => {
-                let Some(source) =
-                    source.filter(|seat| self.seat(*seat).is_ok_and(|player| player.alive))
-                else {
+                let Some(source) = source.filter(|&seat| self.is_in(seat)) else {
                     return false;
                 };
                 let Some(Outcome::Finished(Resolution::Judged(card))) = child else {

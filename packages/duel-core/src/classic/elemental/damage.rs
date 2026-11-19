@@ -33,6 +33,7 @@ pub(crate) struct CardDamage {
     lose_hp: bool,
     propagated: bool,
     record: Option<usize>,
+    body_skipped: bool,
     on_damage: Option<crate::classic::skills::Dispatch>,
     stage: Stage,
 }
@@ -145,6 +146,7 @@ impl Game {
             lose_hp: false,
             propagated,
             record: None,
+            body_skipped: false,
             on_damage: None,
             stage: Stage::Before(0),
         })
@@ -159,6 +161,7 @@ impl Game {
             lose_hp: true,
             propagated: false,
             record: None,
+            body_skipped: false,
             on_damage: None,
             stage: Stage::Before(0),
         })
@@ -216,6 +219,13 @@ impl Game {
                         &damage.card.cards,
                     )
                 }
+                // The damage subject has not yet opted into processing an out player
+                // at these two early boundaries. Later timings retain the parent event.
+                Before(2) if !damage.lose_hp && self.is_out(target) => {
+                    damage.body_skipped = true;
+                    damage.stage = End;
+                    continue;
+                }
                 Before(index) if !damage.lose_hp && index < before.len() => {
                     let timing = before[index];
                     damage.stage = Before(index + 1);
@@ -263,7 +273,12 @@ impl Game {
                     true
                 }
                 Hp => {
-                    if !matches!(child, Some(Outcome::Finished(Resolution::HpChanged { .. }))) {
+                    if !matches!(
+                        child,
+                        Some(Outcome::Finished(
+                            Resolution::HpChanged { .. } | Resolution::BodySkipped
+                        ))
+                    ) {
                         self.finish();
                         return;
                     }
@@ -277,7 +292,7 @@ impl Game {
                 }
                 CheckDying
                     if self.classic.is_some()
-                        && self.seat(target).is_ok_and(|p| p.hp <= 0 && p.alive) =>
+                        && self.seat(target).is_ok_and(|p| p.hp <= 0 && p.is_in()) =>
                 {
                     self.next(EventKind::Dying { source, target });
                     damage.stage = Dying;
@@ -336,7 +351,12 @@ impl Game {
                     }
                 }
                 Finish => {
-                    self.finish();
+                    if damage.body_skipped {
+                        self.scheduler
+                            .end(Outcome::Finished(Resolution::BodySkipped));
+                    } else {
+                        self.finish();
+                    }
                     return;
                 }
                 Cancel => {

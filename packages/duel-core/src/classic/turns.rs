@@ -27,6 +27,8 @@ pub struct TurnInfo {
     pub skipped: bool,
     pub cancelled: bool,
     pub personal_started: bool,
+    /// Whether this turn has already advanced a rest clock.
+    pub rest_counted: bool,
     pub plan: Arc<[PhasePlan]>,
     pub next: usize,
 }
@@ -57,6 +59,7 @@ pub(crate) struct State {
     queue: VecDeque<QueuedTurn>,
     history: Vec<TurnInfo>,
     personal: BTreeMap<SeatId, u64>,
+    yield_round: bool,
 }
 #[derive(Clone, Copy, Debug)]
 enum TurnStage {
@@ -120,6 +123,7 @@ impl TurnFlow {
                 skipped: false,
                 cancelled: false,
                 personal_started: false,
+                rest_counted: false,
                 plan: Arc::clone(&NORMAL_PLAN),
                 next: 0,
             },
@@ -168,6 +172,26 @@ impl LoopFlow {
     }
 }
 impl Game {
+    /// The turn loop yielded after a round with no participating seats.
+    pub fn round_suspended(&self) -> bool {
+        self.turns.yield_round
+    }
+
+    pub(crate) fn resume_suspended_round(&mut self) {
+        self.turns.yield_round = false;
+    }
+
+    pub(crate) fn count_turn_rest(&mut self, subject: EventId) -> bool {
+        let Some(Program::Turn(flow)) = self.scheduler.active_program_mut(subject) else {
+            return false;
+        };
+        if flow.info.rest_counted || !matches!(flow.stage, TurnStage::Count) {
+            return false;
+        }
+        flow.info.rest_counted = true;
+        true
+    }
+
     pub fn turn_info(&self, subject: EventId) -> Option<TurnInfo> {
         match &self.scheduler.active_frame(subject)?.1 {
             Program::Turn(flow) => {
@@ -431,6 +455,11 @@ impl Game {
                     } else {
                         LoopStage::BeginNatural
                     };
+                    if flow.new_round && !self.seats.iter().any(crate::Seat::is_in) {
+                        self.turns.yield_round = true;
+                        self.scheduler.replace_current(Program::PhaseLoop(flow));
+                        return;
+                    }
                 }
             }
         }
@@ -470,9 +499,6 @@ impl Game {
                     Some("phaseBefore")
                 }
                 TurnStage::Count => {
-                    for player in &mut self.seats {
-                        player.turn_kills = 0;
-                    }
                     for player in &mut self.seats {
                         player.turn_kills = 0;
                     }
@@ -547,7 +573,7 @@ impl Game {
                     Some("phaseBegin")
                 }
                 TurnStage::Change => {
-                    if !self.is_alive(seat) || flow.info.next >= flow.info.plan.len() {
+                    if !self.is_in(seat) || flow.info.next >= flow.info.plan.len() {
                         flow.stage = TurnStage::End;
                         continue;
                     }
@@ -555,6 +581,10 @@ impl Game {
                     Some("phaseChange")
                 }
                 TurnStage::RunPhase => {
+                    if !self.is_in(seat) {
+                        flow.stage = TurnStage::End;
+                        continue;
+                    }
                     let index = flow.info.next;
                     let Some(next) = flow.info.plan.get(index).cloned() else {
                         flow.stage = TurnStage::End;

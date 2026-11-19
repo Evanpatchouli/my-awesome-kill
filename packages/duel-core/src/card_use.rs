@@ -57,7 +57,7 @@ impl Game {
         let Some(targets) = program.use_targets() else {
             return Vec::new();
         };
-        self.living_order_from(owner)
+        self.in_order_from(owner)
             .into_iter()
             .filter(|&target| {
                 !targets.contains(&target) && self.allows_additional_target(owner, kind, target)
@@ -71,7 +71,7 @@ impl Game {
             .into_iter()
             .flatten()
             .copied()
-            .filter(|&id| self.seat(id).is_ok_and(|seat| seat.alive))
+            .filter(|&id| self.is_in(id))
             .collect()
     }
 
@@ -80,7 +80,7 @@ impl Game {
         let Ok(player) = self.seat(target) else {
             return false;
         };
-        if !player.alive || !self.hero_allows_target(target, kind) {
+        if !self.is_in(target) || !self.hero_allows_target(target, kind) {
             return false;
         }
         match kind {
@@ -103,7 +103,7 @@ impl Game {
     }
 
     pub(crate) fn jiedao_victims(&self, holder: SeatId) -> Vec<SeatId> {
-        self.living_order_from(holder)
+        self.in_order_from(holder)
             .into_iter()
             .filter(|&id| self.accepts_sha_target(holder, id))
             .collect()
@@ -111,8 +111,8 @@ impl Game {
 
     pub(crate) fn accepts_sha_target(&self, seat: SeatId, target: SeatId) -> bool {
         seat != target
-            && self.is_alive(seat)
-            && self.is_alive(target)
+            && self.is_in(seat)
+            && self.is_in(target)
             && self.in_sha_range(seat, target)
             && self.hero_allows_target(target, CardKind::Sha)
     }

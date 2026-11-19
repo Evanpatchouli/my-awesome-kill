@@ -129,7 +129,8 @@ impl Game {
         &self,
         request: MoveChoiceRequest,
     ) -> Result<Program, RuleError> {
-        if !self.seat(request.seat)?.alive {
+        self.seat(request.seat)?;
+        if !self.is_in(request.seat) {
             return Err(RuleError::InactiveSeat { seat: request.seat });
         }
         if self.match_result().is_some() {
@@ -301,7 +302,7 @@ impl Game {
         }
         if (matches!(child, Some(Outcome::Cancelled))
             || (matches!(flow.stage, Choose)
-                && (!self.is_alive(flow.request.seat) || self.match_result().is_some())))
+                && (!self.is_in(flow.request.seat) || self.match_result().is_some())))
             && !matches!(flow.stage, CancelNotify | CancelFinish)
         {
             flow.result.as_mut().unwrap().cancelled = true;

@@ -30,6 +30,9 @@ impl Skill {
 
 impl Game {
     pub(super) fn miss_skill(&self, seat: SeatId, target: SeatId) -> Option<CardKind> {
+        if !self.is_in(seat) || !self.is_in(target) {
+            return None;
+        }
         match self.weapon(seat)?.kind {
             CardKind::Qinglong if self.sha_use_branches(seat, &[target]).len() > 1 => {
                 Some(CardKind::Qinglong)
@@ -79,6 +82,10 @@ impl Game {
     ) {
         let seat = skill.seat;
         let target = skill.target;
+        if !self.is_in(seat) || !self.is_in(target) {
+            self.scheduler.end(Outcome::Cancelled);
+            return;
+        }
         match (skill.step, child) {
             (Step::Start, None) => {
                 let branches = match skill.kind {

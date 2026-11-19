@@ -196,7 +196,7 @@ fn bonus(
     before: &[Card],
 ) -> Option<(CardZone, Card)> {
     let owner = ctx.owner();
-    if !ctx.game().is_alive(owner) {
+    if !ctx.game().is_in(owner) {
         return None;
     }
     let formerly_held = distinct_basics(before);

@@ -235,7 +235,7 @@ impl Game {
             }
             AttackStep::Redirect(index) => {
                 attack.step = if let Some(&target) = attack.targets.get(index) {
-                    if !self.seat(target).is_ok_and(|s| s.alive) {
+                    if !self.is_in(target) {
                         attack.step = AttackStep::Redirect(index + 1);
                         self.continue_equipment(Flow::Attack(attack));
                         return;
@@ -264,7 +264,7 @@ impl Game {
             }
             AttackStep::Declare(index) => {
                 if let Some(&target) = attack.targets.get(index) {
-                    if !self.seat(target).is_ok_and(|s| s.alive) {
+                    if !self.is_in(target) {
                         attack.step = AttackStep::Declare(index + 1);
                         self.continue_equipment(Flow::Attack(attack));
                         return;
@@ -276,7 +276,8 @@ impl Game {
                             .and_then(|actor| actor.hero)
                             .map(|hero| hero.gender.as_str())
                     };
-                    if self.has_weapon(seat, CardKind::Cixiong)
+                    if self.is_in(seat)
+                        && self.has_weapon(seat, CardKind::Cixiong)
                         && matches!((gender(seat), gender(target)), (Some(a), Some(b)) if a != b)
                     {
                         self.scheduler
@@ -293,7 +294,7 @@ impl Game {
             AttackStep::Aim(index) => {
                 let target = attack.targets[index];
                 let moment = HeroMoment::ShaTarget { seat, target };
-                attack.step = if self.queue_hero_moment(moment) {
+                attack.step = if self.is_in(target) && self.queue_hero_moment(moment) {
                     AttackStep::Aimed(index)
                 } else {
                     AttackStep::Declare(index + 1)
@@ -317,7 +318,7 @@ impl Game {
                     .copied()
                     .skip(index)
                     .enumerate()
-                    .find(|(_, target)| self.seat(*target).is_ok_and(|target| target.alive))
+                    .find(|(_, target)| self.is_in(*target))
                 else {
                     attack.step = AttackStep::After;
                     if self.queue_timing("useCardAfter", Some(seat), None, None, 0, &attack.cards) {
@@ -356,6 +357,10 @@ impl Game {
         child: Option<Outcome<Resolution>>,
     ) {
         let (seat, target) = (attack.seat, attack.target);
+        if matches!(attack.step, TargetStep::Defend | TargetStep::Miss) && !self.is_in(target) {
+            self.scheduler.end(Outcome::Cancelled);
+            return;
+        }
         match (attack.step, child) {
             (TargetStep::Defend, None) if !attack.direct_hit => {
                 self.ask_shan(target, attack.ignore_armor)
@@ -435,7 +440,8 @@ impl Game {
     }
 
     pub(crate) fn qilin_program(&self, seat: SeatId, target: SeatId) -> Option<Program> {
-        (self.seat(seat).is_ok_and(|seat| seat.alive)
+        (self.is_in(seat)
+            && self.is_in(target)
             && self.has_weapon(seat, CardKind::Qilin)
             && !self.target_horses(target).is_empty())
         .then(|| Program::Equipment(Flow::Skill(Skill::new(seat, target, CardKind::Qilin))))

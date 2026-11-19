@@ -20,7 +20,7 @@ pub fn weizhong(owner: SeatId) -> [TriggerRegistration; 2] {
             let fewest = game
                 .seats
                 .iter()
-                .filter(|seat| seat.alive)
+                .filter(|seat| game.is_in(seat.id))
                 .all(|seat| count <= seat.hand.len());
             let _ = ctx.draw_cards(owner, if fewest { 2 } else { 1 });
             TriggerStep::Done

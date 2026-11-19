@@ -80,6 +80,14 @@
 
 死亡主时机之前，来源的 `turn_kills` 已增加且身份模式已公布死者身份。此时同步复活会保留其手牌、装备、显示标记及临时技能，反贼的死亡仍会在 `dieEnd` 前触发一次摸三张。完整死亡隐藏标记，规则仍可通过 `skill_mark_count` 读取计数。需要删除计数的临时技能可以在移除回调中调用 `clear_mark`。[八席复活与死亡奖惩](../../tests/reference/revival.json)
 
+### 休整与离场
+
+规则可用 `TriggerContext::rest(seat, RestClock { unit, count })` 令一席休整，用 `rest_end(seat, hp)` 使其返场。休整者仍然存活，按物理座次排列，`Game::is_in` 为假。普通用牌、距离和应答使用仍参与对局的座位。公开座位的 `out` 与 `rest` 分别表示离场和可见的倒计时标记。可信规则可用 `Game::rest_clock` 读实际计数。
+
+`RestUnit::Phase` 计算任一自然或额外回合，`RestUnit::Round` 只计算休整者自己的自然回合。每个 `phaseBefore` 事件最多推进一名符合条件的休整者，计数为零或负数时持续到主动结束。归零后先解除离场并移除时钟，再执行可中止的复活子事件和 `restEnd`。全桌离场时，规则循环在轮边界让出控制权；宿主用带版本号的 `advanceRound` 继续原循环，可照常录制和重放。
+
+`set_trigger_force_die` 与 `set_trigger_force_out` 可分别允许指定登记在持有者死亡或离场时执行。技能可在当前 `dieBefore` 或 `dieBegin` 回调中用 `reserve_death` 保留此次死亡：普通死亡清理与击杀计数继续，身份模式跳过揭示、判胜及奖惩。独立内容 `content-rest` 通过最后两名常侍的殁亡局面验收回合末死亡、休整、返场结党和摸牌。测试为张让、赵忠已是最后两名的情况提供结算，完整党锢选将与衍生牌技另计。[休整与保留死亡](../../tests/reference/rest.json)
+
 ### 命令录制与回放
 
 `RecordedGame` 从 `ReplaySetup::Prescribed` 的初始牌桌或 `ReplaySetup::Seeded` 的种子、玩家席、武将及席数建局。通过该实例提交的人类命令和电脑决策，在原有版本与规则校验通过后进入 `ReplayLog`。日志包含私有选择，供可信宿主保存。各席和旁观者继续从 `Game::view` 读取自己的投影。

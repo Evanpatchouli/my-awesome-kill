@@ -64,7 +64,7 @@ pub fn registration(owner: SeatId) -> TriggerRegistration {
                 }
                 _ => {
                     if let Some(result) = ctx.compare_result() {
-                        if ctx.game().is_alive(owner) {
+                        if ctx.game().is_in(owner) {
                             grant_result(ctx, result).expect("valid comparison grant");
                         }
                     }

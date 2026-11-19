@@ -46,7 +46,7 @@ pub fn registration(owner: SeatId) -> TriggerRegistration {
                         TriggerStep::Done
                     }
                 }
-                2 if ctx.game().is_alive(owner) => {
+                2 if ctx.game().is_in(owner) => {
                     let cards = ctx.preview_cards();
                     if cards.len() < 2 {
                         return TriggerStep::Done;
@@ -110,7 +110,7 @@ pub fn registration(owner: SeatId) -> TriggerRegistration {
                         then: 3,
                     }
                 }
-                3 if ctx.game().is_alive(owner) => {
+                3 if ctx.game().is_in(owner) => {
                     let rows = ctx
                         .move_result()
                         .and_then(|r| (!r.cancelled).then_some(r.rows.as_ref()).flatten())

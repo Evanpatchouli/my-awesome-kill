@@ -83,7 +83,7 @@ pub fn gushe(owner: SeatId) -> ActiveSkillRegistration {
 }
 
 fn loser_choice(ctx: &mut TriggerContext<'_>, loser: SeatId, then: u16) -> TriggerStep {
-    if !ctx.game().is_alive(loser) {
+    if !ctx.game().is_in(loser) {
         return if then == 2 {
             TriggerStep::Continue(3)
         } else {
@@ -196,11 +196,11 @@ pub fn danlie(owner: SeatId) -> ActiveSkillRegistration {
                 let owner = ctx.owner();
                 if winner == Some(owner) {
                     for target in targets {
-                        if ctx.game().is_alive(target) {
+                        if ctx.game().is_in(target) {
                             let _ = ctx.damage(Some(owner), target, 1, None, None, &[]);
                         }
                     }
-                } else if ctx.game().is_alive(owner) {
+                } else if ctx.game().is_in(owner) {
                     let _ = ctx.lose_hp(owner, 1);
                 }
                 TriggerStep::Done

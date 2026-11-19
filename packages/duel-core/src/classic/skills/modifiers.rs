@@ -234,7 +234,7 @@ impl Game {
         let fangtian = self
             .weapon(seat)
             .is_some_and(|card| card.kind == CardKind::Fangtian);
-        let living = self.living_order_from(seat);
+        let living = self.in_order_from(seat);
         let mut plays = Vec::new();
         for cost in costs {
             let mut compatible: Vec<ChoiceBranch> = Vec::new();

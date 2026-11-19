@@ -124,7 +124,7 @@ impl Game {
         if let Some(source) = source {
             self.seat(source)?;
         }
-        if !player.alive {
+        if !player.is_in() {
             return Err(RuleError::InactiveSeat { seat });
         }
         if self.match_result().is_some() {
@@ -179,7 +179,7 @@ impl Game {
                     let next = self
                         .seat(seat)
                         .ok()
-                        .filter(|player| player.alive && self.match_result().is_none())
+                        .filter(|player| player.is_in() && self.match_result().is_none())
                         .and_then(|player| {
                             flow.change.kind.value_after(player.max_hp, flow.change.num)
                         });

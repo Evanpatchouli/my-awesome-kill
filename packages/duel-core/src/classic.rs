@@ -13,6 +13,7 @@ pub(crate) mod multi_compare;
 pub(crate) mod phases;
 pub(crate) mod pile_order;
 pub(crate) mod recast;
+pub(crate) mod rest;
 pub(crate) mod revival;
 pub(crate) mod skills;
 pub(crate) mod target_timing;
@@ -137,6 +138,11 @@ impl Game {
                     hp: max_hp,
                     max_hp,
                     alive: true,
+                    out: false,
+                    rest_clock: None,
+                    rest_mark_shown: false,
+                    rest_undist: false,
+                    rest_trigger: None,
                     linked: false,
                     turned_over: false,
                     armor: 0,
@@ -366,6 +372,13 @@ impl Game {
     /// Choose a single legal command for the next non-human seat.
     pub fn bot_command(&self) -> Option<Command> {
         let state = self.classic.as_ref()?;
+        if self.round_suspended() {
+            return Some(Command {
+                version: self.version,
+                seat: state.human,
+                action: Action::AdvanceRound,
+            });
+        }
         let decision = self.decision.as_ref()?;
         let seat = decision.seat();
         if seat == state.human {
@@ -409,7 +422,7 @@ impl Game {
                     let save_lord = choice.target == Some(state.lord)
                         && (player.role == Some(Role::Loyalist)
                             || (player.role == Some(Role::Renegade)
-                                && self.seats.iter().filter(|seat| seat.alive).count() > 2));
+                                && self.seats.iter().filter(|seat| seat.is_in()).count() > 2));
                     let card = if choice.target == Some(seat) || save_lord {
                         choice.cards.first().copied()
                     } else {
@@ -523,7 +536,7 @@ impl Game {
                 Some(Role::Lord | Role::Loyalist) => 2,
                 Some(Role::Rebel) => -2,
                 Some(Role::Renegade)
-                    if self.seats.iter().filter(|seat| seat.alive).count() == 2 =>
+                    if self.seats.iter().filter(|seat| seat.is_in()).count() == 2 =>
                 {
                     -2
                 }

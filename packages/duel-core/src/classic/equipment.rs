@@ -189,7 +189,7 @@ impl Game {
                 self.queue_use_card2(seat, card.kind, &[card]);
             }
             EquipStep::Replace => {
-                if matches!(child, Some(Outcome::Cancelled)) {
+                if matches!(child, Some(Outcome::Cancelled)) || !self.is_in(seat) {
                     self.scheduler
                         .after(Program::event(EventKind::Discard { card }));
                     self.scheduler.end(Outcome::Cancelled);
@@ -216,6 +216,12 @@ impl Game {
                 }
             }
             EquipStep::Install => {
+                if !self.is_in(seat) {
+                    self.scheduler
+                        .after(Program::event(EventKind::Discard { card }));
+                    self.scheduler.end(Outcome::Cancelled);
+                    return;
+                }
                 let card = self.take_resolving(card.id);
                 self.seat_mut(seat).equipment.push(card);
                 self.finish();
@@ -246,6 +252,9 @@ impl Game {
         target: SeatId,
         ignored: Option<CardId>,
     ) -> bool {
+        if self.has_skill(seat, "undist") || self.has_skill(target, "undist") {
+            return false;
+        }
         let weapon = self.weapon(seat).filter(|card| Some(card.id) != ignored);
         let range = match weapon.map(|card| card.kind) {
             Some(CardKind::Cixiong | CardKind::Qinggang) => 2,
@@ -275,11 +284,11 @@ impl Game {
     }
 
     pub(crate) fn physical_sha_uses(&self, player: &Seat, card: Card) -> Vec<PlannedUse> {
-        if !self.may_play_sha(player.id) {
+        if !self.is_in(player.id) || !self.may_play_sha(player.id) {
             return Vec::new();
         }
         let targets: Vec<_> = self
-            .living_order_from(player.id)
+            .in_order_from(player.id)
             .into_iter()
             .filter(|&seat| {
                 self.in_sha_range(player.id, seat) && self.hero_allows_target(seat, CardKind::Sha)
@@ -308,6 +317,9 @@ impl Game {
     }
 
     pub(crate) fn virtual_plays(&self, seat: SeatId) -> Vec<VirtualPlay> {
+        if !self.is_in(seat) {
+            return Vec::new();
+        }
         let mut plays = self.hero_play_conversions(seat);
         plays.retain(|play| self.card_enabled(seat, play.kind));
         let Ok(actor) = self.seat(seat) else {
@@ -321,7 +333,7 @@ impl Game {
             return plays;
         }
         let targets: Vec<_> = self
-            .living_order_from(seat)
+            .in_order_from(seat)
             .into_iter()
             .filter(|&target| {
                 self.in_sha_range(seat, target) && self.hero_allows_target(target, CardKind::Sha)
@@ -373,7 +385,7 @@ impl Game {
     ) -> Result<Program, RuleError> {
         if kind == CardKind::Sha {
             let targets = self
-                .living_order_from(seat)
+                .in_order_from(seat)
                 .into_iter()
                 .filter(|target| targets.contains(target))
                 .collect();
@@ -409,9 +421,10 @@ impl Game {
         targets: &[SeatId],
     ) -> Vec<ChoiceBranch> {
         let mut branches = vec![branch(0, "放弃", vec![], 0)];
-        if !targets
-            .iter()
-            .all(|&target| self.accepts_sha_target(seat, target))
+        if !self.is_in(seat)
+            || !targets
+                .iter()
+                .all(|&target| self.accepts_sha_target(seat, target))
         {
             return branches;
         }

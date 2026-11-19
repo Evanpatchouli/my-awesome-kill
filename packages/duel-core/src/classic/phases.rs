@@ -215,7 +215,7 @@ impl Game {
     ) {
         let seat = flow.info.seat;
         let phase = flow.info.phase;
-        if self.match_result().is_some() || !self.seat(seat).expect("the phase seat exists").alive {
+        if self.match_result().is_some() || !self.is_in(seat) {
             self.finish_phase_ordering(event.id, &flow);
             return;
         }

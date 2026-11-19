@@ -240,7 +240,7 @@ impl Game {
                     }
                 }
                 Move => {
-                    if !self.recast_alive(seat) {
+                    if !self.is_in(seat) {
                         movement.stage = Cancel(MoveCancellation::InvalidMovement);
                         continue;
                     }
@@ -276,7 +276,7 @@ impl Game {
                             movement.cards.clone(),
                         )),
                         BatchKind::Lose { destination } => {
-                            if matches!(destination, BatchDestination::Transfer { to, .. } if !self.recast_alive(to))
+                            if matches!(destination, BatchDestination::Transfer { to, .. } if !self.is_in(to))
                             {
                                 movement.stage = Cancel(MoveCancellation::InvalidMovement);
                                 continue;
@@ -376,9 +376,9 @@ impl Game {
                         continue;
                     };
                     if let BatchKind::GainGive { from, .. } = movement.kind {
-                        // The gain's recipient cannot take the next step after death.
+                        // The gain's recipient must still be participating.
                         // The earlier loss already committed the material to special.
-                        if !self.recast_alive(seat) {
+                        if !self.is_in(seat) {
                             movement.stranded = true;
                             movement.stage = End;
                             continue;

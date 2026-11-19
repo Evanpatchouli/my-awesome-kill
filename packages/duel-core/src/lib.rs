@@ -33,6 +33,8 @@ pub mod phase_content;
 mod protocol;
 #[cfg(any(test, feature = "content-qiaoshui"))]
 pub mod qiaoshui;
+#[cfg(any(test, feature = "content-rest"))]
+pub mod rest_content;
 mod scheduler;
 mod temporary;
 mod triggers;
@@ -58,6 +60,7 @@ pub use classic::recast::{
     RecastBatchMovement, RecastBatchRule, RecastFilter, RecastGain, RecastGainFactory, RecastKey,
     RecastLoss, RecastLossFactory, RecastMovement, RecastRule, RecastSeat, RecastState,
 };
+pub use classic::rest::{RestClock, RestUnit};
 pub use classic::skills::SkillId;
 use classic::skills::{HeroAdjustment, HeroFlow};
 use classic::tricks::Trick;
@@ -70,6 +73,7 @@ use scheduler::{EventRef, Outcome, Scheduler, Work};
 
 #[derive(Clone)]
 enum Resolution {
+    BodySkipped,
     ComparedMany {
         event: EventId,
         cancelled: bool,
@@ -105,6 +109,7 @@ enum Resolution {
     },
     DeathCancelled,
     ReviveCancelled,
+    RestCancelled,
     Responded,
     Judged(Card),
     HpChanged {
@@ -175,21 +180,29 @@ enum DeathStage {
 }
 
 #[derive(Clone)]
+struct DeathFlow {
+    body_skipped: bool,
+    source: Option<SeatId>,
+    target: SeatId,
+    role: Option<Role>,
+    reserved: bool,
+    include_out: bool,
+    excluded_marks: Vec<String>,
+    stage: DeathStage,
+}
+
+#[derive(Clone)]
 enum Program {
     GroupCompare(classic::multi_compare::Flow),
     Bids(classic::compare::bids::BidFlow),
     Counter(classic::counter::Flow),
-    Death {
-        source: Option<SeatId>,
-        target: SeatId,
-        role: Option<Role>,
-        stage: DeathStage,
-    },
+    Death(DeathFlow),
     ActiveSkill(active_skill::Flow),
     MoveChoice(move_choice::Flow),
     PileOrder(classic::pile_order::Flow),
     MaxHp(classic::max_hp::Flow),
     Revive(classic::revival::Flow),
+    Rest(classic::rest::Flow),
     Expansion(classic::expansion::Flow),
     BasicUse(classic::basic_use::Flow),
     Compare(classic::compare::Flow),
@@ -237,12 +250,16 @@ impl Program {
                 source,
                 target,
                 role,
-            } => Self::Death {
+            } => Self::Death(DeathFlow {
                 source,
                 target,
                 role,
+                reserved: false,
+                include_out: false,
+                body_skipped: false,
+                excluded_marks: Vec::new(),
                 stage: DeathStage::Before,
-            },
+            }),
             EventKind::UseTao { seat, target, card } => {
                 Self::BasicUse(classic::basic_use::Flow::tao(seat, target, card, false))
             }
@@ -273,21 +290,17 @@ impl Program {
             Self::GroupCompare(flow) => flow.kind(),
             Self::Bids(flow) => flow.kind(),
             Self::Counter(flow) => flow.kind(),
-            Self::Death {
-                source,
-                target,
-                role,
-                ..
-            } => EventKind::Death {
-                source: *source,
-                target: *target,
-                role: *role,
+            Self::Death(flow) => EventKind::Death {
+                source: flow.source,
+                target: flow.target,
+                role: flow.role,
             },
             Self::ActiveSkill(flow) => flow.kind(),
             Self::MoveChoice(flow) => flow.kind(),
             Self::PileOrder(flow) => flow.kind(),
             Self::MaxHp(flow) => flow.kind(),
             Self::Revive(flow) => flow.kind(),
+            Self::Rest(flow) => flow.kind(),
             Self::Expansion(flow) => flow.kind(),
             Self::BasicUse(flow) => flow.kind(),
             Self::Event(kind) => *kind,
@@ -338,6 +351,11 @@ struct Seat {
     hp: i32,
     max_hp: i32,
     alive: bool,
+    out: bool,
+    rest_clock: Option<RestClock>,
+    rest_mark_shown: bool,
+    rest_undist: bool,
+    rest_trigger: Option<TriggerId>,
     linked: bool,
     turned_over: bool,
     armor: u16,
@@ -352,6 +370,10 @@ struct Seat {
 }
 
 impl Seat {
+    fn is_in(&self) -> bool {
+        self.alive && !self.out
+    }
+
     fn zone(&self, zone: Zone) -> &[Card] {
         match zone {
             Zone::Hand => &self.hand,
@@ -377,6 +399,11 @@ impl From<SeatSetup> for Seat {
             hp: i32::from(setup.hp),
             max_hp: i32::from(setup.hp),
             alive: setup.hp > 0,
+            out: false,
+            rest_clock: None,
+            rest_mark_shown: false,
+            rest_undist: false,
+            rest_trigger: None,
             linked: false,
             turned_over: false,
             armor: 0,
@@ -400,6 +427,7 @@ pub struct Game {
     marks: marks::State,
     indexed_triggers: BTreeMap<TriggerId, triggers::TriggerIndex>,
     force_die_triggers: HashSet<TriggerId>,
+    force_out_triggers: HashSet<TriggerId>,
     turns: classic::turns::State,
     phase_state: classic::phases::State,
     active_skills: active_skill::State,
@@ -476,6 +504,7 @@ impl Game {
             marks: marks::State::default(),
             indexed_triggers: BTreeMap::new(),
             force_die_triggers: HashSet::new(),
+            force_out_triggers: HashSet::new(),
             turns: classic::turns::State::default(),
             phase_state: classic::phases::State::default(),
             active_skills: active_skill::State::default(),
@@ -621,7 +650,7 @@ impl Game {
             .collect())
     }
 
-    /// Count the shortest path through the living seats in either direction.
+    /// Count the shorter direction around the table, skipping seats omitted from distance.
     pub fn distance(&self, from: SeatId, to: SeatId) -> Result<usize, RuleError> {
         self.distance_without(from, to, None)
     }
@@ -633,16 +662,23 @@ impl Game {
         ignored: Option<CardId>,
     ) -> Result<usize, RuleError> {
         for id in [from, to] {
-            if !self.seat(id)?.alive {
+            if !self.seat(id)?.is_in() {
                 return Err(RuleError::InactiveSeat { seat: id });
             }
         }
-        let living = self.living_order_from(from);
-        let clockwise = living
+        if from == to {
+            return Ok(0);
+        }
+        let participants = self.in_order_from(from);
+        let counts_for_distance = |seat: &&SeatId| !self.has_skill(**seat, "undist");
+        let length = participants.iter().filter(counts_for_distance).count() as i32;
+        let clockwise = 1 + participants
             .iter()
-            .position(|part| *part == to)
-            .expect("both seats live");
-        let raw = clockwise.min(living.len() - clockwise);
+            .skip(1)
+            .take_while(|&&seat| seat != to)
+            .filter(counts_for_distance)
+            .count() as i32;
+        let raw = clockwise.min(length - clockwise);
         let rider = self.seat(from)?;
         let target = self.seat(to)?;
         let adjustment = i32::from(equipment::has_slot(
@@ -654,11 +690,7 @@ impl Game {
             equipment::Slot::AttackHorse,
             ignored,
         )) + self.hero_distance_modifier(from);
-        Ok(if raw == 0 {
-            0
-        } else {
-            (raw as i32 + adjustment).max(1) as usize
-        })
+        Ok((raw + adjustment).max(1) as usize)
     }
 
     /// Return public information and the specified seat's own hand and choices.
@@ -691,6 +723,10 @@ impl Game {
                     hp: seat.hp,
                     max_hp: seat.max_hp,
                     alive: seat.alive,
+                    out: seat.out,
+                    rest: seat
+                        .rest_mark_shown
+                        .then(|| seat.rest_clock.unwrap_or_default()),
                     linked: seat.linked,
                     turned_over: seat.turned_over,
                     armor: seat.armor,
@@ -774,6 +810,7 @@ impl Game {
             .map(|(&id, &nature)| (id, nature))
             .collect();
         Ok(GameView {
+            round_suspended: self.round_suspended(),
             group_updates: self.group_updates.clone(),
             turn_reason: self
                 .scheduler
@@ -903,6 +940,21 @@ impl Game {
             .checked_add(1)
             .ok_or(RuleError::VersionExhausted)?;
         let answer = match command.action {
+            Action::AdvanceRound => {
+                if !self.round_suspended() {
+                    return Err(RuleError::WrongPhase);
+                }
+                let host = self
+                    .classic
+                    .as_ref()
+                    .expect("only a phase loop can yield")
+                    .human;
+                if command.seat != host {
+                    return Err(RuleError::WrongActor { expected: host });
+                }
+                self.resume_suspended_round();
+                None
+            }
             Action::ActivateSkill {
                 registration,
                 cards,
@@ -996,7 +1048,7 @@ impl Game {
                 expected: self.active_seat,
             });
         }
-        if target == seat || !self.seat(target)?.alive {
+        if target == seat || !self.seat(target)?.is_in() {
             return Err(RuleError::InvalidTarget);
         }
         let card = self.card_in_hand(seat, card, CardKind::Sha)?;
@@ -1008,6 +1060,9 @@ impl Game {
 
     fn checked_play_seat(&self, seat: SeatId) -> Result<(), RuleError> {
         match self.decision.as_ref() {
+            Some(Decision::Play(actor)) if *actor == seat && !self.is_in(seat) => {
+                Err(RuleError::InactiveSeat { seat })
+            }
             Some(Decision::Play(actor)) if *actor == seat => Ok(()),
             Some(Decision::Play(actor)) => Err(RuleError::WrongActor { expected: *actor }),
             Some(Decision::Cards(_)) => Err(RuleError::ChoicePending),
@@ -1121,11 +1176,15 @@ impl Game {
                 continue;
             };
             match work {
-                Work::Started(event, program) => self.record(event, &program, EventStatus::Started),
+                Work::Started(event, program) => {
+                    self.record(event, &program, EventStatus::Started, false)
+                }
                 Work::Run(event, program, child) => {
                     self.resolve(event, program, child, &mut answer)
                 }
                 Work::Ended(event, program, outcome) => {
+                    let body_skipped =
+                        matches!(outcome, Outcome::Finished(Resolution::BodySkipped));
                     let status = match outcome {
                         Outcome::Cancelled
                         | Outcome::Finished(Resolution::ComparedMany {
@@ -1139,6 +1198,7 @@ impl Game {
                             ..
                         }))
                         | Outcome::Finished(Resolution::ReviveCancelled)
+                        | Outcome::Finished(Resolution::RestCancelled)
                         | Outcome::Finished(Resolution::MovedCards(MoveResult {
                             cancelled: true,
                             ..
@@ -1151,10 +1211,10 @@ impl Game {
                         }) => EventStatus::Cancelled,
                         Outcome::Finished(_) => EventStatus::Finished,
                     };
-                    self.record(event, &program, status);
+                    self.record(event, &program, status, body_skipped);
                 }
             }
-            if self.decision.is_some() {
+            if self.decision.is_some() || self.round_suspended() {
                 break;
             }
         }
@@ -1176,14 +1236,10 @@ impl Game {
             Program::GroupCompare(flow) => return self.resolve_group_compare(event, flow, child),
             Program::Bids(flow) => return self.resolve_bids(event, flow, child, answer),
             Program::Counter(flow) => return self.resolve_counter_window(flow, child),
-            Program::Death {
-                source,
-                target,
-                role,
-                stage,
-            } => return self.resolve_death(source, target, role, stage, child),
+            Program::Death(flow) => return self.resolve_death(flow, child),
             Program::MaxHp(flow) => return self.resolve_max_hp(event, flow, child),
             Program::Revive(flow) => return self.resolve_revive(flow, child),
+            Program::Rest(flow) => return self.resolve_rest(flow, child),
             Program::ActiveSkill(flow) => return self.resolve_active_skill(flow, child),
             Program::PileOrder(flow) => return self.resolve_pile_order(event, flow, child),
             Program::MoveChoice(flow) => {
@@ -1366,30 +1422,30 @@ impl Game {
         self.scheduler.end(Outcome::Finished(Resolution::Complete));
     }
 
-    fn record(&mut self, event: EventRef, program: &Program, status: EventStatus) {
+    fn record(
+        &mut self,
+        event: EventRef,
+        program: &Program,
+        status: EventStatus,
+        body_skipped: bool,
+    ) {
         self.events.push(GameEvent {
             id: event.id,
             parent: event.parent,
             status,
+            body_skipped,
             kind: match (status, program) {
                 (EventStatus::Started, Program::Elemental(elemental::Flow::Hp(hp))) => {
                     hp.announced(self)
                 }
-                (
-                    _,
-                    Program::Death {
-                        source,
-                        target,
-                        role,
-                        ..
-                    },
-                ) if !self.seat(*target).is_ok_and(|seat| seat.role_shown)
-                    && *role != Some(Role::Lord)
-                    && self.match_result().is_none() =>
+                (_, Program::Death(flow))
+                    if flow.reserved
+                        || (!self.seat(flow.target).is_ok_and(|seat| seat.role_shown)
+                            && self.match_result().is_none()) =>
                 {
                     EventKind::Death {
-                        source: *source,
-                        target: *target,
+                        source: flow.source,
+                        target: flow.target,
                         role: None,
                     }
                 }
@@ -1417,11 +1473,7 @@ impl Game {
     }
 
     fn living_order_from(&self, start: SeatId) -> Vec<SeatId> {
-        self.seat_order_from(start)
-            .expect("the starting seat is present")
-            .into_iter()
-            .filter(|id| self.seat(*id).is_ok_and(|seat| seat.alive))
-            .collect()
+        self.in_order_from(start)
     }
 
     fn card_in_hand(&self, seat: SeatId, id: CardId, kind: CardKind) -> Result<Card, RuleError> {

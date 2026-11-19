@@ -128,7 +128,7 @@ impl Game {
         }
         let seat = response.seat;
         let kind = response.kind;
-        if !self.is_alive(seat) {
+        if !self.is_in(seat) && !matches!(response.step, Step::Pay) {
             self.scheduler.end(Finished(Passed));
             return;
         }
@@ -427,6 +427,10 @@ impl Game {
     ) {
         match payment.step {
             PaymentStep::Pay => {
+                if !self.is_in(payment.seat) {
+                    self.scheduler.end(Outcome::Cancelled);
+                    return;
+                }
                 if payment.kind == CardKind::Sha {
                     self.note_hero_sha_play(payment.seat);
                 }

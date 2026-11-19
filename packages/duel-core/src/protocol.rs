@@ -98,6 +98,8 @@ pub struct Command {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum Action {
+    /// Continue the rules from a yielded round with no participating seats.
+    AdvanceRound,
     ActivateSkill {
         registration: u64,
         cards: Vec<CardId>,
@@ -148,6 +150,8 @@ pub enum Action {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GameView {
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub round_suspended: bool,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub group_updates: Vec<crate::GroupAnnouncement>,
     pub version: u32,
@@ -187,6 +191,10 @@ pub struct GameView {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SeatView {
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub out: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rest: Option<crate::RestClock>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub marks: Vec<crate::SkillMark>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -363,6 +371,9 @@ pub struct ExpansionCard {
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GameEvent {
+    /// The event reached its end timings without applying its content to an out player.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub body_skipped: bool,
     pub id: EventId,
     pub parent: Option<EventId>,
     pub status: EventStatus,
@@ -659,6 +670,14 @@ pub enum EventKind {
     ChooseSave {
         seat: SeatId,
         target: SeatId,
+    },
+    Rest {
+        seat: SeatId,
+        clock: crate::RestClock,
+    },
+    RestEnd {
+        seat: SeatId,
+        hp: i32,
     },
     Revive {
         seat: SeatId,

@@ -92,8 +92,8 @@ impl Game {
             return Err(RuleError::InvalidTarget);
         }
         for seat in std::iter::once(owner).chain(targets.iter().copied()) {
-            let player = self.seat(seat)?;
-            if !player.alive {
+            self.seat(seat)?;
+            if !self.is_in(seat) {
                 return Err(RuleError::InactiveSeat { seat });
             }
         }
@@ -264,9 +264,8 @@ impl Game {
                 if std::iter::once(flow.owner)
                     .chain(flow.targets.iter().copied())
                     .any(|seat| {
-                        !self
-                            .seat(seat)
-                            .is_ok_and(|player| player.alive && !player.hand.is_empty())
+                        !self.is_in(seat)
+                            || self.seat(seat).is_ok_and(|player| player.hand.is_empty())
                     })
                 {
                     self.group_frame(id).result = Some(CompareManyResult {
@@ -331,6 +330,16 @@ impl Game {
                 self.scheduler.after(cleanup);
             }
             Paid => {
+                if matches!(child, Some(Outcome::Cancelled))
+                    && std::iter::once(flow.owner)
+                        .chain(flow.targets.iter().copied())
+                        .any(|seat| self.is_out(seat))
+                {
+                    self.group_frame(id).cancelled = true;
+                    flow.stage = CancelNotify;
+                    self.scheduler.replace_current(Program::GroupCompare(flow));
+                    return;
+                }
                 flow.stage = Reveal;
                 self.scheduler.replace_current(Program::GroupCompare(flow));
                 self.group_hook(id, "compareCardShowBefore");
@@ -410,8 +419,7 @@ impl Game {
                     winner,
                 });
                 flow.stage = PairNext;
-                if let Some(callback) = flow.callback.clone().filter(|_| self.is_alive(flow.owner))
-                {
+                if let Some(callback) = flow.callback.clone().filter(|_| self.is_in(flow.owner)) {
                     let event = self.subject_timing(
                         "compareMultiple",
                         Some(flow.owner),

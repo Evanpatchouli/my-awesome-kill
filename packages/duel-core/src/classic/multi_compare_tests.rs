@@ -675,6 +675,33 @@ fn dead_initiator_completes_started_pair_but_no_later_pair_callbacks() {
     );
 }
 #[test]
+fn resting_initiator_skips_new_pair_callbacks_after_the_bids_are_paid() {
+    let (mut game, cards) = setup([9, 8, 10, 12]);
+    game.register_trigger(reg("leave_comparison", "compareFixing", |ctx, _, _| {
+        ctx.rest(0, crate::RestClock::default()).unwrap();
+        TriggerStep::Done
+    }))
+    .unwrap();
+    let callback: TriggerEffect =
+        Arc::new(|_, _, _| panic!("an out initiator cannot run a new pair callback"));
+    let compare = game
+        .compare_many_program(0, vec![1, 3, 4], CompareMode::Pairwise, Some(callback))
+        .unwrap();
+    game.scheduler.start(compare);
+    run(&mut game);
+    assert!(game.is_alive(0) && game.is_out(0));
+    let finished = game.group_compare_history().last().unwrap();
+    assert!(!finished.cancelled);
+    assert_eq!(
+        finished.result.as_ref().unwrap().numbers,
+        [[9, 8], [9, 10], [9, 12]]
+    );
+    for bid in cards {
+        assert_eq!(game.discard.iter().filter(|&&c| c == bid).count(), 1);
+    }
+}
+
+#[test]
 fn cancelled_loss_batch_does_not_cancel_group_or_consume_locked_bids() {
     let (mut game, cards) = setup([9, 8, 10, 12]);
     game.register_trigger(reg("cancel_batch", "loseAsyncBegin", |_, _, _| {

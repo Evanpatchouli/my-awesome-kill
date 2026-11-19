@@ -141,6 +141,9 @@ impl ContentAction {
             Self::Damage { target, .. } => *target,
         };
         let player = game.seat(seat).ok().filter(|p| p.alive)?;
+        if player.out && !matches!(self, Self::TurnOver { .. }) {
+            return None;
+        }
         match self {
             Self::Link { .. } => game.seat_change(seat, Change::Link(!player.linked)),
             Self::TurnOver { .. } => game.seat_change(seat, Change::TurnOver(!player.turned_over)),
@@ -165,7 +168,7 @@ impl crate::TriggerContext<'_> {
     /// Toggle when the desired state is omitted. Repeating an explicit state is a no-op.
     pub fn link(&mut self, seat: SeatId, linked: Option<bool>) -> Result<(), RuleError> {
         let player = self.game().seat(seat)?;
-        if !player.alive {
+        if !player.is_in() {
             return Err(RuleError::InactiveSeat { seat });
         }
         if linked == Some(player.linked) {
@@ -312,6 +315,7 @@ pub(crate) struct HealthChange {
     damage: Option<usize>,
     stage: Stage,
     awaiting_timing: bool,
+    body_skipped: bool,
 }
 
 impl HealthChange {
@@ -562,6 +566,7 @@ impl Game {
     pub(crate) fn seat_change(&self, seat: SeatId, change: Change) -> Option<Program> {
         let player = self.seat(seat).ok()?;
         if !player.alive
+            || (player.out && !matches!(change, Change::TurnOver(_)))
             || matches!(change, Change::Link(linked) if linked == player.linked)
             || matches!(change, Change::TurnOver(turned_over) if turned_over == player.turned_over)
         {
@@ -591,6 +596,7 @@ impl Game {
                 damage,
                 stage: Stage::Before,
                 awaiting_timing: false,
+                body_skipped: false,
             })));
     }
 
@@ -630,7 +636,7 @@ impl Game {
                         .collect()
                 });
                 while let Some(target) = pending.pop_front() {
-                    if self.seat(target).is_ok_and(|s| s.linked && s.alive) {
+                    if self.seat(target).is_ok_and(|s| s.linked && s.is_in()) {
                         let original = &self.elemental.history[damage];
                         let card = DamageCard {
                             kind: original.card_kind,
@@ -743,6 +749,19 @@ impl Game {
                     ("changeHpBegin", None, None)
                 }
                 Apply => {
+                    let parent_is_death = self
+                        .scheduler
+                        .active_frame(self.scheduler.current_id())
+                        .and_then(|(event, _)| event.parent)
+                        .and_then(|parent| self.event_kind(parent))
+                        .is_some_and(|kind| matches!(kind, EventKind::Death { .. }));
+                    if self.is_out(hp.seat) && !parent_is_death {
+                        hp.before = self.seat(hp.seat).unwrap().hp;
+                        hp.after = hp.before;
+                        hp.body_skipped = true;
+                        hp.stage = End;
+                        continue;
+                    }
                     let (before, after, delta, absorbed) = hp.values(self);
                     hp.before = before;
                     hp.after = after;
@@ -780,10 +799,15 @@ impl Game {
                     ("changeHpCancelled", None, None)
                 }
                 Finish | FinishCancelled => {
+                    let skipped = hp.body_skipped && !matches!(stage, FinishCancelled);
                     self.scheduler
                         .replace_current(Program::Elemental(Flow::Hp(hp)));
-                    self.scheduler.end(Outcome::Finished(Resolution::HpChanged {
-                        cancelled: matches!(stage, FinishCancelled),
+                    self.scheduler.end(Outcome::Finished(if skipped {
+                        Resolution::BodySkipped
+                    } else {
+                        Resolution::HpChanged {
+                            cancelled: matches!(stage, FinishCancelled),
+                        }
                     }));
                     return;
                 }
@@ -836,3 +860,6 @@ impl Game {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod rest_interruptions;

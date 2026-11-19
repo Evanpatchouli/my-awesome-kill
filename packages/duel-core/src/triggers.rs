@@ -127,7 +127,7 @@ pub struct TriggerContext<'a> {
 }
 impl TriggerContext<'_> {
     pub fn preview_pile(&mut self, seat: SeatId, count: u16) -> Result<(), RuleError> {
-        if !self.game.seat(seat)?.alive {
+        if !self.game.seat(seat)?.is_in() {
             return Err(RuleError::InactiveSeat { seat });
         }
         if self.game.classic.is_none()
@@ -153,7 +153,7 @@ impl TriggerContext<'_> {
         top: &[Card],
         bottom: &[Card],
     ) -> Result<(), RuleError> {
-        if !self.game.seat(seat)?.alive {
+        if !self.game.seat(seat)?.is_in() {
             return Err(RuleError::InactiveSeat { seat });
         }
         let owned = self.preview_cards();
@@ -175,14 +175,64 @@ impl TriggerContext<'_> {
 
     /// Cause a direct death without a rescue window, as requested by the acting rules content.
     pub fn die(&mut self, target: SeatId, source: Option<SeatId>) -> Result<(), RuleError> {
+        self.queue_death(target, source, false)
+    }
+
+    /// Queue a death attempt that also executes its contents for an out-of-play seat.
+    pub fn die_including_out(
+        &mut self,
+        target: SeatId,
+        source: Option<SeatId>,
+    ) -> Result<(), RuleError> {
+        self.queue_death(target, source, true)
+    }
+
+    fn queue_death(
+        &mut self,
+        target: SeatId,
+        source: Option<SeatId>,
+        include_out: bool,
+    ) -> Result<(), RuleError> {
         if let Some(source) = source {
             self.game.seat(source)?;
         }
         if !self.game.seat(target)?.alive {
             return Err(RuleError::InactiveSeat { seat: target });
         }
-        self.operations
-            .push_back(TriggerOperation::Death { target, source });
+        self.operations.push_back(TriggerOperation::Death {
+            target,
+            source,
+            include_out,
+        });
+        Ok(())
+    }
+
+    /// Reserve the currently dispatched death, retaining selected mark displays.
+    pub fn reserve_death(
+        &mut self,
+        subject: EventId,
+        excluded_marks: &[&str],
+    ) -> Result<(), RuleError> {
+        if subject != self.event.subject
+            || !matches!(self.event.timing.as_str(), "dieBefore" | "dieBegin")
+        {
+            return Err(RuleError::WrongEvent);
+        }
+        let Some(Program::Death(flow)) = self.game.scheduler.active_program_mut(subject) else {
+            return Err(RuleError::WrongEvent);
+        };
+        if !matches!(
+            flow.stage,
+            crate::DeathStage::Begin | crate::DeathStage::Apply
+        ) {
+            return Err(RuleError::WrongEvent);
+        }
+        flow.reserved = true;
+        for mark in excluded_marks {
+            if !flow.excluded_marks.iter().any(|existing| existing == mark) {
+                flow.excluded_marks.push((*mark).to_owned());
+            }
+        }
         Ok(())
     }
 
@@ -197,6 +247,32 @@ impl TriggerContext<'_> {
         self.operations
             .push_back(TriggerOperation::Revive { seat, hp });
         Ok(())
+    }
+
+    pub fn rest(&mut self, seat: SeatId, clock: crate::RestClock) -> Result<(), RuleError> {
+        self.game.seat(seat)?;
+        self.operations
+            .push_back(TriggerOperation::Rest(crate::classic::rest::Flow::rest(
+                seat, clock,
+            )));
+        Ok(())
+    }
+
+    pub fn rest_end(&mut self, seat: SeatId, hp: Option<i32>) -> Result<(), RuleError> {
+        let hp = hp.unwrap_or(self.game.seat(seat)?.max_hp);
+        self.operations
+            .push_back(TriggerOperation::Rest(crate::classic::rest::Flow::end(
+                seat, hp,
+            )));
+        Ok(())
+    }
+
+    pub(crate) fn tick_rest_clock(&mut self) {
+        let seat = self.owner;
+        if self.game.tick_rest_clock(seat, self.event.subject) {
+            self.rest_end(seat, None)
+                .expect("the rest clock owner exists");
+        }
     }
 
     pub fn gain_max_hp(
@@ -489,7 +565,7 @@ impl TriggerContext<'_> {
         rank: u8,
         nature: Option<crate::DamageNature>,
     ) -> Result<CardId, RuleError> {
-        if !self.game.seat(seat)?.alive {
+        if !self.game.seat(seat)?.is_in() {
             return Err(RuleError::InactiveSeat { seat });
         }
         let card = self.game.create_content_card(kind, suit, rank, nature)?;
@@ -659,6 +735,7 @@ impl TriggerContext<'_> {
                 | TriggerOperation::MaxHp { .. }
                 | TriggerOperation::Death { .. }
                 | TriggerOperation::Revive { .. }
+                | TriggerOperation::Rest(_)
                 | TriggerOperation::CompareMany { .. }
                 | TriggerOperation::VirtualSha { .. }
                 | TriggerOperation::Emit(_)
@@ -674,7 +751,10 @@ impl TriggerContext<'_> {
         seat: SeatId,
         action: crate::elemental::ContentAction,
     ) -> Result<(), RuleError> {
-        if !self.game.seat(seat)?.alive {
+        let player = self.game.seat(seat)?;
+        if !player.alive
+            || (player.out && !matches!(action, crate::elemental::ContentAction::TurnOver { .. }))
+        {
             return Err(RuleError::InactiveSeat { seat });
         }
         self.operations
@@ -704,6 +784,7 @@ impl TriggerContext<'_> {
 
 #[derive(Clone)]
 enum TriggerOperation {
+    Rest(crate::classic::rest::Flow),
     MaxHp {
         seat: SeatId,
         source: Option<SeatId>,
@@ -721,6 +802,7 @@ enum TriggerOperation {
     Death {
         target: SeatId,
         source: Option<SeatId>,
+        include_out: bool,
     },
     Revive {
         seat: SeatId,
@@ -912,6 +994,7 @@ impl Game {
     pub fn unregister_trigger(&mut self, id: TriggerId) -> bool {
         self.indexed_triggers.remove(&id);
         self.force_die_triggers.remove(&id);
+        self.force_out_triggers.remove(&id);
         self.trigger_registrations.remove(&id).is_some()
     }
     /// Allow this registration to run even when its owner is dead.
@@ -932,6 +1015,19 @@ impl Game {
                 .trigger_registrations
                 .values()
                 .any(|r| r.timing == timing)
+    }
+
+    /// Permit this registration to run while its owner is out of play.
+    pub fn set_trigger_force_out(&mut self, id: TriggerId, enabled: bool) -> Result<(), RuleError> {
+        if !self.trigger_registrations.contains_key(&id) {
+            return Err(RuleError::InvalidSelection);
+        }
+        if enabled {
+            self.force_out_triggers.insert(id);
+        } else {
+            self.force_out_triggers.remove(&id);
+        }
+        Ok(())
     }
     pub(crate) fn queue_timing(
         &mut self,
@@ -1051,9 +1147,10 @@ impl Game {
         event: &TriggerEvent,
     ) -> bool {
         r.timing == event.timing
-            && self
-                .seat(r.owner)
-                .is_ok_and(|s| s.alive || self.force_die_triggers.contains(&id))
+            && self.seat(r.owner).is_ok_and(|s| {
+                (s.alive || self.force_die_triggers.contains(&id))
+                    && (!s.out || self.force_out_triggers.contains(&id))
+            })
             && r.role.matches(r.owner, event)
     }
     pub(crate) fn has_registered_candidates(&self, event: &TriggerEvent) -> bool {
@@ -1173,13 +1270,22 @@ impl Game {
                 TriggerOperation::ReturnPile { seat, rows } => {
                     self.return_pile_program(self.scheduler.current_id(), seat, rows)
                 }
-                TriggerOperation::Death { target, source } => {
+                TriggerOperation::Death {
+                    target,
+                    source,
+                    include_out,
+                } => {
                     if !self.is_alive(target) {
                         continue;
                     }
-                    self.death_program(target, source)
+                    let mut program = self.death_program(target, source);
+                    if let Program::Death(flow) = &mut program {
+                        flow.include_out = include_out;
+                    }
+                    program
                 }
                 TriggerOperation::Revive { seat, hp } => self.revive_program(seat, hp),
+                TriggerOperation::Rest(flow) => Program::Rest(flow),
                 TriggerOperation::MaxHp {
                     seat,
                     source,
@@ -1353,7 +1459,7 @@ impl Game {
         branches: Vec<ChoiceBranch>,
         then: u16,
     ) {
-        if !self.is_alive(seat) || self.match_result().is_some() {
+        if !self.is_in(seat) || self.match_result().is_some() {
             self.finish();
             return;
         }

@@ -138,17 +138,18 @@ impl Game {
     }
 
     pub fn has_active_skill(&self, seat: SeatId, skill: &str) -> bool {
-        !self.active_skills.registrations.is_empty()
-            && self.is_alive(seat)
-            && self
-                .active_skills
-                .registrations
-                .values()
-                .any(|r| r.owner == seat && r.skill == skill)
+        self.is_in(seat) && self.owns_active_skill(seat, skill)
+    }
+
+    pub(crate) fn owns_active_skill(&self, seat: SeatId, skill: &str) -> bool {
+        self.active_skills
+            .registrations
+            .values()
+            .any(|r| r.owner == seat && r.skill == skill)
     }
 
     pub fn active_plays(&self, seat: SeatId) -> Vec<ActivePlay> {
-        if self.checked_play_seat(seat).is_err() || !self.is_alive(seat) {
+        if self.checked_play_seat(seat).is_err() || !self.is_in(seat) {
             return Vec::new();
         }
         self.active_skills
@@ -175,7 +176,7 @@ impl Game {
         targets: Vec<SeatId>,
     ) -> Result<Program, RuleError> {
         self.checked_play_seat(seat)?;
-        if !self.is_alive(seat) {
+        if !self.is_in(seat) {
             return Err(RuleError::InactiveSeat { seat });
         }
         let r = self
@@ -239,7 +240,7 @@ impl Game {
             }
             Stage::Accepted => {
                 if matches!(child, Some(Outcome::Cancelled))
-                    || !self.is_alive(flow.owner)
+                    || !self.is_in(flow.owner)
                     || self.match_result().is_some()
                 {
                     self.scheduler.end(Outcome::Cancelled);

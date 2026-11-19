@@ -113,9 +113,14 @@ impl Game {
         self.marks.counts.remove(&(seat, skill.to_owned(), source));
     }
 
+    #[cfg(test)]
     pub(crate) fn clear_marks_on_death(&mut self, seat: SeatId) {
-        for ((owner, _, _), mark) in &mut self.marks.counts {
-            if *owner == seat {
+        self.clear_marks_on_death_except(seat, &[]);
+    }
+
+    pub(crate) fn clear_marks_on_death_except(&mut self, seat: SeatId, excluded: &[String]) {
+        for ((owner, skill, _), mark) in &mut self.marks.counts {
+            if *owner == seat && !excluded.contains(skill) {
                 mark.shown = false;
             }
         }

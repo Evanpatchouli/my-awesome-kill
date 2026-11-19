@@ -108,7 +108,7 @@ impl Flow {
 }
 
 impl Game {
-    /// Whether these two living seats can each contribute a hand card to an ordinary comparison.
+    /// Whether these two participants can each contribute a hand card to an ordinary comparison.
     pub fn can_compare(&self, initiator: SeatId, target: SeatId) -> bool {
         self.compare_program(initiator, target).is_ok()
     }
@@ -129,7 +129,7 @@ impl Game {
         }
         for seat in [initiator, target] {
             let player = self.seat(seat)?;
-            if !player.alive {
+            if !self.is_in(seat) {
                 return Err(RuleError::InactiveSeat { seat });
             }
             if player.hand.is_empty() {
@@ -243,7 +243,8 @@ impl Game {
         ) {
             return Err(RuleError::WrongEvent);
         }
-        if !self.seat(seat)?.alive {
+        self.seat(seat)?;
+        if !self.is_in(seat) {
             return Err(RuleError::InactiveSeat { seat });
         }
         let (_, card) = self

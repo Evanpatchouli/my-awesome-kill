@@ -35,7 +35,7 @@ pub fn registration(owner: SeatId) -> ActiveSkillRegistration {
         }),
         effect: Arc::new(|ctx, _, selected| {
             let owner = ctx.owner();
-            if ctx.game().is_alive(owner) {
+            if ctx.game().is_in(owner) {
                 ctx.grant_temporary(owner, damage_skill(owner))
                     .expect("valid temporary skill");
                 if let Some(card) = selected.and_then(|selection| selection.cards.first()) {

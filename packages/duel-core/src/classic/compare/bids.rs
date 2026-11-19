@@ -299,6 +299,12 @@ impl Game {
                 let seats = group.seats();
                 let seat = seats[index];
                 let initiator = group.initiator();
+                if matches!(stage, Bid::Begin | Bid::Select)
+                    && seats.into_iter().any(|seat| self.is_out(seat))
+                {
+                    self.scheduler.end(Outcome::Cancelled);
+                    return;
+                }
                 match stage {
                     Bid::Begin => {
                         self.queue_timing(
@@ -317,7 +323,7 @@ impl Game {
                     }
                     Bid::Select => {
                         let player = self.seat(seat).expect("validated participant");
-                        if !player.alive || player.hand.is_empty() {
+                        if !self.is_in(seat) || player.hand.is_empty() {
                             self.scheduler.end(Outcome::Cancelled);
                             return;
                         }
@@ -405,7 +411,9 @@ impl Game {
                     }
                 }
                 PayStage::Lose => {
-                    if matches!(child, Some(Outcome::Cancelled)) {
+                    if matches!(child, Some(Outcome::Cancelled))
+                        || group.seats().into_iter().any(|seat| self.is_out(seat))
+                    {
                         self.scheduler.end(Outcome::Cancelled);
                         return;
                     }

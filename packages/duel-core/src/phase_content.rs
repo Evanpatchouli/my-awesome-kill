@@ -118,7 +118,7 @@ fn fangquan2(owner: SeatId) -> TemporarySkill {
                 2 => {
                     let targets = ctx
                         .game()
-                        .living_order_from(ctx.owner())
+                        .in_order_from(ctx.owner())
                         .into_iter()
                         .filter(|&seat| seat != ctx.owner())
                         .collect::<Vec<_>>();
@@ -139,7 +139,7 @@ fn fangquan2(owner: SeatId) -> TemporarySkill {
                         return TriggerStep::Done;
                     };
                     let owner = ctx.owner();
-                    if !ctx.game().is_alive(target)
+                    if !ctx.game().is_in(target)
                         || target == owner
                         || ctx.insert_extra_turn(target, "fangquan2").is_err()
                     {
@@ -157,10 +157,7 @@ fn fangquan2(owner: SeatId) -> TemporarySkill {
     trigger.filter = Arc::new(|game, _, owner| {
         game.skill_mark_count(owner, "fangquan2", None) > 0
             && game.seat(owner).is_ok_and(|seat| !seat.hand.is_empty())
-            && game
-                .living_order_from(owner)
-                .iter()
-                .any(|&seat| seat != owner)
+            && game.in_order_from(owner).iter().any(|&seat| seat != owner)
     });
     skill.indexed_triggers.push((
         trigger,

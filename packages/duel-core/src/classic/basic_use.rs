@@ -113,7 +113,7 @@ impl Game {
                     flow.step = Step::Resolve(index + 1);
                     let seat = flow.seat;
                     self.scheduler.replace_current(Program::BasicUse(flow));
-                    if self.is_alive(target) {
+                    if self.is_in(target) {
                         self.next(EventKind::Recover {
                             seat,
                             target,

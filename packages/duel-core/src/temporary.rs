@@ -100,11 +100,11 @@ impl Game {
     /// Native and temporarily acquired skills visible to trusted rules content.
     pub fn has_skill(&self, seat: SeatId, id: &str) -> bool {
         self.seat(seat).is_ok_and(|player| {
-            player.alive
-                && (player
+            (id == "undist" && player.rest_undist)
+                || player
                     .hero
                     .is_some_and(|hero| hero.skills.iter().any(|skill| skill.id == id))
-                    || self.has_active_skill(seat, id))
+                || self.owns_active_skill(seat, id)
                 || self
                     .temporary_skills
                     .iter()
@@ -114,7 +114,7 @@ impl Game {
 
     /// Whether the holder's effective-card modifiers permit this kind of use.
     pub fn card_enabled(&self, seat: SeatId, kind: CardKind) -> bool {
-        self.seat(seat).is_ok_and(|player| player.alive)
+        self.is_in(seat)
             && self.temporary_skills.iter().all(|grant| {
                 grant.owner != seat
                     || grant

@@ -23,6 +23,7 @@ pub(crate) struct Flow {
     stage: Stage,
     awaiting_cancellable: bool,
     cancelled: bool,
+    body_skipped: bool,
 }
 
 impl Flow {
@@ -59,6 +60,7 @@ impl Game {
             stage: Stage::Before,
             awaiting_cancellable: false,
             cancelled: false,
+            body_skipped: false,
         })
     }
 
@@ -79,8 +81,11 @@ impl Game {
                     ("reviveBegin", true)
                 }
                 Stage::Apply => {
-                    self.revive_now(flow.seat, Some(flow.hp))
-                        .expect("revive seat was validated");
+                    flow.body_skipped = self.is_out(flow.seat);
+                    if !flow.body_skipped {
+                        self.revive_now(flow.seat, Some(flow.hp))
+                            .expect("revive seat was validated");
+                    }
                     flow.stage = Stage::End;
                     continue;
                 }
@@ -97,13 +102,15 @@ impl Game {
                     ("reviveCancelled", false)
                 }
                 Stage::Finish => {
-                    let cancelled = flow.cancelled;
-                    self.scheduler.replace_current(Program::Revive(flow));
-                    self.scheduler.end(Outcome::Finished(if cancelled {
+                    let result = if flow.cancelled {
                         Resolution::ReviveCancelled
+                    } else if flow.body_skipped {
+                        Resolution::BodySkipped
                     } else {
                         Resolution::Complete
-                    }));
+                    };
+                    self.scheduler.replace_current(Program::Revive(flow));
+                    self.scheduler.end(Outcome::Finished(result));
                     return;
                 }
             };

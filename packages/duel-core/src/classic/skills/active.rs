@@ -67,10 +67,10 @@ impl Game {
         let Some(state) = &self.classic else {
             return Vec::new();
         };
-        let Ok(actor) = self.seat(seat) else {
+        if !self.is_in(seat) {
             return Vec::new();
-        };
-        let living = self.living_order_from(seat);
+        }
+        let living = self.in_order_from(seat);
         let others = living.iter().skip(1).copied().collect::<Vec<_>>();
         let hand = self.hero_owned_card_ids(seat, false);
         let owned = self.hero_owned_card_ids(seat, true);
@@ -169,8 +169,7 @@ impl Game {
                 1,
             );
         }
-        if actor.alive
-            && self.has_lord_skill(seat, Jijiang.as_str())
+        if self.has_lord_skill(seat, Jijiang.as_str())
             && self.may_play_sha(seat)
             && self.card_enabled(seat, CardKind::Sha)
             && self.hero_lord_request_available(seat, CardKind::Sha)
@@ -229,6 +228,10 @@ impl Game {
         }
         match active.stage {
             ActiveStage::Begin => {
+                if !self.is_in(seat) || active.targets.iter().any(|&target| !self.is_in(target)) {
+                    self.finish();
+                    return;
+                }
                 if matches!(active.skill, Zhiheng | Fanjian | Jieyin | Qingnang | Lijian) {
                     self.classic
                         .as_mut()
@@ -297,7 +300,7 @@ impl Game {
                     Lijian => {
                         let target = active.targets[0];
                         let sources = self
-                            .living_order_from(seat)
+                            .in_order_from(seat)
                             .into_iter()
                             .skip(1)
                             .filter(|&candidate| {
@@ -335,6 +338,10 @@ impl Game {
                     self.finish();
                     return;
                 };
+                if !self.is_in(seat) || !self.is_in(active.targets[0]) {
+                    self.finish();
+                    return;
+                }
                 let suit =
                     [Suit::Spade, Suit::Club, Suit::Heart, Suit::Diamond][choice.branch as usize];
                 if let Some(card) = self.random_hand_card(seat) {
@@ -354,12 +361,19 @@ impl Game {
                     self.finish();
                     return;
                 };
+                if !self.is_in(seat)
+                    || !self.is_in(choice.targets[0])
+                    || !self.is_in(active.targets[0])
+                {
+                    self.finish();
+                    return;
+                }
                 self.hero_discard_cards(seat, &active.cards);
                 self.scheduler
                     .next(self.virtual_duel_without_counter(choice.targets[0], active.targets[0]));
             }
             ActiveStage::HealthLost => {
-                if self.seat(seat).is_ok_and(|seat| seat.alive) {
+                if self.is_in(seat) {
                     self.queue_draw(seat, 2, DrawReason::CardEffect);
                 }
             }
@@ -403,11 +417,11 @@ impl Game {
             CardKind::Sha => (SkillId::Jijiang, "shu"),
             _ => return None,
         };
-        if !self.has_lord_skill(seat, skill.as_str()) {
+        if !self.is_in(seat) || !self.has_lord_skill(seat, skill.as_str()) {
             return None;
         }
         let mut applicants: Vec<_> = self
-            .living_order_from(seat)
+            .in_order_from(seat)
             .into_iter()
             .skip(1)
             .filter(|&player| self.hero_faction_is(player, faction))
@@ -431,6 +445,10 @@ impl Game {
         child: Option<Outcome<Resolution>>,
     ) {
         use RequestStage::*;
+        if !self.is_in(request.lord) || request.targets.iter().any(|&seat| !self.is_in(seat)) {
+            self.scheduler.end(Outcome::Finished(Resolution::Passed));
+            return;
+        }
         match request.stage {
             Response if matches!(child, Some(Outcome::Finished(Resolution::Responded))) => {
                 if request.kind == CardKind::Sha {
@@ -439,7 +457,7 @@ impl Game {
                 self.scheduler.end(Outcome::Finished(Resolution::Responded));
                 return;
             }
-            PlayChoice(supplier) => {
+            PlayChoice(supplier) if self.is_in(supplier) => {
                 if let Some(choice) = selection(child).filter(|choice| choice.branch != 0) {
                     let cards = self.hero_cards_by_id(supplier, &choice.cards);
                     let attack = self.delegated_sha_program(
@@ -460,7 +478,7 @@ impl Game {
             return;
         }
         while let Some(supplier) = request.applicants.pop() {
-            if !self.seat(supplier).is_ok_and(|seat| seat.alive) {
+            if !self.is_in(supplier) {
                 continue;
             }
             if request.targets.is_empty() {

@@ -189,7 +189,7 @@ impl Game {
         if self.match_result().is_some()
             || !self
                 .seat(target)
-                .is_ok_and(|player| player.alive && player.hp <= 0)
+                .is_ok_and(|player| player.is_in() && player.hp <= 0)
             || matches!(
                 child,
                 Some(Outcome::Finished(
@@ -215,7 +215,7 @@ impl Game {
             }
             _ => unreachable!("the dying event only waits for save decisions and death"),
         };
-        if let Some(&seat) = remaining.iter().find(|&&seat| self.is_alive(seat)) {
+        if let Some(&seat) = remaining.iter().find(|&&seat| self.is_in(seat)) {
             self.next(EventKind::ChooseSave { seat, target });
         } else {
             self.scheduler.next(self.death_program(target, source));
@@ -231,10 +231,10 @@ impl Game {
         answer: &mut Option<Answer>,
     ) {
         if self.match_result().is_some()
-            || !self.is_alive(seat)
+            || !self.is_in(seat)
             || !self
                 .seat(target)
-                .is_ok_and(|player| player.alive && player.hp <= 0)
+                .is_ok_and(|player| player.is_in() && player.hp <= 0)
         {
             self.scheduler
                 .end(Outcome::Finished(Resolution::SavePassed(seat)));
@@ -291,6 +291,14 @@ impl Game {
         }
     }
 
+    /// Whether the active death event is reserved for an out-of-play return.
+    pub fn death_reserved(&self, event: crate::EventId) -> bool {
+        matches!(
+            self.scheduler.active_frame(event),
+            Some((_, Program::Death(flow))) if flow.reserved
+        )
+    }
+
     pub(crate) fn death_program(&self, target: SeatId, source: Option<SeatId>) -> Program {
         Program::event(EventKind::Death {
             source,
@@ -301,19 +309,14 @@ impl Game {
 
     pub(crate) fn resolve_death(
         &mut self,
-        source: Option<SeatId>,
-        target: SeatId,
-        role: Option<Role>,
-        stage: crate::DeathStage,
+        mut flow: crate::DeathFlow,
         child: Option<Outcome<Resolution>>,
     ) {
         use crate::DeathStage;
-        let next = |stage| Program::Death {
-            source,
-            target,
-            role,
-            stage,
-        };
+        let source = flow.source;
+        let target = flow.target;
+        let role = flow.role;
+        let stage = flow.stage;
         if matches!(child, Some(Outcome::Cancelled))
             && matches!(
                 stage,
@@ -324,23 +327,31 @@ impl Game {
                     | DeathStage::Finish
             )
         {
-            self.scheduler
-                .replace_current(next(DeathStage::FinishCancelled));
+            flow.stage = DeathStage::FinishCancelled;
+            self.scheduler.replace_current(Program::Death(flow));
             self.queue_timing("dieCancelled", Some(target), source, None, 0, &[]);
             return;
         }
         match stage {
             DeathStage::Before => {
-                self.scheduler.replace_current(next(DeathStage::Begin));
+                flow.stage = DeathStage::Begin;
+                self.scheduler.replace_current(Program::Death(flow));
                 self.queue_timing("dieBefore", Some(target), source, None, 0, &[]);
             }
             DeathStage::Begin => {
-                self.scheduler.replace_current(next(DeathStage::Apply));
+                flow.stage = DeathStage::Apply;
+                self.scheduler.replace_current(Program::Death(flow));
                 self.queue_timing("dieBegin", Some(target), source, None, 0, &[]);
             }
             DeathStage::Apply => {
                 if !self.is_alive(target) {
                     self.finish();
+                    return;
+                }
+                if self.is_out(target) && !flow.include_out {
+                    flow.body_skipped = true;
+                    flow.stage = DeathStage::End;
+                    self.scheduler.replace_current(Program::Death(flow));
                     return;
                 }
                 if let Some(source) = source {
@@ -349,33 +360,46 @@ impl Game {
                 }
                 self.set_seat_alive(target, false);
                 let player = self.seat_mut(target);
+                player.out = false;
                 player.linked = false;
                 player.turned_over = false;
                 let hp = player.hp;
-                self.scheduler.replace_current(next(DeathStage::Announce));
+                flow.stage = DeathStage::Announce;
+                self.scheduler.replace_current(Program::Death(flow));
                 if hp != 0 {
                     self.queue_health_change(target, -i64::from(hp), None);
                 }
             }
             DeathStage::Announce => {
-                self.seat_mut(target).role_shown = true;
-                if let Some(table) = self.classic.as_mut() {
-                    let alive: Vec<_> = self
-                        .seats
-                        .iter()
-                        .filter(|s| s.alive)
-                        .filter_map(|s| s.role)
-                        .collect();
-                    if table.result.is_none() {
-                        table.result = classic_data::winning_side(&alive).map(MatchResult::Winner);
+                if !flow.reserved {
+                    self.seat_mut(target).role_shown = true;
+                    if let Some(table) = self.classic.as_mut() {
+                        let alive: Vec<_> = self
+                            .seats
+                            .iter()
+                            .filter(|s| s.alive)
+                            .filter_map(|s| s.role)
+                            .collect();
+                        if table.result.is_none() {
+                            table.result =
+                                classic_data::winning_side(&alive).map(MatchResult::Winner);
+                        }
                     }
                 }
-                self.scheduler.replace_current(next(DeathStage::Cleanup));
+                flow.stage = DeathStage::Cleanup;
+                self.scheduler.replace_current(Program::Death(flow));
                 self.queue_timing("die", Some(target), source, None, 0, &[]);
             }
             DeathStage::Cleanup => {
                 if !self.is_alive(target) {
-                    self.clear_marks_on_death(target);
+                    self.clear_marks_on_death_except(target, &flow.excluded_marks);
+                    if !flow
+                        .excluded_marks
+                        .iter()
+                        .any(|mark| mark == "_rest_return")
+                    {
+                        self.seat_mut(target).rest_mark_shown = false;
+                    }
                     self.remove_temporary_for_seat(target);
                     self.queue_zone_discards(
                         target,
@@ -385,25 +409,33 @@ impl Game {
                         self.scheduler.next(discard);
                     }
                 }
-                self.scheduler.replace_current(next(DeathStage::Reward));
+                flow.stage = DeathStage::Reward;
+                self.scheduler.replace_current(Program::Death(flow));
                 return;
             }
             DeathStage::Reward => {
-                if self.match_result().is_none() {
+                if !flow.reserved && self.match_result().is_none() {
                     if let Some(role) = role {
                         self.queue_death_reward(source, role);
                     }
                 }
-                self.scheduler.replace_current(next(DeathStage::End));
+                flow.stage = DeathStage::End;
+                self.scheduler.replace_current(Program::Death(flow));
             }
             DeathStage::End => {
-                self.scheduler.replace_current(next(DeathStage::After));
+                flow.stage = DeathStage::After;
+                self.scheduler.replace_current(Program::Death(flow));
                 self.queue_timing("dieEnd", Some(target), source, None, 0, &[]);
             }
             DeathStage::After => {
-                self.scheduler.replace_current(next(DeathStage::Finish));
+                flow.stage = DeathStage::Finish;
+                self.scheduler.replace_current(Program::Death(flow));
                 self.queue_timing("dieAfter", Some(target), source, None, 0, &[]);
                 return;
+            }
+            DeathStage::Finish if flow.body_skipped => {
+                self.scheduler
+                    .end(Outcome::Finished(Resolution::BodySkipped));
             }
             DeathStage::Finish => self.finish(),
             DeathStage::FinishCancelled => self
@@ -415,7 +447,7 @@ impl Game {
     fn queue_death_reward(&mut self, source: Option<SeatId>, role: Role) {
         if let Some(killer) = source
             .and_then(|id| self.seat(id).ok())
-            .filter(|seat| seat.alive)
+            .filter(|seat| seat.is_in())
         {
             match role {
                 Role::Rebel => {
@@ -581,3 +613,7 @@ mod tests {
         }
     }
 }
+
+#[cfg(test)]
+#[path = "lifecycle/reserved_death_tests.rs"]
+mod reserved_death_tests;

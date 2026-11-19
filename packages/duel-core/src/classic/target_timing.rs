@@ -51,7 +51,7 @@ impl Game {
         card_kind: CardKind,
         cards: &[Card],
     ) -> bool {
-        if !self.wants_timing(timing.name()) || !self.seat(target).is_ok_and(|p| p.alive) {
+        if !self.wants_timing(timing.name()) || !self.is_in(target) {
             return false;
         }
         self.scheduler.next(Program::TargetTiming(TargetTiming {
@@ -79,7 +79,7 @@ impl Game {
             return;
         }
         // A preceding target's callback can remove this target before its turn.
-        if !self.seat(flow.target).is_ok_and(|p| p.alive) {
+        if !self.is_in(flow.target) {
             self.finish();
             return;
         }
