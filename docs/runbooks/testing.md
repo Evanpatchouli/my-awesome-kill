@@ -41,6 +41,10 @@
 
 使用 `qa-vitality` 构建独立绑定，设置 `MAK_VITALITY_BINDINGS`，执行 `node apps/game/smoke-vitality.mjs`。八席样例在实际牌桌增加和减少 1 号席的体力上限，核对 4/4 → 4/5 → 4/4 → 3/3。每次变化只触发一次威重，分别暗摸 2、1、1 张。继续提升至 3/9 时，横屏座位以数字展示体力。取消死亡、死亡后的变动与求桃次序由 Rust 测试和[固定上游轨迹](../../tests/reference/max-hp.json)核对。
 
+### 复活与角色身份
+
+复活牌桌使用独立的 `qa-revival` 绑定和 `MAK_REVIVAL_BINDINGS`。在 Vite 运行期间执行 `node apps/game/smoke-revival.mjs`。种子 317 的八席局由人类指定 1 号席阵亡、取消复活后再允许复活，并再次阵亡后直接复活至 2/4。检查反贼身份持续公开、原四张手牌留在弃牌堆，随后按物理座次由 1 号席进入下一自然回合。
+
 ### 重铸的真实 WebAssembly 交互
 
 在项目根目录构建带测试内容的独立绑定，随后用普通 Vite 开发入口运行烟测。示例中的第二套绑定放在临时目录，正常发行版保持默认 Cargo features。

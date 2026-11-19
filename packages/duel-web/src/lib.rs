@@ -19,6 +19,8 @@ mod qa_phase_skills;
 mod qa_qiaoshui;
 #[cfg(feature = "qa-recast")]
 mod qa_recast;
+#[cfg(feature = "qa-revival")]
+mod qa_revival;
 #[cfg(feature = "qa-vitality")]
 mod qa_vitality;
 #[cfg(feature = "qa-xunxun")]
